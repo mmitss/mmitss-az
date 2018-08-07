@@ -3,8 +3,8 @@ LIB =
 OBJ = 
 
 CFLAGS += -Wall -DPRINT_LOG
-INCLUDES = -I. -I../include/libj2735
-LIBS = -L../lib/
+INCLUDES = -I. -I../../../include/libj2735
+LIBS = -L../../../lib/
 
 .PHONY: all linux clean
 
