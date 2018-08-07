@@ -1,9 +1,8 @@
-SDK_ROOT=../../../../sdk
-MAKE_ROOT=$(SDK_ROOT)/make
+MAKE_ROOT=../make
 include $(MAKE_ROOT)/header.mk
 
-SRC += MMITSS_rsu_Signal_Control_visual.cpp Signal.cpp Array.cpp Config.cpp PositionLocal3D.cpp
-TGT:=MMITSS_rsu_Signal_Control_visual
+SRC += M_Signal_Control.cpp Signal.cpp Array.cpp Config.cpp PositionLocal3D.cpp
+TGT:=M_Signal_Control
 LIBS+= -lnetsnmp -lstdc++ -lm
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
