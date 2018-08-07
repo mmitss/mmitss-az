@@ -5,6 +5,7 @@ OBJ =
 CFLAGS += -Wall -DPRINT_LOG
 INCLUDES = -I. -I../../../include/libj2735
 LIBS = -L../../../lib/
+THIRDPARTYLIBS = -L../../../3rdparty
 
 .PHONY: all linux clean
 
