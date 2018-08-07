@@ -1,4 +1,4 @@
-MAKE_ROOT=../make
+MAKE_ROOT=../../../make
 include $(MAKE_ROOT)/header.mk
 
 SRC  = M_MapSpatBroadcast.cpp Signal.cpp SignalController.cpp NMAP.cpp GeoCoord.cpp
