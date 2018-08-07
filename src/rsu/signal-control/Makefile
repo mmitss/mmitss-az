@@ -1,8 +1,8 @@
-MAKE_ROOT=../make
+MAKE_ROOT=../../../make
 include $(MAKE_ROOT)/header.mk
 
-SRC += M_Signal_Control.cpp Signal.cpp Array.cpp Config.cpp PositionLocal3D.cpp
-TGT:=M_Signal_Control
+SRC += M_SignalControl.cpp Signal.cpp Array.cpp Config.cpp PositionLocal3D.cpp
+TGT:=M_SignalControl
 LIBS+= -lnetsnmp -lstdc++ -lm
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
