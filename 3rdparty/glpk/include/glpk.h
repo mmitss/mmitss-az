@@ -1,12 +1,12 @@
-/* glpk.h (GLPK API) */
+/* glpk.h */
 
 /***********************************************************************
 *  This code is part of GLPK (GNU Linear Programming Kit).
 *
 *  Copyright (C) 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008,
-*  2009, 2010, 2011, 2013, 2014, 2015 Andrew Makhorin, Department for
-*  Applied Informatics, Moscow Aviation Institute, Moscow, Russia. All
-*  rights reserved. E-mail: <mao@gnu.org>.
+*  2009, 2010, 2011, 2013 Andrew Makhorin, Department for Applied
+*  Informatics, Moscow Aviation Institute, Moscow, Russia. All rights
+*  reserved. E-mail: <mao@gnu.org>.
 *
 *  GLPK is free software: you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ extern "C" {
 
 /* library version numbers: */
 #define GLP_MAJOR_VERSION  4
-#define GLP_MINOR_VERSION  57
+#define GLP_MINOR_VERSION  52
 
 typedef struct glp_prob glp_prob;
 /* LP/MIP problem object */
@@ -84,25 +84,21 @@ typedef struct glp_prob glp_prob;
 
 typedef struct
 {     /* basis factorization control parameters */
-      int msg_lev;            /* (not used) */
+      int msg_lev;            /* (reserved) */
       int type;               /* factorization type: */
-#if 1 /* 05/III-2014 */
-#define GLP_BF_LUF      0x00  /* plain LU-factorization */
-#define GLP_BF_BTF      0x10  /* block triangular LU-factorization */
-#endif
-#define GLP_BF_FT       0x01  /* Forrest-Tomlin (LUF only) */
-#define GLP_BF_BG       0x02  /* Schur compl. + Bartels-Golub */
-#define GLP_BF_GR       0x03  /* Schur compl. + Givens rotation */
-      int lu_size;            /* (not used) */
-      double piv_tol;         /* sgf_piv_tol */
-      int piv_lim;            /* sgf_piv_lim */
-      int suhl;               /* sgf_suhl */
-      double eps_tol;         /* sgf_eps_tol */
-      double max_gro;         /* (not used) */
-      int nfs_max;            /* fhvint.nfs_max */
-      double upd_tol;         /* (not used) */
-      int nrs_max;            /* scfint.nn_max */
-      int rs_size;            /* (not used) */
+#define GLP_BF_FT          1  /* LUF + Forrest-Tomlin */
+#define GLP_BF_BG          2  /* LUF + Schur compl. + Bartels-Golub */
+#define GLP_BF_GR          3  /* LUF + Schur compl. + Givens rotation */
+      int lu_size;            /* luf.sv_size */
+      double piv_tol;         /* luf.piv_tol */
+      int piv_lim;            /* luf.piv_lim */
+      int suhl;               /* luf.suhl */
+      double eps_tol;         /* luf.eps_tol */
+      double max_gro;         /* luf.max_gro */
+      int nfs_max;            /* fhv.hh_max */
+      double upd_tol;         /* fhv.upd_tol */
+      int nrs_max;            /* lpf.n_max */
+      int rs_size;            /* lpf.v_size */
       double foo_bar[38];     /* (reserved) */
 } glp_bfcp;
 
@@ -119,11 +115,11 @@ typedef struct
 #define GLP_DUALP          2  /* use dual; if it fails, use primal */
 #define GLP_DUAL           3  /* use dual simplex */
       int pricing;            /* pricing technique: */
-#define GLP_PT_STD      0x11  /* standard (Dantzig's rule) */
+#define GLP_PT_STD      0x11  /* standard (Dantzig rule) */
 #define GLP_PT_PSE      0x22  /* projected steepest edge */
       int r_test;             /* ratio test technique: */
 #define GLP_RT_STD      0x11  /* standard (textbook) */
-#define GLP_RT_HAR      0x22  /* Harris' two-pass ratio test */
+#define GLP_RT_HAR      0x22  /* two-pass Harris' ratio test */
       double tol_bnd;         /* spx.tol_bnd */
       double tol_dj;          /* spx.tol_dj */
       double tol_piv;         /* spx.tol_piv */
@@ -186,15 +182,20 @@ typedef struct
       int presolve;           /* enable/disable using MIP presolver */
       int binarize;           /* try to binarize integer variables */
       int fp_heur;            /* feasibility pump heuristic */
+#if 1 /* 25/V-2013 */
       int ps_heur;            /* proximity search heuristic */
+#endif
+#if 1 /* 29/VI-2013 */
       int ps_tm_lim;          /* proxy time limit, milliseconds */
-      int sr_heur;            /* simple rounding heuristic */
-#if 1 /* 24/X-2015; not documented--should not be used */
+#endif
+#if 1 /* 11/VII-2013 */
       int use_sol;            /* use existing solution */
       const char *save_sol;   /* filename to save every new solution */
+#endif
+#if 1 /* 28/V-2010 */
       int alien;              /* use alien solver */
 #endif
-      double foo_bar[24];     /* (reserved) */
+      double foo_bar[25];     /* (reserved) */
 } glp_iocp;
 
 typedef struct
@@ -493,16 +494,6 @@ double glp_get_col_dual(glp_prob *P, int j);
 int glp_get_unbnd_ray(glp_prob *P);
 /* determine variable causing unboundedness */
 
-#if 1 /* 08/VIII-2013; not documented yet */
-int glp_get_it_cnt(glp_prob *P);
-/* get simplex solver iteration count */
-#endif
-
-#if 1 /* 08/VIII-2013; not documented yet */
-void glp_set_it_cnt(glp_prob *P, int it_cnt);
-/* set simplex solver iteration count */
-#endif
-
 int glp_interior(glp_prob *P, const glp_iptcp *parm);
 /* solve LP problem with the interior-point method */
 
@@ -593,22 +584,22 @@ int glp_write_mip(glp_prob *P, const char *fname);
 /* write MIP solution to text file */
 
 int glp_bf_exists(glp_prob *P);
-/* check if LP basis factorization exists */
+/* check if the basis factorization exists */
 
 int glp_factorize(glp_prob *P);
-/* compute LP basis factorization */
+/* compute the basis factorization */
 
 int glp_bf_updated(glp_prob *P);
-/* check if LP basis factorization has been updated */
+/* check if the basis factorization has been updated */
 
 void glp_get_bfcp(glp_prob *P, glp_bfcp *parm);
-/* retrieve LP basis factorization control parameters */
+/* retrieve basis factorization control parameters */
 
 void glp_set_bfcp(glp_prob *P, const glp_bfcp *parm);
-/* change LP basis factorization control parameters */
+/* change basis factorization control parameters */
 
 int glp_get_bhead(glp_prob *P, int k);
-/* retrieve LP basis header information */
+/* retrieve the basis header information */
 
 int glp_get_row_bind(glp_prob *P, int i);
 /* retrieve row index in the basis header */
@@ -825,11 +816,6 @@ typedef void (*glp_errfunc)(const char *fmt, ...);
 #define glp_error glp_error_(__FILE__, __LINE__)
 glp_errfunc glp_error_(const char *file, int line);
 /* display fatal error message and terminate execution */
-
-#if 1 /* 07/XI-2015 */
-int glp_at_error(void);
-/* check for error state */
-#endif
 
 #define glp_assert(expr) \
       ((void)((expr) || (glp_assert_(#expr, __FILE__, __LINE__), 1)))

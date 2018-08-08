@@ -122,7 +122,7 @@ int field_flag=0; //0: in the lab  1: in the field
 //unpack ART message and save to requests_combined.txt
 void Unpack_ART(byte* ablob, char * filename);
 
-bool is_empty(std::ifstream& pFile);
+//bool is_empty(std::ifstream& pFile);
 
 void flipEndian (char *buf, int size) {
        int start, end;
@@ -485,7 +485,7 @@ int main ( int argc, char* argv[] )
 	return 0;
 }
 
-bool is_empty(std::ifstream& pFile)
+bool fis_empty(std::ifstream& pFile)
 {
     return pFile.peek() == std::ifstream::traits_type::eof();
 }
@@ -1166,7 +1166,7 @@ int FindActiveMap()
 	char temp[128];	
 	ifstream f_active_map;
 	f_active_map.open(active_map_file,ios::in);
-	if(!is_empty(f_active_map))    //if not empty, read the active map id
+	if(!fis_empty(f_active_map))    //if not empty, read the active map id
 	{
 		string temp_string;
 		getline(f_active_map,temp_string);
