@@ -19,7 +19,7 @@
 *  
 *  
 */
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "BasicVehicle.h"
 
 
@@ -64,7 +64,7 @@ BasicVehicle::~BasicVehicle()
 void BasicVehicle::CreateEmptyBSMblob(char* theTarget)
 {
     // Build up the default BSM msg buffer to be used later
-    char emptyMsg [] = { 
+    unsigned char emptyMsg [] = { 
        
         0x00,   // start of blob data  // Msg Count
         0x00, 0x00,  0x00, 0x00,  // Temp Id 4Byte
