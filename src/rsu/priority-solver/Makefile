@@ -1,11 +1,13 @@
-SDK_ROOT=../../../../sdk
-MAKE_ROOT=$(SDK_ROOT)/make
+BUILD_ROOT=../../..
+MAKE_ROOT=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/header.mk
 
-SRC += MPR_Priority_Solver.cpp Array.cpp Config.cpp ReqEntry.cpp Signal.cpp PriorityRequest.cpp GetInfo.cpp EVLS.cpp
-TGT:=MMITSS_MRP_Priority_Solver
-
-LIBS+= -lnetsnmp -lstdc++ -lglpk -lm
+SRC += M_PrioritySolver.cpp Array.cpp Config.cpp ReqEntry.cpp Signal.cpp PriorityRequest.cpp GetInfo.cpp EVLS.cpp
+TGT:=M_PrioritySolver
+LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
+LIBS += -L$(BUILD_ROOT)/3rdparty/glpk/lib/
+LIBS += -lnetsnmp -lstdc++ -lglpk -lm
+INCLUDES += -I$(BUILD_ROOT)/3rdparty/
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 

@@ -6,6 +6,7 @@ SRC += M_SignalControl.cpp Signal.cpp Array.cpp Config.cpp PositionLocal3D.cpp
 TGT:=M_SignalControl
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
 LIBS += -lnetsnmp -lstdc++ -lm
+INCLUDES += -I$(BUILD_ROOT)/3rdparty/
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
