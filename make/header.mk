@@ -2,10 +2,9 @@ SRC =
 LIB = 
 OBJ = 
 
-CFLAGS += -Wall -DPRINT_LOG
-INCLUDES = -I. -I../../../include/libj2735
-LIBS = -L../../../lib/
-THIRDPARTYLIBS = -L../../../3rdparty
+CFLAGS += -Wall -DPRINT_LOG -no-pie
+INCLUDES = -I. -I$(BUILD_ROOT)/include/libj2735
+LIBS = -L$(BUILD_ROOT)/lib/
 
 .PHONY: all linux clean
 
