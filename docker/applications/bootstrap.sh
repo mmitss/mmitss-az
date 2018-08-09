@@ -10,17 +10,17 @@ run_in_bg () {
 
 ############## Peer Priority applications (0616)
 # Make sure using correct argument for each applicaiton (B.H)
-  run_in_bg MMITSS_MRP_PriorityRequestServer_ASN -c 2
-  run_in_bg MMITSS_MRP_MAP_SPAT_Broadcast_ASN 127.0.0.1 127.0.0.1 0 
-  run_in_bg MMITSS_OBE_MAP_SPAT_Receiver_ASN
+  run_in_bg M_PriorityRequestServer -c 2
+  run_in_bg M_MapSpatBroadcast 127.0.0.1 127.0.0.1 0 
+  run_in_bg M_MapSpatReceiver
        #run_in_bg MMITSS_OBE_PriorityRequestGenerator_ASN -c 2
-  run_in_bg MMITSS_OBE_PriorityRequestGenerator_ASN -c 2 -l 3	
-  run_in_bg MMITSS_MRP_Priority_Solver   
-  run_in_bg MMITSS_MRP_TrafficControllerInterface -c 3         
+  run_in_bg M_PriorityRequestGenerator -c 2 -l 3	
+  run_in_bg M_PrioritySolver   
+  run_in_bg M_TrafficControllerInterface -c 3         
        # Interface : simulation-coordination : -c 2, simulation-Non-coordination : -c 3  
        #run_in_bg MMITSS_MRP_TrafficControllerInterface_forceoffTest  
-  run_in_bg Long_Term_Planning
-  run_in_bg MMITSS_MRP_EquippedVehicleTrajectoryAware_ASN 20000 1 0
+  run_in_bg M_LongTermPlanning
+  run_in_bg M_TrajectoryAware 20000 1 0
 
 # Run the applications which are required
 # run_in_bg MMITSS_MRP_MAP_SPAT_Broadcast_ASN 127.0.0.1 127.0.0.1 1

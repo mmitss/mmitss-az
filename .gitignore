@@ -1,0 +1,8 @@
+#ignore binaries
+docker/applictions/
+
+#unignore the shell script
+!docker/applictions/*.sh
+
+#Ignore obj files
+*.o
