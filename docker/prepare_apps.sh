@@ -3,10 +3,11 @@
 # project for linux and copies it to the applications folder in this directory
 
 red='\033[0;31m'
+
 green='\033[0;32m'
 nocolor='\033[0m'
 
-if [ ! -d "../rse" ] || [ ! -d "../asd" ]; then
+if [ ! -d "../src/rsu" ] || [ ! -d "../src/obu" ]; then
 	echo "All application sources not available."
 	exit 1
 fi
@@ -15,7 +16,7 @@ appdir=$PWD/applications
 mkdir -p $appdir
 
 # list all the folders that contain a Makefile
-for i in $(find ../rse -name Makefile) $(find ../asd -name Makefile); 
+for i in $(find ../src/rsu -name Makefile) $(find ../src/obu -name Makefile); 
 do 
 	# Change to the folder containing Makefile
 	cd $(dirname $i); 
