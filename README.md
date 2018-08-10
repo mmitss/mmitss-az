@@ -1,6 +1,6 @@
 # Contributing Guide
 
-Welcome to the MMITSS AZ contributing guide. Please read this guide to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
+Welcome to the MMITSS AZ open source project contributing guide. Please read this guide to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
 
 
 ## Open source license
@@ -14,7 +14,7 @@ By contributing to the Multi-Modal Intelligent Traffic Signal Systems (MMITSS) o
 
 ## Miscellaneous Documentation
 
-[MMITSS AZ GitHub page](https://github.com/usdot-jpo-ode/jpo-ode)
+[MMITSS AZ GitHub page](https://github.com/mmitss/mmitss)
 
 [MMITSS AZ Wiki] TBD
 
@@ -27,7 +27,7 @@ By contributing to the Multi-Modal Intelligent Traffic Signal Systems (MMITSS) o
 ## Tools
 
 ### Issue tracker
-Contributors will utilize Github's issue tracking system to record and manage issues that are reported by users of the MMITSS AZ in the field. These may include performance requests, found bugs, and new requests. The follow operating procedure highlights how the MMITSS AZ development team will address and respond to reported issues.
+Contributors will use Github's issue tracking system to record and manage issues that are reported by users of MMITSS AZ in the field. These may include performance requests, defects, and new feature requests. The follow operating procedure highlights how the MMITSS AZ development team will address and respond to reported issues.
 
 Issue Repository: (https://github.com/mmitss/mmitss)
 
@@ -35,16 +35,16 @@ Issue Repository: (https://github.com/mmitss/mmitss)
 
 [MMITSS AZ GitHub Pull Request Page](https://github.com/mmitss/mmitss/pulls)
 
-All pull requests will be reviewed by the MMITSS AZ team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process. Feel free to open pull requests, and the ODE team will communicate through it with any comments.
+All pull requests will be reviewed by the MMITSS AZ team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process. Feel free to open pull requests, and the MMITSS team will communicate through it with any comments.
 **Before submitting a pull request**, please make sure the following is done:
 	
-	1.	Fork the repository and create your branch from the develop.
+	1.	Fork the repository and create your branch from the develop branch.
 	2.	If you've added code that should be tested, add tests!
 	3.	Ensure the tests pass. Our target is 90% coverage
 	4.	Update the documentation.
 		- User QA procedures are documented within the Github Wiki
 		- Architecture and user guide documentation should be included in the word document under the `docs/` folder
-		- Please contact the ODE with qny questions
+		- Please contact the MMITSS with qny questions
 	5.	Format your code as outlined in the style guide
 
 ## Contributor Covenant Code of Conduct
@@ -77,6 +77,7 @@ This Code of Conduct applies both within project spaces and in public spaces whe
 Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
+
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
 
 
