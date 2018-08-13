@@ -6,3 +6,11 @@ docker/applictions/
 
 #Ignore obj files
 *.o
+
+.idea
+
+.vscode
+
+cmake*
+
+CMake*
