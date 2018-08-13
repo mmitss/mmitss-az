@@ -20,7 +20,7 @@
  *  
  */
 
-#include "stdafx.h"
+// #include "stdafx.h" djc
 #include "Motion.h"
 
 Motion::Motion(void)

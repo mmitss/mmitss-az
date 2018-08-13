@@ -20,7 +20,7 @@
  *  
  */
 
-#include "stdafx.h"
+// #include "stdafx.h" djc
 #include "PositionLocal3D.h"
 
 PositionLocal3D::PositionLocal3D(void)

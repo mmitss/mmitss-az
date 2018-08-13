@@ -4,8 +4,7 @@ include $(MAKE_ROOT)/header.mk
 
 SRC += M_TrajectoryAware.cpp GeoCoord.cpp NMAP.cpp AccelerationSet4Way.cpp BasicVehicle.cpp Brakes.cpp PositionLocal3D.cpp Motion.cpp
 TGT:=M_TrajectoryAware
-LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
-LIBS += -lnetsnmp -lstdc++ -lm
+LIBS += -lstdc++ -lm
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
