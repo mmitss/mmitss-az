@@ -2,7 +2,7 @@ BUILD_ROOT=../../..
 MAKE_ROOT=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/header.mk
 
-SRC  = M_MapSpatBroadcast.cpp Signal.cpp SignalController.cpp NMAP.cpp GeoCoord.cpp
+SRC  = M_MapSpatBroadcast.cpp Signal.cpp SignalController.cpp NMAP.cpp
 TGT  = M_MapSpatBroadcast
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
 LIBS+= -lnetsnmp -lstdc++ -lm
