@@ -2,7 +2,7 @@ BUILD_ROOT=../../..
 MAKE_ROOT=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/header.mk
 
-SRC  = M_MapSpatReceiver.cpp NMAP.cpp GeoCoord.cpp
+SRC  = M_MapSpatReceiver.cpp NMAP.cpp
 TGT  = M_MapSpatReceiver
 LIBS+= -lstdc++ -lm 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})

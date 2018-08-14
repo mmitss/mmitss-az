@@ -2,7 +2,7 @@ BUILD_ROOT=../../..
 MAKE_ROOT=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/header.mk
 
-SRC += M_TrajectoryAware.cpp GeoCoord.cpp NMAP.cpp AccelerationSet4Way.cpp BasicVehicle.cpp Brakes.cpp PositionLocal3D.cpp Motion.cpp
+SRC += M_TrajectoryAware.cpp NMAP.cpp BasicVehicle.cpp PositionLocal3D.cpp
 TGT:=M_TrajectoryAware
 LIBS += -lstdc++ -lm
 
