@@ -7,7 +7,8 @@ TGT:=LongTermPlanning
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/glpk/lib/
 LIBS += -lnetsnmp -lstdc++ -lglpk -lm
-INCLUDES += -I$(BUILD_ROOT)/3rdparty/
+INCLUDES += -I$(BUILD_ROOT)/3rdparty
+INCLUDES += -I$(BUILD_ROOT)/3rdparty/glpk/include
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
