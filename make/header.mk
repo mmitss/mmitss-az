@@ -14,5 +14,4 @@ linux: LD=ld
 linux: AR=ar
 linux: RANLIB=ranlib
 linux: DEVICE=linux
-linux: LIBS+=-lj2735-linux
 

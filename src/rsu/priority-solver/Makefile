@@ -6,7 +6,7 @@ SRC += M_PrioritySolver.cpp Array.cpp Config.cpp ReqEntry.cpp Signal.cpp Positio
 TGT:=M_PrioritySolver
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/glpk/lib/
-LIBS += -lnetsnmp -lstdc++ -lglpk -lm
+LIBS += -lstdc++ -lglpk -lnetsnmp -lm
 INCLUDES += -I$(BUILD_ROOT)/3rdparty/
 INCLUDES += -I$(BUILD_ROOT)/3rdparty/glpk/include
 
