@@ -4,7 +4,8 @@ include $(MAKE_ROOT)/header.mk
 
 SRC += M_TrajectoryAware.cpp NMAP.cpp BasicVehicle.cpp PositionLocal3D.cpp
 TGT:=M_TrajectoryAware
-LIBS += -lstdc++ -lm
+LIBS += -L$(BUILD_ROOT)/lib/
+LIBS += -lstdc++ -lm -lj2735-linux
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 

@@ -4,8 +4,9 @@ include $(MAKE_ROOT)/header.mk
 
 SRC += M_PriorityRequestServer.cpp ReqEntry.cpp  PriorityConfig.cpp IntLanePhase.cpp ReqEntryListHandle.cpp PositionLocal3D.cpp BasicVehicle.cpp  
 TGT:=M_PriorityRequestServer
+LIBS += -L$(BUILD_ROOT)/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
-LIBS+= -lnetsnmp -lstdc++ 
+LIBS+= -lnetsnmp -lstdc++ -lj2735-linux
 INCLUDES += -I$(BUILD_ROOT)/3rdparty/
 
 OBJ = $(patsubst %.cpp, %.o, ${SRC})

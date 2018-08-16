@@ -4,8 +4,9 @@ include $(MAKE_ROOT)/header.mk
 
 SRC  = M_MapSpatBroadcast.cpp Signal.cpp SignalController.cpp NMAP.cpp
 TGT  = M_MapSpatBroadcast
+LIBS += -L$(BUILD_ROOT)/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
-LIBS+= -lnetsnmp -lstdc++ -lm
+LIBS+= -lnetsnmp -lstdc++ -lm -lj2735-linux
 INCLUDES += -I$(BUILD_ROOT)/3rdparty/
  
 OBJ = $(patsubst %.cpp, %.o, ${SRC})

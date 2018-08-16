@@ -4,7 +4,8 @@ include $(MAKE_ROOT)/header.mk
 
 SRC  = M_MapSpatReceiver.cpp NMAP.cpp
 TGT  = M_MapSpatReceiver
-LIBS+= -lstdc++ -lm 
+LIBS += -L$(BUILD_ROOT)/lib/
+LIBS+= -lstdc++ -lm -lj2735-linux
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
 include $(MAKE_ROOT)/rules.mk
