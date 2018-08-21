@@ -8,7 +8,7 @@ LIBS = -L$(BUILD_ROOT)/src/common
 
 .PHONY: all linux clean
 
-linux: CFLAGS+= -Dsimulation
+linux: CFLAGS+= -Dsimulation -ggdb
 linux: CC=gcc
 linux: LD=ld
 linux: AR=ar

@@ -1,0 +1,251 @@
+MAP_Name	Gaisy_Gav.nmap
+RSU_ID	Gaisy_Gav
+IntersectionID	314
+Intersection_attributes	00110011
+Reference_point	 37.541703 -122.302822 356
+No_Approach	8
+Approach	 1
+Approach_type	 1
+No_lane	 4
+Lane	 1.1
+Lane_ID	 1
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 3
+1.1.1	 37.541729 -122.303001
+1.1.2	 37.541941 -122.303216
+1.1.3	 37.542473 -122.303745
+No_Conn_lane	 2
+6.3	 0
+8.1	 0
+end_lane
+Lane	 1.2
+Lane_ID	 2
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 3
+1.2.1	 37.541747 -122.302975
+1.2.2	 37.541958 -122.303183
+1.2.3	 37.542490 -122.303713
+No_Conn_lane	 1
+6.2	 0
+end_lane
+Lane	 1.3
+Lane_ID	 3
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 3
+1.3.1	 37.541768 -122.302944
+1.3.2	 37.541974 -122.303151
+1.3.3	 37.542502 -122.303683
+No_Conn_lane	 1
+6.1	 0
+end_lane
+Lane	 1.4
+Lane_ID	 4
+Lane_type	 1
+Lane_attributes	 000000000010100
+Lane_width	 365
+No_nodes	 2
+1.4.1	 37.541789 -122.302911
+1.4.2	 37.541993 -122.303115
+No_Conn_lane	 1
+4.1	 0
+end_lane
+end_approach
+Approach	 2
+Approach_type	 2
+No_lane	 3
+Lane	 2.1
+Lane_ID	 5
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 3
+2.1.1	 37.541813 -122.302870
+2.1.2	 37.542018 -122.303072
+2.1.3	 37.542543 -122.303591
+No_Conn_lane	 0
+end_lane
+Lane	 2.2
+Lane_ID	 6
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 3
+2.2.1	 37.541831 -122.302832
+2.2.2	 37.542035 -122.303043
+2.2.3	 37.542557 -122.303559
+No_Conn_lane	 0
+end_lane
+Lane	 2.3
+Lane_ID	 7
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 3
+2.3.1	 37.541850 -122.302798
+2.3.2	 37.542050 -122.303012
+2.3.3	 37.542572 -122.303524
+No_Conn_lane	 0
+end_lane
+end_approach
+Approach	 3
+Approach_type	 1
+No_lane	 1
+Lane	 3.1
+Lane_ID	 8
+Lane_type	 1
+Lane_attributes	 000000000010110
+Lane_width	 365
+No_nodes	 2
+3.1.1	 37.541778 -122.302642
+3.1.2	 37.541838 -122.302523
+No_Conn_lane	 1
+2.3	 0
+end_lane
+end_approach
+Approach	 4
+Approach_type	 2
+No_lane	 1
+Lane	 4.1
+Lane_ID	 9
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 2
+4.1.1	 37.541738 -122.302605
+4.1.2	 37.541788 -122.302476
+No_Conn_lane	 0
+end_lane
+end_approach
+Approach	 5
+Approach_type	 1
+No_lane	 4
+Lane	 5.1
+Lane_ID	 10
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 4
+5.1.1	 37.541641 -122.302586
+5.1.2	 37.541326 -122.302280
+5.1.3	 37.540605 -122.301540
+5.1.4	 37.539820 -122.300656
+No_Conn_lane	 2
+4.1	 0
+2.3	 0
+end_lane
+Lane	 5.2
+Lane_ID	 11
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 4
+5.2.1	 37.541621 -122.302616
+5.2.2	 37.541307 -122.302306
+5.2.3	 37.540587 -122.301567
+5.2.4	 37.539796 -122.300688
+No_Conn_lane	 1
+2.2	 0
+end_lane
+Lane	 5.3
+Lane_ID	 12
+Lane_type	 1
+Lane_attributes	 0000000000100010
+Lane_width	 365
+No_nodes	 4
+5.3.1	 37.541604 -122.302649
+5.3.2	 37.541289 -122.302339
+5.3.3	 37.540568 -122.301601
+5.3.4	 37.539774 -122.300714
+No_Conn_lane	 1
+2.1	 0
+end_lane
+Lane	 5.4
+Lane_ID	 13
+Lane_type	 1
+Lane_attributes	 000000000010100
+Lane_width	 365
+No_nodes	 2
+5.4.1	 37.541586 -122.302681
+5.4.2	 37.541272 -122.302367
+No_Conn_lane	 1
+8.1	 0
+end_lane
+end_approach
+Approach	 6
+Approach_type	 2
+No_lane	 3
+Lane	 6.1
+Lane_ID	 14
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 4
+6.1.1	 37.541561 -122.302729
+6.1.2	 37.541247 -122.302415
+6.1.3	 37.540526 -122.301670
+6.1.4	 37.539729 -122.300780
+No_Conn_lane	 0
+end_lane
+Lane	 6.2
+Lane_ID	 15
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 4
+6.2.1	 37.541543 -122.302758
+6.2.2	 37.541224 -122.302444
+6.2.3	 37.540506 -122.301697
+6.2.4	 37.539705 -122.300807
+No_Conn_lane	 0
+end_lane
+Lane	 6.3
+Lane_ID	 16
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 4
+6.3.1	 37.541525 -122.302788
+6.3.2	 37.541205 -122.302471
+6.3.3	 37.540489 -122.301722
+6.3.4	 37.539680 -122.300834
+No_Conn_lane	 0
+end_lane
+end_approach
+Approach	 7
+Approach_type	 1
+No_lane	 1
+Lane	 7.1
+Lane_ID	 17
+Lane_type	 1
+Lane_attributes	 000000000010110
+Lane_width	 365
+No_nodes	 3
+7.1.1	 37.541568 -122.302979
+7.1.2	 37.541277 -122.303716
+7.1.3	 37.540706 -122.305171
+No_Conn_lane	 1
+6.3	 0
+end_lane
+end_approach
+Approach	 8
+Approach_type	 2
+No_lane	 1
+Lane	 8.1
+Lane_ID	 18
+Lane_type	 1
+Lane_attributes	 0000000001100011
+Lane_width	 365
+No_nodes	 3
+8.1.1	 37.541610 -122.303010
+8.1.2	 37.541322 -122.303743
+8.1.3	 37.540743 -122.305197
+No_Conn_lane	 0
+end_lane
+end_approach
+end_map

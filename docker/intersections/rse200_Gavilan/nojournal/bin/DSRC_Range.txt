@@ -1,0 +1,4 @@
+#The order of the approaches is from 1-8. 1:SB Approaching; 2:NB Leaving; 3:WB Approaching; 4:EB Leaving; 5:NB Approaching; 6:SB Leaving; 7: EB Approaching; 8:WB Leaving
+300 300 275 105 300 300 300 300
+#width and Height of the rectangle in the middle of intersection
+30 40

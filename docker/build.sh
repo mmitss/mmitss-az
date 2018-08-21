@@ -1,21 +1,24 @@
 #!/bin/bash
 ## script to setup context for docker and build an image
 
-libj2735=libj2735-linux.a 
+#libj2735=libj2735-linux.a 
+#libnetsnmp=libnetsnmp.so.30.0.3
+#libglpk
+#libmmitss-common
 repo_name=mmitssuofa/rse
-tag_name=latest
+tag_name=Phase3
 #docker="docker.io"
 docker="docker"
 
 
-select choice in "Build form Dockerfile" "Pull from Docker Hub"; do
+select choice in "Build from Dockerfile" "Pull from Docker Hub"; do
 	case $REPLY in
 		1 )
 			# If libj2735 is available in suitable path or in the PWD, then build from Dockerfile
 			echo "Building from Dockerfile. May take a long time if this is the first time you are building it"
 			sleep 3s
-			if [ -e $libj2735 ]; then cp -v $libj2735 .; 
-			elif [ ! -e $(basename $libj2735) ]; then echo "libj2735-linux.a not found! Aborting build."; exit -1; fi
+#			if [ -e $libj2735 ]; then cp -v $libj2735 .; 
+#			elif [ ! -e $(basename $libj2735) ]; then echo "libj2735-linux.a not found! Aborting build."; exit -1; fi
 			$docker build -t $repo_name:$tag_name .
 			break
 			;;
