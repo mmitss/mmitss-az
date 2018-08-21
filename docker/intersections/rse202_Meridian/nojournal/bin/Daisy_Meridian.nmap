@@ -1,0 +1,265 @@
+MAP_Name	Meridian_NewMAP(Final).nmap
+RSU_ID	Daisy_Meridian
+IntersectionID	303
+Intersection_attributes	00110011    /*elevation: Yes, lane width: Yes, Node date 16 bits, node offset solution: cm, geometry: Yes, navigation: Yes*/
+Reference_point	33.8469379  -112.1221234 5450   /*lat, long, evelation(decimeter)*/
+No_Approach	8
+Approach	1
+Approach_type	1                    /*1: approach, 2: engress*/
+No_lane	4
+Lane	1.1
+Lane_ID	1
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000101010    /*not egress path, straight and right turn permitted, turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+1.1.1	33.847222	-112.122063
+1.1.2	33.847481	-112.121737
+1.1.3	33.847788	-112.121339
+1.1.4	33.848034	-112.120992
+1.1.5	33.848298	-112.120582
+No_Conn_lane	1
+6.1	4     /*Lane 3.1, Straight head */	
+end_lane
+Lane	1.2
+Lane_ID	2
+Lane_type	1
+Lane_attributes	0000000000100010    /*not egress path, straight permitted, no u-turn */
+Lane_width	365
+No_nodes	5
+1.2.1	33.847201	-112.122038
+1.2.2	33.847456	-112.121709
+1.2.3	33.847765	-112.121314
+1.2.4	33.848012	-112.120967
+1.2.5	33.848271	-112.120557
+No_Conn_lane	1
+6.2	4     /*Lane 3.2, Straight head */  
+end_lane
+Lane	1.3
+Lane_ID	3
+Lane_type	1
+Lane_attributes	0000000000100010    /*not egress path, left turn permitted, no u-turn */
+Lane_width	365
+No_nodes	5
+1.3.1	33.847175	-112.122010
+1.3.2	33.847433	-112.121681
+1.3.3	33.847737	-112.121288
+1.3.4  33.847986	-112.120942
+1.3.5  33.848244	-112.120530
+No_Conn_lane	1
+6.3	4     /*Lane 4.1, Left turn */ 
+end_lane
+Lane	1.4
+Lane_ID	4
+Lane_type	1
+Lane_attributes	0000000000100100    /*not egress path, left turn permitted, no u-turn */
+Lane_width	365
+No_nodes	2
+1.4.1	33.847122	-112.121960
+1.4.2	33.8473814	-112.1216390
+No_Conn_lane	1
+4.1	2     /*Lane 4.1, Left turn */ 
+end_lane
+end_approach
+Approach	2
+Approach_type	2                    /*1: approach, 2: engress*/
+No_lane	3
+Lane	2.1
+Lane_ID	5
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet*/
+No_nodes	5
+2.1.1	33.8470717	-112.1219096
+2.1.2	33.8473264	-112.1215882
+2.1.3	33.8476251	-112.1212063
+2.1.4	33.8478845	-112.1208397
+2.1.5	33.8481410	-112.1204420
+No_Conn_lane	0     /* no connected lane because it is a engress lane*/
+end_lane
+Lane	2.2
+Lane_ID	6
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+2.2.1	33.8470411	-112.1218850
+2.2.2	33.8472987	-112.1215681
+2.2.3	33.8476004	-112.1211800
+2.2.4	33.8478618	-112.1208140
+2.2.5	33.8481143	-112.1204194
+No_Conn_lane	0     /* no connected lane because it is a engress lane*/
+end_lane
+Lane	2.3
+Lane_ID	7
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+2.3.1	33.8470178	-112.1218587
+2.3.2	33.8472725	-112.1215450
+2.3.3	33.8475746	-112.1211600
+2.3.4	33.8478380	-112.1207859
+2.3.5	33.8480862	-112.1203984
+No_Conn_lane	0     /* no connected lane because it is a engress lane*/
+end_lane
+end_approach
+Approach	3
+Approach_type	1                    /*1: approach, 2: engress*/
+No_lane	3
+Lane	3.1
+Lane_ID	8
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000101000    /*not engress path, right-turn permitted, yield, turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+3.1.1	33.846865	-112.121829
+3.1.2	33.846569	-112.121500
+3.1.3   33.846250	-112.121139
+3.1.4   33.845958	-112.120800
+3.1.5   33.8457169	-112.1205156
+No_Conn_lane	1     
+2.3	3     /*Lane 2.2, Right turn */
+end_lane
+Lane	3.2
+Lane_ID	9
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100010    /*not engress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+3.2.1	33.846835	-112.121867
+3.2.2	33.846546	-112.121536
+3.2.3	33.846228	-112.121172
+3.2.4	33.845932	-112.120834
+3.2.5   33.8456946	-112.1205474
+No_Conn_lane	1     
+6.2	2     /*Lane 8.1, Straight */
+end_lane
+Lane	3.3
+Lane_ID	10
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100010    /*not engress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	2
+3.3.1	33.846811	-112.121898
+3.3.2	33.846521	-112.121564
+No_Conn_lane	1     
+6.3	2     /*Lane 8.2, Straight */
+end_lane
+end_approach
+Approach	4
+Approach_type	2                    /*1: approach, 2: engress*/
+No_lane	1
+Lane	4.1
+Lane_ID	11
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+4.1.1  33.8467578	-112.1219696
+4.1.2  33.8464635	-112.1216401	
+4.1.3  33.8461479	-112.1212721
+4.1.4  33.8458470	-112.1209213	
+4.1.5  33.8456134	-112.1206538	
+No_Conn_lane	0    /* no connected lane because it is a engress lane*/
+end_lane
+end_approach
+Approach	5
+Approach_type	1                    /*1: approach, 2: engress*/
+No_lane	3
+Lane	5.1
+Lane_ID	12
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100010    /*not egress path, left permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+5.1.1	33.8467964	-112.1222486
+5.1.2	33.8464922	-112.1226376
+5.1.3   33.8462177	-112.1229901
+5.1.4   33.8459129	-112.1234214
+5.1.5   33.8456162	-112.1238652
+No_Conn_lane	1     
+2.1 4    /*Lane 8.3, Left turn */
+end_lane
+Lane	5.2
+Lane_ID	13
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100010    /*not egress path, left permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+5.2.1	33.8467773	-112.1222214
+5.2.2	33.8464655	-112.1226073
+5.2.3	33.8461892	-112.1229660
+5.2.4	33.8458837	-112.1233954
+5.2.5	33.8455856	-112.1238447
+No_Conn_lane	1     
+2.2 4    /*Lane 2.1, Straight */
+end_lane
+Lane	5.3
+Lane_ID	14
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000101010    /*not egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+5.3.1   33.8467551	-112.1221954
+5.3.2	33.8464382	-112.1225871
+5.3.3   33.8461655	-112.1229423
+5.3.4	33.8458595	-112.1233704
+5.3.5	33.8455573	-112.1238207
+No_Conn_lane	2     
+2.3 4    /*Lane 2.2, Straight */
+4.2 3
+end_lane
+end_approach
+Approach	6
+Approach_type	2                    /*1: approach, 2: engress*/
+No_lane	3
+Lane	6.1
+Lane_ID	15
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+6.1.1	33.8469148	-112.1224296
+6.1.2	33.8466455	-112.1227711
+6.1.3	33.8463730	-112.1231248
+6.1.4	33.8460673	-112.1235435
+6.1.5	33.8457675	-112.1239985
+No_Conn_lane	0    /* no connected lane because it is a engress lane*/
+end_lane
+Lane	6.2
+Lane_ID	16
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+6.2.1	33.8468963	-112.1224009
+6.2.2	33.8466187	-112.1227464
+6.2.3	33.8463466	-112.1230967
+6.2.4	33.8460444	-112.1235169
+6.2.5	33.8457419	-112.1239725
+No_Conn_lane	0    /* no connected lane because it is a engress lane*/
+end_lane
+Lane	6.3
+Lane_ID	17
+Lane_type	1        /*1 to 5, for this intersection all 1: motorized vehicle lane */
+Lane_attributes	0000000000100011    /*egress path, straight permitted, no turn on red, no u-turn */
+Lane_width	365      /* in centimeter =12 feet
+No_nodes	5
+6.3.1	33.8468681	-112.1223670
+6.3.2	33.8465903	-112.1227249
+6.3.3	33.8463187	-112.1230755
+6.3.4	33.8460178	-112.1234967
+6.3.5	33.8457127	-112.1239491
+No_Conn_lane	0    /* no connected lane because it is a engress lane*/
+end_lane
+end_approach
+Approach	7
+Approach_type	0                    /*1: approach, 2: engress, 0: do not exist*/
+No_lane	0
+end_approach
+Approach	8
+Approach_type	0                    /*1: approach, 2: engress, 0: do not exist*/
+No_lane	0
+end_approach
+end_map

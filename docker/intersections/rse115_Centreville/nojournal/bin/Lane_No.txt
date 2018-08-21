@@ -1,0 +1,2 @@
+#This is the number of lanes of each phase at Gavilan Peak which determines discharging rate. Sequence: phase 1-8 
+2 3 2 3 2 3 2 2

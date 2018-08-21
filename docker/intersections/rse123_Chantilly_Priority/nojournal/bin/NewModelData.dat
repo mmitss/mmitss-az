@@ -1,0 +1,20 @@
+data;
+param current:=0;
+param SP1:=2;
+param SP2:=6;
+param init1:=0;
+param init2:=0;
+param Grn1 :=17.7231;
+param Grn2 :=17.7231;
+param y       	:=	1  3	2  3	3  3	4  3	5  3	6  3	7  3	8  3;
+param red       	:=	1  1	2  1	3  1	4  1	5  1	6  1	7  1	8  1;
+param gmin      	:=	1  10	2  15	3  0	4  10	5  10	6  15	7  10	8  0;
+param gmax      	:=	1  35	2  150	3  35	4  35	5  35	6  150	7  35	8  35;
+
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 1 2 1 3 1 4 0 5 0  6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .  1  .  .  .  .  .  .  ;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .  6.5  .  .  .  .  .  .  ;
+end;

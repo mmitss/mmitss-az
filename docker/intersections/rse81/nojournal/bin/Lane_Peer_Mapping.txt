@@ -1,0 +1,5 @@
+#The first line is for eastbound, the second line is for westbound, and the third line is vehicle volume for each phase (1~8) 
+#Previous_approach current_approach requested_phase exit_checkout_points ETA_to_downstream IP_downstream
+#5 2 2 32.235913 -110.946859 32.235921 -110.946549 0 10.254.56.82
+5 2 2 0 0 0 0 0 10.254.56.82
+1 6 6 0	0 0 0 0 10.254.56.80

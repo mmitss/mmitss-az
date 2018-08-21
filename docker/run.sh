@@ -3,7 +3,7 @@
 GATEWAY="10.254.56.53"
 repo_name="mmitssuofa"
 img_name="rse"
-tag_name="latest"
+tag_name="Phase3"
 docker="docker.io"
 #docker="docker -D"
 
