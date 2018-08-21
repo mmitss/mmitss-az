@@ -4,7 +4,7 @@ OBJ =
 
 CFLAGS += -Wall -DPRINT_LOG -no-pie
 INCLUDES = -I. -I$(BUILD_ROOT)/include/libj2735 -I$(BUILD_ROOT)/include/common
-LIBS = -L$(BUILD_ROOT)/src/common
+LIBS = -L$(BUILD_ROOT)/lib
 
 .PHONY: all linux clean
 
