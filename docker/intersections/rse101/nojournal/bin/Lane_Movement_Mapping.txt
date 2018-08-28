@@ -1,4 +1,0 @@
-#The order of the approaches would be 1,3,5,7. IF doesn't exist, put 0. The first value is Right Turn Lane, the second value is the Left Turn Lane for each approach: SBRT, SBLT, WBRT, WBLT, NBRT, NBLT, EBRT, EBLT
-0 4 1 3 0 4 1 3
-#Movements in this order for travel time sections: NB; NBRT; NBLT; WB; WBRT; WBLT; SB; SBRT; SBLT; EB; EBRT; EBLT
-16 23 24 15 19 20 13 22 21 14 18 17

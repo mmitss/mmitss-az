@@ -1,4 +1,0 @@
-#The first line is for eastbound, the second line is for westbound, and the third line is vehicle volume for each phase (1~8) 
-#Previous_approach current_approach bus_stop ETA_to_downstream IP_downstream
-7 4 2 0 0 0 0 17.0 10.254.56.201  
-3 8 6 0 0 0 0 0.0 0.0.0.0

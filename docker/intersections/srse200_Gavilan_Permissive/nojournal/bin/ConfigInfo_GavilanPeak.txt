@@ -1,6 +1,0 @@
-Phase_Num 8
-Phase_Seq 1 2 3 4 5 6 7 8
-Gmin	0	7	0	7	0	7	0	7
-Yellow	0	3	0	3	0	3	0	3
-Red	0	2	0	2	0	2	0	2
-Gmax	0	35	0	35	0	35	0	35

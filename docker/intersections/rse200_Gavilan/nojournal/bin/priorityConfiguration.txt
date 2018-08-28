@@ -1,7 +1,0 @@
-coordination 0
-coordinated_phase 2 6
-cycle 100
-offset 0
-split 30
-transit_weight 1
-truck_weight 1

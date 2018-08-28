@@ -1,2 +1,0 @@
-#The order of the approach 1,3,5,7 through left. If the phase doesn't exist, then put phase 0
-2 5 4 4 6 1 3 3

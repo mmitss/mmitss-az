@@ -1,6 +1,0 @@
-Phase_Num 4
-Phase_Seq 0 2 3 0 0 6 7 0
-Gmin	0	15	10	0	0	15	10	0
-Yellow	0	3	3	0	0	3	3	0
-Red	0	1	1	0	0	1	1	0
-Gmax	0	150	35	0	0	150	35	0

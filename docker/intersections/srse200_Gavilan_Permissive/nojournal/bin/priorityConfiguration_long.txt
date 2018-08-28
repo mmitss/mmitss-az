@@ -1,1 +1,0 @@
-coordination_phase_split 7 12 12 19 7 12 21 10
