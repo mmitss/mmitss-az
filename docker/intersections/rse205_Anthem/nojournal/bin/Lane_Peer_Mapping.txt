@@ -1,4 +1,0 @@
-#The first line is for eastbound and the second line is for westbound 
-#Previous_approach current_approach bus_stop ETA_to_downstream IP_downstream
-5 4 2 0 0 0 0 60 0.0.0.0
-1 6 2 0 0 0 0 27 10.254.56.204

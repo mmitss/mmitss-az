@@ -1,2 +1,0 @@
-offset_intersection 0 0 0 0 0 0
-cycletimes 120
