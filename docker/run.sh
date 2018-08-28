@@ -35,24 +35,8 @@ run_container () {
 
 	# Command to run the conatiner as a daemon if -d is used or as an interactive pseudo-terminal if -it is used
 	$docker run $DOCKER_RUN_OPTS  \
-		`### do not assume any network configuration` \
-		--net="none" \
-		\
-		`### LXC options follow` \
-		`### LXC provides a virtual ethernet interface to the host` \
-		--lxc-conf="lxc.network.type=veth" \
-		`### The Static IP address that the container should use` \
-		--lxc-conf="lxc.network.ipv4=$IP/24" \
-		`### The host machine will be the gateway to the outer internet` \
-		--lxc-conf="lxc.network.ipv4.gateway=$GATEWAY" \
-		`### A pre-configured bridged interface called docker999 is used as a bridge to eth0/eth1` \
-		--lxc-conf="lxc.network.link=docker999" \
-		`### This interface will show up as eth0 inside the container` \
-		--lxc-conf="lxc.network.name=p1p1" \
-		`### Up the interface` \
-		--lxc-conf="lxc.network.flags=up" \
-		\
-		`### regular docker options follow` \
+		`### set container ip address` \
+                -ip "${IP}" \
 		`### Mount a preconfigured folder as nojournal` \
 		-v $config_dir/nojournal:/nojournal \
 		`### Mount folder containing applications to be used inside the container` \
