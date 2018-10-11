@@ -3,9 +3,9 @@
 #    The image can be used to spawn containers that can simulate each         #
 #         RSE that needs to be present in the simulated network               #
 #-----------------------------------------------------------------------------#
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
-MAINTAINER Donald Cunningham (pearson10m@gmail.com)
+MAINTAINER D Cunningham (pearson10m@gmail.com)
 
 RUN apt-get update
 RUN apt-get upgrade -y

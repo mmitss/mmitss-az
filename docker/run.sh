@@ -1,11 +1,13 @@
 #!/bin/bash
 
+MMITSS_DOCKER_DEBUG=1
 GATEWAY="10.254.56.53"
 repo_name="mmitssuofa"
 img_name="rse"
 tag_name="Phase3"
-docker="docker.io"
-#docker="docker -D"
+#docker="docker.io"
+docker="docker"
+ 
 
 # Function to check if a container is already running and spawn a new container
 # IMPORTANT: the variable $IP must be set before calling this function
@@ -33,23 +35,24 @@ run_container () {
 		DOCKER_RUN_CMD="/bin/bash"
 	fi
 
-	# Command to run the conatiner as a daemon if -d is used or as an interactive pseudo-terminal if -it is used
-	$docker run $DOCKER_RUN_OPTS  \
-		`### set container ip address` \
-                -ip "${IP}" \
+	# Command to run the container as a daemon if -d is used or as an interactive pseudo-terminal if -it is used
+ 
+echo " $docker run $DOCKER_RUN_OPTS  \		
 		`### Mount a preconfigured folder as nojournal` \
 		-v $config_dir/nojournal:/nojournal \
 		`### Mount folder containing applications to be used inside the container` \
 		-v $PWD/applications:/mmitss \
-		\
 		`### set the hostname of the container. hostname=IP_Addr|dots replaced by underscores` \
 		-h "${IP//./_}" \
+`### set container ip address` \  
+                --network=br0 \            
+                --ip $IP \
 		`### set the name of the container to show up in docker ps` \
 		--name "$container_name" \
 		`### Specify the repo/image:tag to use to spawn the container` \
 		$repo_name/$img_name:$tag_name \
 		`### Specify the binary to load when the container loads` \
-		$DOCKER_RUN_CMD
+		$DOCKER_RUN_CMD"
 }
 
 run_all () {
