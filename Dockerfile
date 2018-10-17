@@ -7,9 +7,9 @@ FROM ubuntu:18.04
 
 MAINTAINER D Cunningham (pearson10m@gmail.com)
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install build-essential -y
+#RUN apt-get update
+#RUN apt-get upgrade -y
+#RUN apt-get install build-essential -y
 
 # Expose ports to communicate with outside world
 # For SRM
