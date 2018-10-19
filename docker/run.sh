@@ -37,7 +37,7 @@ run_container () {
 	# Command to run the container as a daemon if -d is used or as an interactive pseudo-terminal if -it is used 
 #--network=br0  --ip $IP 
  
-  $docker run $DOCKER_RUN_OPTS -P -v $config_dir/nojournal:/nojournal -v $PWD/applications:/mmitss -h "${IP//./_}" --name "$container_name" $repo_name/$img_name:$tag_name $DOCKER_RUN_CMD	
+  $docker run $DOCKER_RUN_OPTS --network=macvlan_1  --ip $IP -v $config_dir/nojournal:/nojournal -v $PWD/applications:/mmitss -h "${IP//./_}" --name "$container_name" $repo_name/$img_name:$tag_name $DOCKER_RUN_CMD	
 				
 }
 
