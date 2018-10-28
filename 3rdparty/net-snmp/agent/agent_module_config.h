@@ -20,12 +20,12 @@
 /* Define if compiling with the agentx/protocol module files.  */
 #define USING_AGENTX_PROTOCOL_MODULE 1
  
-/* Define if compiling with the agentx/client module files.  */
-#define USING_AGENTX_CLIENT_MODULE 1
- 
 /* Define if compiling with the agentx/master_admin module files.  */
 #define USING_AGENTX_MASTER_ADMIN_MODULE 1
  
 /* Define if compiling with the agentx/agentx_config module files.  */
 #define USING_AGENTX_AGENTX_CONFIG_MODULE 1
+ 
+/* Define if compiling with the agentx/client module files.  */
+#define USING_AGENTX_CLIENT_MODULE 1
  

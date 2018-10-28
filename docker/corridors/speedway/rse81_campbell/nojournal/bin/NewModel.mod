@@ -43,8 +43,6 @@ param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);
 param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);
 param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);
 param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);
-param PassedGrn3{p in P,k in K},:=(if (p==SP1 and k==1) then (if (PassedGrn1[SP1,k] <= PassedGrn2[SP2,k]) then PassedGrn1[SP1,k] else PassedGrn2[SP2,k]) else 0);
-param PassedGrn4{p in P,k in K},:=(if (p==SP2 and k==1) then (if (PassedGrn1[SP1,k] <= PassedGrn2[SP2,k]) then PassedGrn1[SP1,k] else PassedGrn2[SP2,k]) else 0);
 param ReqNo:=sum{p in P,j in J} active_pj[p,j];
 param CoordNo:= sum{p in CP1,c in C} active_coord1[p,c]+sum{p in CP2,c in C} active_coord2[p,c];
 param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);
@@ -99,7 +97,7 @@ s.t. Prec_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=8 and k>1 }:  t[p
 s.t. Prec_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=4 and k>1 }:  t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];
 s.t. Prec_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=8 and k>1 }:    t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];
 s.t. PhaseLen{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];
-s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn3[p,k]-PassedGrn4[p,k])*coef[p,k]; 
+s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; 
 s.t. GrnMin{e in E,p in P ,k in K}:  g[p,k,e]>=(gmin[p]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; 
 s.t. PrioDelay1{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Rl[p,j]; 
 s.t. PrioDelay2{e in E,p in P,j in J: active_pj[p,j]>0}:    M*theta[p,j]>=Ru[p,j]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));

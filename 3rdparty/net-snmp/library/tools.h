@@ -3,6 +3,11 @@
  * @defgroup util Memory Utility Routines
  * @ingroup library
  * @{
+ *
+ * Portions of this file are copyrighted by:
+ * Copyright (c) 2016 VMware, Inc. All rights reserved.
+ * Use is subject to license terms specified in the COPYING file
+ * distributed with the Net-SNMP package.
  */
 
 #ifndef _TOOLS_H
@@ -178,17 +183,6 @@ extern          "C" {
     }                                                           \
 }
 
-
-    /*
-     * ISTRANSFORM
-     * ASSUMES the minimum length for ttype and toid.
-     */
-#define USM_LENGTH_OID_TRANSFORM	10
-
-#define ISTRANSFORM(ttype, toid)					\
-	!snmp_oid_compare(ttype, USM_LENGTH_OID_TRANSFORM,		\
-		usm ## toid ## Protocol, USM_LENGTH_OID_TRANSFORM)
-
 #define ENGINETIME_MAX	2147483647      /* ((2^31)-1) */
 #define ENGINEBOOT_MAX	2147483647      /* ((2^31)-1) */
 
@@ -208,6 +202,8 @@ extern          "C" {
     u_char         *malloc_zero(size_t size);
     NETSNMP_IMPORT
     void           *netsnmp_memdup(const void * from, size_t size);
+    NETSNMP_IMPORT
+    void *netsnmp_memdup_nt(const void *from, size_t from_len, size_t *to_len);
 
     void            netsnmp_check_definedness(const void *packet,
                                               size_t length);
@@ -267,6 +263,7 @@ extern          "C" {
     void            netsnmp_set_monotonic_marker(marker_t *pm);
     NETSNMP_IMPORT
     long            atime_diff(const_marker_t first, const_marker_t second);
+    NETSNMP_IMPORT
     u_long          uatime_diff(const_marker_t first, const_marker_t second);       /* 1/1000th sec */
     NETSNMP_IMPORT
     u_long          uatime_hdiff(const_marker_t first, const_marker_t second);      /* 1/100th sec */

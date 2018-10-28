@@ -1,6 +1,7 @@
 /* include/net-snmp/net-snmp-config.h.  Generated from net-snmp-config.h.in by configure.  */
 /* include/net-snmp/net-snmp-config.h.in.  Generated from configure.ac by autoheader.  */
-/* 
+
+/*
  * net-snmp configuration header file
  *
  * NOTE: DO NOT EDIT include/net-snmp/net-snmp-config.h.in as your changes
@@ -14,6 +15,11 @@
 /*
  * Portions of this file are copyrighted by:
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
+ * Use is subject to license terms specified in the COPYING file
+ * distributed with the Net-SNMP package.
+ *
+ * Portions of this file are copyrighted by:
+ * Copyright (c) 2016 VMware, Inc. All rights reserved.
  * Use is subject to license terms specified in the COPYING file
  * distributed with the Net-SNMP package.
  */
@@ -31,6 +37,10 @@
 
 /* definitions added by configure on-the-fly */
 
+#define config_error(x)
+
+#define config_warning(x)
+
 #define config_belongs_in(x)
 
 #define config_exclude(x)
@@ -44,10 +54,6 @@
 #define config_add_mib(x)
 
 #define config_parse_dot_conf(w,x,y,z)
-
-#define config_error(x)
-
-#define config_warning(x)
 
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
@@ -94,8 +100,11 @@
 /* Define to 1 if you have the <asm/types.h> header file. */
 #define HAVE_ASM_TYPES_H 1
 
-/* Define if using MY_INIT() causes a linker error */
-/* #undef HAVE_BROKEN_LIBMYSQLCLIENT */
+/* Define to 1 if you have the `ASN1_STRING_get0_data' function. */
+#define HAVE_ASN1_STRING_GET0_DATA 1
+
+/* Define to 1 if you have the `asprintf' function. */
+#define HAVE_ASPRINTF 1
 
 /* Define to 1 if you have the `cgetnext' function. */
 /* #undef HAVE_CGETNEXT */
@@ -109,21 +118,36 @@
 /* Define to 1 if you have the `closedir' function. */
 #define HAVE_CLOSEDIR 1
 
+/* Define to 1 if you have the `closesocket' function. */
+/* #undef HAVE_CLOSESOCKET */
+
 /* Define to 1 if you have the <com_err.h> header file. */
 /* #undef HAVE_COM_ERR_H */
 
 /* Define to 1 if the system has the type `Counter64'. */
 /* #undef HAVE_COUNTER64 */
 
+/* Define to 1 if you have the <curses.h> header file. */
+#define HAVE_CURSES_H 1
+
 /* Define to 1 if you have the declaration of `sensors_get_all_subfeatures',
    and to 0 if you don't. */
-/* #undef HAVE_DECL_SENSORS_GET_ALL_SUBFEATURES */
+#define HAVE_DECL_SENSORS_GET_ALL_SUBFEATURES 1
 
 /* define to 1 if you have IRE_CACHE defined in <inet/ip.h> header file. */
 /* #undef HAVE_DEFINED_IRE_CACHE */
 
 /* define if you have devstat_getdevs() */
 /* #undef HAVE_DEVSTAT_GETDEVS */
+
+/* Define to 1 if you have the `DH_get0_key' function. */
+#define HAVE_DH_GET0_KEY 1
+
+/* Define to 1 if you have the `DH_get0_pqg' function. */
+#define HAVE_DH_GET0_PQG 1
+
+/* Define to 1 if you have the `DH_set0_pqg' function. */
+#define HAVE_DH_SET0_PQG 1
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -141,6 +165,12 @@
 /* Set if the dpkg-query command is available */
 #define HAVE_DPKG_QUERY 1
 
+/* Define to 1 if you have the `DTLSv1_method' function. */
+#define HAVE_DTLSV1_METHOD 1
+
+/* Define to 1 if you have the `DTLS_method' function. */
+#define HAVE_DTLS_METHOD 1
+
 /* Define to 1 if you have the <err.h> header file. */
 #define HAVE_ERR_H 1
 
@@ -156,11 +186,17 @@
 /* Define to 1 if you have the `EVP_MD_CTX_destroy' function. */
 /* #undef HAVE_EVP_MD_CTX_DESTROY */
 
-/* Define if you have EVP_sha224/256 in openssl */
-/* #undef HAVE_EVP_SHA224 */
+/* Define to 1 if you have the `EVP_MD_CTX_free' function. */
+#define HAVE_EVP_MD_CTX_FREE 1
 
-/* Define if you have EVP_sha384/256 in openssl */
-/* #undef HAVE_EVP_SHA384 */
+/* Define to 1 if you have the `EVP_MD_CTX_new' function. */
+#define HAVE_EVP_MD_CTX_NEW 1
+
+/* Define if you have EVP_sha224/256 in openssl */
+#define HAVE_EVP_SHA224 1
+
+/* Define if you have EVP_sha384/512 in openssl */
+#define HAVE_EVP_SHA384 1
 
 /* Define to 1 if you have the `execv' function. */
 #define HAVE_EXECV 1
@@ -177,8 +213,14 @@
 /* Define to 1 if you have the `fork' function. */
 #define HAVE_FORK 1
 
+/* Define to 1 if you have the `forkall' function. */
+/* #undef HAVE_FORKALL */
+
 /* Define to 1 if you have the <fstab.h> header file. */
 #define HAVE_FSTAB_H 1
+
+/* Define to 1 if you have the `fsync' function. */
+#define HAVE_FSYNC 1
 
 /* Define to 1 if you have the `funlockfile' function. */
 #define HAVE_FUNLOCKFILE 1
@@ -249,6 +291,9 @@
 /* Define to 1 if you have the `hasmntopt' function. */
 #define HAVE_HASMNTOPT 1
 
+/* Define to 1 if you have the headerGet function. */
+/* #undef HAVE_HEADERGET */
+
 /* Define to 1 if you have the `if_freenameindex' function. */
 #define HAVE_IF_FREENAMEINDEX 1
 
@@ -315,11 +360,20 @@
 /* Define to 1 if you have the `knlist' function. */
 /* #undef HAVE_KNLIST */
 
+/* Define to 1 if you have the `krb5_auth_con_getrecvsubkey' function. */
+/* #undef HAVE_KRB5_AUTH_CON_GETRECVSUBKEY */
+
 /* Define to 1 if you have the `krb5_auth_con_getsendsubkey' function. */
 /* #undef HAVE_KRB5_AUTH_CON_GETSENDSUBKEY */
 
 /* Define to 1 if you have the <kstat.h> header file. */
 /* #undef HAVE_KSTAT_H */
+
+/* Define to 1 if you have the `kvm_getfile2' function. */
+/* #undef HAVE_KVM_GETFILE2 */
+
+/* Define to 1 if you have the `kvm_getfiles' function. */
+/* #undef HAVE_KVM_GETFILES */
 
 /* Define to 1 if you have the `kvm_getproc2' function. */
 /* #undef HAVE_KVM_GETPROC2 */
@@ -337,13 +391,10 @@
 /* #undef HAVE_KVM_OPENFILES */
 
 /* Define to 1 if you have the OpenSSL library (-lcrypto or -leay32). */
-/* #undef HAVE_LIBCRYPTO */
+#define HAVE_LIBCRYPTO 1
 
 /* Define to 1 if you have the `elf' library (-lelf). */
 /* #undef HAVE_LIBELF */
-
-/* Define to 1 if you have the `kstat' library (-lkstat). */
-/* #undef HAVE_LIBKSTAT */
 
 /* Define to 1 if you have the `mld' library (-lmld). */
 /* #undef HAVE_LIBMLD */
@@ -396,6 +447,10 @@
 /* Define to 1 if you have the <linux/ethtool.h> header file. */
 #define HAVE_LINUX_ETHTOOL_H 1
 
+/* Define if __u8 .. __u64 must be declared explicitly before including
+   <linux/ethtool.h> */
+/* #undef HAVE_LINUX_ETHTOOL_NEEDS_U64 */
+
 /* Define to 1 if you have the <linux/hdreg.h> header file. */
 #define HAVE_LINUX_HDREG_H 1
 
@@ -407,6 +462,9 @@
 
 /* Define to 1 if you have the <linux/tasks.h> header file. */
 /* #undef HAVE_LINUX_TASKS_H */
+
+/* Define if load_defaults() is available in libmysqlclient */
+/* #undef HAVE_LOAD_DEFAULTS */
 
 /* Define to 1 if you have the <locale.h> header file. */
 #define HAVE_LOCALE_H 1
@@ -456,8 +514,20 @@
 /* Define to 1 if you have the <mtab.h> header file. */
 /* #undef HAVE_MTAB_H */
 
+/* Define if mysql_init() is available in libmysqlclient */
+/* #undef HAVE_MYSQL_INIT */
+
+/* Define if MY_INIT() is availabe in libmysqlclient */
+/* #undef HAVE_MY_INIT */
+
+/* Define if having my_load_defaults() */
+/* #undef HAVE_MY_LOAD_DEFAULTS */
+
 /* Define to 1 if you have the <nbutil.h> header file. */
 /* #undef HAVE_NBUTIL_H */
+
+/* Define to 1 if you have the <ncurses/curses.h> header file. */
+/* #undef HAVE_NCURSES_CURSES_H */
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 /* #undef HAVE_NDIR_H */
@@ -589,28 +659,34 @@
 #define HAVE_OPENDIR 1
 
 /* Define to 1 if you have the <openssl/aes.h> header file. */
-/* #undef HAVE_OPENSSL_AES_H */
+#define HAVE_OPENSSL_AES_H 1
 
 /* Define to 1 if you have the <openssl/des.h> header file. */
-/* #undef HAVE_OPENSSL_DES_H */
+#define HAVE_OPENSSL_DES_H 1
 
 /* Define to 1 if you have the <openssl/dh.h> header file. */
-/* #undef HAVE_OPENSSL_DH_H */
+#define HAVE_OPENSSL_DH_H 1
 
 /* Define to 1 if you have the <openssl/evp.h> header file. */
-/* #undef HAVE_OPENSSL_EVP_H */
+#define HAVE_OPENSSL_EVP_H 1
 
 /* Define to 1 if you have the <openssl/hmac.h> header file. */
-/* #undef HAVE_OPENSSL_HMAC_H */
+#define HAVE_OPENSSL_HMAC_H 1
 
 /* Define to 1 if you have the <osreldate.h> header file. */
 /* #undef HAVE_OSRELDATE_H */
 
+/* Define to 1 if you have the <pcap/pcap.h> header file. */
+/* #undef HAVE_PCAP_PCAP_H */
+
 /* define if you have pci_lookup_name() */
-/* #undef HAVE_PCI_LOOKUP_NAME */
+#define HAVE_PCI_LOOKUP_NAME 1
 
 /* Define to 1 if you have the <pci/pci.h> header file. */
-/* #undef HAVE_PCI_PCI_H */
+#define HAVE_PCI_PCI_H 1
+
+/* Define to 1 if you have <pcre.h>. */
+/* #undef HAVE_PCRE_H */
 
 /* on aix, if you have perfstat */
 /* #undef HAVE_PERFSTAT */
@@ -644,6 +720,9 @@
 
 /* Set if /etc/printcap exists */
 #define HAVE_PRINTCAP 1
+
+/* Define if prioritynames variable is declared in <syslog.h> */
+#define HAVE_PRIORITYNAMES 1
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #define HAVE_PTHREAD_H 1
@@ -691,7 +770,7 @@
 #define HAVE_SELECT 1
 
 /* Define to 1 if you have the <sensors/sensors.h> header file. */
-/* #undef HAVE_SENSORS_SENSORS_H */
+#define HAVE_SENSORS_SENSORS_H 1
 
 /* Define to 1 if you have the `setenv' function. */
 #define HAVE_SETENV 1
@@ -753,8 +832,23 @@
 /* Define to 1 if the system has the type `socklen_t'. */
 #define HAVE_SOCKLEN_T 1
 
+/* Define to 1 if you have the `srand' function. */
+#define HAVE_SRAND 1
+
+/* Define to 1 if you have the `srand48' function. */
+#define HAVE_SRAND48 1
+
+/* Define to 1 if you have the `srandom' function. */
+#define HAVE_SRANDOM 1
+
 /* Define to 1 if the system has the type `ssize_t'. */
 #define HAVE_SSIZE_T 1
+
+/* Define to 1 if you have the `SSL_library_init' function. */
+/* #undef HAVE_SSL_LIBRARY_INIT */
+
+/* Define to 1 if you have the `SSL_load_error_strings' function. */
+/* #undef HAVE_SSL_LOAD_ERROR_STRINGS */
 
 /* Define to 1 if you have the `statfs' function. */
 #define HAVE_STATFS 1
@@ -943,7 +1037,7 @@
 /* #undef HAVE_STRUCT_RTENTRY_RT_USE */
 
 /* Define to 1 if `sa_sigaction' is a member of `struct sigaction'. */
-/* #undef HAVE_STRUCT_SIGACTION_SA_SIGACTION */
+#define HAVE_STRUCT_SIGACTION_SA_SIGACTION 1
 
 /* Define to 1 if `sin6_scope_id' is a member of `struct sockaddr_in6'. */
 #define HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID 1
@@ -971,7 +1065,7 @@
 #define HAVE_STRUCT_STATFS_F_FILES 1
 
 /* Define to 1 if `f_flags' is a member of `struct statfs'. */
-/* #undef HAVE_STRUCT_STATFS_F_FLAGS */
+#define HAVE_STRUCT_STATFS_F_FLAGS 1
 
 /* Define to 1 if `f_frsize' is a member of `struct statfs'. */
 #define HAVE_STRUCT_STATFS_F_FRSIZE 1
@@ -993,6 +1087,9 @@
 
 /* Define to 1 if `tz_dsttime' is a member of `struct timezone'. */
 #define HAVE_STRUCT_TIMEZONE_TZ_DSTTIME 1
+
+/* Define to 1 if `tm_isdst' is a member of `struct time'. */
+/* #undef HAVE_STRUCT_TIME_TM_ISDST */
 
 /* Define to 1 if `tm_gmtoff' is a member of `struct tm'. */
 #define HAVE_STRUCT_TM_TM_GMTOFF 1
@@ -1146,6 +1243,12 @@
 /* Define to 1 if you have the <sys/sysget.h> header file. */
 /* #undef HAVE_SYS_SYSGET_H */
 
+/* Define to 1 if you have the <sys/syslog.h> header file. */
+#define HAVE_SYS_SYSLOG_H 1
+
+/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+#define HAVE_SYS_SYSMACROS_H 1
+
 /* Define to 1 if you have the <sys/sysmp.h> header file. */
 /* #undef HAVE_SYS_SYSMP_H */
 
@@ -1217,6 +1320,12 @@
 
 /* Define if a timezone variable is declared in <sys/time.h> */
 #define HAVE_TIMEZONE_VARIABLE 1
+
+/* Define to 1 if you have the `TLSv1_method' function. */
+#define HAVE_TLSV1_METHOD 1
+
+/* Define to 1 if you have the `TLS_method' function. */
+#define HAVE_TLS_METHOD 1
 
 /* Define to 1 if you have the <ufs/ffs/fs.h> header file. */
 /* #undef HAVE_UFS_FFS_FS_H */
@@ -1299,6 +1408,15 @@
 /* Define to 1 if you have the <ws2tcpip.h> header file. */
 /* #undef HAVE_WS2TCPIP_H */
 
+/* Define to 1 if you have the `X509_get_signature_nid' function. */
+#define HAVE_X509_GET_SIGNATURE_NID 1
+
+/* Define to 1 if you have the `X509_NAME_ENTRY_get_data' function. */
+#define HAVE_X509_NAME_ENTRY_GET_DATA 1
+
+/* Define to 1 if you have the `X509_NAME_ENTRY_get_object' function. */
+#define HAVE_X509_NAME_ENTRY_GET_OBJECT 1
+
 /* Define to 1 if you have the <xti.h> header file. */
 /* #undef HAVE_XTI_H */
 
@@ -1318,6 +1436,13 @@
 /* Unix domain socket for AgentX master-subagent communication */
 #define NETSNMP_AGENTX_SOCKET "/var/agentx/master"
 
+/* Used to make the compiler issue a warning about deprecated functions and
+   variables */
+#define NETSNMP_ATTRIBUTE_DEPRECATED __attribute__((deprecated))
+
+/* Used to suppress compiler warnings about unused functions and variables */
+#define NETSNMP_ATTRIBUTE_UNUSED __attribute__((unused))
+
 /* Define if static inline functions are unsupported */
 /* #undef NETSNMP_BROKEN_INLINE */
 
@@ -1328,11 +1453,14 @@
 /* #undef NETSNMP_CAN_USE_SYSCTL */
 
 /* configure options specified */
-#define NETSNMP_CONFIGURE_OPTIONS " '--prefix=/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss' '--with-default-snmp-version=3' '--with-sys-contact=@@no.where' '--with-sys-location=Unknown' '--with-logfile=/var/log/snmpd.log' '--with-persistent-directory=/var/net-snmp' '--with-cc=/home/obesim/azv2i/MMITSS_Refreshed/sdk/CodeSourcery/bin/powerpc-linux-gnu-gcc' '--with-cflags=-DARP_SCAN_FOUR_ARGUMENTS' '--with-ar=/home/obesim/azv2i/MMITSS_Refreshed/sdk/CodeSourcery/bin/powerpc-linux-gnu-ar' '--with-ld=/home/obesim/azv2i/MMITSS_Refreshed/sdk/CodeSourcery/bin/powerpc-linux-gnu-ld' '--build=ppc-linux' '--host=powerpc' 'build_alias=ppc-linux' 'host_alias=powerpc'"
+#define NETSNMP_CONFIGURE_OPTIONS ""
+
+/* if defined daemons will use syslog when no log destination is defined */
+/* #undef NETSNMP_DAEMONS_DEFAULT_LOG_SYSLOG */
 
 /* default location to look for mibs to load using the above tokens and/or
    those in the MIBS envrionment variable */
-#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss/share/snmp/mibs"
+#define NETSNMP_DEFAULT_MIBDIRS "$HOME/.snmp/mibs:/usr/local/share/snmp/mibs"
 
 /* default mib files to load, specified by path. */
 /* #undef NETSNMP_DEFAULT_MIBFILES */
@@ -1361,11 +1489,14 @@
 /* Define if SNMPv2c code should not be included */
 /* #undef NETSNMP_DISABLE_SNMPV2C */
 
+/* Define if AES-192/AES-256 encryption should be supported */
+/* #undef NETSNMP_DRAFT_BLUMENTHAL_AES_04 */
+
 /* Define if you are embedding perl in the main agent. */
 /* #undef NETSNMP_EMBEDDED_PERL */
 
 /* define if you want to enable IPv6 support */
-/* #undef NETSNMP_ENABLE_IPV6 */
+#define NETSNMP_ENABLE_IPV6 1
 
 /* define if you want to restrict SMUX connections to localhost by default */
 /* #undef NETSNMP_ENABLE_LOCAL_SMUX */
@@ -1379,6 +1510,9 @@
 
 /* testing code sections. */
 /* #undef NETSNMP_ENABLE_TESTING_CODE */
+
+/* if defined always use default auth/priv protocol when creating usmUsers */
+/* #undef NETSNMP_FORCE_SYSTEM_V3_AUTHPRIV */
 
 /* Should evaluate to the name of the current function if defined */
 #define NETSNMP_FUNCTION __func__
@@ -1411,6 +1545,9 @@
 /* If you don't have root access don't exit upon kmem errors */
 /* #undef NETSNMP_NO_ROOT_ACCESS */
 
+/* If you don't want to integrate with systemd. */
+#define NETSNMP_NO_SYSTEMD 1
+
 /* Define if you want to remove all SET/write access from the code */
 /* #undef NETSNMP_NO_WRITE_SUPPORT */
 
@@ -1421,7 +1558,7 @@
 #define NETSNMP_PRI32 ""
 
 /* Size prefix to use to printf a size_t or ssize_t */
-#define NETSNMP_PRIz ""
+#define NETSNMP_PRIz "l"
 
 /* Define to 1 if you want to build with reentrant/threaded code (incomplete).
    */
@@ -1434,7 +1571,7 @@
 #define NETSNMP_TEMP_FILE_PATTERN "/tmp/snmpdXXXXXX"
 
 /* "Define if internal cryptography code should be used" */
-#define NETSNMP_USE_INTERNAL_CRYPTO 1
+/* #undef NETSNMP_USE_INTERNAL_CRYPTO */
 
 /* define if you are using the MD5 code ... */
 /* #undef NETSNMP_USE_INTERNAL_MD5 */
@@ -1452,7 +1589,7 @@
 /* #undef NETSNMP_USE_PKCS11 */
 
 /* Define this if you have lm_sensors v3 or later */
-/* #undef NETSNMP_USE_SENSORS_V3 */
+#define NETSNMP_USE_SENSORS_V3 1
 
 /* Should we compile to use special opaque types: float, double, counter64,
    i64, ui64, union? */
@@ -1470,7 +1607,7 @@
 
 /* Define to the full name and version of this package. */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "Net-SNMP 5.7.3"
+#define PACKAGE_STRING "Net-SNMP 5.8"
 #endif
 
 /* Define to the one symbol short name of this package. */
@@ -1483,7 +1620,7 @@
 
 /* Define to the version of this package. */
 #ifndef PACKAGE_VERSION
-#define PACKAGE_VERSION "5.7.3"
+#define PACKAGE_VERSION "5.8"
 #endif
 
 /* Command to generate ps output, the final column must be the process name
@@ -1499,6 +1636,10 @@
 /* Use BSD 4.4 routing table entries? */
 /* #undef RTENTRY_4_4 */
 
+/* Qualifier for second argument of the appverify_cookie_cb() callback
+   function */
+#define SECOND_APPVERIFY_COOKIE_CB_ARG_QUALIFIER const
+
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
 
@@ -1506,7 +1647,7 @@
 #define SIZEOF_INTMAX_T 8
 
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
+#define SIZEOF_LONG 8
 
 /* The size of `long long', as computed by sizeof. */
 #define SIZEOF_LONG_LONG 8
@@ -1575,7 +1716,7 @@
 # endif
 #else
 # ifndef WORDS_BIGENDIAN
-#  define WORDS_BIGENDIAN 1
+/* #  undef WORDS_BIGENDIAN */
 # endif
 #endif
 
@@ -1588,9 +1729,6 @@
 
 /* Define to 1 if you need to in order for `stat' and other things to work. */
 /* #undef _POSIX_SOURCE */
-
-/* Define if you have RPM 4.6 or newer to turn on legacy API */
-/* #undef _RPM_4_4_COMPAT */
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
@@ -1676,23 +1814,9 @@
 /* end of definitions added by configure on-the-fly */
 
 /* If you have openssl 0.9.7 or above, you likely have AES support. */
-/* #undef NETSNMP_USE_OPENSSL */
+#define NETSNMP_USE_OPENSSL 1
 #if (defined(NETSNMP_USE_OPENSSL) && defined(HAVE_OPENSSL_AES_H) && defined(HAVE_AES_CFB128_ENCRYPT)) || defined(NETSNMP_USE_INTERNAL_CRYPTO)
 #define HAVE_AES 1
-#endif
-
-/* define random functions */
-
-#ifndef HAVE_RANDOM
-#ifdef HAVE_LRAND48
-#define random lrand48
-#define srandom(s) srand48(s)
-#else
-#ifdef HAVE_RAND
-#define random rand
-#define srandom(s) srand(s)
-#endif
-#endif
 #endif
 
 /* define signal if DNE */
@@ -1729,7 +1853,7 @@
 #define NETSNMP_SNMPV2AUTH  0x8000       /* V2 Authenticated requests only */
 
 /* default list of mibs to load */
-#define NETSNMP_DEFAULT_MIBS ":SNMPv2-MIB:IF-MIB:IP-MIB:TCP-MIB:UDP-MIB:HOST-RESOURCES-MIB:NOTIFICATION-LOG-MIB:DISMAN-EVENT-MIB:DISMAN-SCHEDULE-MIB:UCD-SNMP-MIB:UCD-DEMO-MIB:SNMP-TARGET-MIB:NET-SNMP-AGENT-MIB:SNMP-MPD-MIB:SNMP-USER-BASED-SM-MIB:SNMP-FRAMEWORK-MIB:SNMP-VIEW-BASED-ACM-MIB:SNMP-COMMUNITY-MIB:IP-FORWARD-MIB:NET-SNMP-PASS-MIB:NET-SNMP-EXTEND-MIB:UCD-DLMOD-MIB:SNMP-NOTIFICATION-MIB:SNMPv2-TM:NET-SNMP-VACM-MIB"
+#define NETSNMP_DEFAULT_MIBS ":SNMPv2-MIB:IF-MIB:IP-MIB:TCP-MIB:UDP-MIB:HOST-RESOURCES-MIB:NOTIFICATION-LOG-MIB:DISMAN-EVENT-MIB:DISMAN-SCHEDULE-MIB:UCD-SNMP-MIB:UCD-DEMO-MIB:SNMP-TARGET-MIB:NET-SNMP-AGENT-MIB:HOST-RESOURCES-TYPES:SNMP-FRAMEWORK-MIB:SNMP-MPD-MIB:SNMP-USER-BASED-SM-MIB:SNMP-VIEW-BASED-ACM-MIB:SNMP-COMMUNITY-MIB:IPV6-ICMP-MIB:IPV6-MIB:IPV6-TCP-MIB:IPV6-UDP-MIB:IP-FORWARD-MIB:NET-SNMP-PASS-MIB:NET-SNMP-EXTEND-MIB:UCD-DLMOD-MIB:SNMP-NOTIFICATION-MIB:SNMPv2-TM:NET-SNMP-VACM-MIB"
 
 /* debugging stuff */
 /* if defined, we optimize the code to exclude all debugging calls. */
@@ -1759,7 +1883,7 @@
 #define NETSNMP_MAX_PERSISTENT_BACKUPS 10
 
 /* define the system type include file here */
-#define NETSNMP_SYSTEM_INCLUDE_FILE "net-snmp/system/generic.h"
+#define NETSNMP_SYSTEM_INCLUDE_FILE "net-snmp/system/linux.h"
 
 /* define the machine (cpu) type include file here */
 #define NETSNMP_MACHINE_INCLUDE_FILE "net-snmp/machine/generic.h"
@@ -1772,10 +1896,10 @@
 /* #undef NETSNMP_DEFAULT_CLIENT_RECV_BUF */
 
 /* net-snmp's major path names */
-#define SNMPLIBPATH "/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss/lib/snmp"
-#define SNMPSHAREPATH "/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss/share/snmp"
-#define SNMPCONFPATH "/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss/etc/snmp"
-#define SNMPDLMODPATH "/home/obesim/azv2i/MMITSS_Refreshed/sdk/mmitss/lib/snmp/dlmod"
+#define SNMPLIBPATH "/usr/local/lib/snmp"
+#define SNMPSHAREPATH "/usr/local/share/snmp"
+#define SNMPCONFPATH "/usr/local/etc/snmp"
+#define SNMPDLMODPATH "/usr/local/lib/snmp/dlmod"
 
 /* NETSNMP_LOGFILE:  If defined it closes stdout/err/in and opens this in 
    out/err's place.  (stdin is closed so that sh scripts won't wait for it) */
@@ -1990,6 +2114,10 @@
     available.   */
 #define NETSNMP_TRANSPORT_UDP_DOMAIN 1
 
+/*  This is defined if support for the shared UDP/IP transport domain is
+    available.   */
+/* #undef NETSNMP_TRANSPORT_UDPSHARED_DOMAIN */
+
 /*  This is defined if support for the "callback" transport domain is
     available.   */
 #define NETSNMP_TRANSPORT_CALLBACK_DOMAIN 1
@@ -2012,11 +2140,11 @@
 
 /*  This is defined if support for the UDP/IPv6 transport domain is
     available.  */
-/* #undef NETSNMP_TRANSPORT_UDPIPV6_DOMAIN */
+#define NETSNMP_TRANSPORT_UDPIPV6_DOMAIN 1
 
 /*  This is defined if support for the TCP/IPv6 transport domain is
     available.  */
-/* #undef NETSNMP_TRANSPORT_TCPIPV6_DOMAIN */
+#define NETSNMP_TRANSPORT_TCPIPV6_DOMAIN 1
 
 /*  This is defined if support for the TLS transport domain is
     available.   */
@@ -2109,10 +2237,10 @@
 #if NETSNMP_ENABLE_INLINE && !defined(NETSNMP_NO_INLINE)
 #   define NETSNMP_USE_INLINE 1
 #   ifndef NETSNMP_INLINE
-#      define NETSNMP_INLINE inline
+#      define NETSNMP_INLINE __inline__
 #   endif
 #   ifndef NETSNMP_STATIC_INLINE
-#      define NETSNMP_STATIC_INLINE static inline
+#      define NETSNMP_STATIC_INLINE static __inline__
 #   endif
 #else
 #   define NETSNMP_INLINE 
@@ -2128,7 +2256,7 @@
 #define UCD_SNMP_LIBRARY 1
 
 /* final conclusion on nlist usage */
-#if defined(HAVE_NLIST) && defined(HAVE_STRUCT_NLIST_N_VALUE) && !defined(NETSNMP_DONT_USE_NLIST) && defined(HAVE_KMEM) && !defined(NETSNMP_NO_KMEM_USAGE)
+#if defined(HAVE_NLIST) && defined(HAVE_STRUCT_NLIST_N_VALUE) && !defined(NETSNMP_DONT_USE_NLIST) && !defined(NETSNMP_NO_KMEM_USAGE)
 #define NETSNMP_CAN_USE_NLIST
 #endif
 

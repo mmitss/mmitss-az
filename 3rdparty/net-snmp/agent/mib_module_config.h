@@ -35,26 +35,29 @@
 /* Define if compiling with the utilities module files.  */
 #define USING_UTILITIES_MODULE 1
  
-/* Define if compiling with the snmpv3/snmpMPDStats_5_5 module files.  */
-#define USING_SNMPV3_SNMPMPDSTATS_5_5_MODULE 1
- 
-/* Define if compiling with the snmpv3/usmStats_5_5 module files.  */
-#define USING_SNMPV3_USMSTATS_5_5_MODULE 1
+/* Define if compiling with the host module files.  */
+#define USING_HOST_MODULE 1
  
 /* Define if compiling with the snmpv3/snmpEngine module files.  */
 #define USING_SNMPV3_SNMPENGINE_MODULE 1
  
+/* Define if compiling with the snmpv3/snmpMPDStats module files.  */
+#define USING_SNMPV3_SNMPMPDSTATS_MODULE 1
+ 
+/* Define if compiling with the snmpv3/usmStats module files.  */
+#define USING_SNMPV3_USMSTATS_MODULE 1
+ 
 /* Define if compiling with the snmpv3/usmUser module files.  */
 #define USING_SNMPV3_USMUSER_MODULE 1
- 
-/* Define if compiling with the mibII/snmp_mib_5_5 module files.  */
-#define USING_MIBII_SNMP_MIB_5_5_MODULE 1
  
 /* Define if compiling with the mibII/system_mib module files.  */
 #define USING_MIBII_SYSTEM_MIB_MODULE 1
  
 /* Define if compiling with the mibII/sysORTable module files.  */
 #define USING_MIBII_SYSORTABLE_MODULE 1
+ 
+/* Define if compiling with the mibII/snmp_mib module files.  */
+#define USING_MIBII_SNMP_MIB_MODULE 1
  
 /* Define if compiling with the mibII/vacm_vars module files.  */
 #define USING_MIBII_VACM_VARS_MODULE 1
@@ -79,6 +82,12 @@
  
 /* Define if compiling with the mibII/udp module files.  */
 #define USING_MIBII_UDP_MODULE 1
+ 
+/* Define if compiling with the mibII/ipv6 module files.  */
+#define USING_MIBII_IPV6_MODULE 1
+ 
+/* Define if compiling with the if-mib module files.  */
+#define USING_IF_MIB_MODULE 1
  
 /* Define if compiling with the ip-mib module files.  */
 #define USING_IP_MIB_MODULE 1
@@ -146,9 +155,6 @@
 /* Define if compiling with the notification-log-mib/notification_log module files.  */
 #define USING_NOTIFICATION_LOG_MIB_NOTIFICATION_LOG_MODULE 1
  
-/* Define if compiling with the target/target_counters_5_5 module files.  */
-#define USING_TARGET_TARGET_COUNTERS_5_5_MODULE 1
- 
 /* Define if compiling with the target/snmpTargetAddrEntry module files.  */
 #define USING_TARGET_SNMPTARGETADDRENTRY_MODULE 1
  
@@ -157,6 +163,9 @@
  
 /* Define if compiling with the target/target module files.  */
 #define USING_TARGET_TARGET_MODULE 1
+ 
+/* Define if compiling with the target/target_counters module files.  */
+#define USING_TARGET_TARGET_COUNTERS_MODULE 1
  
 /* Define if compiling with the agent/nsTransactionTable module files.  */
 #define USING_AGENT_NSTRANSACTIONTABLE_MODULE 1
@@ -236,20 +245,62 @@
 /* Define if compiling with the utilities/override module files.  */
 #define USING_UTILITIES_OVERRIDE_MODULE 1
  
+/* Define if compiling with the host/hrh_storage module files.  */
+#define USING_HOST_HRH_STORAGE_MODULE 1
+ 
+/* Define if compiling with the host/hrh_filesys module files.  */
+#define USING_HOST_HRH_FILESYS_MODULE 1
+ 
+/* Define if compiling with the host/hrSWInstalledTable module files.  */
+#define USING_HOST_HRSWINSTALLEDTABLE_MODULE 1
+ 
+/* Define if compiling with the host/hrSWRunTable module files.  */
+#define USING_HOST_HRSWRUNTABLE_MODULE 1
+ 
+/* Define if compiling with the host/hr_system module files.  */
+#define USING_HOST_HR_SYSTEM_MODULE 1
+ 
+/* Define if compiling with the host/hr_device module files.  */
+#define USING_HOST_HR_DEVICE_MODULE 1
+ 
+/* Define if compiling with the host/hr_other module files.  */
+#define USING_HOST_HR_OTHER_MODULE 1
+ 
+/* Define if compiling with the host/hr_proc module files.  */
+#define USING_HOST_HR_PROC_MODULE 1
+ 
+/* Define if compiling with the host/hr_network module files.  */
+#define USING_HOST_HR_NETWORK_MODULE 1
+ 
+/* Define if compiling with the host/hr_print module files.  */
+#define USING_HOST_HR_PRINT_MODULE 1
+ 
+/* Define if compiling with the host/hr_disk module files.  */
+#define USING_HOST_HR_DISK_MODULE 1
+ 
+/* Define if compiling with the host/hr_partition module files.  */
+#define USING_HOST_HR_PARTITION_MODULE 1
+ 
 /* Define if compiling with the util_funcs/header_generic module files.  */
 #define USING_UTIL_FUNCS_HEADER_GENERIC_MODULE 1
- 
-/* Define if compiling with the mibII/updates module files.  */
-#define USING_MIBII_UPDATES_MODULE 1
  
 /* Define if compiling with the util_funcs module files.  */
 #define USING_UTIL_FUNCS_MODULE 1
  
+/* Define if compiling with the mibII/updates module files.  */
+#define USING_MIBII_UPDATES_MODULE 1
+ 
 /* Define if compiling with the mibII/vacm_context module files.  */
 #define USING_MIBII_VACM_CONTEXT_MODULE 1
  
-/* Define if compiling with the mibII/interfaces module files.  */
-#define USING_MIBII_INTERFACES_MODULE 1
+/* Define if compiling with the mibII/data_access/at_linux module files.  */
+#define USING_MIBII_DATA_ACCESS_AT_LINUX_MODULE 1
+ 
+/* Define if compiling with the mibII/data_access/at_unix module files.  */
+#define USING_MIBII_DATA_ACCESS_AT_UNIX_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifTable module files.  */
+#define USING_IF_MIB_IFTABLE_MODULE 1
  
 /* Define if compiling with the mibII/kernel_linux module files.  */
 #define USING_MIBII_KERNEL_LINUX_MODULE 1
@@ -268,6 +319,9 @@
  
 /* Define if compiling with the mibII/udpTable module files.  */
 #define USING_MIBII_UDPTABLE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifXTable module files.  */
+#define USING_IF_MIB_IFXTABLE_MODULE 1
  
 /* Define if compiling with the ip-mib/ipAddressTable module files.  */
 #define USING_IP_MIB_IPADDRESSTABLE_MODULE 1
@@ -326,14 +380,41 @@
 /* Define if compiling with the hardware/cpu module files.  */
 #define USING_HARDWARE_CPU_MODULE 1
  
+/* Define if compiling with the notification/snmpNotifyTable_data module files.  */
+#define USING_NOTIFICATION_SNMPNOTIFYTABLE_DATA_MODULE 1
+ 
 /* Define if compiling with the header_complex module files.  */
 #define USING_HEADER_COMPLEX_MODULE 1
+ 
+/* Define if compiling with the snmp-notification-mib/snmpNotifyFilterTable/snmpNotifyFilterTable_data_storage module files.  */
+#define USING_SNMP_NOTIFICATION_MIB_SNMPNOTIFYFILTERTABLE_SNMPNOTIFYFILTERTABLE_DATA_STORAGE_MODULE 1
  
 /* Define if compiling with the snmp-notification-mib/snmpNotifyFilterTable/snmpNotifyFilterTable module files.  */
 #define USING_SNMP_NOTIFICATION_MIB_SNMPNOTIFYFILTERTABLE_SNMPNOTIFYFILTERTABLE_MODULE 1
  
-/* Define if compiling with the if-mib/data_access/interface module files.  */
-#define USING_IF_MIB_DATA_ACCESS_INTERFACE_MODULE 1
+/* Define if compiling with the notification/snmpNotifyFilterProfileTable_data module files.  */
+#define USING_NOTIFICATION_SNMPNOTIFYFILTERPROFILETABLE_DATA_MODULE 1
+ 
+/* Define if compiling with the target/snmpTargetAddrEntry_data module files.  */
+#define USING_TARGET_SNMPTARGETADDRENTRY_DATA_MODULE 1
+ 
+/* Define if compiling with the target/snmpTargetParamsEntry_data module files.  */
+#define USING_TARGET_SNMPTARGETPARAMSENTRY_DATA_MODULE 1
+ 
+/* Define if compiling with the host/data_access/swinst module files.  */
+#define USING_HOST_DATA_ACCESS_SWINST_MODULE 1
+ 
+/* Define if compiling with the host/data_access/swrun module files.  */
+#define USING_HOST_DATA_ACCESS_SWRUN_MODULE 1
+ 
+/* Define if compiling with the host/hrSWRunPerfTable module files.  */
+#define USING_HOST_HRSWRUNPERFTABLE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifTable/ifTable module files.  */
+#define USING_IF_MIB_IFTABLE_IFTABLE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifXTable/ifXTable module files.  */
+#define USING_IF_MIB_IFXTABLE_IFXTABLE_MODULE 1
  
 /* Define if compiling with the ip-mib/ipAddressTable/ipAddressTable module files.  */
 #define USING_IP_MIB_IPADDRESSTABLE_IPADDRESSTABLE_MODULE 1
@@ -424,6 +505,27 @@
  
 /* Define if compiling with the snmp-notification-mib/snmpNotifyFilterTable/snmpNotifyFilterTable_data_access module files.  */
 #define USING_SNMP_NOTIFICATION_MIB_SNMPNOTIFYFILTERTABLE_SNMPNOTIFYFILTERTABLE_DATA_ACCESS_MODULE 1
+ 
+/* Define if compiling with the host/data_access/swinst_apt module files.  */
+#define USING_HOST_DATA_ACCESS_SWINST_APT_MODULE 1
+ 
+/* Define if compiling with the host/data_access/swrun_procfs_status module files.  */
+#define USING_HOST_DATA_ACCESS_SWRUN_PROCFS_STATUS_MODULE 1
+ 
+/* Define if compiling with the if-mib/data_access/interface module files.  */
+#define USING_IF_MIB_DATA_ACCESS_INTERFACE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifTable/ifTable_interface module files.  */
+#define USING_IF_MIB_IFTABLE_IFTABLE_INTERFACE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifTable/ifTable_data_access module files.  */
+#define USING_IF_MIB_IFTABLE_IFTABLE_DATA_ACCESS_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifXTable/ifXTable_interface module files.  */
+#define USING_IF_MIB_IFXTABLE_IFXTABLE_INTERFACE_MODULE 1
+ 
+/* Define if compiling with the if-mib/ifXTable/ifXTable_data_access module files.  */
+#define USING_IF_MIB_IFXTABLE_IFXTABLE_DATA_ACCESS_MODULE 1
  
 /* Define if compiling with the ip-mib/data_access/ipaddress module files.  */
 #define USING_IP_MIB_DATA_ACCESS_IPADDRESS_MODULE 1
@@ -523,6 +625,12 @@
  
 /* Define if compiling with the udp-mib/udpEndpointTable/udpEndpointTable_data_access module files.  */
 #define USING_UDP_MIB_UDPENDPOINTTABLE_UDPENDPOINTTABLE_DATA_ACCESS_MODULE 1
+ 
+/* Define if compiling with the if-mib/data_access/interface_linux module files.  */
+#define USING_IF_MIB_DATA_ACCESS_INTERFACE_LINUX_MODULE 1
+ 
+/* Define if compiling with the if-mib/data_access/interface_ioctl module files.  */
+#define USING_IF_MIB_DATA_ACCESS_INTERFACE_IOCTL_MODULE 1
  
 /* Define if compiling with the ip-mib/data_access/ipaddress_common module files.  */
 #define USING_IP_MIB_DATA_ACCESS_IPADDRESS_COMMON_MODULE 1
