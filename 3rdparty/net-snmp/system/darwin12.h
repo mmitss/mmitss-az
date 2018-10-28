@@ -19,11 +19,6 @@
  */
 /* #define NEED_KLGETSA 1 */
 
-/*
- * ARP_Scan_Next needs a 4th ifIndex argument 
- */
-#define ARP_SCAN_FOUR_ARGUMENTS 1
-
 #define CHECK_RT_FLAGS 1
 
 /*
@@ -135,9 +130,3 @@
 #ifdef TARGET_RT_LITTLE_ENDIAN
 #define UDP_ADDRESSES_IN_HOST_ORDER 1
 #endif
-
-/*
- * as of 7/2010, openssl on darwin does not have sha256
- */
-#define OPENSSL_NO_SHA256 1
-#define OPENSSL_NO_SHA512 1
