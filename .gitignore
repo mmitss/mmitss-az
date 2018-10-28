@@ -1,5 +1,6 @@
 #ignore binaries
-docker/applictions/
+docker/applictions/M_TrajectoryAware
+docker/applictions/M_TrafficControllerInterface
 
 #unignore the shell script
 !docker/applictions/*.sh
