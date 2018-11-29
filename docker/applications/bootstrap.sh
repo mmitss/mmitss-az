@@ -3,7 +3,7 @@
 
 run_in_bg () {
 	$@ &> /nojournal/bin/log/${1}.log &
-	sleep 1s
+	sleep 2s
 }
 
 # ifconfig > /nojournal/bin/log/my_ip.txt
