@@ -37,4 +37,4 @@ echo "Create the symbolic links for the copied libraries."
 sudo ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35
 sudo ln -s /usr/local/lib/mmitss/libglpk.so.35.1.0 /usr/local/lib/mmitss/libglpk.so.35
 sudo ldconfig
-pkill -9 sleep
+pkill -9 sleep #End
