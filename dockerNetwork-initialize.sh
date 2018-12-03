@@ -7,7 +7,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    #
 # is obtained from Arizona Board of Regents or University of Arizona.                       #
 #                                                                                           #
-# lmmitss-initialize.sh                                                                     #
+# dockerNetwork_initialize.sh                                                               #
 # Created by Niraj Altekar                                                                  #
 # Transportation Research Institute                                                         #
 # Systems and Industrial Engineering                                                        #
@@ -18,46 +18,32 @@
 #                                                                                           #
 # Revision History:                                                                         #
 # Rev00: Initial Release.                                                                   #
-# This script configures the directory structure and libraries required by the MMITSS apps. #
-# The intersection configuration files will be stored in /nojournal/bin/                    #
-# The log files for each simulation run will be stored in /nojournal/bin/log/               #
+# Once docker is installed, this script creates a macvlan network bridge that facilitates   #
+# communication between the containers and relative outside world.                          #
 #                                                                                           #
 #############################################################################################
 
 
+echo "Running ifconfig to list the available network interfaces"
+sleep 1s
+ifconfig
 
-#*********************************************************************************************
-#THIS SCRIPT NEEDS A SUPERUSER ACCESS TO RUN, AS IT CREATES DIRECTORIES IN THE ROOT FOLDER.  *
-#*********************************************************************************************
-
-
-#Request the user-name and user-group
-read -p "Username: " username
-read -p "User Group: " usergroup
-
-echo "Creating required directories in the root folder."
-sudo mkdir -p /nojournal/bin/log
-sudo mkdir /usr/local/lib/mmitss
+echo "Enter the name of ethernet port:"
+read ethernetPortName
+echo "Enter the subnet of ethernet port. Example: 10.254.56.0"
+read ethernetSubnet
+ethernetSubnetMask="$ethernetSubnet/24" #appends the default mask of 255.255.255.0 on the desired subnet.
+echo "Enter the desired gateway. Example for given subnet:10.254.56.1"
+read ethernetGateway
+echo "Creating a macvlan network..."
 sleep 1s
 
-echo "Copy the configuration files of the intersection RSE81_Campbell to /nojournal/bin/"
-sudo cp -r ./docker/corridors/speedway/rse81_campbell/nojournal/bin /nojournal
+echo "Name of ethernet port is: "$ethernetPortName
+sleep 1s
+echo "Subnet is: "$ethernetSubnetMask
+sleep 1s
+echo "Gateway is: "$ethernetGateway
 sleep 1s
 
-echo "Change the owner and group of the configuration files and provide necessary permissions (chmod 777)"
-sudo chown -R $username:$usergroup /nojournal
-sudo chmod -R 777 /nojournal
-sleep 1s
-
-echo "Add the shared libraries we need to run"
-sudo cp ./3rdparty/net-snmp/lib/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/glpk/lib/libglpk.so.35.1.0 /usr/local/lib/mmitss/
-sudo cp ./lib/libmmitss-common.so /usr/local/lib/mmitss/
-sudo cp ./lib/mmitss.conf /etc/ld.so.conf.d/
-sleep 1s
-
-echo "Create the symbolic links for the copied libraries."
-sudo ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35
-sudo ln -s /usr/local/lib/mmitss/libglpk.so.35.1.0 /usr/local/lib/mmitss/libglpk.so.35
-sudo ldconfig
-pkill -9 sleep #End
+sudo docker network create -d macvlan --subnet=$ethernetSubnetMask --gateway=$ethernetGateway -o parent=$ethernetPortName macvlan_1
+echo "Macvlan network is now established successfully!"
