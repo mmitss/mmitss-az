@@ -1,6 +1,5 @@
 #ignore binaries
-docker/applictions/M_TrajectoryAware
-docker/applictions/M_TrafficControllerInterface
+docker/applictions/M_*
 
 #unignore the shell script
 !docker/applictions/*.sh
@@ -15,3 +14,5 @@ docker/applictions/M_TrafficControllerInterface
 cmake*
 
 CMake*
+
+docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
