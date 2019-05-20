@@ -23,16 +23,14 @@
 // #include "stdafx.h" djc
 #include "PositionLocal3D.h"
 
-PositionLocal3D::PositionLocal3D(void)
-{
-	latitude         = 0.0; 
-	longitude        = 0.0; 
-	elevation        = 0.0;  
-	positionAccuracy = 0.0; 
+PositionLocal3D::PositionLocal3D(void) {
+    latitude = 0.0;
+    longitude = 0.0;
+    elevation = 0.0;
+    positionAccuracy = 0.0;
 }
 
 
-PositionLocal3D::~PositionLocal3D(void)
-{
+PositionLocal3D::~PositionLocal3D(void) {
 }
 

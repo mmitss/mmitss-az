@@ -24,50 +24,44 @@
 
 #pragma once
 
-struct savari_gps_data_t
-{
-	double time;
+struct savari_gps_data_t {
+    double time;
 
 };
 
-struct gps_data_t
-{
+struct gps_data_t {
 
 };
 
 gps_data_t *gps_handle;
 savari_gps_data_t gps;
-void printgpscsv ();
-void read_gps ();
 
-int gps_init() 
-{
-   
+void printgpscsv();
+
+void read_gps();
+
+int gps_init() {
+    return 0;
 }
 
-void printgpscsv () 
-{
-
-}
- 
-void read_gps ()
-{
- 
-}
-
-void populate_gps_values()
-{
+void printgpscsv() {
 
 }
 
-gps_data_t* savari_gps_open(int * a, int b)
-{
-	
+void read_gps() {
+
+}
+
+void populate_gps_values() {
+
+}
+
+gps_data_t *savari_gps_open(int *a, int b) {
+    return 0;
 }
 
 
-double savari_gps_read(savari_gps_data_t * gps,gps_data_t * gps_handle)
-{
-	
+double savari_gps_read(savari_gps_data_t *gps, gps_data_t *gps_handle) {
+    return 0;
 }
 		

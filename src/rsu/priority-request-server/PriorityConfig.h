@@ -6,26 +6,30 @@
 
 using namespace std;
 
-class PriorityConfig
-{
+class PriorityConfig {
 public:
-	double dCoordinationWeight;
+    double dCoordinationWeight;
     int iCoordinatedPhase[2];
     double dCoordCycle;
     double dCoordinationPhaseSplit[8];
     double dCoordOffset;
     double dTransitWeight;
     double dTruckWeight;
-    
-    int    iNumberOfCoordinatedPhase;
-    bool   bSimilarCoordinationSplit;
+
+    int iNumberOfCoordinatedPhase;
+    bool bSimilarCoordinationSplit;
     double dSmallerCoordinationSplit;
     double dLargerCoordinationSplit;
     double dSplitDifference;
-	
+
 public:
-	PriorityConfig();
-	~PriorityConfig();
-	void setPriorityConfig(double dCoordinationWeight, int iCoordinatedPhase[2], double dCoordCycle, double dCoordinationPhaseSplit[8], double dCoordOffset, double dTransitWeight, double dTruckWeight);
-	void readPriorityConfig( char * filename);
+    PriorityConfig();
+
+    ~PriorityConfig();
+
+    void setPriorityConfig(double dCoordinationWeight, int iCoordinatedPhase[2], double dCoordCycle,
+                           double dCoordinationPhaseSplit[8], double dCoordOffset, double dTransitWeight,
+                           double dTruckWeight);
+
+    void readPriorityConfig(const char *filename);
 };
