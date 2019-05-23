@@ -67,7 +67,7 @@
 #define RSUID_FILENAME "/nojournal/bin/rsuid.txt"
 #define LOG_FILENAME "/nojournal/bin/log/MMITSS_MRP_PriorityRequestServer_"
 #define LANEPHASE_FILENAME "/nojournal/bin/InLane_OutLane_Phase_Mapping.txt"
-#define IPINFO_FILENAME "/nojournal/bin/IPInfo.txt"; // the file to read the traffic signal controller IP and port
+#define IPINFO_FILENAME "/nojournal/bin/IPInfo.txt" // the file to read the traffic signal controller IP and port
 
 double getSimulationTime(char *);  //from VISSIM 
 
@@ -79,10 +79,10 @@ void packEventList(char *tmp_event_data,
                    int &size);  // To send clear commands to the controller when the last request passes the intersection
 void sendClearCommandsToInterface();
 
-void setupConnection();                               // To set up udp socket to get SRM (FIELD case), or SRM and VISSIM time (SIMULATION case)
+void setupConnection(int &);                               // To set up udp socket to get SRM (FIELD case), or SRM and VISSIM time (SIMULATION case)
 void getControllerIPaddress();
 
-void getSignalConfigFile();
+void getSignalConfigFile(char *, int *);
 
 void readPhaseTimingStatus(
         int PhaseStatus[8]);  // We need to get signal status to determin the split phase in case one priority vehicle is EV
@@ -114,22 +114,13 @@ int doWeNeedToSolveForCoordRequests(bool &, bool&, bool &);
 
 void calculateETAofCoordRequests(bool &, bool&, bool &);
 
-void updateCoordRequestsInList(LinkedList <ReqEntry> &);
+void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int []);
 
-void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &);
+void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&);
 
-void setCoordinationPriorityRequests(LinkedList <ReqEntry> &);
+void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int []);
 
-//void  processRxMessage(char * Msg);
-
-
-
-
-
-
-
- // Process the message. If it is SRM, decode it and populate SRM elements, update the request list and update the request files
-void processRxMessage(LinkedList <ReqEntry> &Req_List);
+void processRxMessage(LinkedList <ReqEntry> &Req_List, int&, int []);
 
 double readGPStime();
 

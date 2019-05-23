@@ -38,13 +38,13 @@
 #include <sys/time.h>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
-#include "ReqEntryListHandle.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
 #include "SRM.h"
 #include "BasicVehicle.h"
 #include "PriorityConfig.h"
+#include "ReqEntryListHandle.h"
 #include "M_PriorityRequestServer.h"
 
 using namespace std;
@@ -58,25 +58,18 @@ struct sockaddr_in sendaddr;
 struct sockaddr_in recvaddr;
 int addr_length;
 
-
-
 char INTport[64];            // Port to connect to traffic signal controller e.g. "501"
 char INTip[64];              // IP to connect to traffic signal controller e.g. "150.135.152.23";
-int ReqListUpdateFlag = 0;    // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
 
 
 
 
-
-
-char ConfigFile[256];
-int CombinedPhase[8] = {0};
 char rxMsgBuffer[MAX_MSG_BUFLEN];   // a buffer for received messages
 SRM_t *srm = 0;
 asn_enc_rval_t ec;                 // Encoder return value
 asn_dec_rval_t rval;
-int iAppliedMethod = 1;         // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
-int iApplicationUsage = 1;         // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
+int iAppliedMethod = 1; // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
+int iApplicationUsage = 1; // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
 char cRequestType[32];         // Whether it is a request or resuest_clear or coord_request, this variable is use to fill up tempMsg
 char tempMsg[1024];             // To write the requests info into this variable. this variable will be passed to UpdateList function to update the request lists
 char cIntersectionName[32];
@@ -88,14 +81,9 @@ double dVISSIMtime = 0.0;
 double dDiffSystemAndGPS = 0.0;    // The difference between GPS and Sytem time in FIELD. This is used when the gps.time is not a number, but we ought to have a time for coordinatio in FIELD
 double dCurrentTimeInCycle = 100.0;// For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
 
-
 long lTimeOut = 300000;             // Time out of waiting for a new socket 0.3 sec!
 int iObsoleteTimeOfRemainedReq = 30;   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
-double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count down
-
-
-
-
+double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
 
 int iCoordMsgCont = 0;
 float fCoordPhase1ETA = 0.0;
@@ -120,7 +108,9 @@ int main(int argc, char *argv[]) {
     int iPORT = 4444;                  //  Socket Port: For receiving request from PriorityRequestGenerator ( PRG )
     string Rsu_ID;                  // will get intersection name from "rsuid.txt"
     int ret = 0;
-
+    int ReqListUpdateFlag = 0;    // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
+    char ConfigFile[256];
+    int CombinedPhase[8] = {0};
 
     // -p  the port that the program receive SRM, -t the timeout for listening to a socket, 
     // -t codeusage whether it is for ISIG and priority or just priority, -c field vs simulation use
@@ -171,9 +161,9 @@ int main(int argc, char *argv[]) {
     getRSUid(Rsu_ID);                  // will get intersection name from "rsuid.txt"); 
                                
     // Read the configinfo_XX.txt from ConfigInfo.txt
-    getSignalConfigFile(); 
+    getSignalConfigFile(ConfigFile, CombinedPhase); 
                        
-    setupConnection();
+    setupConnection(iPORT);
 
     // get the intersection name                          
     strcpy(cIntersectionName, Rsu_ID.c_str());  
@@ -201,22 +191,22 @@ int main(int argc, char *argv[]) {
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(req_List);
+            processRxMessage(req_List, ReqListUpdateFlag, CombinedPhase);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0)) {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
             outputlog(temp_log);
             dLastETAUpdateTime = dTime;
-            startUpdateETAofRequestsInList(Rsu_ID,req_List);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
         }
 
         if (priorityConfig.dCoordinationWeight > 0)
-            setCoordinationPriorityRequests(req_List);
+            setCoordinationPriorityRequests(req_List, ReqListUpdateFlag, CombinedPhase);
 
         if (ReqListUpdateFlag > 0 && req_List.ListSize() > 0) {
             sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
             outputlog(temp_log);
-            startUpdateETAofRequestsInList(Rsu_ID,req_List);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
             //	ReqListUpdateFlag=0;
         }
 
@@ -231,7 +221,7 @@ int main(int argc, char *argv[]) {
             ReqListUpdateFlag = 0;
             flagForClearingInterfaceCmd = 0;
 
-            startUpdateETAofRequestsInList(Rsu_ID,req_List);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
 
             // MZP		UpdateCurrentList(req_list);
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
@@ -293,7 +283,7 @@ void getRSUid(string rsu_id)
     fs.close();
 }
 
-void processRxMessage(LinkedList <ReqEntry> &req_list) {
+void processRxMessage(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag, int CombinedPhase[]) {
     float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
@@ -405,14 +395,14 @@ void processRxMessage(LinkedList <ReqEntry> &req_list) {
             //		outputlog(temp_log);
             // MZP		ReqListFromFile(REQUESTFILENAME,req_list);
 
-            UpdateList(req_list, tempMsg, PhaseStatus);   // Update the Req List data structure considering received message
+            UpdateList(req_list, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase);   // Update the Req List data structure considering received message
 
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
             // MZP		printReqestFile2Log(REQUESTFILENAME);
             // MZP		PrintList2File(REQUESTFILENAME_COMBINED,req_list,0); 
             // MZP		printReqestFile2Log(REQUESTFILENAME_COMBINED);
 
-            cout << "Flag After Processing Received SRM  " << ReqListUpdateFlag << endl;
+           // cout << "Flag After Processing Received SRM  " << ReqListUpdateFlag << endl;
         }
 
     } else {
@@ -437,24 +427,25 @@ void processRxMessage(LinkedList <ReqEntry> &req_list) {
     free(srm);
 }
 
-void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list) {
-    updateETAofRequestsInList(req_list);
-    deleteThePassedVehicle(req_list);
+void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list, int& ReqListUpdateFlag) {
+    updateETAofRequestsInList(req_list, ReqListUpdateFlag);
+    deleteThePassedVehicle(req_list, ReqListUpdateFlag);
     // Write the requests list into requests.txt,
 
-    PrintList2File(REQUESTFILENAME, rsu_id, req_list, 1);
+    PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag , 1);
     //printReqestFile2Log(REQUESTFILENAME);
     //Write the requests list into  requests_combined.txt;
     //This file will be different than requests.txt when we have EV
-    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, 0);
+    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, 0);
     printReqestFile2Log(REQUESTFILENAME_COMBINED);
 }
 
-void getSignalConfigFile() {
+void getSignalConfigFile(char *ConfigFile, int *CombinedPhase) {
     char temp_log[256];
     fstream fs;
     fstream fs_phase; //*** Read in all phases in order to find the combined phase information.***//
     string lineread;
+
 
     fs.open(CONFIG_INFO_FILE);
     getline(fs, lineread);
@@ -505,7 +496,7 @@ int getSignalColor(int PhaseStatusNo) {
 }
 
 
-void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list) {
+void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag, int CombinedPhase[]) {
     bool bAtOffsetRefPointFlag = 0;
     bool bAtBeginingOfSmallerCoordSplitFlag = 0;
     bool bAtTheEndOfCoordPhaseSplitsFlag = 0;
@@ -535,7 +526,7 @@ void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list) {
                                             bAtTheEndOfCoordPhaseSplitsFlag) == 1) {
             calculateETAofCoordRequests(bAtOffsetRefPointFlag, bAtBeginingOfSmallerCoordSplitFlag,
                                         bAtTheEndOfCoordPhaseSplitsFlag);
-            updateCoordRequestsInList(req_list);
+            updateCoordRequestsInList(req_list, ReqListUpdateFlag, CombinedPhase);
             ReqListUpdateFlag = 6;
         } else if ((dTime > dTimeOfRepetativeSolve + TIME_INTERVAL_OF_RESOLVING) && (ReqListUpdateFlag == 0)
                     && (FindVehClassInList(req_list, COORDINATION) == 1))
@@ -552,7 +543,7 @@ void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list) {
 }
 
 
-void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list) {
+void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdateFlag, int CombinedPhase[]) {
     char temp_log[256];
     iCoordMsgCont = (iCoordMsgCont + 10) % 127;
     sprintf(temp_log,"\n******************  Coordination Request Is Set ****************** At simulation time %.2f. \n", dTime);
@@ -570,7 +561,7 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list) {
         sprintf(temp_log, "{ %s }\t ", tempMsg);
         ReqListUpdateFlag = 6;
         UpdateList(req_list, tempMsg,
-                   PhaseStatus);      // Update the Req List data structure considering first coordination
+                   PhaseStatus, ReqListUpdateFlag, CombinedPhase);      // Update the Req List data structure considering first coordination
     }
     if (priorityConfig.iCoordinatedPhase[1] > 0) {
         sprintf(tempMsg, "%s %s %d %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %.2f", cRequestType,
@@ -580,7 +571,7 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list) {
         sprintf(temp_log, "{ %s }\t ", tempMsg);
         ReqListUpdateFlag = 6;
         UpdateList(req_list, tempMsg,
-                   PhaseStatus);        // Update the Req List data structure considering second coordination
+                   PhaseStatus, ReqListUpdateFlag, CombinedPhase);        // Update the Req List data structure considering second coordination
     }
 
 /*	
@@ -1576,7 +1567,7 @@ double readGPStime() {
 }
 
 
-void setupConnection() {
+void setupConnection(int &iPort) {
 
     // PRS sends a clear command to the traffic interface when the last priority vehicle passes the intersection
     int iPRStoInterfacePort = 44444;     
@@ -1600,7 +1591,7 @@ void setupConnection() {
 
     // set up sending socket to interface to clean all commands when there is no request in the table
     recvaddr.sin_family = AF_INET;
-    recvaddr.sin_port = htons(iPORT);
+    recvaddr.sin_port = htons(iPort);
     recvaddr.sin_addr.s_addr = INADDR_ANY;//inet_addr("10.254.56.255") ;;
     memset(recvaddr.sin_zero, '\0', sizeof recvaddr.sin_zero);
     if (bind(iSockfd, (struct sockaddr *) &recvaddr, sizeof recvaddr) == -1) {

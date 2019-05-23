@@ -1,4 +1,19 @@
-#include <ReqEntryListHandle.h>
+#include <stdio.h>
+#include <vector>
+#include <iostream>
+#include <string>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fstream>
+#include <sstream>
+#include <istream>
+#include <math.h>
+#include "LinkedList.h"
+#include "ReqEntry.h"
+#include "PriorityConfig.h"
+#include "ReqEntryListHandle.h"
+
 //----- ReqListUpdateFlag=1: ADD a new request
 //----- ReqListUpdateFlag=2: UPDATED request (changing the speed, joining the queue, leaving the queue)
 //----- ReqListUpdateFlag=3: DELETE an obsolete request
@@ -6,6 +21,9 @@
 //----- ReqListUpdateFlag=5:
 //----- ReqListUpdateFlag=6: RESOLVE the problem every 10 seconds if there is coordination in the request table
 //----- ReqListUpdateFlag=7: Update the coordination request
+
+using namespace std;
+
 
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class) {
@@ -23,7 +41,7 @@ int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class) {
     return times;
 }
 
-void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]) {
+void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int &ReqListUpdateFlag, int CombinedPhase[]) {
     flagForClearingInterfaceCmd = 0;
     char temp_log[256];
     int iNewReqDiviser = 0;
@@ -46,7 +64,7 @@ void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8
 
     if ((NewReq.VehClass == EV) && (iNumberOfEVinList == 0))  // if this is the first EV in the list
     {
-        SplitPhase = FindSplitPhase(NewReq.Phase, phaseStatus);
+        SplitPhase = FindSplitPhase(NewReq.Phase, phaseStatus , CombinedPhase);
         NewReq.Split_Phase = SplitPhase;
     } else
         NewReq.Split_Phase = 0;
@@ -122,7 +140,7 @@ void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8
         if (pos >= 0) // this is the first time we receive the clear request
         {
             Req_List.Reset(pos);
-            if (Req_List.ListSize() > 1) // if there is another request in the table we should colve the problem again
+            if (Req_List.ListSize() > 1) // if there is another request in the table we should solve the problem again
                 ReqListUpdateFlag = 4;
             else
                 flagForClearingInterfaceCmd = 1;
@@ -180,7 +198,7 @@ int numberOfEVs(LinkedList <ReqEntry> ReqList) {
     return iNumber;
 }
 
-int FindSplitPhase(int phase, int phaseStatus[8]) {
+int FindSplitPhase(int phase, int phaseStatus[8], int CombinedPhase[]) {
     //*** From global array CombinedPhase[] to get the combined phase :get_configfile() generates CombinedPhase[]
     //*** If the phase exsits, the value is not 0; if not exists, the default value is '0'.; "-1"  means will not change later
     //*** The argument phase should be among {1..8}
@@ -350,7 +368,7 @@ void PrintList(LinkedList <ReqEntry> &ReqList) {
 }
 
 
-void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int IsCombined) {
+void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int ReqListUpdateFlag, int IsCombined) {
     // If IsCombined=1 (There is no EV) print combined phase information into "requests.txt". // BY DJ 2012.3.27
     // The argument of IsCombined is optional, default value is 0, means no EV
     // phase_status is from the ASC controller
@@ -449,7 +467,7 @@ void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqE
 }
 
 
-void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List) {
+void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &ReqListUpdateFlag) {
     char temp_log[256];
     Req_List.Reset();
     while (!Req_List.EndOfList()) {
@@ -470,7 +488,7 @@ void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List) {
     }
 }
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List) {
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &ReqListUpdateFlag) {
     char temp_log[256];
     int icoordphase1 = priorityConfig.iCoordinatedPhase[0];
     int icoordphase2 = priorityConfig.iCoordinatedPhase[1];

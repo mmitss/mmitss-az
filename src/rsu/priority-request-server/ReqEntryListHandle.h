@@ -1,25 +1,6 @@
 #pragma once
 
 
-#include <stdio.h>
-#include <vector>
-#include <iostream>
-#include <string>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fstream>
-#include <sstream>
-#include <istream>
-#include <math.h>
-#include "LinkedList.h"
-#include "ReqEntry.h"
-#include <math.h>
-#include "PriorityConfig.h"
-
-using namespace std;
-
-
 #define EV 1      ////*Emergency vehicle: will have two split phases requests and priority as 1
 #define TRANSIT 2 ////*Transit bus: will have one request and priority as 2
 #define TRUCK 3
@@ -45,9 +26,9 @@ extern double dCurrentTimeInCycle;
 //----------------------------------------------------------------------------------------------//
 int FindInReqList(LinkedList <ReqEntry> ReqList, ReqEntry TestEntry);
 
-void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]);
+void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int&, int CombinedPhase[]);
 
-void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int IsCombined = 0);
+void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int, int IsCombined = 0);
 
 void PrintList(LinkedList <ReqEntry> &ReqList);
 
@@ -56,14 +37,14 @@ int getCurrentFlagInReqFile(const char *filename);
 
 int ReqListFromFile(char *filename, LinkedList <ReqEntry> &Req_List);
 
-int FindSplitPhase(int phase, int phaseStatus[8]);
+int FindSplitPhase(int phase, int phaseStatus[8], int CombinedPhase[]);
 
 int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &);
 
-void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List);
+void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &);
 
 int currentFlagInRequestFile(char *filename);
