@@ -1,0 +1,26 @@
+{
+	"MmitssDriverModelConfig" : 
+	{
+		"CorridorOrigin" : 
+		{
+			"Altitude_Meter" : 751.35,
+			"Latitude" : 
+			{
+				"Degree" : 32.0,
+				"Minute" : 13.0,
+				"Second" : 54.32
+			},
+			"Longitude" : 
+			{
+				"Degree" : -110.0,
+				"Minute" : -57.0,
+				"Second" : -10.5
+			}
+		},
+		"ClientComputer" : 
+		{
+			"IP" : "10.254.56.49",
+			"Port" : 5050
+		}
+	}
+}
