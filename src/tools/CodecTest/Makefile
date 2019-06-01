@@ -2,6 +2,7 @@
 
 BUILD_ROOT       := ../../../3rdparty
 J2735_DIR     := $(BUILD_ROOT)/asn1j2735
+JSONCPP_DIR     := $(BUILD_ROOT)/jsoncpp
 J2735_SO_DIR    := $(J2735_DIR)/lib
 
 OBJ_DIR       := obj
@@ -15,7 +16,7 @@ C++FLAGS  := -std=c++11 -Wconversion $(CFLAGS)
 
 OBJS   := $(patsubst src/%.cpp,obj/%.o,$(wildcard src/*.cpp))
 TARGET := $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMEncoder
-ADDINC := -I$(J2735_DIR)/include
+ADDINC := -I$(J2735_DIR)/include -I$(JSONCPP_DIR)/include
 LINKSO := -Wl,-rpath=../$(J2735_SO_DIR) -L$(J2735_SO_DIR) -ldsrc -lasn
 
 all: $(OBJ_DIR) $(OBJS) $(TARGET)
@@ -27,10 +28,10 @@ $(OBJ_DIR)/%.o: src/%.cpp
 	$(C++) $(C++FLAGS) $(ADDINC) -c -o $@ $<
 
 $(OBJ_DIR)/BSMEncoder: $(OBJ_DIR)/BSMEncoder.o
-	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMEncoder $(OBJ_DIR)/BSMEncoder.o $(LINKSO)
+	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMEncoder $(OBJ_DIR)/BSMEncoder.o $(OBJ_DIR)/jsoncpp.o $(LINKSO)
 
 $(OBJ_DIR)/BSMDecoder: $(OBJ_DIR)/BSMDecoder.o
-	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMDecoder.o $(LINKSO)
+	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMDecoder.o $(OBJ_DIR)/jsoncpp.o $(LINKSO)
 
 clean:
 	rm -f $(OBJS) $(TARGET)

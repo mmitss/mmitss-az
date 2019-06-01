@@ -24,9 +24,10 @@
 #include <string.h> 
 #include <arpa/inet.h> 
 
+#include "json.h"
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include <jsoncpp/json/json.h>
+
 
 
 void logMsgHex(std::ofstream& OS, const uint8_t* buf, size_t size)

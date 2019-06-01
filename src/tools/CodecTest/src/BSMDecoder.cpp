@@ -12,7 +12,7 @@
  *
  */
 
-#include <jsoncpp/json/json.h>
+
 #include <cstddef>
 #include <cstdlib>
 #include <fstream>
@@ -28,7 +28,7 @@
 #include <string.h>
 #include <arpa/inet.h> 
 
-
+#include "json.h"
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
 
