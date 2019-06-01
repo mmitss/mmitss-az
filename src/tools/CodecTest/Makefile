@@ -1,8 +1,8 @@
 # Makefile for 'tools' directory
 
-BUILD_ROOT    := ../../../3rdparty
-J2735_DIR     := $(BUILD_ROOT)/asn1j2735
-JSONCPP_DIR   := $(BUILD_ROOT)/jsoncpp
+THIRDPARTY_ROOT := ../../../3rdparty
+J2735_DIR     := $(THIRDPARTY_ROOT)/asn1j2735
+JSONCPP_DIR   := $(THIRDPARTY_ROOT)/jsoncpp
 JSONCPP_LIB   := $(JSONCPP_DIR)/lib
 J2735_SO_DIR  := $(J2735_DIR)/lib
 
@@ -10,10 +10,10 @@ OBJ_DIR       := obj
 LIB_DIR       := lib
 
 # compiler flags
-C++       := g++
-LOCAL_INCL    := -I/usr/include -Iinclude
-CFLAGS    := -Wall -W -Wshadow -Wcast-qual -Wwrite-strings -O3 -fno-strict-aliasing -fPIC $(LOCAL_INCL)
-C++FLAGS  := -std=c++11 -Wconversion $(CFLAGS)
+C++        := g++
+LOCAL_INCL := -I/usr/include -Iinclude
+CFLAGS     := -Wall -W -Wshadow -Wcast-qual -Wwrite-strings -O3 -fno-strict-aliasing -fPIC $(LOCAL_INCL)
+C++FLAGS   := -std=c++11 -Wconversion $(CFLAGS)
 
 OBJS   := $(patsubst src/%.cpp,obj/%.o,$(wildcard src/*.cpp))
 TARGET := $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMEncoder
@@ -29,10 +29,9 @@ $(OBJ_DIR)/%.o: src/%.cpp
 	$(C++) $(C++FLAGS) $(ADDINC) -c -o $@ $<
 
 $(OBJ_DIR)/BSMEncoder: $(OBJ_DIR)/BSMEncoder.o
-	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMEncoder $(OBJ_DIR)/BSMEncoder.o $(LINKLIBS) #$(OBJ_DIR)/jsoncpp.o 
-
+	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMEncoder $(OBJ_DIR)/BSMEncoder.o $(LINKLIBS) 
+ 
 $(OBJ_DIR)/BSMDecoder: $(OBJ_DIR)/BSMDecoder.o
-	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMDecoder.o $(LINKLIBS) #$(OBJ_DIR)/jsoncpp.o
-
+	$(C++) $(C++FLAGS) -o $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMDecoder.o $(LINKLIBS)  
 clean:
 	rm -f $(OBJS) $(TARGET)
