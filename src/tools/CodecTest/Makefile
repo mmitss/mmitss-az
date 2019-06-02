@@ -16,9 +16,9 @@ LIB_DIR       := lib
 C++         := g++
 LOCAL_INCL  := -I/usr/include -Iinclude
 DEBUG_FLAGS := -O0 -g
-C++FLAGS    := -Wall -Wextra -W -Wshadow -Wcast-qual -Wwrite-strings -Wconversion -fPIC $(DEBUG_FLAGS) $(LOCAL_INCL)
+C++FLAGS    := -Wall -Wextra -W -Wshadow -Wcast-qual -Wwrite-strings -Wconversion $(DEBUG_FLAGS) $(LOCAL_INCL)
 ADD_INCL    := -I$(J2735_INCL) -I$(JSONCPP_INCL)
-LINKLIBS    := -Wl,-rpath=../$(J2735_SO_DIR) -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -ldsrc -lasn -ljsoncpp
+LINKLIBS    := -Wl,-rpath=../$(J2735_SO_DIR) -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -ldsrc -lasn -ljsoncpp1_8_4
 
 # to be built
 OBJS        := $(patsubst src/%.cpp,obj/%.o,$(wildcard src/*.cpp))
