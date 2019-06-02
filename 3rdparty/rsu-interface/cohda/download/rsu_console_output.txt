@@ -1,0 +1,366 @@
+root@MK5:/mnt/src# ./cw_rsu41_setup.Leidos.0.sh 
+
+Initial test
+
+Performing manual setup that cannot be accomplished via SNMP
+Assign static ip 192.168.1.127?  Then press yn
+No change in IPv4 address:
+eth0      Link encap:Ethernet  HWaddr 04:e5:48:10:83:b4  
+          inet addr:192.168.1.127  Bcast:192.168.0.255  Mask:255.255.255.0
+          inet6 addr: fe80::6e5:48ff:fe10:83b4/64 Scope:Link
+/opt/cohda/application/rc.local is called with parameter: 'stop'
+[ ok ] Restarting busybox-syslogd (via systemctl): busybox-syslogd.service.
+rc.rsu1609: no process found
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Initializing cgroup subsys cpuacct
+[    0.000000] Linux version 4.1.15 (duser@ubuntu) (gcc version 5.4.0 20160609 (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) ) #1 SMP PREEMPT Mon Apr 1 12:35:27 PDT 2019
+[    0.000000] CPU: ARMv7 Processor [412fc09a] revision 10 (ARMv7), cr=10c53c7d
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing instruction cache
+[    0.000000] Machine model: MK5 carrier board i.MX6SDL Board
+[    0.000000] Memory policy: Data cache writealloc
+[    0.000000] On node 0 totalpages: 262144
+[    0.000000] free_area_init_node: node 0, pgdat 80852b40, node_mem_map bf7f8000
+[    0.000000]   Normal zone: 2048 pages used for memmap
+[    0.000000]   Normal zone: 0 pages reserved
+[    0.000000]   Normal zone: 262144 pages, LIFO batch:31
+[    0.000000] PERCPU: Embedded 12 pages/cpu @bf7c1000 s17036 r8192 d23924 u49152
+[    0.000000] pcpu-alloc: s17036 r8192 d23924 u49152 alloc=12*4096
+[    0.000000] pcpu-alloc: [0] 0 [0] 1 
+[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 260096
+[    0.000000] Kernel command line: console=ttymxc0,115200 root=/dev/disk/by-path/platform-219c000.usdhc-part5 readonly image=image-a --no-log video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24 dmfc=3 consoleblank=0
+[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+[    0.000000] Memory: 1027812K/1048576K available (5867K kernel code, 277K rwdata, 2052K rodata, 292K init, 392K bss, 20764K reserved, 0K cma-reserved)
+[    0.000000] Virtual kernel memory layout:
+                   vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+                   fixmap  : 0xffc00000 - 0xfff00000   (3072 kB)
+                   vmalloc : 0xc0800000 - 0xff000000   (1000 MB)
+                   lowmem  : 0x80000000 - 0xc0000000   (1024 MB)
+                   modules : 0x7f000000 - 0x80000000   (  16 MB)
+                     .text : 0x80008000 - 0x807c40d8   (7921 kB)
+                     .init : 0x807c5000 - 0x8080e000   ( 292 kB)
+                     .data : 0x8080e000 - 0x80853760   ( 278 kB)
+                      .bss : 0x80853760 - 0x808b57e0   ( 393 kB)
+[    0.000000] Preemptible hierarchical RCU implementation.
+[    0.000000] 	RCU restricting CPUs from NR_CPUS=4 to nr_cpu_ids=2.
+[    0.000000] RCU: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=2
+[    0.000000] NR_IRQS:16 nr_irqs:16 16
+[    0.000000] L2C-310 erratum 769419 enabled
+[    0.000000] L2C-310 enabling early BRESP for Cortex-A9
+[    0.000000] L2C-310 full line of zeros enabled for Cortex-A9
+[    0.000000] L2C-310 ID prefetch enabled, offset 16 lines
+[    0.000000] L2C-310 dynamic clock gating enabled, standby mode enabled
+[    0.000000] L2C-310 cache controller enabled, 16 ways, 512 kB
+[    0.000000] L2C-310: CACHE_ID 0x410000c8, AUX_CTRL 0x76050001
+[    0.000000] mxc_clocksource_init 3000000
+[    0.000000] Switching to timer-based delay loop, resolution 333ns
+[    0.000006] sched_clock: 32 bits at 3000kHz, resolution 333ns, wraps every 715827882841ns
+[    0.000020] clocksource mxc_timer1: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 637086815595 ns
+[    0.000979] Console: colour dummy device 80x30
+[    0.000991] Calibrating delay loop (skipped), value calculated using timer frequency.. 6.00 BogoMIPS (lpj=30000)
+[    0.001003] pid_max: default: 32768 minimum: 301
+[    0.001128] Mount-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.001137] Mountpoint-cache hash table entries: 2048 (order: 1, 8192 bytes)
+[    0.001671] Initializing cgroup subsys blkio
+[    0.001685] Initializing cgroup subsys devices
+[    0.001696] Initializing cgroup subsys freezer
+[    0.001718] CPU: Testing write buffer coherency: ok
+[    0.001969] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+[    0.002047] Setting up static identity map for 0x10008280 - 0x100082d8
+[    0.060173] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+[    0.060252] Brought up 2 CPUs
+[    0.060263] SMP: Total of 2 processors activated (12.00 BogoMIPS).
+[    0.060268] CPU: All CPU(s) started in SVC mode.
+[    0.060697] devtmpfs: initialized
+[    0.068628] VFP support v0.3: implementor 41 architecture 3 part 30 variant 9 rev 4
+[    0.068953] clocksource jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+[    0.069307] pinctrl core: initialized pinctrl subsystem
+[    0.070248] NET: Registered protocol family 16
+[    0.071005] DMA: preallocated 256 KiB pool for atomic coherent allocations
+[    0.099713] cpuidle: using governor ladder
+[    0.129710] cpuidle: using governor menu
+[    0.129829] CPU identified as i.MX6DL, silicon rev 1.2
+[    0.149874] Detected MK5 PCB version 2
+[    0.149884] Detected MK5 PCB load    5
+[    0.149937] hw-breakpoint: found 5 (+1 reserved) breakpoint and 1 watchpoint registers.
+[    0.149946] hw-breakpoint: maximum watchpoint size is 4 bytes.
+[    0.151430] imx6dl-pinctrl 20e0000.iomuxc: initialized IMX pinctrl driver
+[    0.153282] imx-gpc 20dc000.gpc: no fsl,ldo-bypass found!
+[    0.183165] mxs-dma 110000.dma-apbh: initialized
+[    0.188370] SCSI subsystem initialized
+[    0.188701] usbcore: registered new interface driver usbfs
+[    0.188783] usbcore: registered new interface driver hub
+[    0.188924] usbcore: registered new device driver usb
+[    0.190105] i2c i2c-0: IMX I2C adapter registered
+[    0.190128] i2c i2c-0: can't use DMA
+[    0.190849] i2c i2c-2: IMX I2C adapter registered
+[    0.190865] i2c i2c-2: can't use DMA
+[    0.191121] pps_core: LinuxPPS API ver. 1 registered
+[    0.191130] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.191173] PTP clock support registered
+[    0.209784] imx-ipuv3 2400000.ipu: IPU DMFC ONLY-DP HIGH RESOLUTION: 5B(0~3), 5F(4~7)
+[    0.211192] Advanced Linux Sound Architecture Driver Initialized.
+[    0.213176] Switched to clocksource mxc_timer1
+[    0.225374] NET: Registered protocol family 2
+[    0.226230] TCP established hash table entries: 8192 (order: 3, 32768 bytes)
+[    0.226312] TCP bind hash table entries: 8192 (order: 4, 65536 bytes)
+[    0.226442] TCP: Hash tables configured (established 8192 bind 8192)
+[    0.226525] UDP hash table entries: 512 (order: 2, 16384 bytes)
+[    0.226576] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes)
+[    0.226879] NET: Registered protocol family 1
+[    0.227383] RPC: Registered named UNIX socket transport module.
+[    0.227391] RPC: Registered udp transport module.
+[    0.227398] RPC: Registered tcp transport module.
+[    0.227404] RPC: Registered tcp NFSv4.1 backchannel transport module.
+[    0.227714] Trying to unpack rootfs image as initramfs...
+[    0.402048] Freeing initrd memory: 2588K (bf2e1000 - bf568000)
+[    0.402553] CPU PMU: Failed to parse /soc/pmu/interrupt-affinity[0]
+[    0.402615] hw perfevents: enabled with armv7_cortex_a9 PMU driver, 7 counters available
+[    0.405322] Bus freq driver module loaded
+[    0.406667] futex hash table entries: 512 (order: 3, 32768 bytes)
+[    0.406847] audit: initializing netlink subsys (disabled)
+[    0.406917] audit: type=2000 audit(0.400:1): initialized
+[    0.408436] VFS: Disk quotas dquot_6.6.0
+[    0.408545] VFS: Dquot-cache hash table entries: 1024 (order 0, 4096 bytes)
+[    0.409142] squashfs: version 4.0 (2009/01/31) Phillip Lougher
+[    0.409594] NFS: Registering the id_resolver key type
+[    0.409644] Key type id_resolver registered
+[    0.409652] Key type id_legacy registered
+[    0.410061] fuse init (API version 7.23)
+[    0.412331] io scheduler noop registered
+[    0.412347] io scheduler deadline registered (default)
+[    0.414776] imx-sdma 20ec000.sdma: no iram assigned, using external mem
+[    0.414893] imx-sdma 20ec000.sdma: no event needs to be remapped
+[    0.415162] imx-sdma 20ec000.sdma: loaded firmware 3.3
+[    0.418073] imx-sdma 20ec000.sdma: initialized
+[    0.419844] pfuze100-regulator 2-0008: Full layer: 2, Metal layer: 1
+[    0.420387] pfuze100-regulator 2-0008: FAB: 0, FIN: 0
+[    0.420398] pfuze100-regulator 2-0008: pfuze100 found.
+[    0.434532] 2020000.serial: ttymxc0 at MMIO 0x2020000 (irq = 26, base_baud = 5000000) is a IMX
+[    0.985912] console [ttymxc0] enabled
+[    0.989542] 21ec000.serial: ttymxc2 at MMIO 0x21ec000 (irq = 295, base_baud = 5000000) is a IMX
+[    0.997688] 21f0000.serial: ttymxc3 at MMIO 0x21f0000 (irq = 296, base_baud = 5000000) is a IMX
+[    1.005776] 21f4000.serial: ttymxc4 at MMIO 0x21f4000 (irq = 297, base_baud = 5000000) is a IMX
+[    1.026281] brd: module loaded
+[    1.034212] loop: module loaded
+[    1.037790] spi_imx 200c000.ecspi: probed
+[    1.041799] spi_imx 2014000.ecspi: probed
+[    1.047302] 2188000.ethernet supply phy not found, using dummy regulator
+[    1.063816] pps pps0: new PPS source ptp0
+[    1.076951] libphy: fec_enet_mii_bus: probed
+[    1.080641] fec 2188000.ethernet eth0: registered PHC device 0
+[    1.086026] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.091279] ehci-mxc: Freescale On-Chip EHCI Host driver
+[    1.097464] 2184800.usbmisc supply vbus-wakeup not found, using dummy regulator
+[    1.110873] 2184200.usb supply vbus not found, using dummy regulator
+[    1.119446] ci_hdrc ci_hdrc.1: EHCI Host Controller
+[    1.123400] ci_hdrc ci_hdrc.1: new USB bus registered, assigned bus number 1
+[    1.143222] ci_hdrc ci_hdrc.1: USB 2.0 started, EHCI 1.00
+[    1.148410] hub 1-0:1.0: USB hub found
+[    1.150925] hub 1-0:1.0: 1 port detected
+[    1.155992] mousedev: PS/2 mouse device common for all mice
+[    1.162126] snvs_rtc 20cc000.snvs:snvs-rtc-lp: rtc core: registered 20cc000.snvs:snvs-r as rtc0
+[    1.169857] i2c /dev entries driver
+[    1.174623] imx2-wdt 20bc000.wdog: timeout 60 sec (nowayout=0)
+[    1.179789] sdhci: Secure Digital Host Controller Interface driver
+[    1.184718] sdhci: Copyright(c) Pierre Ossman
+[    1.187790] sdhci-pltfm: SDHCI platform and OF driver helper
+[    1.193400] /soc/aips-bus@02100000/usdhc@02198000: voltage-ranges unspecified
+[    1.199266] sdhci-esdhc-imx 2198000.usdhc: could not get ultra high speed state, work on normal mode
+[    1.207175] sdhci-esdhc-imx 2198000.usdhc: Got CD GPIO
+[    1.255565] mmc2: SDHCI controller on 2198000.usdhc [2198000.usdhc] using ADMA
+[    1.272810] /soc/aips-bus@02100000/usdhc@0219c000: voltage-ranges unspecified
+[    1.278756] sdhci-esdhc-imx 219c000.usdhc: could not get ultra high speed state, work on normal mode
+[    1.333243] mmc3: SDHCI controller on 219c000.usdhc [219c000.usdhc] using ADMA
+[    1.340832] mxc_vdoa 21e4000.vdoa: i.MX Video Data Order Adapter(VDOA) driver probed
+[    1.349121] ledtrig-cpu: registered to indicate activity on CPUs
+[    1.356291] caam 2100000.caam: Entropy delay = 3200
+[    1.405489] caam 2100000.caam: Instantiated RNG4 SH0
+[    1.451056] caam 2100000.caam: Instantiated RNG4 SH1
+[    1.454778] caam 2100000.caam: device ID = 0x0a16010000000100 (Era -524)
+[    1.460219] caam 2100000.caam: job rings = 2, qi = 0
+[    1.492066] mmc2: host does not support reading read-only switch, assuming write-enable
+[    1.506468] mmc2: new high speed SDHC card at address aaaa
+[    1.511285] mmcblk2: mmc2:aaaa SL16G 14.8 GiB 
+[    1.519694]  mmcblk2: p1
+[    1.549708] caam algorithms registered in /proc/crypto
+[    1.570219] caam_jr 2101000.jr0: registering rng-caam
+[    1.574900] usbcore: registered new interface driver usbhid
+[    1.579221] usbhid: USB HID core driver
+[    1.586297] wm8903 2-001a: Failed to read chip ID: -5
+[    1.590174] wm8903: probe of 2-001a failed with error -5
+[    1.596917] fsl-hdmi-dai soc:hdmi_audio@00120000: failed to probe. Load HDMI-video first.
+[    1.604018] fsl-hdmi-dai: probe of soc:hdmi_audio@00120000 failed with error -12
+[    1.611635] imx-audio-hdmi sound-hdmi: initialize HDMI-audio failed. load HDMI-video first!
+[    1.618996] nf_conntrack version 0.5.0 (16100 buckets, 64400 max)
+[    1.624867] NET: Registered protocol family 10
+[    1.629486] sit: IPv6 over IPv4 tunneling driver
+[    1.633849] NET: Registered protocol family 17
+[    1.637093] mmc3: MAN_BKOPS_EN bit is not set
+[    1.637148] 8021q: 802.1Q VLAN Support v1.8
+[    1.637214] Key type dns_resolver registered
+[    1.652987] snvs_rtc 20cc000.snvs:snvs-rtc-lp: setting system clock to 2019-05-31 16:54:18 UTC (1559321658)
+[    1.673778] mmc3: new DDR MMC card at address 0001
+[    1.675234] can2_stby: disabling
+[    1.675243] can2_en: disabling
+[    1.675250] can1_stby: disabling
+[    1.675255] can1_en: disabling
+[    1.675264] usb_otg_vbus: disabling
+[    1.675653] ALSA device list:
+[    1.675658]   No soundcards found.
+[    1.691204] mmcblk3: mmc3:0001 W62704 3.56 GiB 
+[    1.691359] Freeing unused kernel memory: 292K (807c5000 - 8080e000)
+[    1.699953] mmcblk3boot0: mmc3:0001 W62704 partition 1 2.00 MiB
+[    1.705538] mmcblk3boot1: mmc3:0001 W62704 partition 2 2.00 MiB
+[    1.711152] mmcblk3rpmb: mmc3:0001 W62704 partition 3 512 KiB
+[    1.718594]  mmcblk3: p1 p2 p3 p4 < p5 p6 >
+[    1.810120] udevd[146]: starting version 175
+[    2.783444] EXT4-fs (mmcblk3p5): mounted filesystem with ordered data mode. Opts: (null)
+[    3.448854] random: systemd urandom read with 27 bits of entropy available
+[    3.461193] systemd[1]: systemd 229 running in system mode. (+PAM +AUDIT +SELINUX +IMA +APPARMOR +SMACK +SYSVINIT +UTMP +LIBCRYPTSETUP +GCRYPT +GNUTLS +ACL +XZ -LZ4 +SECCOMP +BLKID +ELFUTILS +KMOD -IDN)
+[    3.478826] systemd[1]: Detected architecture arm.
+[    3.516372] systemd[1]: Set hostname to <MK5>.
+[    3.803571] systemd[1]: Reached target Encrypted Volumes.
+[    3.823875] systemd[1]: Listening on /dev/initctl Compatibility Named Pipe.
+[    3.853638] systemd[1]: Listening on udev Kernel Socket.
+[    3.873792] systemd[1]: Started Forward Password Requests to Wall Directory Watch.
+[    3.903649] systemd[1]: Listening on udev Control Socket.
+[    3.924574] systemd[1]: Listening on Journal Socket.
+[    3.944680] systemd[1]: Created slice User and Session Slice.
+[    3.964428] systemd[1]: Started Dispatch Password Requests to Console Directory Watch.
+[    3.993736] systemd[1]: Reached target Paths.
+[    4.014418] systemd[1]: Created slice System Slice.
+[    4.034686] systemd[1]: Created slice system-getty.slice.
+[    4.063521] systemd[1]: Starting Nameserver information manager...
+[    4.088823] systemd[1]: Starting Load Kernel Modules...
+[    4.115888] systemd[1]: Starting Uncomplicated firewall...
+[    4.147146] systemd[1]: Mounting Debug File System...
+[    4.166955] systemd[1]: Mounting POSIX Message Queue File System...
+[    4.204358] systemd[1]: Reached target Slices.
+[    4.224060] systemd[1]: Created slice system-serial\x2dgetty.slice.
+[    4.247570] systemd[1]: Starting Create list of required static device nodes for the current kernel...
+[    4.277150] systemd[1]: Starting Remount Root and Kernel File Systems...
+[    4.304188] systemd[1]: Started Trigger resolvconf update for networkd DNS.
+[    4.333997] systemd[1]: Listening on Journal Audit Socket.
+[    4.353567] systemd[1]: Reached target Remote File Systems (Pre).
+[    4.373440] systemd[1]: Reached target Remote File Systems.
+[    4.393438] systemd[1]: Reached target Swap.
+[    4.414597] systemd[1]: tmp.mount: Directory /tmp to mount over is not empty, mounting anyway.
+[    4.427474] systemd[1]: Mounting Temporary Directory...
+[    4.453731] systemd[1]: Listening on Journal Socket (/dev/log).
+[    4.477106] systemd[1]: Starting Journal Service...
+[    4.502757] systemd[1]: Mounted Debug File System.
+[    4.531944] systemd[1]: Mounted POSIX Message Queue File System.
+[    4.553739] systemd[1]: Mounted Temporary Directory.
+[    4.577621] systemd[1]: systemd-modules-load.service: Main process exited, code=exited, status=1/FAILURE
+[    4.607577] systemd[1]: Failed to start Load Kernel Modules.
+[    4.653465] systemd[1]: systemd-modules-load.service: Unit entered failed state.
+[    4.660406] systemd[1]: systemd-modules-load.service: Failed with result 'exit-code'.
+[    4.669060] systemd[1]: Started Uncomplicated firewall.
+[    4.696084] systemd[1]: Started Create list of required static device nodes for the current kernel.
+[    4.724852] systemd[1]: Started Remount Root and Kernel File Systems.
+[    4.757568] systemd[1]: Started Nameserver information manager.
+[    4.787096] systemd[1]: Started Journal Service.
+[    5.458886] systemd-journald[396]: Received request to flush runtime journal from PID 1
+[    6.555856] CAN device driver interface
+[    6.557751] can1_stby: supplied by can1_en
+[    6.559068] flexcan 2090000.flexcan: device registered (reg_base=c0c78000, irq=30)
+[    6.559346] can2_stby: supplied by can2_en
+[    6.560478] flexcan 2094000.flexcan: device registered (reg_base=c0c80000, irq=31)
+[    6.636114] mxc_vpu 2040000.vpu_fsl: VPU initialized
+[    6.660137] pps pps1: new PPS source PPS_GPIO
+[    6.971749] EXT4-fs (mmcblk3p5): re-mounted. Opts: (null)
+[    6.989409] EXT4-fs (mmcblk3p6): mounted filesystem with ordered data mode. Opts: (null)
+[    7.617451] kjournald starting.  Commit interval 5 seconds
+[    7.621811] EXT3-fs (mmcblk2p1): using internal journal
+[    7.621826] EXT3-fs (mmcblk2p1): mounted filesystem with ordered data mode
+[    8.926217] using random self ethernet address
+[    8.926236] using random host ethernet address
+[    8.926251] using self ethernet address: 04:E5:48:10:83:B5
+[    8.927196] usb0: HOST MAC 5a:fe:e0:9a:a9:75
+[    8.927259] usb0: MAC 04:e5:48:10:83:b5
+[    8.927300] using random self ethernet address
+[    8.927309] using random host ethernet address
+[    8.927380] g_ether gadget: Ethernet Gadget, version: Memorial Day 2008
+[    8.927389] g_ether gadget: g_ether ready
+[    8.973747] SAF5x00_Probe: (pSPI bc83be00 pDrv 7f089d60)
+[    9.003490] SAF5x00_Probe FNEND: ()
+[    9.045683] LLC_USBOutReq: USB device not present
+[    9.049133] LLC_USBOutReq: USB device not present
+[    9.052549] LLC_USBOutReq: USB device not present
+[    9.073557] usbcore: registered new interface driver cw-llc
+[    9.176151] LLC_USBOutReq: USB device not present
+[    9.179594] LLC_USBOutReq: USB device not present
+[    9.183028] LLC_USBOutReq: USB device not present
+[    9.413281] usb 1-1: new high-speed USB device number 2 using ci_hdrc
+[   10.849101] IPv6: ADDRCONF(NETDEV_UP): usb0: link is not ready
+[   11.033513] fec 2188000.ethernet eth0: Freescale FEC PHY driver [Generic PHY] (mii_bus:phy_addr=2188000.ethernet:01, irq=-1)
+[   11.033992] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   14.034006] fec 2188000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+[   14.034085] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   21.003313] usb 1-1: reset high-speed USB device number 2 using ci_hdrc
+[   21.153454] usb 1-1: device firmware changed
+[   21.153975] usb 1-1: USB disconnect, device number 2
+[   21.283257] usb 1-1: new high-speed USB device number 3 using ci_hdrc
+[   21.436852] LLC_USBInterfaceProbe: MKx now attached to USB as device 0
+[   21.442076] LLC_USBInterfaceProbe: Successfully attached to LLC USB device 2
+[   22.443316] LLC_USBOutReq: down_timeout(): -62
+[   23.443280] LLC_USBOutReq: down_timeout(): -62
+[   23.483267] device cw-llc0 entered promiscuous mode
+[   24.443269] LLC_USBOutReq: down_timeout(): -62
+[   24.446598] LLC_USBInWorkCallback: LLC_MsgRecv()= -22
+[   24.888691] ieee1609gnl: module license 'Proprietary' taints kernel.
+[   24.888708] Disabling lock debugging due to kernel taint
+[   24.946369] LLC_USBOutReq: USB device not present
+[   24.949821] LLC_USBOutReq: USB device not present
+[   24.975458] LLC_USBOutReq: USB device not present
+[   25.305378] NET: Registered protocol family 22
+[   29.349528] EXT4-fs (mmcblk3p5): re-mounted. Opts: (null)
+[   44.562531] audit: *NO* daemon at audit_pid=1528
+[   44.565896] audit: audit_lost=1 audit_rate_limit=0 audit_backlog_limit=64
+[   44.565913] audit: auditd disappeared
+[   44.824433] [7f155c84]: Dot3_WMEUpdateWSA ERROR: PSID not found in WSA - 1615
+[   45.023992] ip_tables: (C) 2000-2006 Netfilter Core Team
+adding the following line to /var/lib/snmp/snmpd.conf:
+   createUser rsu SHA "rsuadmin" AES rsuadmin
+adding the following line to /etc/snmp/snmpd.conf:
+   rwuser rsu
+/opt/cohda/application/rc.local is called with parameter: 'start'
+[ ok ] Restarting busybox-syslogd (via systemctl): busybox-syslogd.service.
+[ ok ] Restarting busybox-syslogd (via systemctl): busybox-syslogd.service.
+[ ok ] Stopping busybox-syslogd (via systemctl): busybox-syslogd.service.
+pcilib: Cannot open /proc/bus/pci
+
+Starting RSU Application...
+Reading app configuration from /mnt/./rw/rsu1609/conf/rsu.cfg...
+Reading stack configuration from /mnt/./rw/rsu1609/conf/stack.conf...
+Reading user configuration from /mnt/./rw/rsu1609/conf/user.conf...
+Initialising and starting stack components...
+Conf: /mnt/./rw/rsu1609/conf/stack.conf opened
+Conf: /mnt/./rw/rsu1609/conf/user.conf opened
+Logging to "/mnt/src/log"
+Log directory is /mnt/src/log/2019.0531.1708_C04E5481083B4-0000_2148
+LOG_RedirectUDP FNEND: (2,<NULL>,0): UDP_OpenPort FAIL
+libPlat Init...
+lib1609Fac Init...
+lib1609Fac Exit...
+libPlat Exit...
+/mnt/src
+
+sleep 10 after restart
+Error in packet.
+Reason: notWritable (That object does not support modification)
+Failed object: RSU-MIB::rsuMode.0
+
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+Waiting for confirmation...
+

@@ -1,0 +1,179 @@
+#!/bin/sh
+
+# 2019-04-16 ddk
+# Cleans memory, deleting 'image-b' and updating 'factory' and 'image-a'
+# Clears deprecated environment variables
+# Auto-runs from root of microSD card
+
+if [ $# != "1" ] ; then
+    echo "Please supply an argument for rc scripts, ie '$0 start'"
+    exit 0
+fi
+
+#set -x
+IMG_ACTIVE_RUNNING=$(fim -l | grep AR | cut -c 9-15)
+IMG_FACTORY=$(fim -l | grep "factory" | grep -o 'mk.-\S*' | sed 's/sqsh/img/')
+IMG_IMAGE_A=$(fim -l | grep "image-a" | grep -o 'mk.-\S*' | sed 's/sqsh/img/')
+IMG_IMAGE_B=$(fim -l | grep "image-b" | grep -o 'mk.-\S*' | sed 's/sqsh/img/')
+FILESYSTEM_USAGE_PERCENT=$(df /mnt/ro/ | tail -1 | awk '$0=substr($0,index($0,"%")-2,2)')
+
+
+DST_DIR="/mnt/rw/"
+SRC_DIR="/mnt/src/"
+
+CURRENT_IMAGE=$(fim -l | grep "AR " | grep -o 'mk.-\S*' | sed 's/sqsh/img/')
+DESIRED_IMAGE=$(cd /mnt/src/; ls -t mk?-*.img 2>/dev/null | head -n 1)
+
+MY_SCRIPT=$(readlink -f $0)
+MY_SCRIPT_RENAMED="$MY_SCRIPT".complete
+
+GPS_VAR=$(fw_printenv gps 2</dev/null | cut -d '=' -f2)
+SN_RANGE8=$(fw_printenv serial | cut -c 11-18)
+SN_RANGE9=$(fw_printenv serial | cut -c 11-19)
+
+do_LEDs_Orange()
+{
+  echo "Setting FLT & PWR LEDs to 'Orange'"
+  echo 1 > /sys/class/leds/FLT_Red/brightness
+  echo 0 > /sys/class/leds/FLT_Green/brightness
+  echo 1 > /sys/class/leds/PWR_Red/brightness
+  echo 0 > /sys/class/leds/PWR_Green/brightness
+
+  #Delay to allow user to observe LEDs
+  sleep 3
+}
+
+do_clear_env()
+{
+  fw_setenv dot4_antenna_override
+  fw_setenv gps_module
+  fw_setenv gps_rate
+}
+
+do_set_env()
+{
+  if [ "$GPS_VAR" == "ub8" -o "$GPS_VAR" == "" ]; then
+
+    #9 digit SN ranges, M8N
+    if [   "$SN_RANGE9" == "04E548200" ]; then
+      fw_setenv gps ub8n_gn_5hz
+    elif [ "$SN_RANGE9" == "04E548210" ]; then
+      fw_setenv gps ub8n_gn_5hz
+    elif [ "$SN_RANGE9" == "04E548211" ]; then
+      fw_setenv gps ub8n_gn_5hz
+
+    #8 digit SN ranges, M8N
+    elif [ "$SN_RANGE8" == "04E54801" ]; then
+      fw_setenv gps ub8n_gn_5hz
+    elif [ "$SN_RANGE8" == "04E54803" ]; then
+      fw_setenv gps ub8n_gn_5hz
+    elif [ "$SN_RANGE8" == "04E54810" ]; then
+      fw_setenv gps ub8n_gn_5hz
+    elif [ "$SN_RANGE8" == "04E54811" ]; then
+      fw_setenv gps ub8n_gn_5hz
+
+    #8 digit SN ranges, M8U
+    elif [ "$SN_RANGE8" == "04E54820" ]; then
+      fw_setenv gps ub8u_gn_10hz
+    elif [ "$SN_RANGE8" == "04E54821" ]; then
+      fw_setenv gps ub8u_gn_10hz
+    elif [ "$SN_RANGE8" == "04E54822" ]; then
+      fw_setenv gps ub8u_gn_10hz
+    else
+      echo "Unexpected serial number range"
+    fi
+  fi
+
+  GPS_VAR=$(fw_printenv gps 2</dev/null | cut -d '=' -f2)
+  echo "'fw_printenv gps' now returns '$GPS_VAR'"    
+}
+
+do_run_once()
+{
+  mv "$MY_SCRIPT" "$MY_SCRIPT_RENAMED"
+  sync; sync
+  echo "REBOOTING NOW ...."
+  reboot
+}
+
+do_clean_dirs()
+{
+  cd $DST_DIR 
+  ls -A $DST_DIR | grep -Ev 'image|ssh' | xargs rm -rf
+  rm -rf /mnt/src/log/; mkdir /mnt/src/log; ln -s /mnt/src/log/ $DST_DIR/log; sync;
+}
+
+do_check_health()
+{
+  if [ $FILESYSTEM_USAGE_PERCENT -lt "5" ]; then
+    echo "Please recover manually, less than 5% free space in partition '/mnt/ro', exiting now..."
+    exit 0
+  fi
+  echo "File System Usage currently at $FILESYSTEM_USAGE_PERCENT%.  Continuing the reflash process."
+}
+
+
+do_delete_inactive_images()
+{
+  if   [ "$IMG_ACTIVE_RUNNING" == "image-a" ]; then
+    fim -fd image-b
+    fim -fd factory
+  elif [ "$IMG_ACTIVE_RUNNING" == "image-b" ]; then
+    fim -fd image-a
+    fim -fd factory
+  else
+   echo "'fim' did not find an MK5 image marked 'AR', exiting now...."
+   do_run_once
+   exit 0
+  fi
+}
+
+update_factory()
+{ 
+if [ "$IMG_FACTORY" != "$DESIRED_IMAGE" ]; then
+  do_delete_inactive_images
+  do_check_health
+  do_LEDs_Orange
+  do_clean_dirs
+  do_clear_env 
+  do_set_env 
+
+  if [ "$IMG_FACTORY" = "" ]; then
+    echo "OK, maintaining only (1) filesystem, so should have plenty of memory. Now installing factory image"
+    fim -fi factory "$SRC_DIR"/"$DESIRED_IMAGE"
+    echo "Yes" | fim -a factory
+  fi 
+
+  echo "Rebooting..."
+  sync; sync;
+  reboot
+fi
+}
+
+update_image_a()
+{
+if [ "$IMG_ACTIVE_RUNNING" = "factory" ]; then
+  do_check_health
+  do_LEDs_Orange
+  do_clean_dirs
+  do_clear_env 
+  do_set_env 
+  
+  fim -fd image-b  
+  fim -u "$SRC_DIR"/"$DESIRED_IMAGE"
+  echo "Rebooting..."
+  sync; sync;
+  do_run_once
+fi
+} 
+
+# main()
+ case $1 in
+    "start" | "restart")
+       update_factory
+       update_image_a
+    ;;
+    *)
+      ;;
+ esac
+

@@ -1,0 +1,50 @@
+# SVN  : 87588
+# PPID : 3619
+# PID  : 3885
+# epoch: 1558035794
+
+ProtocolMode = 1 # != -1
+SecurityEnable = 0 # != 1
+SendUnsecuredDot2Header = 1 # != 0
+RandMAC = 0 # != 1
+ChannelMode = 1 # != 0
+BSMEnabled = 0 # != 1
+TxALogFileName = RSU_4_1-cw-mon-txa-20190516194257.pcap # tx_r1a.pcap
+TxALogSizeLimit = 40 # != 0
+TxALogTimeLimit = 86400 # != 0
+TxBLogFileName = RSU_4_1-cw-mon-txb-20190516194257.pcap # tx_r1c.pcap
+TxBLogSizeLimit = 40 # != 0
+TxBLogTimeLimit = 86400 # != 0
+RxALogFileName = RSU_4_1-cw-mon-rxa-20190516194257.pcap # rx_r1a.pcap
+RxALogSizeLimit = 40 # != 0
+RxALogTimeLimit = 86400 # != 0
+RxBLogFileName = RSU_4_1-cw-mon-rxb-20190516194257.pcap # rx_r1c.pcap
+RxBLogSizeLimit = 40 # != 0
+RxBLogTimeLimit = 86400 # != 0
+OTALogSizeLimit = 20 # != 0
+OTALogTimeLimit = 86400 # != 0
+Cohda_Syslog_RotateTime = 55 23 * * 7 # 
+Cohda_Syslog_PurgeTime = 10 0 * * 1 # 
+Cohda_Syslog_PurgeAge_hours = 672 # != 0
+WBSS_Service_0_IPAddress = :: # 
+WBSS_Service_0_PSID = 0x0 # != 0xeffffffe
+WBSS_WSA_RepeatRate = 5 # != 50
+WSMFwdRx_Enabled = 1 # != 0
+WSMFwdRx_0_DestIP = fe80::6e5:48ff:fe01:3298 # 
+WSMFwdRx_0_DestPort = 4445 # != 0
+WSMFwdRx_0_PSID = 0x7 # != 0x0
+WSMFwdRx_0_Enabled = 1 # != 0
+WSMFwdRx_1_DestIP = fe80::6e5:48ff:fe01:3298 # 
+WSMFwdRx_1_DestPort = 445 # != 0
+WSMFwdRx_1_PSID = 0x20 # != 0x0
+WSMFwdRx_1_Enabled = 1 # != 0
+Cohda_DebugLevel = 6 # != 4
+Cohda_PCAP_LoggingDisabled = 1 # != 0
+Cohda_LogCaptureSyslog = 1 # != 0
+Cohda_CONFPollingInterval_s = 788400000 # != -1
+Cohda_Crypto_AeroConfigDir = ./aerolink/active # 
+Cohda_Crypto_AeroStateDir = ./aerolink/active # 
+Dot2_MessageContextName = rsu.wsc # 
+Dot2_IdChangeLcmName = wsaLcm # bsmLcm
+PVDM.Enable = 0 # != 1
+PDMM.Broadcast_Period = 1000 # != 100

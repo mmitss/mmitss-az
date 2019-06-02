@@ -1,0 +1,44 @@
+May 16 19:43:15 MK5 syslog.info syslogd started: BusyBox v1.22.1
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - RSU in INITIALISING state
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.3] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.4] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.5] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.6] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.7] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.8] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.9] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.3.10] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward host not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.1] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.2] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.3] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.4] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.5] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.6] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.7] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.8] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.9] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.8.10] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery start not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.1] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.2] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.3] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.4] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.5] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.6] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.7] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.8] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.9] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.7.1.9.10] /mnt/./rw/rsu1609/conf/stack.conf - Message Forward delivery end not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.8.1.2.1] /mnt/./rw/rsu1609/conf/rsu.cfg - GPS Output host not provided - ''
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.14.1.1.1] /mnt/./rw/rsu1609/conf/stack.conf - WRA IP prefix not set
+May 16 19:43:15 MK5 user.info rsu1609[3885]: INFO - [OID 1.0.15628.4.1.14.1.3.1] /mnt/./rw/rsu1609/conf/stack.conf - WRA gateway not set
+May 16 19:43:16 MK5 daemon.err snmpd[3875]: duplicate registration: MIB modules AgentX subagent 8, session 0x4f8310, subsession 0x509800 and AgentX subagent 8, session 0x4f8310, subsession 0x509800 (oid .1.0.15628.4.1.100).
+May 16 19:43:16 MK5 daemon.err snmpd[3875]: duplicate registration: MIB modules AgentX subagent 8, session 0x4f8310, subsession 0x509800 and AgentX subagent 8, session 0x4f8310, subsession 0x509800 (oid .1.0.15628.4.1.100).
+May 16 19:43:16 MK5 daemon.info snmpd[3875]: Connection from UDP: [127.0.0.1]:55568->[127.0.0.1]:161
+May 16 19:43:16 MK5 user.warn rsu1609[3885]: WARNING - eth0 connected
+May 16 19:43:16 MK5 daemon.info snmpd[3875]: Connection from UDP: [127.0.0.1]:46815->[127.0.0.1]:161
+May 16 19:43:16 MK5 user.info rsu1609[3885]: INFO - RSU transitioned to OPERATE state
+May 16 19:44:20 MK5 daemon.info dhclient[1052]: DHCPDISCOVER on eth0 to 255.255.255.255 port 67 interval 3 (xid=0x61be029)
+May 16 19:44:21 MK5 daemon.info dhclient[1052]: DHCPREQUEST of 192.168.1.65 on eth0 to 255.255.255.255 port 67 (xid=0x29e01b06)
+May 16 19:44:21 MK5 daemon.info dhclient[1052]: DHCPOFFER of 192.168.1.65 from 192.168.1.254
+May 16 19:44:21 MK5 daemon.info dhclient[1052]: DHCPACK of 192.168.1.65 from 192.168.1.254
+May 16 19:44:21 MK5 daemon.info dhclient[1052]: bound to 192.168.1.65 -- renewal in 39626 seconds.
