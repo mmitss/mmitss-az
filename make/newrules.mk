@@ -18,6 +18,10 @@ linux: $(TARGET)
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) $(INCLUDES) -c $< -o $@ 
 
+#the executable depends on the .o's so we link
+$(TARGET): $(OBJECTS)
+	$(CPP) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(LIBS)
+
 .PHONY : clean
 clean:
 	rm -f $(TARGET) $(OBJECTS) *.out
