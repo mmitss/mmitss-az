@@ -24,6 +24,11 @@ LINKLIBS    := -Wl,-rpath=../$(J2735_SO_DIR) -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) 
 OBJS        := $(patsubst src/%.cpp,obj/%.o,$(wildcard src/*.cpp))
 TARGET      := $(OBJ_DIR)/BSMDecoder $(OBJ_DIR)/BSMEncoder
 
+# what to build in the form of ....
+#target: prerequisites …
+#(tab)  recipe         ...there must be a tab before the recipe or it will not work
+# 
+#the recipe can be a compiler call or a shell command
 
 all: $(OBJ_DIR) $(OBJS) $(TARGET)
 
