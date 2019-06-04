@@ -1,3 +1,5 @@
+# this file contains the general make rules to be included in module specific makefiles
+
 # what to build in the form of ....
 #
 #target: prerequisites …
