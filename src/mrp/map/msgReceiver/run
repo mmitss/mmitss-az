@@ -1,0 +1,2 @@
+g++ msgReceiver.cpp ../../common/MmitssUdpSocket.cpp -o msgReceiver
+./msgReceiver
