@@ -1,8 +1,8 @@
 # Makefile for 'tools' directory
 
-BUILD_ROOT       := ../../3rdparty
+BUILD_ROOT       := ../../../3rdparty
 J2735_DIR     := $(BUILD_ROOT)/asn1j2735
-MAPENGINE_DIR := $(BUILD_ROOT)/mapEngine
+MAPENGINE_DIR := $(BUILD_ROOT)/mapengine
 J2735_SO_DIR    := $(J2735_DIR)/lib
 MAPENGINE_SO_DIR := $(MAPENGINE_DIR)/lib
 #EXEC_DIR  := $(BUILD_ROOT)/bin
