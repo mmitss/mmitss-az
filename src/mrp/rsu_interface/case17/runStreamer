@@ -1,0 +1,2 @@
+g++ msgStreamer.cpp ../common/MmitssUdpSocket.cpp -o msgStreamer
+./msgStreamer
