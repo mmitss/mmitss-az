@@ -1,0 +1,148 @@
+{
+    "Spat":
+    {
+        "IntersectionState":
+        {
+            "regionalID": 0,
+            "intersectionID": 1003
+        },
+        "msgCnt": 3,
+        "minuteOfYear": 120001,
+        "msOfMinute": 50001,
+        "status": "0000000000000000",
+        "phaseState":
+        [
+            {
+                "phaseNo": 1,
+                "currState": 3,
+                "startTime": 50,
+                "minEndTime": 51,
+                "maxEndTime": 52,
+                "elapsedTime": 54
+            },
+            {
+                "phaseNo": 2,
+                "currState": 3,
+                "startTime": 55,
+                "minEndTime": 56,
+                "maxEndTime": 57,
+                "elapsedTime": 58
+            },
+            {
+                "phaseNo": 3,
+                "currState": 3,
+                "startTime": 59,
+                "minEndTime": 60,
+                "maxEndTime": 61,
+                "elapsedTime": 62
+            },
+            {
+                "phaseNo": 4,
+                "currState": 3,
+                "startTime": 63,
+                "minEndTime": 64,
+                "maxEndTime": 65,
+                "elapsedTime": 66
+            },
+            {
+                "phaseNo": 5,
+                "currState": 3,
+                "startTime": 67,
+                "minEndTime": 68,
+                "maxEndTime": 69,
+                "elapsedTime": 70
+            },
+            {
+                "phaseNo": 6,
+                "currState": 3,
+                "startTime": 71,
+                "minEndTime": 72,
+                "maxEndTime": 73,
+                "elapsedTime": 74
+            },
+            {
+                "phaseNo": 7,
+                "currState": 3,
+                "startTime": 75,
+                "minEndTime": 76,
+                "maxEndTime": 77,
+                "elapsedTime": 78
+            },
+            {
+                "phaseNo": 8,
+                "currState": 3,
+                "startTime": 79,
+                "minEndTime": 80,
+                "maxEndTime": 81,
+                "elapsedTime": 82
+            }
+        ],
+        "pedPhaseState":
+        [
+            {
+                "phaseNo": 1,
+                "currState": 3,
+                "startTime": 83,
+                "minEndTime": 84,
+                "maxEndTime": 85,
+                "elapsedTime": 86
+            },
+            {
+                "phaseNo": 2,
+                "currState": 3,
+                "startTime": 87,
+                "minEndTime": 88,
+                "maxEndTime": 89,
+                "elapsedTime": 90
+            },
+            {
+                "phaseNo": 3,
+                "currState": 3,
+                "startTime": 91,
+                "minEndTime": 92,
+                "maxEndTime": 93,
+                "elapsedTime": 94
+            },
+            {
+                "phaseNo": 4,
+                "currState": 3,
+                "startTime": 95,
+                "minEndTime": 96,
+                "maxEndTime": 97,
+                "elapsedTime": 98
+            },
+            {
+                "phaseNo": 5,
+                "currState": 3,
+                "startTime": 99,
+                "minEndTime": 100,
+                "maxEndTime": 101,
+                "elapsedTime": 102
+            },
+            {
+                "phaseNo": 6,
+                "currState": 3,
+                "startTime": 103,
+                "minEndTime": 104,
+                "maxEndTime": 105,
+                "elapsedTime": 106
+            },
+            {
+                "phaseNo": 7,
+                "currState": 3,
+                "startTime": 107,
+                "minEndTime": 108,
+                "maxEndTime": 109,
+                "elapsedTime": 110
+            },
+            {
+                "phaseNo": 8,
+                "currState": 3,
+                "startTime": 111,
+                "minEndTime": 112,
+                "maxEndTime": 113,
+                "elapsedTime": 114
+            }            
+        ]       
+    }
+}
