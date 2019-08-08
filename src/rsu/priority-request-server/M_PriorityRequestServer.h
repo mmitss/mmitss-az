@@ -69,7 +69,7 @@
 #define LANEPHASE_FILENAME "/nojournal/bin/InLane_OutLane_Phase_Mapping.txt"
 #define IPINFO_FILENAME "/nojournal/bin/IPInfo.txt" // the file to read the traffic signal controller IP and port
 
-double getSimulationTime(char *);  //from VISSIM 
+double getSimulationTime(const char *);  //from VISSIM 
 
 void obtainInLaneOutLane(int srmInLane, int srmOutLane, int &inApproach, int &outApproach, int &iInlane, int &Outlane);
 
@@ -120,7 +120,7 @@ void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int
 
 void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int []);
 
-void processRxMessage(LinkedList <ReqEntry> &Req_List, int&, int []);
+void processRxMessage(const char *, const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int);
 
 double readGPStime();
 

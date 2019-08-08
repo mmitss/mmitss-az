@@ -36,8 +36,8 @@
 #include <vector>
 #include <time.h>
 #include <sys/time.h>
-#include <net-snmp/net-snmp-config.h>
-#include <net-snmp/net-snmp-includes.h>
+#include "net-snmp/net-snmp-config.h"
+#include "net-snmp/net-snmp-includes.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
@@ -61,18 +61,15 @@ int addr_length;
 char INTport[64];            // Port to connect to traffic signal controller e.g. "501"
 char INTip[64];              // IP to connect to traffic signal controller e.g. "150.135.152.23";
 
-
-
-
-char rxMsgBuffer[MAX_MSG_BUFLEN];   // a buffer for received messages
-SRM_t *srm = 0;
 asn_enc_rval_t ec;                 // Encoder return value
 asn_dec_rval_t rval;
-int iAppliedMethod = 1; // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
-int iApplicationUsage = 1; // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
-char cRequestType[32];         // Whether it is a request or resuest_clear or coord_request, this variable is use to fill up tempMsg
-char tempMsg[1024];             // To write the requests info into this variable. this variable will be passed to UpdateList function to update the request lists
-char cIntersectionName[32];
+
+
+char cRequestType[32];         // Whether it is a request or resuest_clear or coord_request, 
+                               //this variable is used to fill up tempMsg
+char cIntersectionName[32];    // also used in tempMsg
+
+
 int PhaseStatus[8];             // Determine the phase status for generate the split phases
 int phaseColor[8];
 int iColor[2][8];                         // iColor[1][*]  has the current phase color, and iColor[0][*] has the previous signal status phase color.
@@ -96,7 +93,6 @@ bool bsetCoordForFistTime = 0;
 int flagForClearingInterfaceCmd = 0; // a flag to clear all commands in th interface when the request passed
 
 PriorityConfig priorityConfig;
-IntLanePhase lanePhase;
 
     
 
@@ -111,7 +107,9 @@ int main(int argc, char *argv[]) {
     int ReqListUpdateFlag = 0;    // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
     char ConfigFile[256];
     int CombinedPhase[8] = {0};
-
+    char rxMsgBuffer[MAX_MSG_BUFLEN]{};   // a buffer for received messages
+    int iAppliedMethod = 1; // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
+    int iApplicationUsage = 1; // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
     // -p  the port that the program receive SRM, -t the timeout for listening to a socket, 
     // -t codeusage whether it is for ISIG and priority or just priority, -c field vs simulation use
     while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)    
@@ -170,6 +168,8 @@ int main(int argc, char *argv[]) {
 
     readSignalControllerAndGetActivePhases();
 
+    IntLanePhase lanePhase{};
+
     lanePhase.ReadLanePhaseMap(LANEPHASE_FILENAME);
 
     LinkedList <ReqEntry> req_List;   // List of all received requests
@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(req_List, ReqListUpdateFlag, CombinedPhase);
+            processRxMessage(rxMsgBuffer, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0)) {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
@@ -283,7 +283,8 @@ void getRSUid(string rsu_id)
     fs.close();
 }
 
-void processRxMessage(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag, int CombinedPhase[]) {
+void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, LinkedList <ReqEntry> &req_list,
+                         int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage) {
     float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
@@ -303,6 +304,9 @@ void processRxMessage(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag, i
     char temp_log[256];
     char bsmBlob[BSM_BLOB_SIZE];
     BasicVehicle vehIn;
+    char tempMsg[1024];      // To write the requests info into this variable. 
+                             //this variable will be passed to UpdateList function to update the request lists
+    SRM_t *srm = 0;
 
     srm = (SRM_t *) calloc(1, sizeof *(srm));
     srm->timeOfService = (struct DTime *) calloc(1, sizeof(DTime_t));
@@ -548,6 +552,8 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdat
     iCoordMsgCont = (iCoordMsgCont + 10) % 127;
     sprintf(temp_log,"\n******************  Coordination Request Is Set ****************** At simulation time %.2f. \n", dTime);
     outputlog(temp_log);
+    char tempMsg[1024];  // To write the requests info into this variable. 
+                         //this variable will be passed to UpdateList function to update the request lists
 // MZP 	ReqListFromFile(REQUESTFILENAME,req_list);
 
 
@@ -1449,7 +1455,7 @@ void packEventList(char *tmp_event_data, int &size) {
     size = offset;
 }
 
-double getSimulationTime(char *buffer) {
+double getSimulationTime(const char *buffer) {
     unsigned char byteA, byteB, byteC, byteD;
     byteA = buffer[0];
     byteB = buffer[1];
