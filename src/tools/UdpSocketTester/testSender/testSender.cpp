@@ -2,7 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include "json.h"
-#include "../UdpSocket.h"
+#include "UdpSocket.h"
 #include "../BasicVehicle.h"
 
 using std::cout;
