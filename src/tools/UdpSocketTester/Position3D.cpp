@@ -5,43 +5,42 @@ using std::cout;
 using std::endl;
 using std::string;
 
+// Constructor
 Position3D::Position3D()
 {
-    latitude_DecimalDegree = 0.0;
-    longitude_DecimalDegree = 0.0;
-    elevation_Meter = 0.0;
+
 }
 
 //Setters:
 void Position3D::setLatitude_decimalDegree(double vehLatitude_DecimalDegree)
 {
-    if(vehLatitude_DecimalDegree >= -90.0 && vehLatitude_DecimalDegree <= 90.0)
+    if(vehLatitude_DecimalDegree >= VALID_LATITUDEMINDEG && vehLatitude_DecimalDegree <= VALID_LATITUDEMAXDEG)
         latitude_DecimalDegree = vehLatitude_DecimalDegree;
     else
         cout << "Latitude out of range!" << endl;
 }
 void Position3D::setLongitude_decimalDegree(double vehlongitude_DecimalDegree)
 {
-    if(vehlongitude_DecimalDegree >= -180.0 && vehlongitude_DecimalDegree <= 180.0)
+    if(vehlongitude_DecimalDegree >= VALID_LONGITUDEMINDEG && vehlongitude_DecimalDegree <= VALID_LONGITUDEMAXDEG)
         longitude_DecimalDegree = vehlongitude_DecimalDegree;
     else
         cout << "Longitude out of range!" << endl;
 }
 void Position3D::setElevation_meter(double vehElevation_Meter)
 {
-    if(vehElevation_Meter >= -409.5 && vehElevation_Meter <= 6143.9)
+    if(vehElevation_Meter >= VALID_ELEVATIONMINMETER && vehElevation_Meter <= VALID_ELEVATIONMAXMETER)
         elevation_Meter = vehElevation_Meter;
-    else if (vehElevation_Meter == -409.6)
+    else if (vehElevation_Meter == UNKNOWN_ELEVATIONMETER)
         {
             elevation_Meter = vehElevation_Meter;
             cout << "Elevation unknown!" << endl;
         }
-    else if (vehElevation_Meter < -409.6)
-        elevation_Meter = -409.5;
+    else if (vehElevation_Meter < UNKNOWN_ELEVATIONMETER)
+        elevation_Meter = VALID_ELEVATIONMINMETER;
     
-    else if (vehElevation_Meter >= 6143.9)
-        elevation_Meter = 6143.9;
-    }
+    else if (vehElevation_Meter >= VALID_ELEVATIONMAXMETER)
+        elevation_Meter = VALID_ELEVATIONMAXMETER;
+}
 
 //Getters:
 double Position3D::getLatitude_DecimalDegree()

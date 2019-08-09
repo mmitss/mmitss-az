@@ -11,7 +11,7 @@ using std::string;
 using std::ifstream;
 
 
-const int SENDPORTNO = 10001;
+const short unsigned int SENDPORTNO = 10001;
 const string LOCALHOST = "127.0.0.1";
 
 int main()

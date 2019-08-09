@@ -5,16 +5,21 @@
 
 using std::string;
 
+const int MINPORTNO = 1024;
+const int MAXPORTNO = 65534;
+const int RECVBUFFERSIZE = 5120;
+
 class UdpSocket
 {
     private:
         int selfName{};
         sockaddr_in selfIdentifier{};
-        int senderPort{};
+        short unsigned int senderPort{};
         string senderIP{};
+        
     public:
-        UdpSocket(const int port);
-        void sendData(const string receiverIP, const int receiverPort, const string sendBuffer);
+        UdpSocket(const short unsigned int port);
+        void sendData(const string receiverIP, const short unsigned int receiverPort, const string sendBuffer);
         void receiveData(char *recvBuffer, size_t sizeofReceiveBuffer);
         int getSenderPort();
         string getSenderIP();

@@ -8,11 +8,7 @@ using std::string;
 //Constructor:
 BasicVehicle::BasicVehicle()
 {
-    temporaryID = 0;
-    secMark_Second = 0.0;
-    speed_MeterPerSecond = 0.0;
-    heading_Degree = 0.0;
-    type = 0;
+
 }
 
 //Setters:
@@ -22,9 +18,9 @@ void BasicVehicle::setTemporaryID(int vehTemporaryID)
 }
 void BasicVehicle::setSecMark_Second(double vehSecMark_Second)
 {
-    if(vehSecMark_Second>=0 && vehSecMark_Second<=60.999)
+    if(vehSecMark_Second >= VALID_SECMARKMINSEC && vehSecMark_Second <= VALID_SECMARKMAXSEC)
         secMark_Second = vehSecMark_Second;
-    else if (vehSecMark_Second>=61.000 && vehSecMark_Second<=65.534)
+    else if (vehSecMark_Second >= RESERVED_SECMARKMINSEC && vehSecMark_Second <= RESERVED_SECMARKMAXSEC)
         cout << "secMark in the reserved range!" << endl;
     else
         cout << "secMark out of range!" << endl;
@@ -37,18 +33,18 @@ void BasicVehicle::setPosition(double vehLatitude_DecimalDegree, double vehLongi
 }
 void BasicVehicle::setSpeed_MeterPerSecond(double vehSpeed_MeterPerSecond)
 {
-    if(vehSpeed_MeterPerSecond >=0 && vehSpeed_MeterPerSecond <=163.8)
+    if(vehSpeed_MeterPerSecond >= VALID_SPEEDMINMPS && vehSpeed_MeterPerSecond <= VALID_SPEEDMAXMPS)
         speed_MeterPerSecond = vehSpeed_MeterPerSecond;
-    else if (vehSpeed_MeterPerSecond > 163.8 && vehSpeed_MeterPerSecond < 163.83)
+    else if (vehSpeed_MeterPerSecond > UNAVAIL_SPEEDMINMPS && vehSpeed_MeterPerSecond < UNAVAIL_SPEEDMAXMPS)
         cout << "Speed is unavailable!" << endl; 
     else
         cout << "Speed out of range!" << endl;
 }
 void BasicVehicle::setHeading_Degree(double vehHeading_Degree)
 {
-    if(vehHeading_Degree >= 0 && vehHeading_Degree <= 359.9875)
+    if(vehHeading_Degree >= VALID_HEADINGMINDEG && vehHeading_Degree <= VALID_HEADINGMAXDEG)
         heading_Degree = vehHeading_Degree;
-    else if (vehHeading_Degree == 360.0)
+    else if (vehHeading_Degree == HEADINGUNAVAILABLEDEG)
         cout << "Heading unavailable!" << endl;
     else
         cout << "Heading out of range!" << endl;

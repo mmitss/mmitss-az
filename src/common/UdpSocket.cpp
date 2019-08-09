@@ -9,11 +9,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
-const int MINPORTNO = 1024;
-const int MAXPORTNO = 65535;
-const int RECVBUFFERSIZE = 5120;
-
-UdpSocket::UdpSocket(const int port)
+UdpSocket::UdpSocket(const short unsigned int port)
 {
     if(port >= MINPORTNO || port <= MAXPORTNO)
     {
@@ -34,7 +30,7 @@ UdpSocket::UdpSocket(const int port)
         cout << "Invalid port number. Use a port between 1024 to 65535 (both limits included)" << endl;;
     }
 }
-void UdpSocket::sendData(const string receiverIP, const int receiverPort, const string sendBuffer)
+void UdpSocket::sendData(const string receiverIP, const short unsigned int receiverPort, const string sendBuffer)
 {
     sockaddr_in receiverIdentifier{};
     receiverIdentifier.sin_family = AF_INET;

@@ -9,7 +9,7 @@ LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the
 LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -ldsrc -lasn -ljsoncpp1_8_4 #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += testReceiver.cpp ../UdpSocket.cpp
+SRC += testReceiver.cpp ../UdpSocket.cpp ../BasicVehicle.cpp ../Position3D.cpp
 #the name of the executable goes here
 TARGET = testReceiver
 
