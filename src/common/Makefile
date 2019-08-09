@@ -6,7 +6,7 @@ CC = gcc # C compiler
 CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
 LDFLAGS = -shared  # linking flags
 TGT = $(BUILD_ROOT)/lib/libmmitss-common.so
-SRC = AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp
+SRC = AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp UdpSocket.cpp
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
 $(TGT) : $(OBJ)

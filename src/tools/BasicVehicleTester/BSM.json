@@ -1,0 +1,17 @@
+{
+	"MsgType": "BSM",
+	"BasicVehicle" : 
+	{
+		"heading_Degree" : 90.01,
+		"position" : 
+		{
+			"elevation_Meter" : 12.6,
+			"latitude_DecimalDegree" : 37.4230638,
+			"longitude_DecimalDegree" : -122.1420467
+		},
+		"secMark_Second" : 50.001,
+		"speed_MeterPerSecond" : 35.02,
+		"temporaryID" : 601,
+		"type" : 0
+    }
+}

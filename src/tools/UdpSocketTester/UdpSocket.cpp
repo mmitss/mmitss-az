@@ -43,11 +43,12 @@ void UdpSocket::sendData(const string receiverIP, const int receiverPort, const 
     socklen_t receiverAddrLen = sizeof(receiverIdentifier);
     sendto(selfName, sendBuffer.c_str(), strlen(sendBuffer.c_str()), 0, (sockaddr*)&receiverIdentifier, receiverAddrLen);
 }
-void UdpSocket::receiveData(char *receiveBuffer)
+void UdpSocket::receiveData(char *receiveBuffer, size_t sizeofReceiveBuffer)
 {
     sockaddr_in senderIdentifier{};
     socklen_t senderAddrLen = sizeof(senderIdentifier);
-    recvfrom(selfName, receiveBuffer, sizeof(receiveBuffer), 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
+    size_t n = recvfrom(selfName, receiveBuffer, sizeofReceiveBuffer, 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
+    receiveBuffer[n] = '\0'; 
     senderPort =  ntohs(senderIdentifier.sin_port);
     senderIP = inet_ntoa(senderIdentifier.sin_addr);
 }
