@@ -5,16 +5,29 @@
 #include "json.h"
 #include "Position3D.h"
 
+const double VALID_HEADINGMINDEG = 0;
+const double VALID_HEADINGMAXDEG = 359.9875;
+const double HEADINGUNAVAILABLEDEG = 360.0;
+
+const double VALID_SPEEDMINMPS = 0;
+const double VALID_SPEEDMAXMPS = 163.8;
+const double UNAVAIL_SPEEDMINMPS = 163.8;
+const double UNAVAIL_SPEEDMAXMPS = 163.83;
+
+const double VALID_SECMARKMINSEC = 0.0;
+const double VALID_SECMARKMAXSEC = 60.999;
+const double RESERVED_SECMARKMINSEC = 61.00;
+const double RESERVED_SECMARKMAXSEC = 65.534;
 
 class BasicVehicle
 {
     private:
-        int temporaryID;
-        double secMark_Second; // seconds
+        int temporaryID{};
+        double secMark_Second{}; // seconds
         Position3D position;
-        double speed_MeterPerSecond; // Meter per second
-        double heading_Degree; // Degree
-        int type; // Enumeration
+        double speed_MeterPerSecond{}; // Meter per second
+        double heading_Degree{}; // Degree
+        int type{}; // Enumeration
 
     public:
         //Constructor:

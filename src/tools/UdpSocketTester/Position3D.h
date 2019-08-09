@@ -1,11 +1,21 @@
 #pragma once
 
+const double VALID_LATITUDEMINDEG = -90.0;
+const double VALID_LATITUDEMAXDEG = 90.0;
+
+const double VALID_LONGITUDEMINDEG = -180.0;
+const double VALID_LONGITUDEMAXDEG = 180.0;
+
+const double VALID_ELEVATIONMINMETER = -409.5;
+const double VALID_ELEVATIONMAXMETER = 6143.9;
+const double UNKNOWN_ELEVATIONMETER = -409.6;
+
 class Position3D
 {
     private:
-        double latitude_DecimalDegree = 0.0;//-90.0 to 90.0 decimalDegree
-        double longitude_DecimalDegree = 0.0;//-180.0 to 180.0 decimalDegree
-        double elevation_Meter = 0.0;//-409.5 to +6143.9 meter, -409.6 -> Unknown
+        double latitude_DecimalDegree{};//-90.0 to 90.0 decimalDegree
+        double longitude_DecimalDegree{};//-180.0 to 180.0 decimalDegree
+        double elevation_Meter{};//-409.5 to +6143.9 meter, -409.6 -> Unknown
 
     public:
         //Constructor:
