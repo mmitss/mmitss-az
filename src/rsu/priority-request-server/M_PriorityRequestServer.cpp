@@ -70,7 +70,8 @@ char cRequestType[32];         // Whether it is a request or resuest_clear or co
 char cIntersectionName[32];    // also used in tempMsg
 
 
-int PhaseStatus[8];             // Determine the phase status for generate the split phases
+int PhaseStatus[8];             // Determine the phase status to generate the split phases
+                                // DJC The idiots pass this global by into functions
 int phaseColor[8];
 int iColor[2][8];                         // iColor[1][*]  has the current phase color, and iColor[0][*] has the previous signal status phase color.
 double dTime = 0.0;                // The reference time, in FIELD it will be gps time, in SIMULATION it will be VISSIM time
@@ -78,11 +79,11 @@ double dVISSIMtime = 0.0;
 double dDiffSystemAndGPS = 0.0;    // The difference between GPS and Sytem time in FIELD. This is used when the gps.time is not a number, but we ought to have a time for coordinatio in FIELD
 double dCurrentTimeInCycle = 100.0;// For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
 
-long lTimeOut = 300000;             // Time out of waiting for a new socket 0.3 sec!
-int iObsoleteTimeOfRemainedReq = 30;   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
+
+
 double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
 
-int iCoordMsgCont = 0;
+
 float fCoordPhase1ETA = 0.0;
 float fCoordPhase2ETA = 0.0;
 float fCoordPhase1GreenHoldDuration = 0.0;
@@ -90,7 +91,7 @@ float fCoordPhase2GreenHoldDuration = 0.0;
 double dTimeOfRepetativeSolve = 0.0;
 int iNumOfRxBytes = 0;
 bool bsetCoordForFistTime = 0;
-int flagForClearingInterfaceCmd = 0; // a flag to clear all commands in th interface when the request passed
+
 
 PriorityConfig priorityConfig;
 
@@ -102,6 +103,7 @@ int main(int argc, char *argv[]) {
     double dLastETAUpdateTime = 0.0;
     char temp_log[256];
     int iPORT = 4444;                  //  Socket Port: For receiving request from PriorityRequestGenerator ( PRG )
+    long lTimeOut = 300000;             // Time out of waiting for a new socket 0.3 sec!
     string Rsu_ID;                  // will get intersection name from "rsuid.txt"
     int ret = 0;
     int ReqListUpdateFlag = 0;    // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
@@ -112,6 +114,8 @@ int main(int argc, char *argv[]) {
     int iApplicationUsage = 1; // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
     // -p  the port that the program receive SRM, -t the timeout for listening to a socket, 
     // -t codeusage whether it is for ISIG and priority or just priority, -c field vs simulation use
+    int flagForClearingInterfaceCmd = 0; // a flag to clear all commands in the interface when the request passed
+
     while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)    
     {
         switch (ret) {
@@ -161,7 +165,7 @@ int main(int argc, char *argv[]) {
     // Read the configinfo_XX.txt from ConfigInfo.txt
     getSignalConfigFile(ConfigFile, CombinedPhase); 
                        
-    setupConnection(iPORT);
+    setupConnection(iPORT,lTimeOut);
 
     // get the intersection name                          
     strcpy(cIntersectionName, Rsu_ID.c_str());  
@@ -363,6 +367,7 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
             iEndHour = srm->endOfService->hour;
             calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
             fETA = (float) iETA;
+            
             lvehicleID = vehIn.TemporaryID;
             iVehicleState = srm->status->buf[0];
             iMsgCnt = srm->msgCnt;
@@ -549,6 +554,8 @@ void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqLi
 
 void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdateFlag, int CombinedPhase[]) {
     char temp_log[256];
+    int iCoordMsgCont = 0;
+
     iCoordMsgCont = (iCoordMsgCont + 10) % 127;
     sprintf(temp_log,"\n******************  Coordination Request Is Set ****************** At simulation time %.2f. \n", dTime);
     outputlog(temp_log);
@@ -939,6 +946,7 @@ void readPhaseTimingStatus(int PhaseStatus[8]) {
 }
 
 // DJC - it appears that this function does nothing. I moved the vector of ints from being global to local and it is not used any where else.
+// DJC it does seem to act as a proxy call to load PhaseStatus via readPhaseTimingStatus()
 void readSignalControllerAndGetActivePhases() {
     vector<int> v_PhaseNotEnabled;      // to get the phases from controller that are not active. 
     // geting the current active phase from controller
@@ -1573,7 +1581,7 @@ double readGPStime() {
 }
 
 
-void setupConnection(int &iPort) {
+void setupConnection(int &iPort,long lTimeOut) {
 
     // PRS sends a clear command to the traffic interface when the last priority vehicle passes the intersection
     int iPRStoInterfacePort = 44444;     

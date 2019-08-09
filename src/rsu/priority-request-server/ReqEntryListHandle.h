@@ -5,11 +5,10 @@
 #define TRANSIT 2 ////*Transit bus: will have one request and priority as 2
 #define TRUCK 3
 #define COORDINATION 6
+#define OBSOLETE_TIME_OF_REMAINED_REQ 30;   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
 
-
-extern int iObsoleteTimeOfRemainedReq;
 extern double dCountDownIntervalForETA;
-extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
+//extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
 extern int flagForClearingInterfaceCmd;
 extern string RSUID;    // will get from "rsuid.txt"
 extern int outputlog(char *output);

@@ -79,7 +79,7 @@ void packEventList(char *tmp_event_data,
                    int &size);  // To send clear commands to the controller when the last request passes the intersection
 void sendClearCommandsToInterface();
 
-void setupConnection(int &);                               // To set up udp socket to get SRM (FIELD case), or SRM and VISSIM time (SIMULATION case)
+void setupConnection(int &,long);                               // To set up udp socket to get SRM (FIELD case), or SRM and VISSIM time (SIMULATION case)
 void getControllerIPaddress();
 
 void getSignalConfigFile(char *, int *);

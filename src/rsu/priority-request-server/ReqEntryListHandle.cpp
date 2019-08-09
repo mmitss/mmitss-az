@@ -501,7 +501,7 @@ void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &ReqListUpda
     while (!Req_List.EndOfList()) {
         //cout<<"Req_List.Data().dSetRequestTime"<<Req_List.Data().dSetRequestTime<<endl;
         //cout<<"Dtime"<<dTime<<endl;
-        if ((dTime - Req_List.Data().dSetRequestTime > iObsoleteTimeOfRemainedReq) && (Req_List.Data().VehClass !=
+        if ((dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ && (Req_List.Data().VehClass !=
                                                                                        COORDINATION))// if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the SRM has not been updated during this interval, this request is a residual request and should be deleted!
         {
             Req_List.Reset(Req_List.CurrentPosition());
