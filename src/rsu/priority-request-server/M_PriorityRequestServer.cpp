@@ -44,7 +44,7 @@
 #include "SRM.h"
 #include "BasicVehicle.h"
 #include "PriorityConfig.h"
-#include "ReqEntryListHandle.h"
+#include "ManageReqList.h"
 #include "M_PriorityRequestServer.h"
 
 using namespace std;
@@ -196,22 +196,22 @@ int main(int argc, char *argv[]) {
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(rxMsgBuffer, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage);
+            processRxMessage(rxMsgBuffer, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0)) {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
             outputlog(temp_log);
             dLastETAUpdateTime = dTime;
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA, flagForClearingInterfaceCmd);
         }
 
         if (priorityConfig.dCoordinationWeight > 0)
-            setCoordinationPriorityRequests(req_List, ReqListUpdateFlag, CombinedPhase);
+            setCoordinationPriorityRequests(req_List, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
 
         if (ReqListUpdateFlag > 0 && req_List.ListSize() > 0) {
             sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
             outputlog(temp_log);
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA, flagForClearingInterfaceCmd);
             //	ReqListUpdateFlag=0;
         }
 
@@ -226,7 +226,7 @@ int main(int argc, char *argv[]) {
             ReqListUpdateFlag = 0;
             flagForClearingInterfaceCmd = 0;
 
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA, flagForClearingInterfaceCmd);
 
             // MZP		UpdateCurrentList(req_list);
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
@@ -289,7 +289,7 @@ void getRSUid(string rsu_id)
 }
 
 void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, LinkedList <ReqEntry> &req_list,
-                         int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage) {
+                         int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage, int &flagForClearingInterfaceCmd ) {
     float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
@@ -405,7 +405,7 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
             //		outputlog(temp_log);
             // MZP		ReqListFromFile(REQUESTFILENAME,req_list);
 
-            UpdateList(req_list, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase);   // Update the Req List data structure considering received message
+            UpdateList(req_list, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);   // Update the Req List data structure considering received message
 
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
             // MZP		printReqestFile2Log(REQUESTFILENAME);
@@ -437,9 +437,10 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
     free(srm);
 }
 
-void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list, int& ReqListUpdateFlag, const double dCountDownIntervalForETA) {
+void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list, int& ReqListUpdateFlag,
+                                    const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd) {
     updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA);
-    deleteThePassedVehicle(req_list, ReqListUpdateFlag);
+    deleteThePassedVehicle(req_list, ReqListUpdateFlag, flagForClearingInterfaceCmd);
     // Write the requests list into requests.txt,
 
     PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag , 1);
@@ -506,7 +507,8 @@ int getSignalColor(int PhaseStatusNo) {
 }
 
 
-void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag, int CombinedPhase[]) {
+void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag,
+                                     int CombinedPhase[], int &flagForClearingInterfaceCmd) {
     bool bAtOffsetRefPointFlag = 0;
     bool bAtBeginingOfSmallerCoordSplitFlag = 0;
     bool bAtTheEndOfCoordPhaseSplitsFlag = 0;
@@ -536,7 +538,7 @@ void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqLi
                                             bAtTheEndOfCoordPhaseSplitsFlag) == 1) {
             calculateETAofCoordRequests(bAtOffsetRefPointFlag, bAtBeginingOfSmallerCoordSplitFlag,
                                         bAtTheEndOfCoordPhaseSplitsFlag);
-            updateCoordRequestsInList(req_list, ReqListUpdateFlag, CombinedPhase);
+            updateCoordRequestsInList(req_list, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
             ReqListUpdateFlag = 6;
         } else if ((dTime > dTimeOfRepetativeSolve + TIME_INTERVAL_OF_RESOLVING) && (ReqListUpdateFlag == 0)
                     && (FindVehClassInList(req_list, COORDINATION) == 1))
@@ -553,7 +555,8 @@ void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqLi
 }
 
 
-void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdateFlag, int CombinedPhase[]) {
+void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdateFlag,
+                                int CombinedPhase[], int &flagForClearingInterfaceCmd) {
     char temp_log[256];
     int iCoordMsgCont = 0;
 
@@ -575,7 +578,7 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdat
         sprintf(temp_log, "{ %s }\t ", tempMsg);
         ReqListUpdateFlag = 6;
         UpdateList(req_list, tempMsg,
-                   PhaseStatus, ReqListUpdateFlag, CombinedPhase);      // Update the Req List data structure considering first coordination
+                   PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);      // Update the Req List data structure considering first coordination
     }
     if (priorityConfig.iCoordinatedPhase[1] > 0) {
         sprintf(tempMsg, "%s %s %d %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %.2f", cRequestType,
@@ -585,7 +588,7 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdat
         sprintf(temp_log, "{ %s }\t ", tempMsg);
         ReqListUpdateFlag = 6;
         UpdateList(req_list, tempMsg,
-                   PhaseStatus, ReqListUpdateFlag, CombinedPhase);        // Update the Req List data structure considering second coordination
+                   PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);        // Update the Req List data structure considering second coordination
     }
 
 /*	

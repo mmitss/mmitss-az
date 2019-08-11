@@ -41,8 +41,9 @@ int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class) {
     return times;
 }
 
-void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int &ReqListUpdateFlag, int CombinedPhase[]) {
-    flagForClearingInterfaceCmd = 0;
+void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8],
+                 int &ReqListUpdateFlag, int CombinedPhase[], int &flagForClearingInterfaceCmd) {
+
     char temp_log[256];
     int iNewReqDiviser = 0;
     int iRecvReqListDiviser = 0;
@@ -467,7 +468,7 @@ void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqE
 }
 
 
-void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &ReqListUpdateFlag) {
+void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &ReqListUpdateFlag, int &flagForClearingInterfaceCmd) {
     char temp_log[256];
     Req_List.Reset();
     while (!Req_List.EndOfList()) {
