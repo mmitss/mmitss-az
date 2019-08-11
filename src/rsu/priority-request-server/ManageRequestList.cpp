@@ -12,7 +12,7 @@
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "PriorityConfig.h"
-#include "ReqEntryListHandle.h"
+#include "ManageRequestList.h"
 
 //----- ReqListUpdateFlag=1: ADD a new request
 //----- ReqListUpdateFlag=2: UPDATED request (changing the speed, joining the queue, leaving the queue)

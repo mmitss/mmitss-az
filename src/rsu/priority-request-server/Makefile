@@ -2,7 +2,7 @@ BUILD_ROOT=../../..
 MAKE_ROOT=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/header.mk
 
-SRC += M_PriorityRequestServer.cpp ReqEntry.cpp  PriorityConfig.cpp IntLanePhase.cpp ManageReqList.cpp PositionLocal3D.cpp BasicVehicle.cpp  
+SRC += M_PriorityRequestServer.cpp ReqEntry.cpp  PriorityConfig.cpp IntLanePhase.cpp ManageRequestList.cpp PositionLocal3D.cpp BasicVehicle.cpp  
 TGT:=M_PriorityRequestServer
 LIBS += -L$(BUILD_ROOT)/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
