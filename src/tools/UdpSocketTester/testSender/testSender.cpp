@@ -20,7 +20,6 @@ int main()
     const int receiverPortNo = 1516;
 	ifstream json_file("BSM.json");
     std::string originalJsonString((std::istreambuf_iterator<char>(json_file)), std::istreambuf_iterator<char>());
-    cout << originalJsonString << endl;
     BasicVehicle basicVehicle;
     basicVehicle.json2BasicVehicle(originalJsonString);
 	string newJsonString = basicVehicle.basicVehicle2Json();

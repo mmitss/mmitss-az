@@ -1,24 +1,23 @@
-# MMITSS-common.so Makefile
-
+# Sample Makefile for building with the uper codec and json libraries
 BUILD_ROOT=../..
-INCLUDES = -I. -I$(BUILD_ROOT)/include/common -I$(BUILD_ROOT)/3rdparty/jsoncpp/include
-CC = gcc # C compiler
-CFLAGS = -fPIC -Wall -Wextra -O2 -g -ljsoncpp1_8_4# C flags
-LIBS = -L$(BUILD_ROOT)/3rdparty/jsoncpp
-LDFLAGS = -shared # linking flags
-TGT = $(BUILD_ROOT)/lib/libmmitss-common.so
-SRC = AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp
-OBJ = $(patsubst %.cpp, %.o, ${SRC})
+MAKE_ROOT :=$(BUILD_ROOT)/make
+include $(MAKE_ROOT)/newheader.mk
 
-$(TGT) : $(OBJ)
-	$(CC) ${LDFLAGS} ${INCLUDES} ${LIBS} -o $@ $^
+INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(BUILD_ROOT)/include/common# tell the compiler where to find the j2735 and json include directories
+CPPFLAGS	:= $(CPPFLAGS) -fPIC
+LDFLAGS     := -shared -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the json shared lib 
+#-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
+LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/3rdparty/jsoncpp -ldsrc -lasn -ljsoncpp1_8_4#tell the linker where to find the j2735 and json libraries
 
-%.o: %.c
-	${CC} ${CFLAGS} ${INCLUDES}  -c -o $@ $<
 
-%.o: %.cpp
-	${CC} $(INCLUDES) $(CFLAGS) -c -o $@ $<
+#cpp's go here
+SRC += AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp
+#the name of the executable goes here
+TARGET = $(BUILD_ROOT)/lib/libmmitss-common.so
 
-clean:
-	-rm -f $(TGT) $(LIB_NAME)*.a $(OBJ) *~ *.o
+# list the .o's corresponding to .cpp's
+# see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html
+OBJECTS = $(patsubst %.cpp, %.o, $(SRC))
+
+include $(MAKE_ROOT)/newrules.mk
 
