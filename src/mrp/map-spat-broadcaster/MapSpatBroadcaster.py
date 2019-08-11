@@ -7,9 +7,13 @@ import Spat
 
 def main():
 
+    # Read a config file by creating an object of the time MapSpatBroadcasterConfig
+    config = MapSpatBroadcasterConfig.MapSpatBroadcasterConfig("MapSpatBroadcasterConfig.json")
+
+
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ip = '10.254.56.49'
+    ip = config.getMrpIP()
     port = 6053
     MapSpatBroadcastAddress = (ip, port)
     s.bind(MapSpatBroadcastAddress)
@@ -23,8 +27,9 @@ def main():
     msgEncoderPort = 10004
     msgEncoderAddress = (msgEncoderIP, msgEncoderPort)
 
-    # Read a config file by creating an object of the time MapSpatBroadcasterConfig
-    config = MapSpatBroadcasterConfig.MapSpatBroadcasterConfig("MapSpatBroadcasterConfig.json")
+    trafficControllerObserverIP = '127.0.0.1'
+    trafficControllerObserverPort = 20006
+    trafficControllerObserverAddress = (trafficControllerObserverIP,trafficControllerObserverPort)
 
     # Store map payload in a string
     mapPayload = config.getMapPayload()
@@ -49,14 +54,14 @@ def main():
                 spatObject.setmsgCnt(msgCnt)
                 spatObject.fillSpatInformation(currentBlob)
                 spatJsonString = spatObject.Spat2Json()
+                
                 s.sendto(spatJsonString.encode(), msgEncoderAddress)
+                s.sendto(spatJsonString.encode(), trafficControllerObserverAddress)
                 s.sendto(mapPayload.encode(), msgSenderAddress)
-                print("Sent SPaT JSON to msgEncoder and MAP payload to msgSender.")
+
+                print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")
-
-
-
 
 if __name__ == "__main__":
     main()

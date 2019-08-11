@@ -8,6 +8,7 @@ class MapSpatBroadcasterConfig:
         self.regionalID = configJson["MapSpatBroadcasterConfig"]["regionalID"]
         self.mapPayload = configJson["MapSpatBroadcasterConfig"]["mapPayload"]
         self.controllerIP = configJson["MapSpatBroadcasterConfig"]["controllerIP"]
+        self.mrpIP = configJson["MapSpatBroadcasterConfig"]["mrpIP"]
 
     def getIntersectionID(self):
         return self.intersectionID
@@ -20,3 +21,6 @@ class MapSpatBroadcasterConfig:
 
     def getControllerIP(self):
         return self.controllerIP
+
+    def getMrpIP(self):
+        return self.mrpIP
