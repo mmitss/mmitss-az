@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string.h>
 
-#include "../UdpSocket.h"
-#include "../BasicVehicle.h"
+#include "UdpSocket.h"
+#include "BasicVehicle.h"
 
 using std::cout;
 using std::endl;

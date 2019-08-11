@@ -1,19 +1,20 @@
 # MMITSS-common.so Makefile
 
 BUILD_ROOT=../..
-INCLUDES = -I. -I$(BUILD_ROOT)/include/common
+INCLUDES = -I. -I$(BUILD_ROOT)/include/common -I$(BUILD_ROOT)/3rdparty/jsoncpp/include
 CC = gcc # C compiler
-CFLAGS = -fPIC -Wall -Wextra -O2 -g # C flags
-LDFLAGS = -shared  # linking flags
+CFLAGS = -fPIC -Wall -Wextra -O2 -g -ljsoncpp1_8_4# C flags
+LIBS = -L$(BUILD_ROOT)/3rdparty/jsoncpp
+LDFLAGS = -shared # linking flags
 TGT = $(BUILD_ROOT)/lib/libmmitss-common.so
-SRC = AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp UdpSocket.cpp
+SRC = AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp
 OBJ = $(patsubst %.cpp, %.o, ${SRC})
 
 $(TGT) : $(OBJ)
-	$(CC) ${LDFLAGS} ${INCLUDES} -o $@ $^
+	$(CC) ${LDFLAGS} ${INCLUDES} ${LIBS} -o $@ $^
 
 %.o: %.c
-	${CC} ${CFLAGS} ${INCLUDES} -c -o $@ $<
+	${CC} ${CFLAGS} ${INCLUDES}  -c -o $@ $<
 
 %.o: %.cpp
 	${CC} $(INCLUDES) $(CFLAGS) -c -o $@ $<
