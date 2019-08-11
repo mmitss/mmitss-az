@@ -77,7 +77,8 @@ class Spat:
         for i in range(8):
             self.vehPhasesDict[i] = self.vehPhases[i].asDict()
             self.pedPhasesDict[i] = self.pedPhases[i].asDict()
-        spatDict = dict({"Spat" :
+        spatDict = dict({"MsgType": "SPAT",
+                    "Spat" :
                     {
                         "IntersectionState" :
                         {

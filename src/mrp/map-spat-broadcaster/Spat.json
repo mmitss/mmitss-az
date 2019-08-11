@@ -1,5 +1,6 @@
 {
-    "Spat":
+	"MsgType": "SPAT",   
+	"Spat":
     {
         "IntersectionState":
         {
