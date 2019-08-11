@@ -81,7 +81,6 @@ double dCurrentTimeInCycle = 100.0;// For example, if cycle is 100 and offset is
 
 
 
-double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
 
 
 float fCoordPhase1ETA = 0.0;
@@ -115,6 +114,8 @@ int main(int argc, char *argv[]) {
     // -p  the port that the program receive SRM, -t the timeout for listening to a socket, 
     // -t codeusage whether it is for ISIG and priority or just priority, -c field vs simulation use
     int flagForClearingInterfaceCmd = 0; // a flag to clear all commands in the interface when the request passed
+    double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
+    
 
     while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)    
     {
@@ -201,7 +202,7 @@ int main(int argc, char *argv[]) {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
             outputlog(temp_log);
             dLastETAUpdateTime = dTime;
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
         }
 
         if (priorityConfig.dCoordinationWeight > 0)
@@ -210,7 +211,7 @@ int main(int argc, char *argv[]) {
         if (ReqListUpdateFlag > 0 && req_List.ListSize() > 0) {
             sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
             outputlog(temp_log);
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
             //	ReqListUpdateFlag=0;
         }
 
@@ -225,7 +226,7 @@ int main(int argc, char *argv[]) {
             ReqListUpdateFlag = 0;
             flagForClearingInterfaceCmd = 0;
 
-            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag);
+            startUpdateETAofRequestsInList(Rsu_ID,req_List, ReqListUpdateFlag, dCountDownIntervalForETA);
 
             // MZP		UpdateCurrentList(req_list);
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
@@ -436,8 +437,8 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
     free(srm);
 }
 
-void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list, int& ReqListUpdateFlag) {
-    updateETAofRequestsInList(req_list, ReqListUpdateFlag);
+void startUpdateETAofRequestsInList(const string& rsu_id, LinkedList <ReqEntry> &req_list, int& ReqListUpdateFlag, const double dCountDownIntervalForETA) {
+    updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA);
     deleteThePassedVehicle(req_list, ReqListUpdateFlag);
     // Write the requests list into requests.txt,
 
@@ -1184,8 +1185,8 @@ void identifyColor(int i_Color[2][8], int greenGroup, int redGroup, int yellowGr
 void whichPhaseIsGreen(int phase_Color[8], int greenGroup, int redGroup,
                        int yellowGroup) // this function return the color of the first argument which is phaseNo.
 {
-    for (int iii = 0; iii < 8; iii++)
-        phase_Color[iii] = REAL_RED_STATUS;
+    for (int i = 0; i < 8; i++)
+        phase_Color[i] = REAL_RED_STATUS;
 
     if (redGroup != 255) // if redGroup=255 therfore all phases are RED
     {

@@ -116,7 +116,7 @@ void calculateETAofCoordRequests(bool &, bool&, bool &);
 
 void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int []);
 
-void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&);
+void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double);
 
 void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int []);
 

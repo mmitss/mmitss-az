@@ -5,9 +5,9 @@
 #define TRANSIT 2 ////*Transit bus: will have one request and priority as 2
 #define TRUCK 3
 #define COORDINATION 6
-#define OBSOLETE_TIME_OF_REMAINED_REQ 30;   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
+#define OBSOLETE_TIME_OF_REMAINED_REQ 30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
 
-extern double dCountDownIntervalForETA;
+//extern double dCountDownIntervalForETA;
 //extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
 extern int flagForClearingInterfaceCmd;
 extern string RSUID;    // will get from "rsuid.txt"
@@ -42,7 +42,7 @@ int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double);
 
 void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &);
 
