@@ -1,3 +1,28 @@
+'''
+**********************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+**********************************************************************************
+
+  Spat.py  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  Revision History:
+  1. This is the initial revision. Spat class does the following tasks:
+    -> Provides an API for setting regionaID, IntersectionID, msgCount, and for filling the SPAT information from the controller.
+    -> Constructor needs no parameters. Only initializes the attributes.
+    -> fillSpatInformation needs an object of NTCIP1202Blob class as an input parameter.
+    -> Based on set information, spat2Json method returns a JSON string contaiing the filled information. This method needs to be called after setting all attributes.
+    -> If NTCIP1202 standard changes, a similar class needs to be developed with similar API, for other components to run smooth.
+'''
+
 from Ntcip1202v2Blob import Ntcip1202v2Blob
 import json
 from Phase import Phase

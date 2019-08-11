@@ -1,3 +1,37 @@
+'''
+**********************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+**********************************************************************************
+
+  NTCIP1202v2Blob.py  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  Revision History:
+  1. This is the initial revision. NTCIP1202v2Blob class does the following tasks:
+    -> Read the NTCIP1202v2 blob received from a trafficController.
+    -> Manually unpack the blob using byte-structure provided in Econolite SPAT Guide.
+    -> API (as a minimum) for following information is provided:
+        -> PhaseCurrentStatus: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> PhaseStatusStartTime: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> PhaseStatusMinEndTime: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> PhaseStatusMaxEndTime: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> PhaseStatusElapsedTime: Required for TrafficController Observer
+        -> Intersection status: Required in MMITSS J2735SPAT and TrafficController Observer
+        -> msOfMinute: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> minuteOfYear: Required for MMITSS J2735SPAT and TrafficController Observer
+    -> minuteOfYear and msOfMinute is calculated from the MRP system time.
+    -> Constructor requires no inputs. Just initializes the attributes.
+    -> processNewData method needs to be called everytime a new blob is received. ReceivedBlob needs to be passed as a parameter for this method.
+'''
+
 import time
 import datetime
 

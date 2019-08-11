@@ -1,3 +1,28 @@
+'''
+**********************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+**********************************************************************************
+
+  MapSpatBroadcaster.py  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  Revision History:
+  1. This is the initial revision. MapSpatBroadcaster does the follwoing tasks: 
+    -> Read configuration data: controllerIP, selfIP, mapPayload, regionalID, and IntersectionID.
+    -> Receive SPAT data from the ctraffic controller (currently NTCIP1202v2 Blob: defined in separate class)
+    -> Calculate the data required for trafficControllerObserver and J2735 SPAT message.
+    -> Formulate a json string and send it to trafficControllerObserver and msgEncoder.
+    -> Send the mapPayload as it is to msgSender.
+    -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be required to created which could be used in similar manner like NTCIP1202v2Blob class.
+'''
 import socket
 import time
 import json
