@@ -12,6 +12,7 @@
 //extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
 //extern int flagForClearingInterfaceCmd;
 //extern char temp_log[256];
+//extern double dCurrentTimeInCycle;
 
 extern string RSUID;    // will get from "rsuid.txt"
 extern int outputlog(char *output);
@@ -22,7 +23,7 @@ extern int CombinedPhase[8];
 
 extern PriorityConfig priorityConfig;
 extern double dTime;
-extern double dCurrentTimeInCycle;
+
 
 
 //----------------------------------------------------------------------------------------------//
@@ -35,6 +36,7 @@ void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqE
 void PrintList(LinkedList <ReqEntry> &ReqList);
 
 //int ReqListFromFile(char *filename,LinkedList<ReqEntry>& Req_List);
+
 int getCurrentFlagInReqFile(const char *filename);
 
 int ReqListFromFile(char *filename, LinkedList <ReqEntry> &Req_List);
@@ -45,7 +47,7 @@ int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double, const double);
 
 void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, int &);
 

@@ -110,15 +110,15 @@ int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
 int gpsInitialization();
 
-int doWeNeedToSolveForCoordRequests(bool &, bool&, bool &);
+int doWeNeedToSolveForCoordRequests(bool &, bool&, bool &, const double);
 
 void calculateETAofCoordRequests(bool &, bool&, bool &);
 
-void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int [], int&);
+void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int [], int&, const double);
 
-void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int&);
+void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &, const double);
 
-void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int [], int&);
+void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int [], int&, double&);
 
 void processRxMessage(const char *, const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
 
