@@ -19,8 +19,9 @@ class UdpSocket
         
     public:
         UdpSocket(const short unsigned int port);
+        UdpSocket(const short unsigned int port, int timeOutSec, int timeOutMicroSec);
         void sendData(const string receiverIP, const short unsigned int receiverPort, const string sendBuffer);
-        void receiveData(char *recvBuffer, size_t sizeofReceiveBuffer);
+        bool receiveData(char *recvBuffer, size_t sizeofReceiveBuffer);
         int getSenderPort();
         string getSenderIP();
         void closeSocket();

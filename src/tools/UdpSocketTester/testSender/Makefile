@@ -9,7 +9,7 @@ LDFLAGS     := -fPIC -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path 
 LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/3rdparty/jsoncpp -L$(BUILD_ROOT)/lib -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common#tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += testSender.cpp
+SRC += testSender.cpp ../UdpSocket.cpp
 #the name of the executable goes here
 TARGET = testSender
 
