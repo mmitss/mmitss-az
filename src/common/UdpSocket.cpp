@@ -1,6 +1,22 @@
-//Explain at the header about what it does???
+/*
+**********************************************************************************
 
-/* Thrown exception:
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+**********************************************************************************
+
+  UdpSocket.cpp  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  Revision History:
+  1. 
+  Thrown exception:
     -> 101: Socket creation failed
     -> 102: Socket binding failed
     -> 103: Port number out of range
