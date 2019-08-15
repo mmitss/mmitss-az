@@ -1,9 +1,15 @@
 //Explain at the header about what it does???
 
+/* Thrown exception:
+    -> 101: Socket creation failed
+    -> 102: Socket binding failed
+    -> 103: Port number out of range
+*/
+
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
-#include "UdpSocket.h"
+#include <UdpSocket.h>
 
 using std::string;
 using std::cout;
@@ -15,10 +21,10 @@ using std::endl;
 
 UdpSocket::UdpSocket(const short unsigned int port)
 {
-    if(port >= MINPORTNO || port <= MAXPORTNO)
+    if(port >= MINPORTNO && port <= MAXPORTNO)
     {
         if((selfName = socket(AF_INET, SOCK_DGRAM, 0))< 0) // If socket creation is unsuccessful, socket() function returns '-1'.
-            cout << "Socket creation failed!" << endl;
+            {throw (101);}
         else
         {
             memset(&selfIdentifier, 0, sizeof(selfIdentifier));
@@ -26,22 +32,20 @@ UdpSocket::UdpSocket(const short unsigned int port)
             selfIdentifier.sin_addr.s_addr = INADDR_ANY;
             selfIdentifier.sin_port = htons(port);
             if ( bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0 )
-                cout << "Socket binding failed!" << endl;
+                {throw (102);}
         }
     }
     else
-    {
-        cout << "Invalid port number. Use a port between 1024 to 65535 (both limits included)" << endl;;
-    }
+        {throw (103);}
 }
 
 UdpSocket::UdpSocket(const short unsigned int port, int timeOutSec, int timeOutMicroSec)
 {
-    if(port >= MINPORTNO || port <= MAXPORTNO)
+    if(port >= MINPORTNO && port <= MAXPORTNO)
     {
         
         if((selfName = socket(AF_INET, SOCK_DGRAM, 0))< 0) // If socket creation is unsuccessful, socket() function returns '-1'.
-            cout << "Socket creation failed!" << endl;
+            {throw (101);}
         else
         {
             struct timeval tv;
@@ -55,13 +59,11 @@ UdpSocket::UdpSocket(const short unsigned int port, int timeOutSec, int timeOutM
             selfIdentifier.sin_addr.s_addr = INADDR_ANY;
             selfIdentifier.sin_port = htons(port);
             if ( bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0 )
-                cout << "Socket binding failed!" << endl;
+                {throw 102;}
         }
     }
     else
-    {
-        cout << "Invalid port number. Use a port between 1024 to 65535 (both limits included)" << endl;;
-    }
+    {throw 103;}
 }
 
 /************************************
