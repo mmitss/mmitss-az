@@ -18,7 +18,7 @@
   1. 
 */
 #include <iostream>
-#include "Position3D.h"
+#include <Position3D.h>
 
 using std::cout;
 using std::endl;

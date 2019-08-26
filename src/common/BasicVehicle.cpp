@@ -15,10 +15,11 @@
   in the Systems and Industrial Engineering Department.
 
   Revision History:
-  1. 
+  1. This is the initial revision. This 
+
 */
 
-#include "BasicVehicle.h"
+#include <BasicVehicle.h>
 #include <iostream>
 
 using std::cout;

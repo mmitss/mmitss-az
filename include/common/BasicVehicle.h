@@ -21,8 +21,8 @@
 
 #include <string>
 #include <cstdint>
-#include "json.h"
-#include "Position3D.h"
+#include <json.h>
+#include <Position3D.h>
 
 const double VALID_HEADINGMINDEG = 0;
 const double VALID_HEADINGMAXDEG = 359.9875;
@@ -47,6 +47,7 @@ class BasicVehicle
         double speed_MeterPerSecond{}; // Meter per second
         double heading_Degree{}; // Degree
         int type{}; // Enumeration
+		int lane{}
 
     public:
         //Constructor:
