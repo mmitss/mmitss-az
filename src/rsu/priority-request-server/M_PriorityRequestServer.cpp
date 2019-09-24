@@ -180,9 +180,11 @@ int main(int argc, char *argv[]) {
     LinkedList <ReqEntry> req_List;   // List of all received requests
     //Main program loop
     while (true) {
-        cout << "\n..................Waiting for the request info..................\n";
-        cout << "Flag at the begining  " << ReqListUpdateFlag << endl;
+        // DJC cout << "\n..................Waiting for the request info..................\n";
+        // DJC cout << "Flag at the begining  " << ReqListUpdateFlag << endl;
 
+        // Get clock time for this type of run environment
+        // KLH - we should get time from system clock and sync system clock to external source
         if (iApplicationUsage == FIELD)
             dTime = readGPStime();
         else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0))
@@ -190,9 +192,11 @@ int main(int argc, char *argv[]) {
         else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0))
             dTime = dVISSIMtime;
 
+        // read socket for Signal Request Message
         iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, sizeof(rxMsgBuffer), 0, (struct sockaddr *) &recvaddr,
                                  (socklen_t * ) & iAddrLeng);
 
+        // Read combined request file to see if PRS has set the update flag
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
@@ -217,13 +221,14 @@ int main(int argc, char *argv[]) {
             //	ReqListUpdateFlag=0;
         }
 
-        cout << "ReqListUpdateFlag " << ReqListUpdateFlag << endl;
-        cout << "flagForClearingInterfaceCmd " << flagForClearingInterfaceCmd << endl;
+        // DJC cout << "ReqListUpdateFlag " << ReqListUpdateFlag << endl;
+        // DJC cout << "flagForClearingInterfaceCmd " << flagForClearingInterfaceCmd << endl;
 
+        // if request list is empty and the last vehisle just passed the intersection
         if (priorityConfig.dCoordinationWeight <= 0 && ((ReqListUpdateFlag > 0 && req_List.ListSize() == 0) ||
-                                                        flagForClearingInterfaceCmd == 1)) // Request list is empty and the last vehisle just passed the intersection
+                                                        flagForClearingInterfaceCmd == 1)) 
         {
-            cout << "Req List gets Empty" << endl;
+            //DJC cout << "Req List gets Empty" << endl;
 
             ReqListUpdateFlag = 0;
             flagForClearingInterfaceCmd = 0;
@@ -378,6 +383,7 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
 //            dSpeed = vehIn.motion.speed;
             //printsrmcsv (&srm);
 
+            //KLH - concerned about this being a bug
             if (iVehicleState == 3) // vehicle is in queue
                 dMinGrn = (double) (fETA);
 
@@ -677,6 +683,7 @@ void calculateETAofCoordRequests(bool& bAtOffsetRefPointFlag, bool& bAtBeginingO
 
 }
 
+//sync clock to gps to schedule coordianation requests
 int gpsInitialization() {
     int is_async = 0;
     int fd;
@@ -1376,7 +1383,7 @@ void obtainInLaneOutLane(int srmInLane, int srmOutLane, int &inApproach, int &ou
     Outlane = srmOutLane - outApproach * 10;
 }
 
-
+// Will get this from JSON
 void calculateETA(int beginMin, int beginSec, int endMin, int endSec, int &iETA) {
 
     if ((beginMin == 59) && (endMin == 0)) //

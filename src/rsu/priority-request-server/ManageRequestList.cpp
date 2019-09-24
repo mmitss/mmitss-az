@@ -32,9 +32,7 @@ int FindTimesInList(LinkedList<ReqEntry> Req_List, int Veh_Class)
     while (!Req_List.EndOfList())
     {
         if (Req_List.Data().VehClass == Veh_Class)
-        {
             times++;
-        }
 
         Req_List.Next();
     }
@@ -583,6 +581,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
 
         // if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
         // SRM has not been updated during this interval, this request is a residual request and should be deleted!
+        // Does the SRM get sent on some interval or only once??????????
         if ((dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ) && 
             (Req_List.Data().VehClass != COORDINATION)) 
         {
