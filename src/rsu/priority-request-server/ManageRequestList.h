@@ -19,9 +19,10 @@ extern int outputlog(char *output);
 
 extern char logfilename[256];
 
-extern int CombinedPhase[8];
-
+//extern int CombinedPhase[8];
+/*RemoveCoord
 extern PriorityConfig priorityConfig;
+*/
 extern double dTime;
 
 

@@ -11,7 +11,9 @@
 #include <math.h>
 #include "LinkedList.h"
 #include "ReqEntry.h"
+/*RemoveCoord
 #include "PriorityConfig.h"
+*/
 #include "ManageRequestList.h"
 
 //----- ReqListUpdateFlag=1: ADD a new request
@@ -564,14 +566,15 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                                const double dCurrentTimeInCycle)
 {
     char temp_log[256];
+/*RemoveCoord
     int icoordphase1 = priorityConfig.iCoordinatedPhase[0];
     int icoordphase2 = priorityConfig.iCoordinatedPhase[1];
     double dcoordphase1split = priorityConfig.dCoordinationPhaseSplit[priorityConfig.iCoordinatedPhase[0] - 1];
     double dcoordphase2split = priorityConfig.dCoordinationPhaseSplit[priorityConfig.iCoordinatedPhase[1] - 1];
     double dCoordinationCycle = priorityConfig.dCoordCycle;
     double dLargerSplit = priorityConfig.dLargerCoordinationSplit;
-    //double doffset = priorityConfig.dCoordOffset;
-
+    double doffset = priorityConfig.dCoordOffset;
+*/
     Req_List.Reset();
 
     while (!Req_List.EndOfList())
@@ -582,8 +585,11 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         // if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
         // SRM has not been updated during this interval, this request is a residual request and should be deleted!
         // Does the SRM get sent on some interval or only once??????????
+/*RemoveCoord
         if ((dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ) && 
-            (Req_List.Data().VehClass != COORDINATION)) 
+            (Req_List.Data().VehClass != COORDINATION))
+*/ 
+        if (dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ)
         {
             Req_List.Reset(Req_List.CurrentPosition());
             sprintf(temp_log,
@@ -596,6 +602,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         }
         else
         {
+/*RemoveCoord
             if ((Req_List.Data().VehClass == COORDINATION))
             {
                 if (dcoordphase1split == dcoordphase2split) // if the two coordinated phse have the same split time
@@ -650,25 +657,26 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
             }
             else
             {
-                if (Req_List.Data().ETA > 0)
+*/
+            if (Req_List.Data().ETA > 0)
+            {
+                if (dTime - Req_List.Data().dUpdateTimeOfETA >= dCountDownIntervalForETA)
                 {
-                    if (dTime - Req_List.Data().dUpdateTimeOfETA >= dCountDownIntervalForETA)
-                    {
-                        Req_List.Data().ETA = 
-                            max(0.0, Req_List.Data().ETA - (dTime - Req_List.Data().dUpdateTimeOfETA));
+                    Req_List.Data().ETA = max(0.0, Req_List.Data().ETA - (dTime - Req_List.Data().dUpdateTimeOfETA));
 
-                        Req_List.Data().dUpdateTimeOfETA = dTime;
-                    }
+                    Req_List.Data().dUpdateTimeOfETA = dTime;
                 }
-                else
-                    Req_List.Data().ETA = 0;
+            }
+            else
+                Req_List.Data().ETA = 0;
 
                 // MZP added 10/30/17
                  //if the vehicle is leaving intersection
-                if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4))
-                    Req_List.Data().iLeavingCounter++;
-            }
+            if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4))
+                Req_List.Data().iLeavingCounter++;
+            
         }
+
         Req_List.Next();
     }
 }

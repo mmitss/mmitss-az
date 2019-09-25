@@ -43,7 +43,9 @@
 #include "IntLanePhase.h"
 #include "SRM.h"
 #include "BasicVehicle.h"
+/*RemoveCoord
 #include "PriorityConfig.h"
+*/
 #include "ManageRequestList.h"
 #include "M_PriorityRequestServer.h"
 
@@ -60,40 +62,32 @@ int addr_length;
 
 char INTport[64];            // Port to connect to traffic signal controller e.g. "501"
 char INTip[64];              // IP to connect to traffic signal controller e.g. "150.135.152.23";
-
-asn_enc_rval_t ec;                 // Encoder return value
-asn_dec_rval_t rval;
+                                // DJC The idiots pass this global into functions
 
 
-char cRequestType[32];         // Whether it is a request or resuest_clear or coord_request, 
-                               //this variable is used to fill up tempMsg
-char cIntersectionName[32];    // also used in tempMsg
 
-
-int PhaseStatus[8];             // Determine the phase status to generate the split phases
-                                // DJC The idiots pass this global by into functions
-int phaseColor[8];
-int iColor[2][8];                         // iColor[1][*]  has the current phase color, and iColor[0][*] has the previous signal status phase color.
 double dTime = 0.0;                // The reference time, in FIELD it will be gps time, in SIMULATION it will be VISSIM time
-double dVISSIMtime = 0.0;
-double dDiffSystemAndGPS = 0.0;    // The difference between GPS and Sytem time in FIELD. This is used when the gps.time is not a number, but we ought to have a time for coordinatio in FIELD
+
+//double dDiffSystemAndGPS = 0.0;    // The difference between GPS and Sytem time in FIELD. This is used when the gps.time is not a number, but we ought to have a time for coordinatio in FIELD
 
 
 
 
 
-
+/*RemoveCoord
 float fCoordPhase1ETA = 0.0;
 float fCoordPhase2ETA = 0.0;
 float fCoordPhase1GreenHoldDuration = 0.0;
 float fCoordPhase2GreenHoldDuration = 0.0;
-double dTimeOfRepetativeSolve = 0.0;
-int iNumOfRxBytes = 0;
 bool bsetCoordForFistTime = 0;
+double dTimeOfRepetativeSolve = 0.0;
+*/
 
+int iNumOfRxBytes = 0;
 
+/*RemoveCoord
 PriorityConfig priorityConfig;
-
+*/
     
 
 
@@ -116,6 +110,7 @@ int main(int argc, char *argv[]) {
     int flagForClearingInterfaceCmd = 0; // a flag to clear all commands in the interface when the request passed
     double dCountDownIntervalForETA = 1.0;    // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
     double dCurrentTimeInCycle = 100.0;// For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
+    int PhaseStatus[8];             // Determine the phase status to generate the split phases
 
     while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)    
     {
@@ -147,17 +142,18 @@ int main(int argc, char *argv[]) {
         }
     }
 
+/*RemoveCoord
     priorityConfig.readPriorityConfig(PRIORITY_CONFIG_FILE);
-
+*/
     creatLogFile();
 
     // clear the content of requests.txt and requests_combined.txt
     clearRequestFiles();                        
-
+/*RemoveCoord
     // initializing the gps to get gps time for setting coordination time in case the application is running in field.
     if ((iApplicationUsage == FIELD) && (priorityConfig.dCoordinationWeight > 0))
         gpsInitialization();
-
+*/
     getControllerIPaddress();
   
     // Get the current RSU ID from "rsuid.txt" 
@@ -169,9 +165,11 @@ int main(int argc, char *argv[]) {
     setupConnection(iPORT,lTimeOut);
 
     // get the intersection name                          
-    strcpy(cIntersectionName, Rsu_ID.c_str());  
+    //strcpy(cIntersectionName, Rsu_ID.c_str());  
 
-    readSignalControllerAndGetActivePhases();
+    //DJC removed this function as it only acts a proxy call to readPhaseTimingStatus()
+    //readSignalControllerAndGetActivePhases();
+    readPhaseTimingStatus(PhaseStatus); // First find the unused(enabled) phases if there are any.
 
     IntLanePhase lanePhase{};
 
@@ -185,12 +183,14 @@ int main(int argc, char *argv[]) {
 
         // Get clock time for this type of run environment
         // KLH - we should get time from system clock and sync system clock to external source
-        if (iApplicationUsage == FIELD)
+        /*if (iApplicationUsage == FIELD)
             dTime = readGPStime();
         else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0))
             dTime = getSystemTime();
         else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0))
             dTime = dVISSIMtime;
+        */
+        dTime = getSystemTime();
 
         // read socket for Signal Request Message
         iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, sizeof(rxMsgBuffer), 0, (struct sockaddr *) &recvaddr,
@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(rxMsgBuffer, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
+            processRxMessage(rxMsgBuffer, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0)) {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
@@ -210,8 +210,10 @@ int main(int argc, char *argv[]) {
                                             flagForClearingInterfaceCmd, dCurrentTimeInCycle);
         }
 
+/*RemoveCoord
         if (priorityConfig.dCoordinationWeight > 0)
             setCoordinationPriorityRequests(req_List, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd, dCurrentTimeInCycle);
+*/
 
         if (ReqListUpdateFlag > 0 && req_List.ListSize() > 0) {
             sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
@@ -224,9 +226,13 @@ int main(int argc, char *argv[]) {
         // DJC cout << "ReqListUpdateFlag " << ReqListUpdateFlag << endl;
         // DJC cout << "flagForClearingInterfaceCmd " << flagForClearingInterfaceCmd << endl;
 
-        // if request list is empty and the last vehisle just passed the intersection
+/*RemoveCoord
         if (priorityConfig.dCoordinationWeight <= 0 && ((ReqListUpdateFlag > 0 && req_List.ListSize() == 0) ||
-                                                        flagForClearingInterfaceCmd == 1)) 
+                                                        flagForClearingInterfaceCmd == 1))
+*/
+        // if request list is empty and the last vehisle just passed the intersection                                                         
+        if ((ReqListUpdateFlag > 0 && req_List.ListSize() == 0) ||
+                                                        flagForClearingInterfaceCmd == 1)
         {
             //DJC cout << "Req List gets Empty" << endl;
 
@@ -296,7 +302,7 @@ void getRSUid(string rsu_id)
     fs.close();
 }
 
-void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, LinkedList <ReqEntry> &req_list,
+void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLanePhase lanePhase, LinkedList <ReqEntry> &req_list,
                          int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage, int &flagForClearingInterfaceCmd ) {
     float fETA;
     int iRequestedPhase;
@@ -317,6 +323,8 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
     char temp_log[256];
     char bsmBlob[BSM_BLOB_SIZE];
     BasicVehicle vehIn;
+    char cRequestType[32];         // Whether it is a request or request_clear or coord_request, 
+                               //this variable is used to fill up tempMsg
     char tempMsg[1024];      // To write the requests info into this variable. 
                              //this variable will be passed to UpdateList function to update the request lists
     SRM_t *srm = 0;
@@ -329,8 +337,12 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
 
 
     cout << "Message Received " << endl;
+
+    //asn_enc_rval_t ec;                 
+    asn_dec_rval_t rval; // Encoder return value
     rval = ber_decode(0, &asn_DEF_SRM, (void **) &srm, rxMsgBuffer, sizeof(rxMsgBuffer));
     //xer_fprint(stdout, &asn_DEF_SRM, srm);
+    double dVISSIMtime = 0.0;
 
     if (rval.code == RC_OK) {
         sprintf(temp_log, "SRM Recieved: Decode Success\n");
@@ -394,13 +406,13 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
             //	else if (iVehicleState==2) // vehicle is in queue
             //		iVehicleState=3;
 
-            sprintf(tempMsg, "%s %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
-                    cIntersectionName, lvehicleID,
+            sprintf(tempMsg, "%s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
+                    /*cIntersectionName,*/ lvehicleID,
                     iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
                     srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
                     iEndHour, iEndMinute, iEndSecond,
                     iVehicleState, iMsgCnt, 0.0);
-            sprintf(temp_log, "........... The Received SRM  match the Intersection ID  ,  at time %.2f. \n", dTime);
+            sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
             outputlog(temp_log);
 
             //~ sprintf(temp_log," ID, Type, ETA , Phase, QCT, inLane, outLane, Shr, Smn, Ssec, Ehr, Emn, Esec, State, Speed, Cnt  \n");
@@ -408,13 +420,13 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
 
             sprintf(temp_log, "%s\t \n", tempMsg);
             outputlog(temp_log);
-            readPhaseTimingStatus(PhaseStatus);  // Get the current phase status for determining the split phases
+            readPhaseTimingStatus(phaseStatus);  // Get the current phase status for determining the split phases
 
             //	sprintf(temp_log,"Current Signal status:     %d  %d  %d  %d  %d  %d  %d  %d\t", PhaseStatus[0],PhaseStatus[1],PhaseStatus[2],PhaseStatus[3],PhaseStatus[4],PhaseStatus[5],PhaseStatus[6],PhaseStatus[7]);     
             //		outputlog(temp_log);
             // MZP		ReqListFromFile(REQUESTFILENAME,req_list);
 
-            UpdateList(req_list, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);   // Update the Req List data structure considering received message
+            UpdateList(req_list, tempMsg, phaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);   // Update the Req List data structure considering received message
 
             // MZP		PrintList2File(REQUESTFILENAME,req_list,1);  // Write the requests list into requests.txt,
             // MZP		printReqestFile2Log(REQUESTFILENAME);
@@ -428,15 +440,21 @@ void processRxMessage(const char *rxMsgBuffer, const IntLanePhase lanePhase, Lin
         if ((iApplicationUsage == FIELD)) {
             sprintf(temp_log, " SRM Decode Failed ! \n");
             outputlog(temp_log);
+/*RemoveCoord
         } else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
+*/
+        } else if (iApplicationUsage == SIMULATION) {
             dVISSIMtime = getSimulationTime(rxMsgBuffer);
             sprintf(temp_log, "The received message is VISSIM clock %.2f\n", dVISSIMtime);
             outputlog(temp_log);
+        }
+/*RemoveCoord
         } else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
             sprintf(temp_log,
                     "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
             outputlog(temp_log);
         }
+*/
     }  
 
     free(srm->vehicleVIN);
@@ -518,6 +536,7 @@ int getSignalColor(int PhaseStatusNo) {
     return ColorValue;
 }
 
+/*RemoveCoord
 
 void setCoordinationPriorityRequests(LinkedList <ReqEntry> &req_list, int &ReqListUpdateFlag,
                                      int CombinedPhase[], int &flagForClearingInterfaceCmd, double &dCurrentTimeInCycle) {
@@ -603,12 +622,11 @@ void updateCoordRequestsInList(LinkedList <ReqEntry> &req_list,int &ReqListUpdat
                    PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);        // Update the Req List data structure considering second coordination
     }
 
-/*	
-	PrintList2File(REQUESTFILENAME,req_list,1);         // Write the requests list into requests.txt, 
-	printReqestFile2Log(REQUESTFILENAME);
-	PrintList2File(REQUESTFILENAME_COMBINED,req_list,0);//Write the requests list into  requests_combined.txt; 
-	printReqestFile2Log(REQUESTFILENAME_COMBINED);
-*/
+	
+//	PrintList2File(REQUESTFILENAME,req_list,1);         // Write the requests list into requests.txt, 
+//	printReqestFile2Log(REQUESTFILENAME);
+//	PrintList2File(REQUESTFILENAME_COMBINED,req_list,0);//Write the requests list into  requests_combined.txt; 
+//	printReqestFile2Log(REQUESTFILENAME_COMBINED);
 }
 
 // As a result of this function, we obtain the value of fCoordPhase1GreenHoldDuration,fCoordPhase1ETA, 
@@ -720,6 +738,7 @@ int gpsInitialization() {
     return 0;
 }
 
+*/
 
 int FindVehClassInList(LinkedList <ReqEntry> req_list, int VehClass) {
     req_list.Reset();
@@ -749,7 +768,7 @@ int FindVehClassInList(LinkedList <ReqEntry> req_list, int VehClass) {
 // bAtBeginingOfSmallerCoordSplit   0    1      1     		1
 // bAtTheEndOfCoordPhaseSplits      0    0      1     		1
 
-
+/*RemoveCoord
 int doWeNeedToSolveForCoordRequests(bool& bAtOffsetRefPointFlag, bool& bAtBeginingOfSmallerCoordSplitFlag,
                                     bool& bAtTheEndOfCoordPhaseSplitsFlag, const double dCurrentTimeInCycle) {
     int iYesSolveIt = 0;
@@ -792,15 +811,15 @@ int doWeNeedToSolveForCoordRequests(bool& bAtOffsetRefPointFlag, bool& bAtBegini
     }
 
     // MZP
-    /*cout<<"bAtBeginingOfSmallerCoordSplitFlag"<<bAtBeginingOfSmallerCoordSplitFlag<<endl;
-    cout<<"bAtTheEndOfCoordPhaseSplitsFlag"<<bAtTheEndOfCoordPhaseSplitsFlag<<endl;
-    cout<<"bAtOffsetRefPointFlag"<<bAtOffsetRefPointFlag<<endl;
-*/
+    //cout<<"bAtBeginingOfSmallerCoordSplitFlag"<<bAtBeginingOfSmallerCoordSplitFlag<<endl;
+    //cout<<"bAtTheEndOfCoordPhaseSplitsFlag"<<bAtTheEndOfCoordPhaseSplitsFlag<<endl;
+    //cout<<"bAtOffsetRefPointFlag"<<bAtOffsetRefPointFlag<<endl;
+
 
 
     return iYesSolveIt;
 }
-
+*/
 
 void readPhaseTimingStatus(int PhaseStatus[8]) {
     netsnmp_session session, *ss;
@@ -920,6 +939,9 @@ void readPhaseTimingStatus(int PhaseStatus[8]) {
             }
         }
         //****** GET the results from controller *************//
+        int iColor[2][8]; // iColor[1][*]  has the current phase color, and iColor[0][*] has the previous signal status phase color.
+        int phaseColor[8];
+
         identifyColor(iColor, out[0], out[1], out[2], out[3]);
         whichPhaseIsGreen(phaseColor, out[0], out[1], out[2]);
         for (int i = 0; i < MAX_NO_OF_PHASES; i++) {
@@ -962,6 +984,7 @@ void readPhaseTimingStatus(int PhaseStatus[8]) {
     SOCK_CLEANUP;
 }
 
+/*
 // DJC - it appears that this function does nothing. I moved the vector of ints from being global to local and it is not used any where else.
 // DJC it does seem to act as a proxy call to load PhaseStatus via readPhaseTimingStatus()
 void readSignalControllerAndGetActivePhases() {
@@ -977,6 +1000,7 @@ void readSignalControllerAndGetActivePhases() {
                 100); // JD 4/1/12 100 is a random number, later the v_PhaseNotEnabled will be used to search the unused phases
     }
 }
+*/
 
 void identifyColor(int i_Color[2][8], int greenGroup, int redGroup, int yellowGroup, int nextPhase) {
 
@@ -1582,7 +1606,7 @@ int msleep(unsigned long milisec) {
     return 1;
 }
 
-
+/*
 double readGPStime() {
     double dSystemTime = 0.0;
     double dTempTime = 0.0;
@@ -1596,7 +1620,7 @@ double readGPStime() {
     }
     return dTempTime;
 }
-
+*/
 
 void setupConnection(int &iPort,long lTimeOut) {
 

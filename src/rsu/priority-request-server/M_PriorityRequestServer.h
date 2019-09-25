@@ -104,23 +104,13 @@ void creatLogFile();
 
 void setupConfigurationAndConnection();
 
-void readSignalControllerAndGetActivePhases();
+// DJC void readSignalControllerAndGetActivePhases();
 
 int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
-int gpsInitialization();
-
-int doWeNeedToSolveForCoordRequests(bool &, bool&, bool &, const double);
-
-void calculateETAofCoordRequests(bool &, bool&, bool &);
-
-void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int [], int&, const double);
-
 void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &, const double);
 
-void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int [], int&, double&);
-
-void processRxMessage(const char *, const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
+void processRxMessage(const char *, int [], const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
 
 double readGPStime();
 
@@ -132,3 +122,10 @@ void whichPhaseIsGreen(int phase_Color[8], int greenGroup, int redGroup,
                        int yellowGroup); // this function returns the color of the first argument which is phaseNo.
 
 
+/*RemoveCoord
+void setCoordinationPriorityRequests(LinkedList <ReqEntry> &, int&, int [], int&, double&);
+void updateCoordRequestsInList(LinkedList <ReqEntry> &,int &, int [], int&, const double);
+int gpsInitialization();
+int doWeNeedToSolveForCoordRequests(bool &, bool&, bool &, const double);
+void calculateETAofCoordRequests(bool &, bool&, bool &);
+*/
