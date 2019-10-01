@@ -109,22 +109,6 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             iRecvReqListDiviser = (int)Req_List.Data().iMsgCnt / 10;
 
             iNewReqDiviser = (int)NewReq.iMsgCnt / 10;
-            // MZP      outputlog("All the data in the request list is:\n");
-            // MZP
-            /*
-              if (iRecvReqListDiviser==iNewReqDiviser) // the recived SRM with identical MsgCnt type is already in the list, so we should not add the new req to the list. We should just update the ETA of the request in the list
-            {
-                ReqListUpdateFlag=2;
-                Req_List.Data().ETA=Req_List.Data().ETA-dRollingHorInterval;
-                if (Req_List.Data().ETA<0)
-                    Req_List.Data().ETA=0;
-                sprintf(temp_log,"%ld %d %f %d %f %f %d %d %d %d %d %d %d %d %d %d\n",Req_List.Data().VehID,Req_List.Data().VehClass,Req_List.Data().ETA,Req_List.Data().Phase,Req_List.Data().MinGreen,
-                Req_List.Data().fSetRequestTime, Req_List.Data().iInLane, Req_List.Data().iOutLane, Req_List.Data().iStrHour,Req_List.Data().iStrMinute,Req_List.Data().iStrSecond,
-                Req_List.Data().iEndHour,Req_List.Data().iEndMinute,Req_List.Data().iEndSecond,Req_List.Data().iVehState,Req_List.Data().iMsgCnt);
-
-            }
-            else
-            */
 
             // if the received SRM with identical MsgCnt type is not already in the list, we should  add/update the new req to the list.
             if (iRecvReqListDiviser != iNewReqDiviser)
@@ -229,7 +213,7 @@ int numberOfEVs(LinkedList<ReqEntry> ReqList)
 
 int FindSplitPhase(int phase, int phaseStatus[8], int CombinedPhase[])
 {
-    //*** From global array CombinedPhase[] to get the combined phase :get_configfile() generates CombinedPhase[]
+    //*** From CombinedPhase[] to get the combined phase :get_configfile() generates CombinedPhase[]
     //*** If the phase exsits, the value is not 0; if not exists, the default value is '0'.; "-1"  means will not change later
     //*** The argument phase should be among {1..8}
     //int Phase_Seq[8]={1,2,3,4,5,6,7,8};
@@ -354,48 +338,6 @@ int getCurrentFlagInReqFile(const char *filename)
     return iTempFlag;
 }
 
-/*
-int ReqListFromFile(char *filename,LinkedList<ReqEntry>& Req_List)
-{
-    fstream fss;
-    fss.open(filename,fstream::in);
-    ReqEntry req_temp;
-
-    int ReqNo=-1;
-    char RSU_ID[20];
-    long vehicle_ID;
-    int Veh_Class,Req_Phase,Req_SplitPhase;
-    float fSetRequestTime;
-    float ETA,MinGrn;
-	int iinlane,ioutlane,istrhour,istrminute,istrsecond,iendhour,iendminute,iendsecond,ivehstate,imsgcnt; 
-	string lineread;
-    Req_List.ClearList();
-
-    getline(fss,lineread); // Read first line: should be [Num_req] [No] [UpdateFlag]
-    sscanf(lineread.c_str(),"%*s %d %d",&ReqNo,&ReqListUpdateFlag);
-    cout<<"The total Requests is:"<<ReqNo<<endl;
-
-    while(!fss.eof() && ReqNo>0)
-    {
-        getline(fss,lineread);
-        if(lineread.size()!=0)
-        {
-			sscanf(lineread.c_str(),"%s %ld %d %f %d %f %f %d %d %d %d %d %d %d %d %d %d %d",RSU_ID,&vehicle_ID,&Veh_Class,&ETA, 
-			&Req_Phase,&MinGrn,&fSetRequestTime,&Req_SplitPhase,&iinlane,&ioutlane,&istrhour,&istrminute,&istrsecond,&iendhour,&iendminute,&iendsecond,&ivehstate,&imsgcnt); 
-            ReqEntry req_temp(vehicle_ID,Veh_Class,ETA,Req_Phase,MinGrn,fSetRequestTime,Req_SplitPhase,iinlane,ioutlane,istrhour,istrminute,istrsecond,iendhour,iendminute,iendsecond,ivehstate,imsgcnt);  
-            Req_List.InsertAfter(req_temp);
-            cout<<lineread<<endl;
-        }
-        else
-        {
-            cout<<"Blank Line in requests.txt file!\n";
-        }
-    }
-    fss.close();
-    return ReqNo;
-
-}
-*/
 void PrintList(LinkedList<ReqEntry> &ReqList)
 {
     if (ReqList.ListEmpty())
@@ -566,15 +508,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                                const double dCurrentTimeInCycle)
 {
     char temp_log[256];
-/*RemoveCoord
-    int icoordphase1 = priorityConfig.iCoordinatedPhase[0];
-    int icoordphase2 = priorityConfig.iCoordinatedPhase[1];
-    double dcoordphase1split = priorityConfig.dCoordinationPhaseSplit[priorityConfig.iCoordinatedPhase[0] - 1];
-    double dcoordphase2split = priorityConfig.dCoordinationPhaseSplit[priorityConfig.iCoordinatedPhase[1] - 1];
-    double dCoordinationCycle = priorityConfig.dCoordCycle;
-    double dLargerSplit = priorityConfig.dLargerCoordinationSplit;
-    double doffset = priorityConfig.dCoordOffset;
-*/
+
     Req_List.Reset();
 
     while (!Req_List.EndOfList())
@@ -585,10 +519,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         // if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
         // SRM has not been updated during this interval, this request is a residual request and should be deleted!
         // Does the SRM get sent on some interval or only once??????????
-/*RemoveCoord
-        if ((dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ) && 
-            (Req_List.Data().VehClass != COORDINATION))
-*/ 
+
         if (dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ)
         {
             Req_List.Reset(Req_List.CurrentPosition());
@@ -602,62 +533,6 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         }
         else
         {
-/*RemoveCoord
-            if ((Req_List.Data().VehClass == COORDINATION))
-            {
-                if (dcoordphase1split == dcoordphase2split) // if the two coordinated phse have the same split time
-                {
-                    if (Req_List.Data().ETA == 0 && Req_List.Data().MinGreen > 1)
-                        Req_List.Data().MinGreen = dcoordphase1split - dCurrentTimeInCycle;
-
-                    if (Req_List.Data().ETA > 0 && Req_List.Data().MinGreen == 0)
-                    {
-                        if (dCurrentTimeInCycle > 0)
-                            Req_List.Data().ETA = dCoordinationCycle - dCurrentTimeInCycle;
-                        else
-                            Req_List.Data().ETA = -dCurrentTimeInCycle;
-                    }
-                }
-                else
-                {
-                    if (icoordphase1 == Req_List.Data().Phase)
-                    {
-                        if (Req_List.Data().ETA == 0 && Req_List.Data().MinGreen > 1)
-                            Req_List.Data().MinGreen = dLargerSplit - dCurrentTimeInCycle;
-
-                        if (Req_List.Data().ETA > 0 && Req_List.Data().MinGreen == 0)
-                        {
-                            // if signal is on the coordinated split time , one coordinated phase has ETA and the other has MinGreen
-                            if ((dCurrentTimeInCycle <= max(dcoordphase2split - dcoordphase1split, 0.0)))
-                                Req_List.Data().ETA =
-                                    max(dcoordphase2split - dcoordphase1split, 0.0) - dCurrentTimeInCycle;
-                            else
-                                Req_List.Data().ETA = dCoordinationCycle - dCurrentTimeInCycle +
-                                                      max(dcoordphase2split - dcoordphase1split, 0.0);
-                        }
-                    }
-                    if (icoordphase2 == Req_List.Data().Phase)
-                    {
-                        if (Req_List.Data().ETA == 0 && Req_List.Data().MinGreen > 1)
-                            Req_List.Data().MinGreen = dLargerSplit - dCurrentTimeInCycle;
-
-                        if (Req_List.Data().ETA > 0 && Req_List.Data().MinGreen == 0)
-                        {
-                            if (dCurrentTimeInCycle <= max(dcoordphase1split - dcoordphase2split, 0.0))
-                                Req_List.Data().ETA =
-                                    max(dcoordphase1split - dcoordphase2split, 0.0) - dCurrentTimeInCycle;
-                            else
-                                Req_List.Data().ETA = dCoordinationCycle - dCurrentTimeInCycle +
-                                                      max(dcoordphase1split - dcoordphase2split, 0.0);
-                        }
-                    }
-                }
-
-                Req_List.Data().dTimeInCycle = dCurrentTimeInCycle;
-            }
-            else
-            {
-*/
             if (Req_List.Data().ETA > 0)
             {
                 if (dTime - Req_List.Data().dUpdateTimeOfETA >= dCountDownIntervalForETA)
