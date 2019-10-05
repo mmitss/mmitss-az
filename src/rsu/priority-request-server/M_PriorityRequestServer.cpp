@@ -33,12 +33,12 @@
 #include <vector>
 #include <time.h>
 #include <sys/time.h>
-#include "net-snmp/net-snmp-config.h"
-#include "net-snmp/net-snmp-includes.h"
+//#include "net-snmp/net-snmp-config.h"
+//#include "net-snmp/net-snmp-includes.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
-#include "SRM.h"
+//#include "SRM.h"
 #include "BasicVehicle.h"
 #include "ManageRequestList.h"
 #include "M_PriorityRequestServer.h"
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
 void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLanePhase lanePhase, LinkedList<ReqEntry> &req_list,
                       int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage, int &flagForClearingInterfaceCmd)
 {
-    float fETA;
+/*    float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
     int iInApproach = 0;
@@ -285,7 +285,8 @@ void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLaneP
                 dMinGrn = (double)(fETA);
 
             sprintf(tempMsg, "%s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
-                    /*cIntersectionName,*/ lvehicleID,
+                    //cIntersectionName, 
+                    lvehicleID,
                     iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
                     srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
                     iEndHour, iEndMinute, iEndSecond,
@@ -308,9 +309,9 @@ void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLaneP
         {
             sprintf(temp_log, " SRM Decode Failed ! \n");
             outputlog(temp_log);
-            /*RemoveCoord
-        } else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
-*/
+            //RemoveCoord
+        //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
+
         }
         else if (iApplicationUsage == SIMULATION)
         {
@@ -318,13 +319,13 @@ void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLaneP
             sprintf(temp_log, "The received message is VISSIM clock %.2f\n", dVISSIMtime);
             outputlog(temp_log);
         }
-        /*RemoveCoord
-        } else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
-            sprintf(temp_log,
-                    "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
-            outputlog(temp_log);
-        }
-*/
+        //RemoveCoord
+        //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
+        //    sprintf(temp_log,
+        //            "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
+        //    outputlog(temp_log);
+        //}
+ 
     }
 
     free(srm->vehicleVIN);
@@ -332,7 +333,9 @@ void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLaneP
     free(srm->endOfService);
     free(srm->timeOfService);
     free(srm);
+*/
 }
+
 
 void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag,
                                     const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd,
@@ -439,7 +442,7 @@ int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
 
 void readPhaseTimingStatus(int PhaseStatus[8])
 {
-    netsnmp_session session, *ss;
+/*    netsnmp_session session, *ss;
     netsnmp_pdu *pdu;
     netsnmp_pdu *response;
     oid anOID[MAX_OID_LEN];
@@ -448,7 +451,7 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     int status;
     init_snmp("ASC");         //Initialize the SNMP library
     snmp_sess_init(&session); //Initialize a "session" that defines who we're going to talk to
-    /* set up defaults */
+    // set up defaults
     //char *ip = m_rampmeterip.GetBuffer(m_rampmeterip.GetLength());
     //char *port = m_rampmeterport.GetBuffer(m_rampmeterport.GetLength());
     char ipwithport[64];
@@ -456,12 +459,12 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     strcat(ipwithport, ":");
     strcat(ipwithport, INTport); //for ASC get status, DO NOT USE port!!!
     session.peername = strdup(ipwithport);
-    session.version = SNMP_VERSION_1; //for ASC intersection  /* set the SNMP version number */
-    /* set the SNMPv1 community name used for authentication */
+    session.version = SNMP_VERSION_1; //for ASC intersection  set the SNMP version number 
+    // set the SNMPv1 community name used for authentication 
     session.community = (u_char *)"public";
     session.community_len = strlen((const char *)session.community);
     SOCK_STARTUP;
-    ss = snmp_open(&session); /* establish the session */
+    ss = snmp_open(&session); // establish the session
     if (!ss)
     {
         snmp_sess_perror("ASC", &session);
@@ -469,10 +472,10 @@ void readPhaseTimingStatus(int PhaseStatus[8])
         exit(1);
     }
 
-    /*
-    * Create the PDU for the data for our request.
-    *   1) We're going to GET the system.sysDescr.0 node.
-    */
+    
+    // Create the PDU for the data for our request.
+    //  1) We're going to GET the system.sysDescr.0 node.
+
     pdu = snmp_pdu_create(SNMP_MSG_GET);
     anOID_len = MAX_OID_LEN;
 
@@ -520,26 +523,26 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     }
     snmp_add_null_var(pdu, anOID, anOID_len);
 
-    /*
-    * Send the Request out.
-    */
+    
+    //Send the Request out.
+
     status = snmp_synch_response(ss, pdu, &response);
 
-    /*
-    * Process the response.
-    */
+
+    //Process the response.
+
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-        /*
-        * SUCCESS: Print the result variables
-        */
+    
+        //SUCCESS: Print the result variables
+        
 
         int *out = new int[MAX_CONTROLLER_OUTPUT_VALUES];
         int i = 0;
         //~ for(vars = response->variables; vars; vars = vars->next_variable)
         //~ print_variable(vars->name, vars->name_length, vars);
 
-        /* manipuate the information ourselves */
+        // manipuate the information ourselves
         for (vars = response->variables; vars; vars = vars->next_variable)
         {
             if (vars->type == ASN_OCTET_STR)
@@ -559,7 +562,7 @@ void readPhaseTimingStatus(int PhaseStatus[8])
                 //printf("value #%d is NOT a string! Ack!. Value = %d \n", count++,*aa);
             }
         }
-        //****** GET the results from controller *************//
+        //GET the results from controller
         int iColor[2][8]; // iColor[1][*]  has the current phase color, and iColor[0][*] has the previous signal status phase color.
         int phaseColor[8];
 
@@ -599,15 +602,16 @@ void readPhaseTimingStatus(int PhaseStatus[8])
             snmp_sess_perror("snmpdemoapp", ss);
     }
 
-    /*
-    * Clean up:    *  1) free the response.   *  2) close the session.
-    */
+    
+    // Clean up:    *  1) free the response.   *  2) close the session.
+    
     if (response)
         snmp_free_pdu(response);
 
     snmp_close(ss);
 
     SOCK_CLEANUP;
+*/
 }
 
 
