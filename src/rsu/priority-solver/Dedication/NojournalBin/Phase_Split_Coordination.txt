@@ -1,0 +1,2 @@
+#This is the phase split of 8 phases in case we do not want to read it from controller  (as test of different split)
+0 60 0 30 12 48 0 0

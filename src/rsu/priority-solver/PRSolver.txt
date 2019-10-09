@@ -1,0 +1,69 @@
+/***************/
+###List of all the files
+//define log file name with time stamp.
+char logfilename[256]     			= "/nojournal/bin/log/MMITSS_MRP_Priority_Solver";
+char signal_plan_file[256]      	= "/nojournal/bin/log/signal_Plan_";
+//---Store the file name of the Config file.
+//--- For Example: ConfigInfo_Hastings.txt, which has the minGrn and maxGrn etc.
+char ConfigInfo[256]	  			= "/nojournal/bin/ConfigInfo.txt";
+char IPInfo[64]			  			= "/nojournal/bin/IPInfo.txt";
+char rsuid_filename[64]   			= "/nojournal/bin/rsuid.txt";
+char PriorityConfigFile[64]  		= "/nojournal/bin/priorityConfiguration.txt";   // for importing the priority related inputs such as weights 
+char request_combined_filename[128] = "/nojournal/bin/requests_combined.txt"; //requests_combined
+char requestfilename[128] 			= "/nojournal/bin/requests.txt"; //requests
+char signal_filename[128]		 	= "/nojournal/bin/signal_status.txt";
+char prioritydatafile[128]			= "/nojournal/bin/NewModelData.dat";
+char resultsfile[128]    			= "/nojournal/bin/Results.txt"; // Result from the GLPK solver.
+char Lane_No_File_Name[64]  		= "/nojournal/bin/Lane_No_MPRSolver.txt"; 
+char Lane_Phase_File_Name[64]  		= "/nojournal/bin/Lane_Phase_Mapping.txt"; 
+/***********************/
+
+/****************/
+###
+LinkedList<ReqEntry> Req_List_Combined; // Req list for requests in requests_combined.txt   . requests.combined.txt does not have the requests split phase in case we have EV in the list
+LinkedList<ReqEntry> ReqList;           // Req list for requests in requests.txt: For updating the ReqListUpdateFlag only.  requests.txt has the requests split phase in case we have EV in the list
+LinkedList <Schedule> Eventlist_R1;
+LinkedList <Schedule> Eventlist_R2;
+/***************/
+
+/*********************************/
+###### main function
+    //handleArguments(int argc, char* argv[])
+        -get the type priority policy (priority algorithm, adaptive, COP)
+    //setupConfigurationAndConnection()
+        -create log files -> creatLogFiles()
+        -READ the ASC controller IP address into INTip from "IPInfo.txt" -> get_ip_address()
+        -Get rsu id for string RSUID from "rsuid.txt" -> get_rsu_id()
+        -Read the ConfigInfo.txt file and write the info into ConfigFile_XX.txt. Read in the CombinedPhase[8] for finding the split phases. ->get_configfile()
+        -get current timing plan using snmp session -> CurTimingPlanRead()
+        -snmp session to get Gmin,Yellow, Red, Gmax, Phase enabled information and write in Configfile_XX.txt -> IntersectionConfigRead(curPlan,ConfigFile);
+        -Get Configuration from priorityConfiguration.txt and controler and handle the parameters for incomplete phases ->ReadInConfig(ConfigFile,PriorityConfigFile) //Check with Dr. Head
+        -Read the signal info from ConfigFile_XX.txt file. create NewModel.mod file -> GenerateMod(ConfigFile,ConfigIS,"/nojournal/bin/NewModel.mod",0)
+        -Create socket connection having port no 33333 to get arrival time from trajectory aware component (just in case sodeusage is AdaptivePriority) and send the Event list to Signal Controller OR to send the Event list to COP OR to only send the Event list to Signal Controller ->setupConnection()
+    //testConnectionToController()
+        -warm up to see if we are connected to controller. snmp session is used ->PhaseTimingStatusRead()
+    //void captureRequiredSignalStatus()
+        -newPhaseStatus is the status reading from the controller -> UpdatePhase(phase_read)
+        - record phaseStatus information ->RecordPhase(signal_plan_file)
+    //readRequestListFromFiles()
+        - Read from the uncombined phase file: requests.txt get ReqListUpdateFlag.  requests.txt has the split phase information ->ReqListFromFile(requestfilename,ReqList)
+        - Read from the combined phase file: requests_combined.txt ->ReqListFromFile_EV(request_combined_filename,Req_List_Combined)
+    //logRequestList()
+        - log request file information
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

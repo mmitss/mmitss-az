@@ -1,0 +1,30 @@
+config dnsmasq
+	option domainneeded	1
+	option boguspriv	1
+	option filterwin2k	'0'  #enable for dial on demand
+	option localise_queries	1
+	option local	'/lan/'
+	option domain	'lan'
+	option expandhosts	1
+	option nonegcache	0
+	option authoritative	1
+	option readethers	1
+	option leasefile	'/tmp/dhcp.leases'
+	option resolvfile	'/tmp/resolv.conf.auto'
+	option localttl         1
+
+
+config dhcp				# DHCP section
+	option interface	lan	# applies to network 'lan'
+	option start 		02	# starting IP address on the specified network
+	option limit		250	# number of IP addresses
+	option leasetime	1h	# lease time
+	option ignore		1	# 1/0 - disable/enable DHCP server on this network
+
+
+config dhcp				# DHCP section
+	option interface	dsrcnet0 # applies to network 'dsrcnet0'
+	option start 		02	# starting IP address on the specified network
+	option limit		250	# number of IP addresses
+	option leasetime	1h	# lease time
+	option ignore		1	# 1/0 - disable/enable DHCP server on this network

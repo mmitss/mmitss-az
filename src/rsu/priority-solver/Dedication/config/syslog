@@ -1,0 +1,21 @@
+config syslogd
+	option enable '1'       # enable(1)/disable(0)
+	option ipaddr	''      # IP address where network based logging should be sent
+	option port	''      # port where network based logging should be sent
+	option size	'256'       # max file size KB, 0 unlimited
+	option type	''
+	option mark	'0'
+	option directory '/nojournal/systemlogs/'   # files location
+	option time '0'      # max time file is allowed to grow in mins, 0 unlimited
+	option disc_capacity '70'   # max disc capacity, percentage
+
+config klogd
+	option conloglevel	''
+
+config dmesg
+	option buffersize	''
+
+config dmesgbackup
+	option enabled	'0'
+	option file	'/var/log/dmesg'
+	option gzip	'1'

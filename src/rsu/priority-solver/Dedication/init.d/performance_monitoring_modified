@@ -1,0 +1,129 @@
+#!/bin/sh
+## This is a script to check availability of the device and applications
+## Author: Shayan Khoshmagham, 3/15/16
+## University of Arizona
+
+LOG=/nojournal/bin/log/Performance_Report.log
+SECONDS=15
+COUNT=5
+FLAG=1
+INTERVAL="10"  # update interval in seconds
+SECS=3600
+UNIT_TIME=10
+STEPS=$(( $SECS / $UNIT_TIME ))
+
+DATE=$(date +"%m%d%Y%H%M")
+
+#Sending out Emails
+SUBJECT="Server Status"
+EMAILID="shkhoshmagham@email.arizona.edu"
+
+APP="MMITSS_RSE_SZA_Sender"
+
+PORT=1188
+ITISCODE=613
+
+for myHost in $(cat host.txt); do
+	echo "The Status of the device is checked on an hourly basis" > $LOG.$myHost.$DATE
+done
+	#ping and ps to find out the applications running and do automatic 
+
+while true; do
+	for myHost in $(cat host.txt); do
+		count=$(ping -c $COUNT $myHost | grep 'received' | awk -F',' '{ print $2 }' | awk '{ print $1 }')
+		#echo "The value of Count is: $count"
+		if [ $count -eq 0 ]; then
+			#100% failure
+			let FLAG+=1
+			echo "The value of the flag is: $FLAG"
+			echo "$(date): Ping Failed! The RSU is down!" >> $LOG.$myHost.$DATE
+			if [ $FLAG -eq 3 ]; then
+				mail -s "$SUBJECT" $EMAILID<<EOF
+				Roadside Unit mounted at $myHost is Down at $(date)
+EOF
+			let FLAG-=10
+			fi
+		fi
+		if [ $count -eq 5 ]; then
+			#100% success
+			echo "$(date): Ping Success! The RSU is up and running!" >> $LOG.$myHost.$DATE
+			echo "$(date): Ping Success! The RSU is up and running!"
+			
+			if [ -z "$1" ]; then
+				echo
+				echo usage: $0 [network-interface]
+				echo
+				echo e.g. $0 ath0
+				echo
+				echo shows packets-per-second
+				exit
+			fi
+
+			IF=$1
+
+			while true
+			do
+				Rp1=`cat /sys/class/net/$1/statistics/rx_packets`  #log file for Received Packets
+				Tp1=`cat /sys/class/net/$1/statistics/tx_packets`  #log file for Transferred Packets
+				Rb1=`cat /sys/class/net/$1/statistics/rx_bytes`    #log file for Received Bytes
+				Tb1=`cat /sys/class/net/$1/statistics/tx_bytes`    #log file for Transferred Bytes
+				Rd1=`cat /sys/class/net/$1/statistics/rx_dropped`  #log file for packets dropped while received
+				Td1=`cat /sys/class/net/$1/statistics/tx_dropped`  #log file for packets dropped while tranmitted
+				sleep $INTERVAL					   #Sleep for 10 Seconds
+				Rp2=`cat /sys/class/net/$1/statistics/rx_packets`  
+				Tp2=`cat /sys/class/net/$1/statistics/tx_packets`
+				Rb2=`cat /sys/class/net/$1/statistics/rx_bytes`
+				Tb2=`cat /sys/class/net/$1/statistics/tx_bytes`
+				Rd2=`cat /sys/class/net/$1/statistics/rx_dropped`
+				Td2=`cat /sys/class/net/$1/statistics/tx_dropped`
+					
+				TXPPS=`expr $Tp2 - $Tp1`		           #Difference between Transferred Packets
+				RXPPS=`expr $Rp2 - $Rp1`			   #Difference between Received Packets
+				TBPS=`expr $Tb2 - $Tb1`				   #Difference between Transferred Bytes
+				RBPS=`expr $Rb2 - $Rb1`				   #Difference between Received Bytes
+				TKBPS=`expr $TBPS / 1024`			   #Conversion to KBytes
+				RKBPS=`expr $RBPS / 1024`			   #Conversion to KBytes
+				TXDPS=`expr $Td2 - $Td1`			   #Difference between Dropped Packets while transmitted
+				RXDPS=`expr $Rd2 - $Rd1`			   #Difference between Dropped Packets while received
+
+				echo $(date +"%s") "TX $1: $TXPPS pkts/"$INTERVAL"s RX $1: $RXPPS pkts/"$INTERVAL"s" >> $LOG.$myHost.$DATE
+				echo $(date +"%s") "TX $1: $TXPPS pkts/"$INTERVAL"s RX $1: $RXPPS pkts/"$INTERVAL"s"
+				echo $(date +"%s") "TX $1: $TKBPS kB/"$INTERVAL"s RX $1: $RKBPS kB/"$INTERVAL"s" >> $LOG.$myHost.$DATE
+				echo $(date +"%s") "TX $1: $TKBPS kB/"$INTERVAL"s RX $1: $RKBPS kB/"$INTERVAL"s"
+				#echo $(date +"%s") "TX $1: $TXDPS dpkts/"$INTERVAL"s RX $1: $RXDPS dpkts/"$INTERVAL"s" >> $LOG.$myHost.$DATE
+				#echo $(date +"%s") "TX $1: $TXDPS dpkts/"$INTERVAL"s RX $1: $RXDPS dpkts/"$INTERVAL"s"
+				echo $(date +"%s") "TX $1: $Td2 dpkts/"$INTERVAL"s RX $1: $Rd2 dpkts/"$INTERVAL"s" >> $LOG.$myHost.$DATE
+				echo $(date +"%s") "TX $1: $Td2 dpkts/"$INTERVAL"s RX $1: $Rd2 dpkts/"$INTERVAL"s"
+
+				iwconfig $1 | grep -i signal >> $LOG.$myHost.$DATE
+				iwconfig $1 | grep -i signal
+
+				#for i in `seq 0 $STEPS`
+				#do
+				  #ps -eo comm,pcpu | tail -n +2 >> /tmp/cpu_usage.$$
+				  #sleep $UNIT_TIME
+				#done
+				#echo
+				#echo CPU eaters :
+				#cat /tmp/cpu_usage.$$ | \
+				#awk '
+				#{ process[$1]+=$2; }
+				#END{ 
+			  	#for(i in process)
+			  	#{
+			    	#printf("%-20s %s",i, process[i] ;
+			  	#}
+			   	#}' | sort -nrk 2 | head
+
+			done
+				#if ps ax | grep -v grep | grep $APP > /dev/null 
+				#then
+					#echo "$APP service running, everything is fine"
+				#else
+					#echo "$APP is not running"
+					#/usr/local/bin/MMITSS_RSE_SZA_Sender 1188 613 &
+				#fi
+		fi
+	done	
+#sleep $SECONDS		
+done

@@ -1,0 +1,187 @@
+#
+#
+# !!
+# !! CAUTION : MODIFYING THESE RULES MAY MAKE UNIT IN-ACCESSIBLE
+# !!
+#
+#
+
+# this rule is to forward all traffic from OBUs on ath0 to CA on eth0
+config rule
+	option src		dsrcnet0	# ingress network dsrcnet0(ath0)
+	option src_ip		2001:470:e0fb:4444::/64    # source IP6 address
+	option dest		lan		# egress network lan(eth0)
+	option dest_ip		2001:1890:110e:A777::/64	# destination IP6 address
+	option proto		all		# tcp/udp/all - protocol
+#	option dest_port	501		# 1 - 65535 : destination port
+	option target		ACCEPT		# ACCEPT/DROP/REJECT
+	
+# this rule is to forward all traffic from OBUs on ath1 to CA on eth0
+config rule
+	option src		dsrcnet1	# ingress network dsrcnet0(ath0)
+	option src_ip		2001:470:e0fb:4444::/64    # source IP6 address
+	option dest		lan		# egress network lan(eth0)
+	option dest_ip		2001:1890:110e:A777::/64	# destination IP6 address
+	option proto		all		# tcp/udp/all - protocol
+#	option dest_port	501		# 1 - 65535 : destination port
+	option target		ACCEPT		# ACCEPT/DROP/REJECT
+
+# this rule is to accept all incoming SPAT msgs from TCID on eth0 to RSE
+config rule
+	option src		lan		# ingress network lan(eth0)
+	option src_ip		2001:470:e0fb:1111::/64   # source IP6 address
+	option proto		udp		# tcp/udp/all - protocol
+	option dest_port	51013		# 1 - 65535 : destination port
+	option target		ACCEPT		# ACCEPT/DROP/REJECT
+
+#this rule is to accept all incoming WSMP msgs from remote server on eth0 to RSE
+config rule
+	option src		lan		# ingress network lan(eth0)
+	#option src_ip		2001:470:e0fb:1111::/64   # source IP6 address
+	option proto		udp		# tcp/udp/all - protocol
+	option dest_port	3334		# 1 - 65535 : destination port
+	option target		ACCEPT		# ACCEPT/DROP/REJECT
+
+# this rule is to accept all incoming MAP msgs from TCID on eth0 to RSE
+#config rule
+	#option src		lan		# ingress network lan(eth0)
+	#option src_ip		2001:470:e0fb:1111::/64   # source IP6 address
+	#option proto		udp		# tcp/udp/all - protocol
+	#option dest_port	51014		# 1 - 65535 : destination port
+	#option target		ACCEPT		# ACCEPT/DROP/REJECT
+
+# this rule is to accept internal UDP streaming between StreetWAVE RSEs
+# on eth0
+config rule
+	option src		lan	# ingress network lan (eth0)
+	option proto		udp	# tcp/udp/all - protocol
+	option dest_port	51015	# 1 - 65535 : destination port
+	option target		ACCEPT	# ACCEPT/DROP/REJECT
+
+# this rule is to accept internal UDP streaming between StreetWAVE RSEs
+# on eth0
+#config rule
+	#option src		lan	# ingress network lan (eth0)
+	#option proto		udp	# tcp/udp/all - protocol
+	#option dest_port	51016	# 1 - 65535 : destination port
+	#option target		ACCEPT	# ACCEPT/DROP/REJECT
+
+# this rule is to accept all incoming SSH/SCP traffic on eth0 to RSE
+config rule
+	option src		lan		# ingress network lan(eth0)
+	option proto		tcp		# tcp/udp/all - protocol
+	option dest_port	22		# 1 - 65535 : destination port
+	option target		ACCEPT		# ACCEPT/DROP/REJECT
+
+# this rule is to accept all incoming HTTP traffic on eth0 to RSE
+config rule
+	option src		lan		# ingress network lan(eth0)
+	option proto		tcp		# tcp/udp/all - protocol
+	option dest_port	8080		# 1 - 65535 : destination port 
+	option target		ACCEPT		# ACCEPT/REJECT/DROP
+
+
+
+#
+# !!
+# !! DO NOT CHANGE ANYTHING BELOW.
+# !!
+#
+
+
+# This rule is needed for neighbor discovery(IPv6 ARP) on all interfaces
+# without this, forwarding won't work
+config rule
+	option proto		icmpv6
+	option target		ACCEPT
+	
+# Inputs are the ones we should always guard against which are often
+# malicious followed by forward packets.
+# Output from RSE needs to be always enabled and is safe.
+# Otherwise, router advertisements from RSE won't work.
+config zone
+	option name		dsrcnet0
+	option input		DROP
+	option output		ACCEPT
+	option forward		DROP
+
+config zone
+	option name		dsrcnet1
+	option input		DROP
+	option output		ACCEPT
+	option forward		DROP
+
+config zone
+	option name		lan
+	option input		DROP
+	option output		ACCEPT 
+	option forward		DROP
+
+config defaults
+	option syn_flood	1
+	option input		DROP
+	option output		ACCEPT 
+	option forward		DROP
+        # ICMP raw socket sends are failing if this is not set$
+        option drop_invalid 	0
+        	
+
+# include a file with users custom iptables rules
+config include
+	option path /etc/firewall.user
+
+
+
+
+### EXAMPLE CONFIG SECTIONS
+# do not allow a specific ip to access wan
+#config rule
+#	option src		lan
+#	option src_ip	192.168.45.2
+#	option dest		wan
+#	option proto	tcp
+#	option target	REJECT 
+
+# block a specific mac on wan
+#config rule
+#	option dest		wan
+#	option src_mac	00:11:22:33:44:66
+#	option target	REJECT 
+
+# block incoming ICMP traffic on a zone
+#config rule
+#	option src		lan
+#	option proto	ICMP
+#	option target	DROP
+
+# port redirect port coming in on wan to lan
+#config redirect
+#	option src			wan
+#	option src_dport	80
+#	option dest			lan
+#	option dest_ip		192.168.16.235
+#	option dest_port	80 
+#	option proto		tcp
+
+
+### FULL CONFIG SECTIONS
+#config rule
+#	option src		lan
+#	option src_ip	192.168.45.2
+#	option src_mac	00:11:22:33:44:55
+#	option src_port	80
+#	option dest		wan
+#	option dest_ip	194.25.2.129
+#	option dest_port	120
+#	option proto	tcp
+#	option target	REJECT 
+
+#config redirect
+#	option src		lan
+#	option src_ip	192.168.45.2
+#	option src_mac	00:11:22:33:44:55
+#	option src_port		1024
+#	option src_dport	80
+#	option dest_ip	194.25.2.129
+#	option dest_port	120
+#	option proto	tcp

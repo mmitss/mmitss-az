@@ -1,0 +1,9 @@
+
+
+config "timezone" "timezone"
+	#option posixtz	'PST8PDT,M3.2.0,M11.1.0'
+	option posixtz	'UTC'
+	option zoneinfo	'America/Los_Angeles'
+
+
+

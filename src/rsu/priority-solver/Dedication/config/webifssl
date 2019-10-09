@@ -1,0 +1,17 @@
+config webifssl	matrixtunnel
+	option enable	0
+
+config webifssl	certificates
+	option cafile	'/etc/ssl/matrixtunnel.cert'
+	option privkey	'/etc/ssl/matrixtunnel.key'
+
+config webifssl listen
+	option port	'443'
+
+config webifssl remote
+	option host	127.0.0.1
+	option port	'80'
+
+config webifssl syslog
+	option enable	0
+	option loglevel	0
