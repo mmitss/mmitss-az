@@ -1,0 +1,77 @@
+# See RFC 2461 and 2462 for details about router advertisement configuration
+# interface to which this section applies
+config interface
+    option interface            'lan'  # applies to network 'lan'
+    option AdvSendAdvert        1      # 1/0 - enable/disable periodic router advertisements and responses to neighbor solicitations
+    option AdvManagedFlag       0    # 1/0 - hosts should use administered  addresses in addition to auto configuration
+    option AdvOtherConfigFlag   0    # 1/0 - hosts should use administered non-address info for auto configuration
+    option MaxRtrAdvInterval    1    # MinRtrAdvInterval - 1800 : max router advt interval.
+    option MinRtrAdvInterval    1    # 1 - MaxRtrAdvInterval : min router advt interval
+    option ignore               1    # 0/1 - enable/disable router advertisements on this interface
+
+# custom prefixes can be advertised in router advertisements
+config prefix
+    option interface            'lan'    # applies to network 'lan'
+    # If not specified, a non-link-local prefix of the interface is used
+    option prefix               '' # prefix to advertise in router advertisements
+    option AdvOnLink            1  # 1/0 - indicates that this prefix can be used for on-link determination
+    option AdvAutonomous        1 #  1/0 - indicates that this prefix can be used for autonomous address configuration
+    option AdvRouterAddr        0 # 1/0 - indicates that the address of interface is sent instead of network prefix
+    option ignore               1  # 0/1 - enable/disable this prefix advertisement
+
+# see RFC 5006 for details on RDNSS (Recursive DNS Server)
+config rdnss
+    option interface            'lan'    # applies to network 'lan'
+    # If not specified, the link-local address of the interface is used
+    option addr                 ''    # address to announce in RDNSS option
+    option ignore               1    # 0/1 - enable/disable this option
+
+config interface
+    option interface            'dsrcnet0'  # applies to network 'dsrcnet0'
+    option AdvSendAdvert        1     # 1/0 - enable/disable periodic router advertisements and responses to neighbor solicitations
+    option AdvManagedFlag       0    # 1/0 - hosts should use administered addresses in addition to auto configuration
+    option AdvOtherConfigFlag   0    # 1/0 - hosts should use administered non-address info for auto configuration
+    option MaxRtrAdvInterval    1    # MinRtrAdvInterval - 1800 : max router advt interval.
+    option MinRtrAdvInterval    1    # 1 - MaxRtrAdvInterval : min router advt interval
+    option ignore               1    # 0/1 - enable/disable router advertisements on this interface
+
+config prefix
+    option interface            'dsrcnet0'    # applies to network 'dsrcnet0'
+    # If not specified, a non-link-local prefix of the interface is used
+    option prefix               '' # prefix to advertise in router advertsements
+    option AdvOnLink            1  # 1/0 - indicates that this prefix can be used for on-link determination
+    option AdvAutonomous        1 #  1/0 - indicates that this prefix can be used for autonomous address configuration
+    option AdvRouterAddr        0 # 1/0 - indicates that the address of interface is sent instead of network prefix
+    option ignore               1  # 0/1 - enable/disable this prefix advertisement
+
+# see RFC 5006 for details on RDNSS (Recursive DNS Server)
+config rdnss
+    option interface            'dsrcnet0'    # applies to network 'dsrcnet0'
+    # If not specified, the link-local address of the interface is used
+    option addr                 ''    # address to announce in RDNSS option
+    option ignore               1    # 0/1 - enable/disable this option
+
+config interface
+    option interface            'dsrcnet1'  # applies to network 'dsrcnet0'
+    option AdvSendAdvert        1     # 1/0 - enable/disable periodic router advertisements and responses to neighbor solicitations
+    option AdvManagedFlag       0    # 1/0 - hosts should use administered addresses in addition to auto configuration
+    option AdvOtherConfigFlag   0    # 1/0 - hosts should use administered non-address info for auto configuration
+    option MaxRtrAdvInterval    1    # MinRtrAdvInterval - 1800 : max router advt interval.
+    option MinRtrAdvInterval    1    # 1 - MaxRtrAdvInterval : min router advt interval
+    option ignore               1    # 0/1 - enable/disable router advertisements on this interface
+
+config prefix
+    option interface            'dsrcnet1'    # applies to network 'dsrcnet0'
+    # If not specified, a non-link-local prefix of the interface is used
+    option prefix               '' # prefix to advertise in router advertsements
+    option AdvOnLink            1  # 1/0 - indicates that this prefix can be used for on-link determination
+    option AdvAutonomous        1 #  1/0 - indicates that this prefix can be used for autonomous address configuration
+    option AdvRouterAddr        0 # 1/0 - indicates that the address of interface is sent instead of network prefix
+    option ignore               1  # 0/1 - enable/disable this prefix advertisement
+
+# see RFC 5006 for details on RDNSS (Recursive DNS Server)
+config rdnss
+    option interface            'dsrcnet1'    # applies to network 'dsrcnet0'
+    # If not specified, the link-local address of the interface is used
+    option addr                 ''    # address to announce in RDNSS option
+    option ignore               1    # 0/1 - enable/disable this option

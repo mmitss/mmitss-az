@@ -1,0 +1,2 @@
+config enable
+	option enable '0'

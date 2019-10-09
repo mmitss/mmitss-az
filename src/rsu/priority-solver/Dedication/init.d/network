@@ -1,0 +1,29 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=40
+STOP=40
+
+boot() {
+	setup_switch() { return 0; }
+
+    touch /etc/config/dhcp
+	include /lib/network
+	setup_switch
+	[ -s /etc/config/wireless ] || \
+		/sbin/wifi detect > /etc/config/wireless
+    /sbin/wifi up
+}
+
+start() {
+    touch /etc/config/dhcp
+	ifup -a
+}
+
+restart() {
+	ifup -a
+}
+
+stop() {
+	ifdown -a
+}

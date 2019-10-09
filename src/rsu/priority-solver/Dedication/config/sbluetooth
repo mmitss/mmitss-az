@@ -1,0 +1,3 @@
+config sbluetooth sbluetooth
+# set enable to 1 to enable savari bluetooth
+	option   enable  0

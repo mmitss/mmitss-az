@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+START=60
+
+start(){
+#	mknod /dev/powersw c 10 2
+#	insmod /lib/modules/2.6.23.12/powersw.ko
+	/usr/local/bin/graceshut &
+}
+
+stop(){
+	rmmod powersw
+}

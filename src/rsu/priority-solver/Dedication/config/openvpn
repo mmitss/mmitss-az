@@ -1,0 +1,8 @@
+config openvpn general
+	option mode ""
+	option proto ""
+	option port ""
+	
+config openvpn client
+	option ipaddr ""
+	option auth ""

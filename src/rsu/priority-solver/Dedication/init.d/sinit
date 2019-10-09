@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+START=99
+
+start () {
+	/usr/local/bin/savari/sinit -f /etc/config/sinit.conf | logger&
+}
+
+stop () {
+	halt
+	sleep 1
+	killall -2 sinit
+}

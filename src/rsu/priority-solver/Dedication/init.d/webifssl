@@ -1,0 +1,149 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2007 X-Wrt.org 
+
+START=91
+EXTRA_COMMANDS="status"
+EXTRA_HELP="	status	Show current status
+"
+
+load_variables() {
+	[ "$webifssl_config_loaded" != "1" ] && {
+		config_load webifssl
+		DEFAULT_pidfile="/var/run/webifssl.pid"
+		DEFAULT_certs_cafile="/etc/ssl/matrixtunnel.cert"
+		DEFAULT_certs_privkey="/etc/ssl/matrixtunnel.key"
+		DEFAULT_listen_host=""
+		DEFAULT_listen_port="443"
+		DEFAULT_remote_host="127.0.0.1"
+		DEFAULT_remote_port="80"
+		DEFAULT_syslog_enable="0"
+		DEFAULT_syslog_loglevel="0"
+		CONFIG_matrixtunnel_pidfile="${CONFIG_matrixtunnel_pidfile:-$DEFAULT_pidfile}"
+		CONFIG_certs_cafile="${CONFIG_certs_cafile:-$DEFAULT_certs_cafile}"
+		CONFIG_certs_privkey="${CONFIG_certs_privkey:-$DEFAULT_certs_privkey}"
+		CONFIG_listen_host="${CONFIG_listen_host:-$DEFAULT_listen_host}"
+		CONFIG_listen_port="${CONFIG_listen_port:-$DEFAULT_listen_port}"
+		CONFIG_remote_host="${CONFIG_remote_host:-$DEFAULT_remote_host}"
+		CONFIG_remote_port="${CONFIG_remote_port:-$DEFAULT_remote_port}"
+		CONFIG_syslog_enable="${CONFIG_syslog_enable:-DEFAULT_syslog_enable}"
+		CONFIG_syslog_loglevel="${CONFIG_syslog_loglevel:-DEFAULT_syslog_loglevel}"
+		webifssl_config_loaded="1"
+	}
+}
+
+start() {
+	MATRIXTUNNEL=$(which matrixtunnel 2>/dev/null)
+	[ -z "$MATRIXTUNNEL" ] && return 1
+	local IPCALC_CMD wsenable OPTIONS msenable
+	load_variables
+	local IPCALC_CMD=$(which ipcalc.sh 2>/dev/null)
+	[ "$IPCALC_CMD" == "" ] && IPCALC_CMD=$(which ipcalc 2>/dev/null)
+
+	[ -f "$CONFIG_matrixtunnel_pidfile" ] && stop
+	config_get_bool wsenable matrixtunnel enable 0
+	[ "$wsenable" -eq 1 ] && {
+		if [ -f "$CONFIG_certs_cafile" -a -f "$CONFIG_certs_privkey" ]; then
+			OPTIONS="-A $CONFIG_certs_cafile -p $CONFIG_certs_privkey"
+			OPTIONS="$OPTIONS -d "
+			[ -n "$CONFIG_listen_host" ] && {
+				[ "$IPCALC_CMD" != "" ] && {
+					eval $($IPCALC_CMD "$CONFIG_listen_host")
+					[ "$CONFIG_listen_host" == "$IP" ] && OPTIONS="$OPTIONS$CONFIG_listen_host:"
+				}
+			}
+			[ "$CONFIG_listen_port" -lt 1 -o "$CONFIG_listen_port" -gt 65535 ] 2>/dev/null && CONFIG_listen_port="$DEFAULT_listen_port"
+			OPTIONS="$OPTIONS$CONFIG_listen_port"
+			OPTIONS="$OPTIONS -r "
+			[ -n "$CONFIG_remote_host" ] && {
+				[ "$IPCALC_CMD" != "" ] && {
+					eval $($IPCALC_CMD "$CONFIG_remote_host")
+					[ "$CONFIG_remote_host" == "$IP" ] && OPTIONS="$OPTIONS$CONFIG_remote_host:"
+				}
+				
+			}
+			[ "$CONFIG_remote_port" -lt 1 -o "$CONFIG_remote_port" -gt 65535 ] 2>/dev/null && CONFIG_listen_port="$DEFAULT_listen_port"
+			OPTIONS="$OPTIONS$CONFIG_remote_port"
+			config_get_bool msenable syslog enable 0
+			[ "$msenable" -eq 1 ] && {
+				[ "$CONFIG_syslog_loglevel" -lt 1 -o "$CONFIG_syslog_loglevel" -gt 7 ] 2>/dev/null && CONFIG_syslog_loglevel="$DEFAULT_syslog_loglevel"
+				OPTIONS="$OPTIONS -D $CONFIG_syslog_loglevel"
+			}
+			echo "Starting webif^2 ssl tunnel."
+			$MATRIXTUNNEL $OPTIONS -P "$CONFIG_matrixtunnel_pidfile"
+		else
+			echo "webif^2 ssl certificates are missing!"
+		fi
+	}
+}
+
+kill_mtproc() {
+	local pid="$1"
+	[ -n "$pid" -a -d "/proc/$pid" ] && {
+		echo -n "Stopping webif^2 ssl tunnel..."
+		kill -TERM "$pid"
+		[ "$?" -eq 0 ] && sleep 1
+		[ ! -d "/proc/$pid" ] && echo "OK" || {
+			echo "Failed!"
+			echo -n "Killing webif^2 ssl tunnel..."
+			kill -KILL "$pid"
+			[ "$?" -eq 0 ] && echo "OK" || echo "Failed!"
+		}
+	}
+}
+
+is_mtchild() {
+	local parent="$1"
+	local child="$2"
+	local temp
+	temp=$(cat /proc/${child}/status 2>/dev/null | sed '/^PPid:/!d; s/^PPid://; s/[[:space:]]//g')
+	if [ "$parent" = "$temp" ]; then
+		return "0"
+	elif [ "$temp" = "1" ]; then
+		return "1"
+	elif [ "$temp" = "" ]; then
+		return "1"
+	else
+		is_mtchild "$parent" "$temp"
+		return "$?" = "0"
+	fi
+}
+
+stop() {
+	local pid
+	load_variables
+	local childlist
+	[ -f "$CONFIG_matrixtunnel_pidfile" ] && {
+		pid=$(cat "$CONFIG_matrixtunnel_pidfile" 2>/dev/null)
+		[ -n "$pid" -a -d "/proc/$pid" ] && {
+			for mtpid in $(pidof matrixtunnel); do
+				is_mtchild "$pid" "$mtpid"
+				[ "$?" -eq 0 ] && childlist="$childlist $mtpid"
+			done
+			childlist="$childlist $pid"
+			for pid in $childlist; do
+				kill_mtproc "$pid"
+			done
+		} || echo "webif^2 ssl tunnel is not running."
+		rm -f "$CONFIG_matrixtunnel_pidfile" 2>/dev/null
+	} || echo "No webif^2 ssl tunnel is running."
+}
+
+restart() {
+	start
+}
+
+status() {
+	local pid
+	load_variables
+	[ -f "$CONFIG_matrixtunnel_pidfile" ] && {
+		pid=$(cat "$CONFIG_matrixtunnel_pidfile" 2>/dev/null)
+		[ -n "$pid" -a -d "/proc/$pid" ] && {
+			for mtpid in $(pidof matrixtunnel); do
+				is_mtchild "$pid" "$mtpid"
+				[ "$?" -eq 0 ] && childlist="$childlist $mtpid"
+			done
+			childlist="$pid$childlist"
+			echo "webif^2 ssl tunnel (pid $childlist) is running..."
+		}
+	}
+}

@@ -1,0 +1,26 @@
+config webif general
+	option lang "en"
+	option firmware_name	'Unknown Wrt'
+	option firmware_version	'unknown'
+	option firmware_subtitle "With X-Wrt Extensions"
+	option device_name	'PC Engines WRAP'
+	option use_progressbar ""
+	option doublereboot '1'
+
+config webif theme
+	option id "xwrt"
+
+config webif qos
+	option show_advanced_rules "0"
+
+config webif misc
+	option opendns "0"
+
+config webif wireless
+	option wifi0_txpower ''
+	
+config webif firewall
+	option log	'0'
+
+
+
