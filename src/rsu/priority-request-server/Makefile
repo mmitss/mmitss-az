@@ -6,6 +6,7 @@ SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestLi
 TGT:=M_PriorityRequestServer
 LIBS += -L$(BUILD_ROOT)/lib/
 LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
+LIBS += -L$(BUILD_ROOT)/3rdparty/jsoncpp/lib/
 LIBS+= -lnetsnmp -lstdc++ -lj2735-linux
 INCLUDES += -I$(BUILD_ROOT)/3rdparty/
 

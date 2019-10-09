@@ -92,7 +92,7 @@ void BasicVehicle::CreateEmptyBSMblob(char *theTarget) {
 }
 
 
-// This function unpack the BSM blob stream and populates the vehicle attributes (the class data)
+// This function unpacks the BSM blob stream and populates the vehicle attributes (the class data)
 void BasicVehicle::BSMToVehicle(char *ablob) {
 
     if (ablob != NULL) {

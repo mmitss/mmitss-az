@@ -110,7 +110,7 @@ int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
 void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &, const double);
 
-void processRxMessage(const char *, int [], const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
+void processRxMessage(const char *, const string &, int [], const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
 
 double readGPStime();
 

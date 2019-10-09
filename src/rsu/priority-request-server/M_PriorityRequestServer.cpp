@@ -6,14 +6,6 @@
  * is obtained from Arizona Board of Regents or University of Arizona.
  */
 
-#ifdef fieldtesting
-#include "savariGPS.h"
-#endif
-
-#ifdef simulation
-#include "dummySavariGPS.h"
-#endif
-
 #ifndef byte
 #define byte char
 #endif
@@ -33,12 +25,13 @@
 #include <vector>
 #include <time.h>
 #include <sys/time.h>
-//#include "net-snmp/net-snmp-config.h"
-//#include "net-snmp/net-snmp-includes.h"
+#include "net-snmp/net-snmp-config.h"
+#include "net-snmp/net-snmp-includes.h"
+#include "json.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
-//#include "SRM.h"
+#include "SRM.h"
 #include "BasicVehicle.h"
 #include "ManageRequestList.h"
 #include "M_PriorityRequestServer.h"
@@ -60,7 +53,8 @@ int main(int argc, char *argv[])
     int iAddrLeng = 0;
     double dLastETAUpdateTime = 0.0;
     char temp_log[256];
-    int iPORT = 4444;       //  Socket Port: For receiving request from PriorityRequestGenerator ( PRG )
+    //int iPORT = 4444;       //  Socket Port: For receiving request from PriorityRequestGenerator ( PRG )
+    int iPORT = 20002;      //  Socket Port: For receiving SRM from Transciever/Encoder
     long lTimeOut = 300000; // Time out of waiting for a new socket 0.3 sec!
     string Rsu_ID;          // will get intersection name from "rsuid.txt"
     int ret = 0;
@@ -76,37 +70,6 @@ int main(int argc, char *argv[])
     double dCountDownIntervalForETA = 1.0; // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
     double dCurrentTimeInCycle = 100.0;    // For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
     int PhaseStatus[8];                    // Determine the phase status to generate the split phases
-
-    while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)
-    {
-        switch (ret)
-        {
-        case 'p':
-            iPORT = atoi(optarg);
-            printf("Port is : %d\n", iPORT);
-            break;
-        case 't':
-            lTimeOut = atoi(optarg);
-            printf("Time out is : %ld \n", lTimeOut);
-            break;
-        case 'u':
-            iAppliedMethod = atoi(optarg);
-            if (iAppliedMethod == COP_AND_PRIORITY)
-                printf("PRS is being used for integrated priority with I-SIG \n");
-            else
-                printf("PRS is being used for priority and actuation \n");
-            break;
-        case 'c':
-            iApplicationUsage = atoi(optarg);
-            if (iApplicationUsage == FIELD)
-                printf(" PRS is being used for field \n");
-            else if (iApplicationUsage == SIMULATION)
-                printf(" PRS is being used for simulation testing \n");
-            break;
-        default:
-            break;
-        }
-    }
 
     creatLogFile();
 
@@ -150,7 +113,7 @@ int main(int argc, char *argv[])
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(rxMsgBuffer, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
+            processRxMessage(rxMsgBuffer, Rsu_ID, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0))
         {
@@ -189,13 +152,42 @@ int main(int argc, char *argv[])
 }
 
 //========================================================================================//
+/*void SignalRequest::json2SignalRequest(std::string jsonString)
+{
+    Json::Value jsonObject;
+    Json::Reader reader;
 
+    reader.parse(jsonString.c_str(), jsonObject);
 
+    minuteOfYear = (jsonObject["SignalRequest"]["minuteOfYear"]).asInt();
+    msOfMinute = (jsonObject["SignalRequest"]["msOfMinute"]).asInt();
+    msgCount = (jsonObject["SignalRequest"]["msgCount"]).asInt();
+    regionalID = (jsonObject["SignalRequest"]["regionalID"]).asInt();
+    intersectionID = (jsonObject["SignalRequest"]["intersectionID"]).asInt();
+    requestID = (jsonObject["SignalRequest"]["requestID"]).asInt();
+    
+    priorityRequestType = (jsonObject["SignalRequest"]["priorityRequestType"]).asInt();
+    
+    inBoundLane.setLaneID((jsonObject["SignalRequest"]["inBoundLane"]["LaneID"]).asInt());
+    expectedTimeOfArrival.setETA_Minute((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt());
+    expectedTimeOfArrival.setETA_Second((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
+    expectedTimeOfArrival.setETA_Duration((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"]).asDouble());
 
-void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLanePhase lanePhase, LinkedList<ReqEntry> &req_list,
+    vehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
+    position.setLatitude_decimalDegree((jsonObject["SignalRequest"]["position"]["latitude_DecimalDegree"]).asDouble());
+    position.setLongitude_decimalDegree((jsonObject["SignalRequest"]["position"]["longitude_DecimalDegree"]).asDouble());
+    position.setElevation_meter((jsonObject["SignalRequest"]["position"]["elevation_Meter"]).asDouble());
+    heading_Degree = (jsonObject["SignalRequest"]["heading_Degree"]).asDouble();
+    speed_MeterPerSecond = (jsonObject["SignalRequest"]["speed_MeterPerSecond"]).asDouble();
+    vehicleType = (jsonObject["SignalRequest"]["vehicleType"]).asInt();
+    basicVehicleRole = (jsonObject["SignalRequest"]["basicVehicleRole"]).asInt();
+}
+*/
+
+void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseStatus[], const IntLanePhase lanePhase, LinkedList<ReqEntry> &req_list,
                       int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage, int &flagForClearingInterfaceCmd)
 {
-/*    float fETA;
+    float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
     int iInApproach = 0;
@@ -218,124 +210,124 @@ void processRxMessage(const char *rxMsgBuffer, int phaseStatus[], const IntLaneP
                            //this variable is used to fill up tempMsg
     char tempMsg[1024];    // To write the requests info into this variable.
                            //this variable will be passed to UpdateList function to update the request lists
-    SRM_t *srm = 0;
 
-    srm = (SRM_t *)calloc(1, sizeof *(srm));
-    srm->timeOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
-    srm->endOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
-    srm->transitStatus = (BIT_STRING_t *)calloc(1, sizeof(BIT_STRING_t));
-    srm->vehicleVIN = (VehicleIdent_t *)calloc(1, sizeof(VehicleIdent_t));
+    Json::Value jsonObject;
+    Json::Reader reader;
+
+    //SRM_t *srm = 0;
+
+    //srm = (SRM_t *)calloc(1, sizeof *(srm));
+    //srm->timeOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
+    //srm->endOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
+    //srm->transitStatus = (BIT_STRING_t *)calloc(1, sizeof(BIT_STRING_t));
+    //srm->vehicleVIN = (VehicleIdent_t *)calloc(1, sizeof(VehicleIdent_t));
 
     cout << "Message Received " << endl;
 
-    asn_dec_rval_t rval; // Encoder return value
-    rval = ber_decode(0, &asn_DEF_SRM, (void **)&srm, rxMsgBuffer, sizeof(rxMsgBuffer));
+    //asn_dec_rval_t rval; // Encoder return value
+    //rval = ber_decode(0, &asn_DEF_SRM, (void **)&srm, rxMsgBuffer, sizeof(rxMsgBuffer));
 
-    double dVISSIMtime = 0.0;
+    //double dVISSIMtime = 0.0;
 
-    if (rval.code == RC_OK)
+    //if (rval.code == RC_OK)
+    //{
+    sprintf(temp_log, "SRM Recieved: Decode Success\n");
+    outputlog(temp_log);
+
+    for (int i = 0; i < 38; i++) // extracting the bsm blob from the srm
+        bsmBlob[i] = srm->vehicleData.buf[i];
+
+    vehIn.BSMToVehicle(bsmBlob);
+
+    lintersectionID = (srm->request.id.buf[1] << 8) + srm->request.id.buf[0];
+    // Potential bug! Intersection ID in SRM is an optional (2bytes to 4 bytes) size data element.
+    // It's ASN.1 notation in SRM is IntersectionID ::= OCTET STRING (SIZE(2..4)).
+    //  While in PRG we populate it as 2 byte data element.  Here in PRS, we only
+    // read the two byte. If intersection ID is a big number > 65535 (interger type capacity), there will be error
+
+    // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
+    if (lanePhase.iIntersectionID == lintersectionID)
     {
-        sprintf(temp_log, "SRM Recieved: Decode Success\n");
+        if (srm->request.isCancel->buf[0] == 0)
+            strcpy(cRequestType, "request");
+        else
+            strcpy(cRequestType, "request_clear");
+
+        obtainInLaneOutLane(srm->request.inLane->buf[0], srm->request.outLane->buf[0], iInApproach, ioutApproach,
+                            iInLane, iOutlane);
+        iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutlane];
+        iPriorityLevel = srm->request.type.buf[0]; // is this the currect element of SRM to populate with vehicle  type?!
+
+        // MZP 10/10/17 deleted vehiceVIN data element population in PRG ---> dMinGrn is
+        // embeded in iETA and obtained using
+        // iVehicleState dMinGrn=((srm->vehicleVIN->id->buf[1]<<8)+srm->vehicleVIN->id->buf[0])/10;
+        // there was no place in SMR to store MinGrn !!!!!
+
+        iStartMinute = srm->timeOfService->minute;
+        iStartSecond = srm->timeOfService->second;
+        iEndMinute = srm->endOfService->minute;
+        iEndSecond = srm->endOfService->second;
+        iStartHour = srm->timeOfService->hour;
+        iEndHour = srm->endOfService->hour;
+        calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
+        fETA = (float)iETA;
+
+        lvehicleID = vehIn.TemporaryID;
+        iVehicleState = srm->status->buf[0];
+        iMsgCnt = srm->msgCnt;
+
+        //KLH - concerned about this being a bug
+        if (iVehicleState == 3) // vehicle is in queue
+            dMinGrn = (double)(fETA);
+
+        sprintf(tempMsg, "%s %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
+                Rsu_id,
+                lvehicleID,
+                iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
+                srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
+                iEndHour, iEndMinute, iEndSecond,
+                iVehicleState, iMsgCnt, 0.0);
+        sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
 
-        for (int i = 0; i < 38; i++) // extracting the bsm blob from the srm
-            bsmBlob[i] = srm->vehicleData.buf[i];
+        sprintf(temp_log, "%s\t \n", tempMsg);
+        outputlog(temp_log);
+        readPhaseTimingStatus(phaseStatus); // Get the current phase status for determining the split phases
 
-        vehIn.BSMToVehicle(bsmBlob);
-
-        lintersectionID = (srm->request.id.buf[1] << 8) + srm->request.id.buf[0];
-        // Potential bug! Intersection ID in SRM is an optional (2bytes to 4 bytes) size data element.
-        // It's ASN.1 notation in SRM is IntersectionID ::= OCTET STRING (SIZE(2..4)).
-        //  While in PRG we populate it as 2 byte data element.  Here in PRS, we only
-        // read the two byte. If intersection ID is a big number > 65535 (interger type capacity), there will be error
-
-        // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
-        if (lanePhase.iIntersectionID == lintersectionID)
-        {
-            if (srm->request.isCancel->buf[0] == 0)
-                strcpy(cRequestType, "request");
-            else
-                strcpy(cRequestType, "request_clear");
-
-            obtainInLaneOutLane(srm->request.inLane->buf[0], srm->request.outLane->buf[0], iInApproach, ioutApproach,
-                                iInLane, iOutlane);
-            iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutlane];
-            iPriorityLevel = srm->request.type.buf[0]; // is this the currect element of SRM to populate with vehicle  type?!
-
-            // MZP 10/10/17 deleted vehiceVIN data element population in PRG ---> dMinGrn is
-            // embeded in iETA and obtained using
-            // iVehicleState dMinGrn=((srm->vehicleVIN->id->buf[1]<<8)+srm->vehicleVIN->id->buf[0])/10;
-            // there was no place in SMR to store MinGrn !!!!!
-
-            iStartMinute = srm->timeOfService->minute;
-            iStartSecond = srm->timeOfService->second;
-            iEndMinute = srm->endOfService->minute;
-            iEndSecond = srm->endOfService->second;
-            iStartHour = srm->timeOfService->hour;
-            iEndHour = srm->endOfService->hour;
-            calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
-            fETA = (float)iETA;
-
-            lvehicleID = vehIn.TemporaryID;
-            iVehicleState = srm->status->buf[0];
-            iMsgCnt = srm->msgCnt;
-
-            //KLH - concerned about this being a bug
-            if (iVehicleState == 3) // vehicle is in queue
-                dMinGrn = (double)(fETA);
-
-            sprintf(tempMsg, "%s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
-                    //cIntersectionName, 
-                    lvehicleID,
-                    iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
-                    srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
-                    iEndHour, iEndMinute, iEndSecond,
-                    iVehicleState, iMsgCnt, 0.0);
-            sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
-            outputlog(temp_log);
-
-            sprintf(temp_log, "%s\t \n", tempMsg);
-            outputlog(temp_log);
-            readPhaseTimingStatus(phaseStatus); // Get the current phase status for determining the split phases
-
-            // Update the Req List data structure considering received message
-            UpdateList(req_list, tempMsg, phaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd); 
-
-        }
+        // Update the Req List data structure considering received message
+        UpdateList(req_list, tempMsg, phaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
     }
-    else
-    {
-        if ((iApplicationUsage == FIELD))
-        {
-            sprintf(temp_log, " SRM Decode Failed ! \n");
-            outputlog(temp_log);
-            //RemoveCoord
-        //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
+//}
+//    else
+//    {
+//if ((iApplicationUsage == FIELD))
+//{
+//    sprintf(temp_log, " SRM Decode Failed ! \n");
+//    outputlog(temp_log);
+    //RemoveCoord
+    //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
+//}
+//else if (iApplicationUsage == SIMULATION)
+//{
+//    dVISSIMtime = getSimulationTime(rxMsgBuffer);
+//    sprintf(temp_log, "The received message is VISSIM clock %.2f\n", dVISSIMtime);
+//    outputlog(temp_log);
+//}
+//RemoveCoord
+//} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
+//    sprintf(temp_log,
+//            "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
+//    outputlog(temp_log);
+//}
 
-        }
-        else if (iApplicationUsage == SIMULATION)
-        {
-            dVISSIMtime = getSimulationTime(rxMsgBuffer);
-            sprintf(temp_log, "The received message is VISSIM clock %.2f\n", dVISSIMtime);
-            outputlog(temp_log);
-        }
-        //RemoveCoord
-        //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
-        //    sprintf(temp_log,
-        //            "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
-        //    outputlog(temp_log);
-        //}
- 
-    }
+//    }
 
-    free(srm->vehicleVIN);
-    free(srm->transitStatus);
-    free(srm->endOfService);
-    free(srm->timeOfService);
-    free(srm);
-*/
+//    free(srm->vehicleVIN);
+//    free(srm->transitStatus);
+//    free(srm->endOfService);
+//    free(srm->timeOfService);
+//    free(srm);
 }
-
 
 void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag,
                                     const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd,
@@ -415,8 +407,6 @@ int getSignalColor(int PhaseStatusNo)
     return ColorValue;
 }
 
-
-
 int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
 {
     req_list.Reset();
@@ -439,10 +429,9 @@ int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
     return Have;
 }
 
-
 void readPhaseTimingStatus(int PhaseStatus[8])
 {
-/*    netsnmp_session session, *ss;
+    netsnmp_session session, *ss;
     netsnmp_pdu *pdu;
     netsnmp_pdu *response;
     oid anOID[MAX_OID_LEN];
@@ -459,8 +448,8 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     strcat(ipwithport, ":");
     strcat(ipwithport, INTport); //for ASC get status, DO NOT USE port!!!
     session.peername = strdup(ipwithport);
-    session.version = SNMP_VERSION_1; //for ASC intersection  set the SNMP version number 
-    // set the SNMPv1 community name used for authentication 
+    session.version = SNMP_VERSION_1; //for ASC intersection  set the SNMP version number
+    // set the SNMPv1 community name used for authentication
     session.community = (u_char *)"public";
     session.community_len = strlen((const char *)session.community);
     SOCK_STARTUP;
@@ -472,7 +461,6 @@ void readPhaseTimingStatus(int PhaseStatus[8])
         exit(1);
     }
 
-    
     // Create the PDU for the data for our request.
     //  1) We're going to GET the system.sysDescr.0 node.
 
@@ -523,19 +511,16 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     }
     snmp_add_null_var(pdu, anOID, anOID_len);
 
-    
     //Send the Request out.
 
     status = snmp_synch_response(ss, pdu, &response);
-
 
     //Process the response.
 
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-    
+
         //SUCCESS: Print the result variables
-        
 
         int *out = new int[MAX_CONTROLLER_OUTPUT_VALUES];
         int i = 0;
@@ -602,18 +587,15 @@ void readPhaseTimingStatus(int PhaseStatus[8])
             snmp_sess_perror("snmpdemoapp", ss);
     }
 
-    
     // Clean up:    *  1) free the response.   *  2) close the session.
-    
+
     if (response)
         snmp_free_pdu(response);
 
     snmp_close(ss);
 
     SOCK_CLEANUP;
-*/
 }
-
 
 void identifyColor(int i_Color[2][8], int greenGroup, int redGroup, int yellowGroup, int nextPhase)
 {
@@ -1287,7 +1269,6 @@ int msleep(unsigned long milisec)
     return 1;
 }
 
-
 void setupConnection(int &iPort, long lTimeOut)
 {
 
@@ -1350,3 +1331,35 @@ void creatLogFile()
         ftemp.close();
     }
 }
+
+/*    while ((ret = getopt(argc, argv, "p:t:c:u:")) != -1)
+    {
+        switch (ret)
+        {
+        case 'p':
+            iPORT = atoi(optarg);
+            printf("Port is : %d\n", iPORT);
+            break;
+        case 't':
+            lTimeOut = atoi(optarg);
+            printf("Time out is : %ld \n", lTimeOut);
+            break;
+        case 'u':
+            iAppliedMethod = atoi(optarg);
+            if (iAppliedMethod == COP_AND_PRIORITY)
+                printf("PRS is being used for integrated priority with I-SIG \n");
+            else
+                printf("PRS is being used for priority and actuation \n");
+            break;
+        case 'c':
+            iApplicationUsage = atoi(optarg);
+            if (iApplicationUsage == FIELD)
+                printf(" PRS is being used for field \n");
+            else if (iApplicationUsage == SIMULATION)
+                printf(" PRS is being used for simulation testing \n");
+            break;
+        default:
+            break;
+        }
+    }
+*/
