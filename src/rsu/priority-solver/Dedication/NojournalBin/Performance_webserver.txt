@@ -1,6 +1,0 @@
-The_Number_of_Vehicle_Received_at_time_1488561517.064797_is: 0
-Observation_Period_is: 17 18 37 17 18 52
-DSRC_Range_for_Northbound_Through_movement_is: nan 
-DSRC_Range_for_Eastbound_Through_movement_is: nan 
-DSRC_Range_for_Southbound_Through_movement_is: nan 
-DSRC_Range_for_Westbound_Through_movement_is: nan 

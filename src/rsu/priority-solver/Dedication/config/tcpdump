@@ -1,9 +1,0 @@
-config tcpdump
-	option enable	'0'
-    option fileprefix    'StreetWAVE'   # filename prefix
-    option filesize '50'                # max file size MB, 0 unlimited
-    option timeout '0'                  # max time file is allowed to grow in mins, 0 - unlimited
-    option log_dir '/nojournal/pcaplogs/'   # files location
-    option ignore_ip_address '2001:470:bc55::2'    # tcpdump will not log if any packets going to / coming from ignore_ip_address & ignore_ip_port
-    option ignore_port       '22'       # tcpdump will not log if any packets going to / coming from ignore_ip_address & ignore_ip_port
-
