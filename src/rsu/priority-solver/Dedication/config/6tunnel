@@ -1,7 +1,0 @@
-config 6tunnel
-        option tnlifname     'tun0'
-        option remoteip4	'64.62.134.130'
-	option localip4		'192.168.1.149'
-	option localip6		'2001:470:66:5b9:1111::2/80'
-        option prefix           '2001:470:66:5b9:1111::/80'
-        option remoteip6        '2001:1890:110e:a102::98'
