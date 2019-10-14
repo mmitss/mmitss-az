@@ -36,7 +36,9 @@
 #include "msgEnum.h"
 #include "M_PriorityRequestServer.h"
 
-
+#include "AsnJ2735Lib.h"
+#include "locAware.h"
+#include "geoUtils.h"
 
 using namespace std;
 
@@ -177,7 +179,7 @@ int main(int argc, char *argv[])
     expectedTimeOfArrival.setETA_Duration((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"]).asDouble());
 
     vehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
-    position.setLatitude_decimalDegree((jsonObject["SignalRequest"]["position"]["latitude_DecimalDegree"]).asDouble());
+    position.setLatitude_decimalDegree((jsonObject["Req_ListSignalRequest"]["position"]["latitude_DecimalDegree"]).asDouble());
     position.setLongitude_decimalDegree((jsonObject["SignalRequest"]["position"]["longitude_DecimalDegree"]).asDouble());
     position.setElevation_meter((jsonObject["SignalRequest"]["position"]["elevation_Meter"]).asDouble());
     heading_Degree = (jsonObject["SignalRequest"]["heading_Degree"]).asDouble();
@@ -282,7 +284,8 @@ void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseSt
                 Rsu_id,
                 lvehicleID,
                 iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
-                srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
+                // srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
+                iInLane, iOutLane, iStartHour, iStartMinute, iStartSecond,
                 iEndHour, iEndMinute, iEndSecond,
                 iVehicleState, iMsgCnt, 0.0);
         sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
@@ -1334,3 +1337,26 @@ void creatLogFile()
         }
     }
 */
+
+int getPhaseInfo(SignalRequest signalRequest)
+{
+
+    Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("IntersectionConfig.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+    int intersectionID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
+    int regionalID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
+    std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
+	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
+	bool singleFrame = false;
+    int phaseNo{};
+    
+    LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
+    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,signalRequest.getInBoundApproachID(), signalRequest.getInBoundLaneID()));
+
+	delete plocAwareLib;
+	return phaseNo;
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "SignalRequest.h"
 ///* Reading Phase Status through NTCIP: different status has a number.  // FROM "rsu_config" app
 //**********asc3PhaseStatusTiming2
 // (1) X: XPED timing
@@ -120,6 +120,10 @@ void identifyColor(int color[2][8], int greenGroup, int redGroup, int yellowGrou
 
 void whichPhaseIsGreen(int phase_Color[8], int greenGroup, int redGroup,
                        int yellowGroup); // this function returns the color of the first argument which is phaseNo.
+
+
+
+int getPhaseInfo(SignalRequest signalRequest);
 
 
 /*RemoveCoord

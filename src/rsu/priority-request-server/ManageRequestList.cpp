@@ -458,12 +458,12 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
 {
     char temp_log[256];
 
-    Req_List.Reset(); iRequestedPhase 
+    Req_List.Reset();
 
-    while (!Req_List. iRequestedPhase 
+    while (!Req_List.EndOfList())
     {
-         // three tim iRequestedPhase ed, the vehicle is deleted from the list.
-        if (Req_List. iRequestedPhase 
+         // three time steps after the vehicle leaving request is received, the vehicle is deleted from the list.
+        if (Req_List.Data().iLeavingCounter >= 3)
         {
             Req_List.DeleteAt();
 
@@ -529,8 +529,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                 Req_List.Data().iLeavingCounter++;
             
         }
- iRequestedPhase 
- iRequestedPhase 
- iRequestedPhase 
- iRequestedPhase 
- iRequestedPhase  iRequestedPhase 
+
+        Req_List.Next();
+    }
+}
