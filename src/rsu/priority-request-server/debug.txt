@@ -1,0 +1,2 @@
+g++ -o M_PriorityRequestServer  M_PriorityRequestServer.o  ReqEntry.o  IntLanePhase.o  ManageRequestList.o  PositionLocal3D.o  BasicVehicle.o  SignalRequest.o  IntersectionAccessPoint.o  ExpectedTimeOfArrival.o -fPIC -Wl,-rpath=../../../3rdparty/asn1j2735/lib  -L../../../3rdparty/asn1j2735/lib -L../../../3rdparty/jsoncpp/lib -L../../../lib -L../../../3rdparty/mapengine/lib -L../../../3rdparty/net-snmp/lib -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common -llocAware -lnetsnmp   
+../../../make/newrules.mk:25: recipe for target 'M_PriorityRequestServer' failed

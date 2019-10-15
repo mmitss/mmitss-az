@@ -1,20 +1,21 @@
+# Sample Makefile for building with the uper codec and json libraries
 BUILD_ROOT=../../..
-MAKE_ROOT=$(BUILD_ROOT)/make
-include $(MAKE_ROOT)/header.mk
+MAKE_ROOT :=$(BUILD_ROOT)/make
+include $(MAKE_ROOT)/newheader.mk
 
-SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp PositionLocal3D.cpp BasicVehicle.cpp SignalRequest.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp 
-TGT:=M_PriorityRequestServer
-LIBS += -L$(BUILD_ROOT)/lib/
-LIBS += -L$(BUILD_ROOT)/3rdparty/net-snmp/lib/
-LIBS += -L$(BUILD_ROOT)/3rdparty/jsoncpp/lib/
-LIBS+= -lnetsnmp -lstdc++ -lj2735-linux -ljsoncpp1_8_4
-INCLUDES += -I$(BUILD_ROOT)/3rdparty/
-INCLUDES += -I$(BUILD_ROOT)/3rdparty/jsoncpp/include
-INCLUDES += -I$(BUILD_ROOT)/3rdparty/asn1j2735/include
-INCLUDES += -I$(BUILD_ROOT)/3rdparty/mapengine/include
 
-OBJ = $(patsubst %.cpp, %.o, ${SRC})
-include $(MAKE_ROOT)/rules.mk
-$(TGT): $(OBJ)
-	${CC} ${CFLAGS} ${INCLUDES} $(LDFLAGS) $(OBJ) -o $(TGT) $(LIBS)
+INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(BUILD_ROOT)/include/common/ -I$(BUILD_ROOT)/3rdparty/ -I$(BUILD_ROOT)/3rdparty/mapengine/include  # tell the compiler where to find the j2735 and json include directories
+LDFLAGS     := -fPIC -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the json shared lib 
+#-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
+LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib -L$(BUILD_ROOT)/3rdparty/net-snmp/lib -llocAware -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common -lnetsnmp   #tell the linker where to find the j2735 and json libraries
 
+#cpp's go here
+SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp SignalRequest.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp #PositionLocal3D.cpp BasicVehicle.cpp We will use new version of Basic Vehicle
+#the name of the executable goes here
+TARGET = M_PriorityRequestServer
+
+# list the .o's corresponding to .cpp's
+# see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html
+OBJECTS = $(patsubst %.cpp, %.o, $(SRC))
+
+include $(MAKE_ROOT)/newrules.mk

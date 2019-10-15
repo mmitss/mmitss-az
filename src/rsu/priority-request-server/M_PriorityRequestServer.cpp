@@ -31,7 +31,7 @@
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
-#include "BasicVehicle.h"
+// #include "BasicVehicle.h" //we will use new version of Basic Vehicle
 #include "ManageRequestList.h"
 #include "msgEnum.h"
 #include "M_PriorityRequestServer.h"
@@ -212,7 +212,7 @@ void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseSt
     long lintersectionID;
     char temp_log[256];
     char bsmBlob[BSM_BLOB_SIZE];
-    BasicVehicle vehIn;
+    // BasicVehicle vehIn; //DD: New version nof Basic Vehicle doen't have vehIn
     int iRequestType; // Whether it is a request or request_clear or coord_request,
                            //this variable is used to fill up tempMsg
     char tempMsg[1024];    // To write the requests info into this variable.
@@ -246,7 +246,15 @@ void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseSt
 
         //DJC - WE need to do a remapping here, the old code, both manageRequestList and Solver use vehClass which this iPriority level eventually maps to as
         //DJC EV==1, TRANSIT==2, TRUCK==3 
-        iPriorityLevel = (jsonObject["SignalRequest"]["vehicleType"]).asInt(); 
+        if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::special))
+            iPriorityLevel = 1;
+
+        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::bus))
+            iPriorityLevel = 2;
+
+        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+            iPriorityLevel = 3;    
+        //iPriorityLevel = (jsonObject["SignalRequest"]["vehicleType"]).asInt(); 
 
         //All of the following are unused here and in solver
         //iStartMinute = srm->timeOfService->minute;
@@ -259,7 +267,7 @@ void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseSt
 
         //calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
         //fETA = (float)iETA;
-        fETA = (jsonObject["SignalRequest"]["msOfMinute"]).asInt()/1000;
+        fETA = (jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt()*60.0 + (jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble();
 
         //lvehicleID = vehIn.TemporaryID;
         lvehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
@@ -1340,20 +1348,19 @@ void creatLogFile()
 
 int getPhaseInfo(SignalRequest signalRequest)
 {
-
+    int phaseNo{};
+    bool singleFrame = false;
     Json::Value jsonObject;
 	Json::Reader reader;
 	std::ifstream jsonconfigfile("IntersectionConfig.json");
 
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject);
+    
     int intersectionID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
     int regionalID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
     std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
-	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
-	bool singleFrame = false;
-    int phaseNo{};
-    
+	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();    
     LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
     phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,signalRequest.getInBoundApproachID(), signalRequest.getInBoundLaneID()));
 

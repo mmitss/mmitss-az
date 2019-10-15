@@ -25,7 +25,7 @@
 #include <string>
 #include "ExpectedTimeOfArrival.h"
 #include "IntersectionAccessPoint.h"
-#include "Position3D.h"
+#include <Position3D.h>
 
 class SignalRequest
 {

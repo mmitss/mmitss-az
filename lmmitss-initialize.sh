@@ -53,11 +53,18 @@ echo "Add the shared libraries we need to run"
 sudo cp ./3rdparty/net-snmp/lib/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
 sudo cp ./3rdparty/glpk/lib/libglpk.so.35.1.0 /usr/local/lib/mmitss/
 sudo cp ./lib/libmmitss-common.so /usr/local/lib/mmitss/
+sudo cp ./3rdparty/mapengine/lib/liblocAware.so.1.0 /usr/local/lib/mmitss/
+sudo cp ./3rdparty/asn1j2735/lib/libasn.so.1.0 /usr/local/lib/mmitss/
+sudo cp ./3rdparty/asn1j2735/lib/libdsrc.so.1.0 /usr/local/lib/mmitss/
 sudo cp ./lib/mmitss.conf /etc/ld.so.conf.d/
 sleep 1s
 
 echo "Create the symbolic links for the copied libraries."
 sudo ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35
 sudo ln -s /usr/local/lib/mmitss/libglpk.so.35.1.0 /usr/local/lib/mmitss/libglpk.so.35
+sudo ln -s /usr/local/lib/mmitss/liblocAware.so.1.0 /usr/local/lib/mmitss/liblocAware.so
+sudo ln -s /usr/local/lib/mmitss/libasn.so.1.0 /usr/local/lib/mmitss/libasn.so
+sudo ln -s /usr/local/lib/mmitss/libdsrc.so.1.0 /usr/local/lib/mmitss/libdsrc.so
+
 sudo ldconfig
 pkill -9 sleep #End

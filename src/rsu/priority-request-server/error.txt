@@ -1,0 +1,144 @@
+     18159:	
+     18159:	WARNING: Unsupported flag value(s) of 0x8000000 in DT_FLAGS_1.
+     18159:	
+     18159:	file=libdl.so.2 [0];  needed by make [0]
+     18159:	file=libdl.so.2 [0];  generating link map
+     18159:	  dynamic: 0x00007f04b9825d90  base: 0x00007f04b9623000   size: 0x0000000000203110
+     18159:	    entry: 0x00007f04b9623e50  phdr: 0x00007f04b9623040  phnum:                  7
+     18159:	
+     18159:	
+     18159:	file=libc.so.6 [0];  needed by make [0]
+     18159:	file=libc.so.6 [0];  generating link map
+     18159:	  dynamic: 0x00007f04b961cb80  base: 0x00007f04b9232000   size: 0x00000000003f0ae0
+     18159:	    entry: 0x00007f04b9253cb0  phdr: 0x00007f04b9232040  phnum:                 10
+     18159:	
+     18159:	
+     18159:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+     18159:	
+     18159:	
+     18159:	calling init: /lib/x86_64-linux-gnu/libdl.so.2
+     18159:	
+     18159:	
+     18159:	initialize program: make
+     18159:	
+     18159:	
+     18159:	transferring control: make
+     18159:	
+     18161:	
+     18161:	file=libc.so.6 [0];  needed by g++ [0]
+     18161:	file=libc.so.6 [0];  generating link map
+     18161:	  dynamic: 0x00007fc940b06b80  base: 0x00007fc94071c000   size: 0x00000000003f0ae0
+     18161:	    entry: 0x00007fc94073dcb0  phdr: 0x00007fc94071c040  phnum:                 10
+     18161:	
+     18161:	
+     18161:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+     18161:	
+     18161:	
+     18161:	initialize program: g++
+     18161:	
+     18161:	
+     18161:	transferring control: g++
+     18161:	
+     18162:	
+     18162:	file=libc.so.6 [0];  needed by /usr/lib/gcc/x86_64-linux-gnu/7/collect2 [0]
+     18162:	file=libc.so.6 [0];  generating link map
+     18162:	  dynamic: 0x00007fb4f23fbb80  base: 0x00007fb4f2011000   size: 0x00000000003f0ae0
+     18162:	    entry: 0x00007fb4f2032cb0  phdr: 0x00007fb4f2011040  phnum:                 10
+     18162:	
+     18162:	
+     18162:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+     18162:	
+     18162:	
+     18162:	initialize program: /usr/lib/gcc/x86_64-linux-gnu/7/collect2
+     18162:	
+     18162:	
+     18162:	transferring control: /usr/lib/gcc/x86_64-linux-gnu/7/collect2
+     18162:	
+     18163:	
+     18163:	WARNING: Unsupported flag value(s) of 0x8000000 in DT_FLAGS_1.
+     18163:	
+     18163:	file=libbfd-2.30-system.so [0];  needed by /usr/bin/ld [0]
+     18163:	file=libbfd-2.30-system.so [0];  generating link map
+     18163:	  dynamic: 0x00007fc243267bd0  base: 0x00007fc242f23000   size: 0x000000000034fba0
+     18163:	    entry: 0x00007fc242f69450  phdr: 0x00007fc242f23040  phnum:                  7
+     18163:	
+     18163:	
+     18163:	file=libdl.so.2 [0];  needed by /usr/bin/ld [0]
+     18163:	file=libdl.so.2 [0];  generating link map
+     18163:	  dynamic: 0x00007fc242f21d90  base: 0x00007fc242d1f000   size: 0x0000000000203110
+     18163:	    entry: 0x00007fc242d1fe50  phdr: 0x00007fc242d1f040  phnum:                  7
+     18163:	
+     18163:	
+     18163:	file=libc.so.6 [0];  needed by /usr/bin/ld [0]
+     18163:	file=libc.so.6 [0];  generating link map
+     18163:	  dynamic: 0x00007fc242d18b80  base: 0x00007fc24292e000   size: 0x00000000003f0ae0
+     18163:	    entry: 0x00007fc24294fcb0  phdr: 0x00007fc24292e040  phnum:                 10
+     18163:	
+     18163:	
+     18163:	file=libz.so.1 [0];  needed by /usr/lib/x86_64-linux-gnu/libbfd-2.30-system.so [0]
+     18163:	file=libz.so.1 [0];  generating link map
+     18163:	  dynamic: 0x00007fc24292cdf0  base: 0x00007fc242711000   size: 0x000000000021c0b0
+     18163:	    entry: 0x00007fc242712f90  phdr: 0x00007fc242711040  phnum:                  7
+     18163:	
+     18163:	
+     18163:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+     18163:	
+     18163:	
+     18163:	calling init: /lib/x86_64-linux-gnu/libz.so.1
+     18163:	
+     18163:	
+     18163:	calling init: /lib/x86_64-linux-gnu/libdl.so.2
+     18163:	
+     18163:	
+     18163:	calling init: /usr/lib/x86_64-linux-gnu/libbfd-2.30-system.so
+     18163:	
+     18163:	
+     18163:	initialize program: /usr/bin/ld
+     18163:	
+     18163:	
+     18163:	transferring control: /usr/bin/ld
+     18163:	
+     18163:	
+     18163:	file=/usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so [0];  dynamically loaded by /usr/bin/ld [0]
+     18163:	file=/usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so [0];  generating link map
+     18163:	  dynamic: 0x00007fc241d40dc0  base: 0x00007fc241b2f000   size: 0x0000000000212480
+     18163:	    entry: 0x00007fc241b325d0  phdr: 0x00007fc241b2f040  phnum:                  7
+     18163:	
+     18163:	
+     18163:	calling init: /usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so
+     18163:	
+     18163:	opening file=/usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so [0]; direct_opencount=1
+     18163:	
+../../../3rdparty/mapengine/lib/liblocAware.so: undefined reference to `AsnJ2735Lib::decode_msgFrame(unsigned char const*, unsigned long, Frame_element_t&)'
+../../../3rdparty/mapengine/lib/liblocAware.so: undefined reference to `AsnJ2735Lib::encode_msgFrame(Frame_element_t const&, unsigned char*, unsigned long)'
+     18163:	
+     18163:	calling fini: /usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so [0]
+     18163:	
+     18163:	
+     18163:	file=/usr/lib/gcc/x86_64-linux-gnu/7/liblto_plugin.so [0];  destroying link map
+     18163:	
+     18163:	calling fini: /usr/bin/ld [0]
+     18163:	
+     18163:	
+     18163:	calling fini: /usr/lib/x86_64-linux-gnu/libbfd-2.30-system.so [0]
+     18163:	
+     18163:	
+     18163:	calling fini: /lib/x86_64-linux-gnu/libdl.so.2 [0]
+     18163:	
+     18163:	
+     18163:	calling fini: /lib/x86_64-linux-gnu/libz.so.1 [0]
+     18163:	
+collect2: error: ld returned 1 exit status
+     18162:	
+     18162:	calling fini: /usr/lib/gcc/x86_64-linux-gnu/7/collect2 [0]
+     18162:	
+     18161:	
+     18161:	calling fini: g++ [0]
+     18161:	
+make: *** [M_PriorityRequestServer] Error 1
+     18159:	
+     18159:	calling fini: make [0]
+     18159:	
+     18159:	
+     18159:	calling fini: /lib/x86_64-linux-gnu/libdl.so.2 [0]
+     18159:	
