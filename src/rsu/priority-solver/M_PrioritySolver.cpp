@@ -257,7 +257,7 @@ int main ( int argc, char* argv[] )
 		dEndTime=GetSeconds();
 		if( dEndTime-dStartTime < 2.0 ) // We do connect to RSE
 		{
-			captureRequiredSignalStatus();
+			captureRequiredSignalStatus(); //DD: How to know which phase status is required
 			// calculateRedElapseTime(red_start_time,previous_signal_color);  	// in case of Adaptive Priority
 			Req_List_Combined.ClearList();   
 			ReqList.ClearList();
@@ -406,7 +406,7 @@ void setupConfigurationAndConnection()
     setupConnection(); // to get arrival time from trajectory aware component (just in case sodeusage is AdaptivePriority) and send the Event list to Signal Controller OR to send the Event list to COP OR to only send the Event list to Signal Controller    
 }
 
-void creatLogFiles()
+void creatLogFiles()33333
 {
 	//------log file name with Time stamp---------------------------
     char timestamp[128];
@@ -4859,7 +4859,7 @@ int  CurTimingPlanRead()
     * Create the PDU for the data for our request.
     *   1) We're going to GET the system.sysDescr.0 node.
     */
-    pdu = snmp_pdu_create(SNMP_MSG_GET);
+    pdu = snmp_pdu_create(SNMP_MSG_GET); //DD: package data unit
     anOID_len = MAX_OID_LEN;
 
     //---#define CUR_TIMING_PLAN     "1.3.6.1.4.1.1206.3.5.2.1.22.0"      // return the current timing plan
