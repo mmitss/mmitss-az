@@ -1,0 +1,31 @@
+{
+	"MsgType" : "SRM",
+	"SignalRequest" : 
+	{
+		"expectedTimeOfArrival" : 
+		{
+			"ETA_Duration" : 2.0,
+			"ETA_Minute" : 3,
+			"ETA_Second" : 21.862319342331329
+		},
+		"heading_Degree" : 330.0,
+		"inBoundLane" : 
+		{
+			"LaneID" : 7
+		},
+		"intersectionID" : 1008,
+		"minuteOfYear" : 387323,
+		"msOfMinute" : 43000,
+		"msgCount" : 1,
+		"position" : 
+		{
+			"elevation_Meter" : 10.0,
+			"latitude_DecimalDegree" : 37.422472599999999,
+			"longitude_DecimalDegree" : -122.1406599
+		},
+		"priorityRequestType" : 1,
+		"speed_MeterPerSecond" : 15.6553,
+		"vehicleID" : 601,
+		"vehicleType" : 6
+	}
+}
