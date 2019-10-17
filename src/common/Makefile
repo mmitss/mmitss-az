@@ -11,7 +11,7 @@ LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/3rdparty/jsonc
 
 
 #cpp's go here
-SRC += AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp
+SRC += AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp SignalRequest.cpp SignalStatus.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp
 #the name of the executable goes here
 TARGET = $(BUILD_ROOT)/lib/libmmitss-common.so
 
