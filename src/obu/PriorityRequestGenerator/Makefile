@@ -1,5 +1,5 @@
 # Sample Makefile for building with the uper codec and json libraries
-BUILD_ROOT=../../../..
+BUILD_ROOT=../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
@@ -9,7 +9,7 @@ LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the
 LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/3rdparty/jsoncpp -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib  -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common  #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += main.cpp PriorityRequestGenerator.cpp MapManager.cpp  SignalStatus.cpp SignalRequest.cpp ExpectedTimeOfArrival.cpp IntersectionAccessPoint.cpp locAware.cpp geoUtils.cpp
+SRC += main.cpp PriorityRequestGenerator.cpp MapManager.cpp locAware.cpp geoUtils.cpp
 #the name of the executable goes here
 #the name of the executable goes here
 TARGET = PRG

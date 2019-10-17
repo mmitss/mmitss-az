@@ -152,7 +152,7 @@ bool MapManager::deleteMapPayLoadFromList()
 void MapManager::writeMAPPayloadInFile() 
 {
 
-    const char *path = "../map";
+    const char *path = "./map";
     std::stringstream ss;
     ss << path;
     std::string s;
