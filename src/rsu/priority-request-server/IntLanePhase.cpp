@@ -51,7 +51,7 @@ int IntLanePhase::ReadLanePhaseMap(const char *filename) {
             if (strcmp(token_char, "No_Lane") == 0) {
                 sscanf(lineread.c_str(), "%*s %s", temp_char);
                 iNoRow = atoi(temp_char);
-                for (int i = 0; i < iNoRow; i++) {
+                for (int j = 0; j < iNoRow; j++) {
                     getline(lanePhase_file, lineread);
                     sscanf(lineread.c_str(), "%s", token_char);
                     iInLane = token_char[2] - 48;

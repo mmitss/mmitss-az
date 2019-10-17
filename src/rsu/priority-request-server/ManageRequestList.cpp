@@ -52,7 +52,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iRecvReqListDiviser = 0;
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
     char RSU_ID[16];
-    MsgEnum::requestType reqType;
+    MsgEnum::requestType reqType= MsgEnum::requestType::priorityRequest;
     
     sscanf(RcvMsg, "%s %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", reqType, RSU_ID, &NewReq.VehID,
            &NewReq.VehClass,
