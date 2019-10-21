@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "SignalRequest.h"
 ///* Reading Phase Status through NTCIP: different status has a number.  // FROM "rsu_config" app
 //**********asc3PhaseStatusTiming2
 // (1) X: XPED timing
@@ -110,7 +110,7 @@ int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
 void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &, const double);
 
-void processRxMessage(const char *, const string &, int [], const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int, int&);
+void processRxMessage(const char *,string &, int [], const IntLanePhase, LinkedList <ReqEntry> &Req_List, int&, int [], int&);
 
 double readGPStime();
 
@@ -120,6 +120,10 @@ void identifyColor(int color[2][8], int greenGroup, int redGroup, int yellowGrou
 
 void whichPhaseIsGreen(int phase_Color[8], int greenGroup, int redGroup,
                        int yellowGroup); // this function returns the color of the first argument which is phaseNo.
+
+
+
+int getPhaseInfo(SignalRequest signalRequest);
 
 
 /*RemoveCoord

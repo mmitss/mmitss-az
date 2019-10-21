@@ -47,7 +47,8 @@ class BasicVehicle
         double speed_MeterPerSecond{}; // Meter per second
         double heading_Degree{}; // Degree
         int type{}; // Enumeration
-		int lane{};
+	int lane{};
+
 
     public:
         //Constructor:
