@@ -31,10 +31,14 @@
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
-#include "SRM.h"
-#include "BasicVehicle.h"
 #include "ManageRequestList.h"
+#include "msgEnum.h"
 #include "M_PriorityRequestServer.h"
+
+#include "AsnJ2735Lib.h"
+#include "locAware.h"
+#include "geoUtils.h"
+#include "SignalRequest.h"
 
 using namespace std;
 
@@ -45,8 +49,7 @@ struct sockaddr_in recvaddr;
 int addr_length;
 char INTport[64];   // Port to connect to traffic signal controller e.g. "501"
 char INTip[64];     // IP to connect to traffic signal controller e.g. "150.135.152.23";
-double dTime = 0.0; // The reference time, in FIELD it will be gps time, in SIMULATION it will be VISSIM time
-int iNumOfRxBytes = 0;
+double dTime = 0.0; // The reference time, in FIELD it will be gps time, in SIMULATION it will be VISSIM time;
 
 int main(int argc, char *argv[])
 {
@@ -57,19 +60,16 @@ int main(int argc, char *argv[])
     int iPORT = 20002;      //  Socket Port: For receiving SRM from Transciever/Encoder
     long lTimeOut = 300000; // Time out of waiting for a new socket 0.3 sec!
     string Rsu_ID;          // will get intersection name from "rsuid.txt"
-    int ret = 0;
     int ReqListUpdateFlag = 0; // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
     char ConfigFile[256];
     int CombinedPhase[8] = {0};
     char rxMsgBuffer[MAX_MSG_BUFLEN]{}; // a buffer for received messages
     int iAppliedMethod = 1;             // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
-    int iApplicationUsage = 1;          // If the PriorityRequestServer is used in field testings, this value is 1. If it is used in Simulation testing, it is 2. This variable is determined as argument.
-    // -p  the port that the program receive SRM, -t the timeout for listening to a socket,
-    // -t codeusage whether it is for ISIG and priority or just priority, -c field vs simulation use
     int flagForClearingInterfaceCmd = 0;   // a flag to clear all commands in the interface when the request passed
     double dCountDownIntervalForETA = 1.0; // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
     double dCurrentTimeInCycle = 100.0;    // For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
     int PhaseStatus[8];                    // Determine the phase status to generate the split phases
+    ssize_t iNumOfRxBytes = 0;
 
     creatLogFile();
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(rxMsgBuffer, Rsu_ID, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, iApplicationUsage, flagForClearingInterfaceCmd);
+            processRxMessage(rxMsgBuffer, Rsu_ID, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
 
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0))
         {
@@ -151,142 +151,109 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-//========================================================================================//
-/*void SignalRequest::json2SignalRequest(std::string jsonString)
-{
-    Json::Value jsonObject;
-    Json::Reader reader;
 
-    reader.parse(jsonString.c_str(), jsonObject);
-
-    minuteOfYear = (jsonObject["SignalRequest"]["minuteOfYear"]).asInt();
-    msOfMinute = (jsonObject["SignalRequest"]["msOfMinute"]).asInt();
-    msgCount = (jsonObject["SignalRequest"]["msgCount"]).asInt();
-    regionalID = (jsonObject["SignalRequest"]["regionalID"]).asInt();
-    intersectionID = (jsonObject["SignalRequest"]["intersectionID"]).asInt();
-    requestID = (jsonObject["SignalRequest"]["requestID"]).asInt();
-    
-    priorityRequestType = (jsonObject["SignalRequest"]["priorityRequestType"]).asInt();
-    
-    inBoundLane.setLaneID((jsonObject["SignalRequest"]["inBoundLane"]["LaneID"]).asInt());
-    expectedTimeOfArrival.setETA_Minute((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt());
-    expectedTimeOfArrival.setETA_Second((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
-    expectedTimeOfArrival.setETA_Duration((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"]).asDouble());
-
-    vehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
-    position.setLatitude_decimalDegree((jsonObject["SignalRequest"]["position"]["latitude_DecimalDegree"]).asDouble());
-    position.setLongitude_decimalDegree((jsonObject["SignalRequest"]["position"]["longitude_DecimalDegree"]).asDouble());
-    position.setElevation_meter((jsonObject["SignalRequest"]["position"]["elevation_Meter"]).asDouble());
-    heading_Degree = (jsonObject["SignalRequest"]["heading_Degree"]).asDouble();
-    speed_MeterPerSecond = (jsonObject["SignalRequest"]["speed_MeterPerSecond"]).asDouble();
-    vehicleType = (jsonObject["SignalRequest"]["vehicleType"]).asInt();
-    basicVehicleRole = (jsonObject["SignalRequest"]["basicVehicleRole"]).asInt();
-}
-*/
-
-void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseStatus[], const IntLanePhase lanePhase, LinkedList<ReqEntry> &req_list,
-                      int &ReqListUpdateFlag, int CombinedPhase[], int iApplicationUsage, int &flagForClearingInterfaceCmd)
+void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[], const IntLanePhase lanePhase, LinkedList<ReqEntry> &req_list,
+                      int &ReqListUpdateFlag, int CombinedPhase[], int &flagForClearingInterfaceCmd)
 {
     float fETA;
     int iRequestedPhase;
     int iPriorityLevel;
-    int iInApproach = 0;
-    int ioutApproach = 0;
     int iInLane = 0;
-    int iOutlane = 0;
-    int iETA = 0;
+    int iOutLane = 0;
     double dMinGrn;
-    int iStartMinute, iStartSecond, iEndMinute, iEndSecond;
-    int iStartHour, iEndHour;
-    int iVehicleState;
-    long lvehicleID;
-    int iMsgCnt;
-    //    double dSpeed;
+    int iStartMinute{}, iStartSecond{}, iEndMinute{}, iEndSecond{};
+    int iStartHour{}, iEndHour{};
+    int iVehicleState{};
+    long lvehicleID{};
+    int iMsgCnt{};
     long lintersectionID;
     char temp_log[256];
-    char bsmBlob[BSM_BLOB_SIZE];
-    BasicVehicle vehIn;
-    char cRequestType[32]; // Whether it is a request or request_clear or coord_request,
+    // BasicVehicle vehIn; //DD: New version nof Basic Vehicle doen't have vehIn
+    int iRequestType; // Whether it is a request or request_clear or coord_request,
                            //this variable is used to fill up tempMsg
     char tempMsg[1024];    // To write the requests info into this variable.
                            //this variable will be passed to UpdateList function to update the request lists
 
+    std::string receivedSrmJsonString = rxMsgBuffer;
+
+    SignalRequest currentSRM;
+
     Json::Value jsonObject;
     Json::Reader reader;
 
-    //SRM_t *srm = 0;
+    reader.parse(rxMsgBuffer, jsonObject);
 
-    //srm = (SRM_t *)calloc(1, sizeof *(srm));
-    //srm->timeOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
-    //srm->endOfService = (struct DTime *)calloc(1, sizeof(DTime_t));
-    //srm->transitStatus = (BIT_STRING_t *)calloc(1, sizeof(BIT_STRING_t));
-    //srm->vehicleVIN = (VehicleIdent_t *)calloc(1, sizeof(VehicleIdent_t));
+    //vehIn.BSMToVehicle(bsmBlob);
 
-    cout << "Message Received " << endl;
-
-    //asn_dec_rval_t rval; // Encoder return value
-    //rval = ber_decode(0, &asn_DEF_SRM, (void **)&srm, rxMsgBuffer, sizeof(rxMsgBuffer));
-
-    //double dVISSIMtime = 0.0;
-
-    //if (rval.code == RC_OK)
-    //{
-    sprintf(temp_log, "SRM Recieved: Decode Success\n");
-    outputlog(temp_log);
-
-    for (int i = 0; i < 38; i++) // extracting the bsm blob from the srm
-        bsmBlob[i] = srm->vehicleData.buf[i];
-
-    vehIn.BSMToVehicle(bsmBlob);
-
-    lintersectionID = (srm->request.id.buf[1] << 8) + srm->request.id.buf[0];
-    // Potential bug! Intersection ID in SRM is an optional (2bytes to 4 bytes) size data element.
-    // It's ASN.1 notation in SRM is IntersectionID ::= OCTET STRING (SIZE(2..4)).
-    //  While in PRG we populate it as 2 byte data element.  Here in PRS, we only
-    // read the two byte. If intersection ID is a big number > 65535 (interger type capacity), there will be error
+    lintersectionID = (jsonObject["SignalRequest"]["intersectionID"]).asUInt();
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
     if (lanePhase.iIntersectionID == lintersectionID)
     {
-        if (srm->request.isCancel->buf[0] == 0)
-            strcpy(cRequestType, "request");
-        else
-            strcpy(cRequestType, "request_clear");
+        iRequestType = (jsonObject["SignalRequest"]["priorityRequestType"]).asInt();
 
-        obtainInLaneOutLane(srm->request.inLane->buf[0], srm->request.outLane->buf[0], iInApproach, ioutApproach,
-                            iInLane, iOutlane);
-        iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutlane];
-        iPriorityLevel = srm->request.type.buf[0]; // is this the currect element of SRM to populate with vehicle  type?!
+        //**DJC** WARNING I am making a assumption that outLane will equal inLane as we do not currently support an outLane
+        //srmInLane = jsonObject["SignalRequest"]["inBoundLane"]["LaneID"].asInt();
+        //srmOutLane = iInLane;
+
+        //obtainInLaneOutLane(srmInLane, srmOutLane, iInApproach, ioutApproach, iInLane, iOutLane);
+
+        //iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutLane];
+
+        currentSRM.json2SignalRequest(receivedSrmJsonString);
+        iRequestedPhase = getPhaseInfo(currentSRM);
+
+        // EV==1, TRANSIT==2, TRUCK==3 
+        if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::special))
+            iPriorityLevel = 1;
+
+        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::bus))
+            iPriorityLevel = 2;
+
+        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+            iPriorityLevel = 3;
+
+        //All of the following are unused here and in solver
+        //iStartMinute = srm->timeOfService->minute;
+        //iStartSecond = srm->timeOfService->second;
+        //iStartHour = srm->timeOfService->hour;
+        //iEndMinute = srm->endOfService->minute;
+        //iEndSecond = srm->endOfService->second;
+        //iEndHour = srm->endOfService->hour;
+
+        //calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
+
+        //fETA = (float)iETA;
+        fETA = static_cast<float>((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt()*60.0 + 
+                                  (jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
+
+        //lvehicleID = vehIn.TemporaryID;
+        lvehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
+
+        //iMsgCnt = srm->msgCnt;
+        iMsgCnt = (jsonObject["SignalRequest"]["msgCount"]).asInt();
 
         // MZP 10/10/17 deleted vehiceVIN data element population in PRG ---> dMinGrn is
         // embeded in iETA and obtained using
         // iVehicleState dMinGrn=((srm->vehicleVIN->id->buf[1]<<8)+srm->vehicleVIN->id->buf[0])/10;
         // there was no place in SMR to store MinGrn !!!!!
-
-        iStartMinute = srm->timeOfService->minute;
-        iStartSecond = srm->timeOfService->second;
-        iEndMinute = srm->endOfService->minute;
-        iEndSecond = srm->endOfService->second;
-        iStartHour = srm->timeOfService->hour;
-        iEndHour = srm->endOfService->hour;
-        calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
-        fETA = (float)iETA;
-
-        lvehicleID = vehIn.TemporaryID;
-        iVehicleState = srm->status->buf[0];
-        iMsgCnt = srm->msgCnt;
+        
+        //iVehicleState = srm->status->buf[0];
+        //iVehicleState = !!!!!!!!!! What do I do here... unused except for next line
 
         //KLH - concerned about this being a bug
         if (iVehicleState == 3) // vehicle is in queue
             dMinGrn = (double)(fETA);
 
-        sprintf(tempMsg, "%s %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f", cRequestType,
-                Rsu_id,
+        sprintf(tempMsg, "%d %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f",
+                iRequestType,
+                Rsu_id.c_str(),
                 lvehicleID,
                 iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
-                srm->request.inLane->buf[0], srm->request.outLane->buf[0], iStartHour, iStartMinute, iStartSecond,
+                iInLane, iOutLane, iStartHour, iStartMinute, iStartSecond,
                 iEndHour, iEndMinute, iEndSecond,
                 iVehicleState, iMsgCnt, 0.0);
+
         sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
 
@@ -297,36 +264,6 @@ void processRxMessage(const char *rxMsgBuffer, const string &Rsu_id, int phaseSt
         // Update the Req List data structure considering received message
         UpdateList(req_list, tempMsg, phaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
     }
-//}
-//    else
-//    {
-//if ((iApplicationUsage == FIELD))
-//{
-//    sprintf(temp_log, " SRM Decode Failed ! \n");
-//    outputlog(temp_log);
-    //RemoveCoord
-    //} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight > 0)) {
-//}
-//else if (iApplicationUsage == SIMULATION)
-//{
-//    dVISSIMtime = getSimulationTime(rxMsgBuffer);
-//    sprintf(temp_log, "The received message is VISSIM clock %.2f\n", dVISSIMtime);
-//    outputlog(temp_log);
-//}
-//RemoveCoord
-//} else if ((iApplicationUsage == SIMULATION) && (priorityConfig.dCoordinationWeight <= 0)) {
-//    sprintf(temp_log,
-//            "The received message is VISSIM clock but is not considered b/c coordination weight is zero \n");
-//    outputlog(temp_log);
-//}
-
-//    }
-
-//    free(srm->vehicleVIN);
-//    free(srm->transitStatus);
-//    free(srm->endOfService);
-//    free(srm->timeOfService);
-//    free(srm);
 }
 
 void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag,
@@ -381,6 +318,7 @@ void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
     fs.close();
 }
 
+/*
 int getSignalColor(int PhaseStatusNo)
 {
     int ColorValue = RED;
@@ -406,7 +344,9 @@ int getSignalColor(int PhaseStatusNo)
     }
     return ColorValue;
 }
+*/
 
+/* DJC old coord stuff
 int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
 {
     req_list.Reset();
@@ -428,6 +368,7 @@ int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
     }
     return Have;
 }
+*/
 
 void readPhaseTimingStatus(int PhaseStatus[8])
 {
@@ -449,8 +390,9 @@ void readPhaseTimingStatus(int PhaseStatus[8])
     strcat(ipwithport, INTport); //for ASC get status, DO NOT USE port!!!
     session.peername = strdup(ipwithport);
     session.version = SNMP_VERSION_1; //for ASC intersection  set the SNMP version number
-    // set the SNMPv1 community name used for authentication
-    session.community = (u_char *)"public";
+    // set the SNMPv1 community name used for authentication "public";
+    char * strPtr = const_cast<char *>("public");
+    session.community = reinterpret_cast<u_char*>(strPtr);
     session.community_len = strlen((const char *)session.community);
     SOCK_STARTUP;
     ss = snmp_open(&session); // establish the session
@@ -523,7 +465,7 @@ void readPhaseTimingStatus(int PhaseStatus[8])
         //SUCCESS: Print the result variables
 
         int *out = new int[MAX_CONTROLLER_OUTPUT_VALUES];
-        int i = 0;
+        int j = 0;
         //~ for(vars = response->variables; vars; vars = vars->next_variable)
         //~ print_variable(vars->name, vars->name_length, vars);
 
@@ -543,7 +485,7 @@ void readPhaseTimingStatus(int PhaseStatus[8])
 
                 int *aa;
                 aa = (int *)vars->val.integer;
-                out[i++] = *aa;
+                out[j++] = *aa;
                 //printf("value #%d is NOT a string! Ack!. Value = %d \n", count++,*aa);
             }
         }
@@ -1052,17 +994,22 @@ void printReqestFile2Log(const char *resultsfile)
     }
     fss.close();
 }
-
+/*
 void obtainInLaneOutLane(int srmInLane, int srmOutLane, int &inApproach, int &outApproach, int &iInlane, int &Outlane)
 {
 
     inApproach = (int)(srmInLane / 10);
+
     iInlane = srmInLane - inApproach * 10;
+
     outApproach = (int)(srmOutLane / 10);
+    
     Outlane = srmOutLane - outApproach * 10;
 }
+*/
 
 // Will get this from JSON
+/*
 void calculateETA(int beginMin, int beginSec, int endMin, int endSec, int &iETA)
 {
 
@@ -1079,6 +1026,7 @@ void calculateETA(int beginMin, int beginSec, int endMin, int endSec, int &iETA)
     else if (endMin - beginMin == 2)
         iETA = (60 - beginSec) + endSec + 60;
 }
+*/
 
 void packEventList(char *tmp_event_data, int &size)
 {
@@ -1162,6 +1110,7 @@ void packEventList(char *tmp_event_data, int &size)
     size = offset;
 }
 
+/*
 double getSimulationTime(const char *buffer)
 {
     unsigned char byteA, byteB, byteC, byteD;
@@ -1172,6 +1121,7 @@ double getSimulationTime(const char *buffer)
     long DSecond = (long)((byteA << 24) + (byteB << 16) + (byteC << 8) + (byteD)); // in fact unsigned
     return DSecond / 10.0;
 }
+*/
 
 int outputlog(char *output) // JD 12.2.11
 {
@@ -1363,3 +1313,27 @@ void creatLogFile()
         }
     }
 */
+
+int getPhaseInfo(SignalRequest signalRequest)
+{
+    int phaseNo{};
+    bool singleFrame = false;
+    Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("IntersectionConfig.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+    
+    int intersectionID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
+    int regionalID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
+    std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
+	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();    
+    LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
+    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,
+                                                          static_cast<uint8_t>(signalRequest.getInBoundApproachID()),
+                                                          static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
+
+	delete plocAwareLib;
+	return phaseNo;
+}
