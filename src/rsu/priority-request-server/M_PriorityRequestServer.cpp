@@ -31,7 +31,6 @@
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
-// #include "BasicVehicle.h" //we will use new version of Basic Vehicle
 #include "ManageRequestList.h"
 #include "msgEnum.h"
 #include "M_PriorityRequestServer.h"
@@ -319,6 +318,7 @@ void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
     fs.close();
 }
 
+/*
 int getSignalColor(int PhaseStatusNo)
 {
     int ColorValue = RED;
@@ -344,7 +344,9 @@ int getSignalColor(int PhaseStatusNo)
     }
     return ColorValue;
 }
+*/
 
+/* DJC old coord stuff
 int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
 {
     req_list.Reset();
@@ -366,6 +368,7 @@ int FindVehClassInList(LinkedList<ReqEntry> req_list, int VehClass)
     }
     return Have;
 }
+*/
 
 void readPhaseTimingStatus(int PhaseStatus[8])
 {
@@ -991,7 +994,7 @@ void printReqestFile2Log(const char *resultsfile)
     }
     fss.close();
 }
-
+/*
 void obtainInLaneOutLane(int srmInLane, int srmOutLane, int &inApproach, int &outApproach, int &iInlane, int &Outlane)
 {
 
@@ -1003,8 +1006,10 @@ void obtainInLaneOutLane(int srmInLane, int srmOutLane, int &inApproach, int &ou
     
     Outlane = srmOutLane - outApproach * 10;
 }
+*/
 
 // Will get this from JSON
+/*
 void calculateETA(int beginMin, int beginSec, int endMin, int endSec, int &iETA)
 {
 
@@ -1021,6 +1026,7 @@ void calculateETA(int beginMin, int beginSec, int endMin, int endSec, int &iETA)
     else if (endMin - beginMin == 2)
         iETA = (60 - beginSec) + endSec + 60;
 }
+*/
 
 void packEventList(char *tmp_event_data, int &size)
 {
@@ -1104,6 +1110,7 @@ void packEventList(char *tmp_event_data, int &size)
     size = offset;
 }
 
+/*
 double getSimulationTime(const char *buffer)
 {
     unsigned char byteA, byteB, byteC, byteD;
@@ -1114,6 +1121,7 @@ double getSimulationTime(const char *buffer)
     long DSecond = (long)((byteA << 24) + (byteB << 16) + (byteC << 8) + (byteD)); // in fact unsigned
     return DSecond / 10.0;
 }
+*/
 
 int outputlog(char *output) // JD 12.2.11
 {
