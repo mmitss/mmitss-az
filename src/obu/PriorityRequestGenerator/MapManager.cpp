@@ -35,7 +35,7 @@
 using namespace GeoUtils;
 using namespace MsgEnum;
 
-const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 5; 
+const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 20; 
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
@@ -56,6 +56,7 @@ void MapManager::json2MapPayload(std::string jsonString)
     reader.parse(jsonString.c_str(), jsonObject);
 
     mapPayload = (jsonObject["MapPayload"]).asString();
+    intersectionName =(jsonObject["IntersectionName"]).asString();
 }
 
 /*
@@ -76,7 +77,7 @@ std::string MapManager::getTimedOutMapPayLoad()
 /*
     -Check whether mapPayload has to be added in the available map list or not
         --If availableMapList is empty, mapPayload has to be added in the availableMapList
-        --IfvailableMapList is not empty but mapPayload is not in the availableMapList, mapPayload has to be added in the availableMapList
+        --If avilableMapList is not empty but mapPayload is not in the availableMapList, mapPayload has to be added in the availableMapList
 */
 
 bool MapManager::addToMapInList() //check_Map.h
@@ -99,7 +100,7 @@ bool MapManager::addToMapInList() //check_Map.h
 
 /*
     -Check whether mapPayload information has to be updated in the available map list or not
-        --IfvailableMapList is not empty and mapPayload is in the availableMapList, mapPayload has to be added in the availableMapList
+        --If avilableMapList is not empty and mapPayload is in the availableMapList, mapPayload has to be added in the availableMapList
 */
 
 bool MapManager::updateMapPayLoadList()
@@ -159,18 +160,36 @@ void MapManager::writeMAPPayloadInFile()
     ss >> s;
     std::ofstream outputfile;
 
-    outputfile.open(s + "/" + "Map" + std::to_string(numberOfMapFile) + ".map.payload");
+    outputfile.open(s + "/" + intersectionName + ".map.payload");
 
     outputfile << "payload"
                << " "
-               << "Map" << numberOfMapFile << " " << mapPayload << std::endl;
+               << intersectionName << " " << mapPayload << std::endl;
     outputfile.close();
-
-    if (numberOfMapFile < MAX_NO_OF_MAP_FILE)
-        numberOfMapFile++;
-    else
-        numberOfMapFile = 0;
 }
+
+// void MapManager::writeMAPPayloadInFile() 
+// {
+
+//     const char *path = "./map";
+//     std::stringstream ss;
+//     ss << path;
+//     std::string s;
+//     ss >> s;
+//     std::ofstream outputfile;
+
+//     outputfile.open(s + "/" + "Map" + std::to_string(numberOfMapFile) + ".map.payload");
+
+//     outputfile << "payload"
+//                << " "
+//                << "Map" << numberOfMapFile << " " << mapPayload << std::endl;
+//     outputfile.close();
+
+//     if (numberOfMapFile < MAX_NO_OF_MAP_FILE)
+//         numberOfMapFile++;
+//     else
+//         numberOfMapFile = 0;
+// }
 
 /*
 	- Obtain system time and calculte current Minute of the Year. This time will be used for calculation of mapPayload deletion method.
@@ -195,7 +214,6 @@ int MapManager::getMapPayloadReceivedTime()
 
 /*
     - Check whether mapPayload has to be added in the availableMapList or updated the received time of mapPayload
-    - Check if any mapPayload has to be deleted from the availableMapList
 */
 
 void MapManager::maintainAvailableMapList() //check Map.h
@@ -204,8 +222,8 @@ void MapManager::maintainAvailableMapList() //check Map.h
 
     if (addToMapInList() == true)
     {
-        std::string mapName = "Map" + std::to_string(numberOfMapFile);
-        std::string mapFileDirectory = "../map/" + mapName + ".map.payload";
+        std::string mapName = intersectionName;
+        std::string mapFileDirectory = "./map/" + mapName + ".map.payload";
         writeMAPPayloadInFile();
         //decodeMAPPayload(mapFileDirectory, mapName);
         availableMap.availableMapPayload = mapPayload;
@@ -309,10 +327,19 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
     }
 }
 
+/*
+	-If vehicle is out of the intersection, activeMapList has to cleared.
+*/
+void MapManager::deleteActiveMapfromList()
+{
+	activeMapList.clear();
+}
+
 std::vector<Map::ActiveMap> MapManager::getActiveMapList()
 {
     return activeMapList;
 }
+
 MapManager::~MapManager()
 {
 }

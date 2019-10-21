@@ -3,7 +3,7 @@
  © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
        granted for USDOT OSADP distribution with the Apache 2.0 open source license.
 **********************************************************************************
-  IntersectionAccessPoint.h
+  main.cpp
   Created by: Debashis Das
   University of Arizona   
   College of Engineering
@@ -44,8 +44,8 @@ int main()
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
             if (PRG.shouldSendOutRequest(basicVehicle, mapManager) == true)
             {
-                sendingJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest);
-                std::cout << sendingJsonString << std::endl;
+                sendingJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
+                // std::cout << sendingJsonString << std::endl;
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
             }
             mapManager.deleteMap();
