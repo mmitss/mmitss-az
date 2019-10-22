@@ -35,7 +35,7 @@
 using namespace GeoUtils;
 using namespace MsgEnum;
 
-const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 20; 
+const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 5; 
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
