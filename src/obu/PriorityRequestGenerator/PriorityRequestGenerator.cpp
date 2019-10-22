@@ -50,7 +50,7 @@ using namespace MsgEnum;
 
 const double DISTANCEUNITCONVERSION = 100; //cm to meter
 const double VEHICLEMINSPEED = 0.89408;
-const double VEHICLE_SPEED_DEVIATION_LIMIT = 5.0;
+const double VEHICLE_SPEED_DEVIATION_LIMIT = 3.0;
 const double ETA_DURATION_SECOND = 2;
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
