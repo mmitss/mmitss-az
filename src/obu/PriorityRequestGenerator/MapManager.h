@@ -27,7 +27,7 @@ private:
     std::vector<Map::AvailableMap> availableMapList;
     std::vector<Map::ActiveMap> activeMapList;
     std::string mapPayload{};
-    int numberOfMapFile{};
+    std::string intersectionMapName{};
     std::string timedOutMapPayLoad{};
 
 public:
@@ -46,5 +46,6 @@ public:
     void deleteMap();
     void printAvailableMapList();
     void createActiveMapList(BasicVehicle basicVehicle);
+    void deleteActiveMapfromList();
     std::vector<Map::ActiveMap>getActiveMapList();
 };
