@@ -39,7 +39,6 @@ const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 20;
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
-const int MAX_NO_OF_MAP_FILE = 15;
 
 MapManager::MapManager()
 {
@@ -48,7 +47,6 @@ MapManager::MapManager()
 /*
     -obtain uper hex string payload from the received json string
 */
-
 void MapManager::json2MapPayload(std::string jsonString)
 {
     Json::Value jsonObject;
@@ -56,14 +54,13 @@ void MapManager::json2MapPayload(std::string jsonString)
     reader.parse(jsonString.c_str(), jsonObject);
 
     mapPayload = (jsonObject["MapPayload"]).asString();
-    intersectionName =(jsonObject["IntersectionName"]).asString();
+    intersectionMapName =(jsonObject["IntersectionName"]).asString();
 }
 
 /*
     - setters for Map which has to be deleted from available map list.
     - If time difference between last time mapPpayload has been received and elapsed time is atleast 5 minutes delete that map. 
 */
-
 void MapManager::setTimedOutMapPayLoad(std::string timedOutPayLoad)
 {
     timedOutMapPayLoad = timedOutPayLoad;
@@ -79,7 +76,6 @@ std::string MapManager::getTimedOutMapPayLoad()
         --If availableMapList is empty, mapPayload has to be added in the availableMapList
         --If avilableMapList is not empty but mapPayload is not in the availableMapList, mapPayload has to be added in the availableMapList
 */
-
 bool MapManager::addToMapInList() //check_Map.h
 {
     bool addInList = false;
@@ -102,7 +98,6 @@ bool MapManager::addToMapInList() //check_Map.h
     -Check whether mapPayload information has to be updated in the available map list or not
         --If avilableMapList is not empty and mapPayload is in the availableMapList, mapPayload has to be added in the availableMapList
 */
-
 bool MapManager::updateMapPayLoadList()
 {
     bool updateMapList = false;
@@ -125,7 +120,6 @@ bool MapManager::updateMapPayLoadList()
     -Check whether mapPayload has to be deleted in the available map list or not
         --If time difference between last time mapPpayload has been received and elapsed time is atleast 5minutes delete that map.
 */
-
 bool MapManager::deleteMapPayLoadFromList()
 {
     bool deleteMapPayload = false;
@@ -149,7 +143,6 @@ bool MapManager::deleteMapPayLoadFromList()
 /*
     - Method to write the mapPayload in a file based on structure require for map Engine Library.
 */
-
 void MapManager::writeMAPPayloadInFile() 
 {
 
@@ -160,43 +153,19 @@ void MapManager::writeMAPPayloadInFile()
     ss >> s;
     std::ofstream outputfile;
 
-    outputfile.open(s + "/" + intersectionName + ".map.payload");
+    outputfile.open(s + "/" + intersectionMapName + ".map.payload");
 
     outputfile << "payload"
                << " "
-               << intersectionName << " " << mapPayload << std::endl;
+               << intersectionMapName << " " << mapPayload << std::endl;
     outputfile.close();
 }
-
-// void MapManager::writeMAPPayloadInFile() 
-// {
-
-//     const char *path = "./map";
-//     std::stringstream ss;
-//     ss << path;
-//     std::string s;
-//     ss >> s;
-//     std::ofstream outputfile;
-
-//     outputfile.open(s + "/" + "Map" + std::to_string(numberOfMapFile) + ".map.payload");
-
-//     outputfile << "payload"
-//                << " "
-//                << "Map" << numberOfMapFile << " " << mapPayload << std::endl;
-//     outputfile.close();
-
-//     if (numberOfMapFile < MAX_NO_OF_MAP_FILE)
-//         numberOfMapFile++;
-//     else
-//         numberOfMapFile = 0;
-// }
 
 /*
 	- Obtain system time and calculte current Minute of the Year. This time will be used for calculation of mapPayload deletion method.
 		--get the number of years passed (today's number of day in the year -1)
 		--get number of hours and minutes elapsed today
 */
-
 int MapManager::getMapPayloadReceivedTime()
 {
     int minuteOfYear{};
@@ -215,17 +184,16 @@ int MapManager::getMapPayloadReceivedTime()
 /*
     - Check whether mapPayload has to be added in the availableMapList or updated the received time of mapPayload
 */
-
 void MapManager::maintainAvailableMapList() //check Map.h
 {
     Map::AvailableMap availableMap;
 
     if (addToMapInList() == true)
     {
-        std::string mapName = intersectionName;
+        std::string mapName = intersectionMapName;
         std::string mapFileDirectory = "./map/" + mapName + ".map.payload";
+        
         writeMAPPayloadInFile();
-        //decodeMAPPayload(mapFileDirectory, mapName);
         availableMap.availableMapPayload = mapPayload;
         availableMap.availableMapFileName = mapName;
         availableMap.availableMapFileDirectory = mapFileDirectory;
@@ -246,7 +214,6 @@ void MapManager::maintainAvailableMapList() //check Map.h
 /*
 	- This function is for deleting map from availableMapList and also delete map file from the map folder.
 */
-
 void MapManager::deleteMap()
 {
     if (deleteMapPayLoadFromList() == true)
@@ -264,7 +231,6 @@ void MapManager::deleteMap()
 /*
 	- This function is for printing availableMapList.
 */
-
 void MapManager::printAvailableMapList()
 {
     for (size_t i = 0; i < availableMapList.size(); i++)
@@ -273,6 +239,9 @@ void MapManager::printAvailableMapList()
     }
 }
 
+/*
+	- This function is for maintaining activemaplist based on the availableMapList.
+*/
 void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 {
     Map::ActiveMap activeMap;

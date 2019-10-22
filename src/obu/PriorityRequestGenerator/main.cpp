@@ -42,11 +42,11 @@ int main()
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            if (PRG.shouldSendOutRequest(basicVehicle, mapManager) == true)
+            if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
                 sendingJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-                // std::cout << sendingJsonString << std::endl;
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
+                std::cout << "SRM is sent" << std::endl;
             }
             mapManager.deleteMap();
         }
@@ -62,7 +62,7 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            PRG.printART();
+            std::cout << "SSM is received" << std::endl;
         }
     }
 }
