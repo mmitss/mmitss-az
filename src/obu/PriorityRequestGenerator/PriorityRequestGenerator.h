@@ -28,6 +28,7 @@ class PriorityRequestGenerator
 {
 private:
     std::vector<ActiveRequest>ActiveRequestTable;
+    std::vector<Map::ActiveMap> activeMapList;
     bool bgetActiveMap {false}; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
     int messageType{};
     int temporaryVehicleID{};
@@ -49,34 +50,36 @@ public:
     PriorityRequestGenerator();
     ~PriorityRequestGenerator();
 
-    int getMessageType(std::string jsonString);
-    std::string getActiveMapFileName(MapManager mapManager);
-    std::string getActiveMapFileDirectory(MapManager mapManager);
-    void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
+    std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
+    std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+
+    bool addToActiveRequestTable(SignalStatus signalStatus);
+    bool shouldSendOutRequest(BasicVehicle basicVehicle);
+
     void setIntersectionID(int vehicleNearByIntersectionId);
     void setRegionalID(int vehicleNearByRegionalId);
     void setLaneID(int laneId);
     void setApproachID(int approachID);
     bool setTime2Go(double distance2go, double vehicleSpeed);
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
+    int getMessageType(std::string jsonString);
+    std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
+    void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);    
     int getIntersectionID();
     int getRegionalID();
     int getVehicleID(BasicVehicle basicVehicle);
     int getLaneID();
     int getApproachID();
     double getTime2Go();
-    int getVehicleIntersectionStatus();
-    void deleteActiveMapfromList(MapManager mapManager);
-    bool addToActiveRequestTable(SignalStatus signalStatus);
-    std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
-    void printART();
-    bool shouldSendOutRequest(BasicVehicle basicVehicle, MapManager mapManager);
+    int getVehicleIntersectionStatus();    
     int getVehicleType();
     int getBasicVehicleRole();
-    int getPriorityRequestType(BasicVehicle basicVehicle);
+    int getPriorityRequestType(BasicVehicle basicVehicle, MapManager mapManager);
     int getMinuteOfYear();
     int getMsOfMinute();
     int getMsgCount();
-    std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest);
+    
+    void printART();
+    
 
 };

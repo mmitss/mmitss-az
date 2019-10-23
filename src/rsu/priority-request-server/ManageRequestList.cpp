@@ -11,6 +11,7 @@
 #include <math.h>
 #include "LinkedList.h"
 #include "ReqEntry.h"
+#include "msgEnum.h"
 /*RemoveCoord
 #include "PriorityConfig.h"
 */
@@ -50,9 +51,10 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iNewReqDiviser = 0;
     int iRecvReqListDiviser = 0;
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
-    char RSU_ID[16], msg[16];
+    char RSU_ID[16];
+    MsgEnum::requestType reqType= MsgEnum::requestType::priorityRequest;
     
-    sscanf(RcvMsg, "%s %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", msg, RSU_ID, &NewReq.VehID,
+    sscanf(RcvMsg, "%s %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", reqType, RSU_ID, &NewReq.VehID,
            &NewReq.VehClass,
            &NewReq.ETA, &NewReq.Phase, &NewReq.MinGreen, &NewReq.dSetRequestTime,
            &NewReq.iInLane, &NewReq.iOutLane, &NewReq.iStrHour, &NewReq.iStrMinute, &NewReq.iStrSecond,
@@ -78,8 +80,8 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
     int pos = FindInReqList(Req_List, NewReq);
 
-    // the vehicle is approaching the intersection or in it is in the queue and requesting a phase or if it is a coordination request
-    if ((strcmp(msg, "request") == 0 || strcmp(msg, "coord_request") == 0) && NewReq.Phase > 0)
+    // the vehicle is approaching the intersection or in it is in the queue and requesting a phase
+    if (reqType == MsgEnum::requestType::priorityRequest && NewReq.Phase > 0)
     {
         if (pos < 0) // Request is NOT in the List, problem should be solved by Solver, therefore ReqListUpdateFlag becomes positive
         {
@@ -136,7 +138,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         }
         //----------------End Update the Requests list according to the received time.--------//
     }
-    else if (strcmp(msg, "request_clear") == 0)
+    else if (reqType == MsgEnum::requestType::priorityCancellation)
     {
         if (pos >= 0) // this is the first time we receive the clear request
         {
@@ -158,33 +160,8 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
                     "A new cancel request is received but the request is not in the list. The request is ignored.\n");
             outputlog(temp_log);
         }
-        /*  MZP 12/2/17
-         iRecvReqListDiviser = (int) Req_List.Data().iMsgCnt /10;
-         iNewReqDiviser = (int) NewReq.iMsgCnt /10;
-         cout<<"iRecvReqListDiviser"<<iRecvReqListDiviser<<endl;
-         cout<<"iNewReqDiviser"<<iNewReqDiviser<<endl;
-         if (iRecvReqListDiviser != iNewReqDiviser) // if the recived SRM with identical MsgCnt type is not already in the list, so we should  add/update the new req to the list.
-         {
-             Req_List.Data() = NewReq;
-             sprintf(temp_log,"Set the clear request in the list %s at time (%.2f).\n",RcvMsg,dTime);
-             outputlog(temp_log);
-         }else
-         {
-             Req_List.Reset(pos);
-             Req_List.DeleteAt();
-             sprintf(temp_log,"CLEAR the request form list %s at time (%.2f).\n",RcvMsg,dTime);
-             outputlog(temp_log);
-         }
-     }
-
-     if( Req_List.ListSize()>0 ) // if there is another request in the table we should colve the problem again
-         ReqListUpdateFlag=4;
-     else
-         flagForClearingInterfaceCmd=1;
-         cout<<"HERE Req_List.ListSize()"<<Req_List.ListSize()<<endl;
-          */
     }
-    //---------------End of Handling the Received Requests.----------------//
+   
     if (Req_List.ListSize() == 0 && ReqListUpdateFlag != 4)
     {
         sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
@@ -192,6 +169,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
         ReqListUpdateFlag = 0;
     }
+     //---------------End of Handling the Received Requests.----------------//
 }
 
 int numberOfEVs(LinkedList<ReqEntry> ReqList)
@@ -546,7 +524,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                 Req_List.Data().ETA = 0;
 
                 // MZP added 10/30/17
-                 //if the vehicle is leaving intersection
+                 //if the vehicle is leaving intersection iRequestedPhase 
             if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4))
                 Req_List.Data().iLeavingCounter++;
             
