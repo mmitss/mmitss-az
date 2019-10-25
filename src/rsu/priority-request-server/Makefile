@@ -10,7 +10,7 @@ LDFLAGS     := -fPIC -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path 
 LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib -L$(BUILD_ROOT)/3rdparty/net-snmp/lib -llocAware -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common -lnetsnmp   #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp SignalRequest.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp 
+SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp  
 #the name of the executable goes here
 TARGET = M_PriorityRequestServer
 
