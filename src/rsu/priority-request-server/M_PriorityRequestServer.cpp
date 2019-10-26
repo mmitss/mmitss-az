@@ -25,6 +25,7 @@
 #include <vector>
 #include <time.h>
 #include <sys/time.h>
+
 #include "net-snmp/net-snmp-config.h"
 #include "net-snmp/net-snmp-includes.h"
 #include "json.h"
@@ -174,18 +175,18 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
     char tempMsg[1024];    // To write the requests info into this variable.
                            //this variable will be passed to UpdateList function to update the request lists
 
+    
     std::string receivedSrmJsonString = rxMsgBuffer;
-
     SignalRequest currentSRM;
-
+    currentSRM.json2SignalRequest(receivedSrmJsonString);
     Json::Value jsonObject;
     Json::Reader reader;
 
     reader.parse(rxMsgBuffer, jsonObject);
 
     //vehIn.BSMToVehicle(bsmBlob);
-
-    lintersectionID = (jsonObject["SignalRequest"]["intersectionID"]).asUInt();
+    
+    lintersectionID = currentSRM.getIntersectionID(); //(jsonObject["SignalRequest"]["intersectionID"]).asInt();
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
     if (lanePhase.iIntersectionID == lintersectionID)
@@ -200,7 +201,7 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
 
         //iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutLane];
 
-        currentSRM.json2SignalRequest(receivedSrmJsonString);
+        // currentSRM.json2SignalRequest(receivedSrmJsonString);
         iRequestedPhase = getPhaseInfo(currentSRM);
 
         // EV==1, TRANSIT==2, TRUCK==3 
