@@ -96,8 +96,8 @@ void xTimeStamp(char *pc_TimeStamp_);
 
 int msleep(unsigned long milisec);
 
-void getRSUid(string);
-
+//void getRSUid(string);
+string getRSUid();
 void clearRequestFiles();
 
 void creatLogFile();

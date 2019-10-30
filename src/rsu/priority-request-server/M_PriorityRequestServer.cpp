@@ -25,7 +25,6 @@
 #include <vector>
 #include <time.h>
 #include <sys/time.h>
-
 #include "net-snmp/net-snmp-config.h"
 #include "net-snmp/net-snmp-includes.h"
 #include "json.h"
@@ -64,7 +63,8 @@ int main(int argc, char *argv[])
     int ReqListUpdateFlag = 0; // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
     char ConfigFile[256];
     int CombinedPhase[8] = {0};
-    char rxMsgBuffer[MAX_MSG_BUFLEN]{}; // a buffer for received messages
+    // char rxMsgBuffer[MAX_MSG_BUFLEN]{}; // a buffer for received messages
+    char rxMsgBuffer[1024]{};
     int iAppliedMethod = 1;             // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
     int flagForClearingInterfaceCmd = 0;   // a flag to clear all commands in the interface when the request passed
     double dCountDownIntervalForETA = 1.0; // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
     getControllerIPaddress();
 
     // Get the current RSU ID from "rsuid.txt"
-    getRSUid(Rsu_ID); // will get intersection name from "rsuid.txt");
-
+    // getRSUid(Rsu_ID); // will get intersection name from "rsuid.txt");
+    Rsu_ID = getRSUid();
     // Read the configinfo_XX.txt from ConfigInfo.txt
     getSignalConfigFile(ConfigFile, CombinedPhase);
 
@@ -107,15 +107,21 @@ int main(int argc, char *argv[])
         dTime = getSystemTime();
 
         // read socket for Signal Request Message
-        iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, sizeof(rxMsgBuffer), 0, (struct sockaddr *)&recvaddr,
+        // iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, sizeof(rxMsgBuffer), 0, (struct sockaddr *)&recvaddr,
+        //                          (socklen_t *)&iAddrLeng);
+
+        iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, 1024, 0, (struct sockaddr *)&recvaddr,
                                  (socklen_t *)&iAddrLeng);
 
         // Read combined request file to see if PRS has set the update flag
         ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         if (iNumOfRxBytes > -1)
-            processRxMessage(rxMsgBuffer, Rsu_ID, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
-
+            {
+                std::string receivedJsonString(rxMsgBuffer);
+                std::cout << receivedJsonString <<std::endl;
+                processRxMessage(rxMsgBuffer, Rsu_ID, PhaseStatus, lanePhase, req_List, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
+            }
         if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0))
         {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
@@ -175,24 +181,25 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
     char tempMsg[1024];    // To write the requests info into this variable.
                            //this variable will be passed to UpdateList function to update the request lists
 
-    
     std::string receivedSrmJsonString = rxMsgBuffer;
-    SignalRequest currentSRM;
-    currentSRM.json2SignalRequest(receivedSrmJsonString);
-    Json::Value jsonObject;
-    Json::Reader reader;
 
-    reader.parse(rxMsgBuffer, jsonObject);
+    SignalRequest currentSRM;
+
+    currentSRM.json2SignalRequest(receivedSrmJsonString);
+    // Json::Value jsonObject;
+    // Json::Reader reader;
+
+    // reader.parse(rxMsgBuffer, jsonObject);
 
     //vehIn.BSMToVehicle(bsmBlob);
-    
-    lintersectionID = currentSRM.getIntersectionID(); //(jsonObject["SignalRequest"]["intersectionID"]).asInt();
+
+    lintersectionID = currentSRM.getIntersectionID(); //(jsonObject["SignalRequest"]["intersectionID"]).asUInt();
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
     if (lanePhase.iIntersectionID == lintersectionID)
     {
-        iRequestType = (jsonObject["SignalRequest"]["priorityRequestType"]).asInt();
-
+        // iRequestType = (jsonObject["SignalRequest"]["priorityRequestType"]).asInt();
+        iRequestType = currentSRM.getPriorityRequestType();
         //**DJC** WARNING I am making a assumption that outLane will equal inLane as we do not currently support an outLane
         //srmInLane = jsonObject["SignalRequest"]["inBoundLane"]["LaneID"].asInt();
         //srmOutLane = iInLane;
@@ -201,18 +208,28 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
 
         //iRequestedPhase = lanePhase.iInLaneOutLanePhase[iInApproach][iInLane][ioutApproach][iOutLane];
 
-        // currentSRM.json2SignalRequest(receivedSrmJsonString);
+        iInLane = currentSRM.getInBoundLaneID();
         iRequestedPhase = getPhaseInfo(currentSRM);
 
         // EV==1, TRANSIT==2, TRUCK==3 
-        if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::special))
+        if(currentSRM.getVehicleType() == static_cast<int>(MsgEnum::vehicleType::special))
             iPriorityLevel = 1;
 
-        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::bus))
+        else if(currentSRM.getVehicleType() == static_cast<int>(MsgEnum::vehicleType::bus))
             iPriorityLevel = 2;
 
-        else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+        else if(currentSRM.getVehicleType() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
             iPriorityLevel = 3;
+
+        // EV==1, TRANSIT==2, TRUCK==3 
+        // if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::special))
+        //     iPriorityLevel = 1;
+
+        // else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::bus))
+        //     iPriorityLevel = 2;
+
+        // else if((jsonObject["SignalRequest"]["vehicleType"]).asInt() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+        //     iPriorityLevel = 3;
 
         //All of the following are unused here and in solver
         //iStartMinute = srm->timeOfService->minute;
@@ -225,14 +242,23 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
         //calculateETA(iStartMinute, iStartSecond, iEndMinute, iEndSecond, iETA);
 
         //fETA = (float)iETA;
-        fETA = static_cast<float>((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt()*60.0 + 
-                                  (jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
+        fETA = static_cast<float>(currentSRM.getETA_Minute()*60.0 + currentSRM.getETA_Second());
 
         //lvehicleID = vehIn.TemporaryID;
-        lvehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
+        lvehicleID = currentSRM.getTemporaryVehicleID();
 
         //iMsgCnt = srm->msgCnt;
-        iMsgCnt = (jsonObject["SignalRequest"]["msgCount"]).asInt();
+        iMsgCnt = currentSRM.getMsgCount();
+
+
+        // fETA = static_cast<float>((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt()*60.0 + 
+        //                           (jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
+
+        // //lvehicleID = vehIn.TemporaryID;
+        // lvehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
+
+        // //iMsgCnt = srm->msgCnt;
+        // iMsgCnt = (jsonObject["SignalRequest"]["msgCount"]).asInt();
 
         // MZP 10/10/17 deleted vehiceVIN data element population in PRG ---> dMinGrn is
         // embeded in iETA and obtained using
@@ -924,8 +950,10 @@ void sendClearCommandsToInterface()
     }
 }
 
-void getRSUid(string rsu_id)
+// void getRSUid(string rsu_id)
+string getRSUid() //Debashis: changed it to return as string
 {
+    string rsu_id;
     fstream fs;
     fs.open(RSUID_FILENAME);
     char temp[128];
@@ -947,6 +975,7 @@ void getRSUid(string rsu_id)
     }
 
     fs.close();
+    return rsu_id;
 }
 
 void getControllerIPaddress()
@@ -1327,9 +1356,10 @@ int getPhaseInfo(SignalRequest signalRequest)
 	reader.parse(configJsonString.c_str(), jsonObject);
     
     int intersectionID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
-    int regionalID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
-    std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
-	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();    
+    int regionalID = (jsonObject["IntersectionInfo"]["regionalID"]).asInt();
+    // std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
+	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
+    std::string fmap = "./map/" + intersectionName + ".map.payload";    
     LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
     phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,
                                                           static_cast<uint8_t>(signalRequest.getInBoundApproachID()),
