@@ -289,6 +289,10 @@ void processRxMessage(const char *rxMsgBuffer, string &Rsu_id, int phaseStatus[]
         readPhaseTimingStatus(phaseStatus); // Get the current phase status for determining the split phases
 
         // Update the Req List data structure considering received message
+
+    currentSRM.json2SignalRequest(receivedSrmJsonString);
+    // Json::Value jsonObject;
+    // Json::Reader reader;
         UpdateList(req_list, tempMsg, phaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
     }
 }

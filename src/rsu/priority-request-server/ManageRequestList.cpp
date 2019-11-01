@@ -51,11 +51,11 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iNewReqDiviser = 0;
     int iRecvReqListDiviser = 0;
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
-    char RSU_ID[16];
-    MsgEnum::requestType reqType= MsgEnum::requestType::priorityRequest;
+    char RSU_ID[16]{};
+    int reqType = 0;
     
-    sscanf(RcvMsg, "%s %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", reqType, RSU_ID, &NewReq.VehID,
-           &NewReq.VehClass,
+    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", &reqType, RSU_ID, 
+           &NewReq.VehID, &NewReq.VehClass,
            &NewReq.ETA, &NewReq.Phase, &NewReq.MinGreen, &NewReq.dSetRequestTime,
            &NewReq.iInLane, &NewReq.iOutLane, &NewReq.iStrHour, &NewReq.iStrMinute, &NewReq.iStrSecond,
            &NewReq.iEndHour, &NewReq.iEndMinute, &NewReq.iEndSecond, &NewReq.iVehState, &NewReq.iMsgCnt,
@@ -81,7 +81,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int pos = FindInReqList(Req_List, NewReq);
 
     // the vehicle is approaching the intersection or in it is in the queue and requesting a phase
-    if (reqType == MsgEnum::requestType::priorityRequest && NewReq.Phase > 0)
+    if (reqType == PRIORITY_REQUEST && NewReq.Phase > 0)
     {
         if (pos < 0) // Request is NOT in the List, problem should be solved by Solver, therefore ReqListUpdateFlag becomes positive
         {
@@ -138,7 +138,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         }
         //----------------End Update the Requests list according to the received time.--------//
     }
-    else if (reqType == MsgEnum::requestType::priorityCancellation)
+    else if (reqType == PRIORITY_CANCELLATION)
     {
         if (pos >= 0) // this is the first time we receive the clear request
         {

@@ -7,6 +7,10 @@
 #define COORDINATION 6
 #define OBSOLETE_TIME_OF_REMAINED_REQ 30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
 
+#define PRIORITY_REQUEST 1
+#define REQUEST_UPDATE 2
+#define PRIORITY_CANCELLATION 3
+
 //**eliminate the stench of global vatiables**
 //extern double dCountDownIntervalForETA;
 //extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
