@@ -2794,8 +2794,13 @@ void ReqListFromFile_EV(char *filename,LinkedList<ReqEntry>& Req_List)
         getline(fss,lineread);
         if(lineread.size()!=0)
         {
-             sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
+            // sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
+            //     &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
+
+			//DD: No of formatter and specifier don't match. 
+			sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
                 &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
+
             ReqEntry req_temp(OBU_ID,Veh_Class,ETA,Req_Phase,MinGrn,dsetRequestTime,0,iInLane,iOutLane,iStrHour,iStrMinute,iStrSecond,iEndHour,iEndMinute,iEndSecond,iVehState, iMsgCnt);
             Req_List.InsertAfter(req_temp);
          //   cout<<lineread.c_str()<<endl;

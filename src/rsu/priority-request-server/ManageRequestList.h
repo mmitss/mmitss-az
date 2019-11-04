@@ -5,7 +5,7 @@
 #define TRANSIT 2 ////*Transit bus: will have one request and priority as 2
 #define TRUCK 3
 #define COORDINATION 6
-#define OBSOLETE_TIME_OF_REMAINED_REQ 30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
+#define OBSOLETE_TIME_OF_REMAINED_REQ 300 //30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
 
 #define PRIORITY_REQUEST 1
 #define REQUEST_UPDATE 2
