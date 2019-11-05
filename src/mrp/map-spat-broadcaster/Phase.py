@@ -30,4 +30,4 @@ class Phase:
         self.elapsedTime = 0
     
     def asDict(self):
-        return {"phaseNo":self.phaseNo, "currState":self.currState, "startTime":self.startTime, "minEndTime":self.minEndTime, "maxEndTime":self.maxEndTime, "elapsedTime":self.elapsedTime}
+        return {"phaseNo":self.phaseNo, "currState":self.currState, "startTime":0, "minEndTime":self.minEndTime, "maxEndTime":self.maxEndTime, "elapsedTime":self.elapsedTime}

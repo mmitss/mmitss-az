@@ -27,51 +27,52 @@ import socket
 import time
 import json
 import Ntcip1202v2Blob
-import MapSpatBroadcasterConfig
 import Spat
 
 def main():
 
     # Read a config file by creating an object of the time MapSpatBroadcasterConfig
-    config = MapSpatBroadcasterConfig.MapSpatBroadcasterConfig("MapSpatBroadcasterConfig.json")
+    configFile = open("MapSpatBroadcasterConfig.json", 'r')
+    config = (json.load(configFile))["MapSpatBroadcasterConfig"]
+
 
 
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    ip = config.getMrpIP()
+    mrpIp = config["mrpIP"]
     port = 6053
-    MapSpatBroadcastAddress = (ip, port)
+    MapSpatBroadcastAddress = (mrpIp, port)
     s.bind(MapSpatBroadcastAddress)
     s.settimeout(3)
 
-    msgSenderIP = '127.0.0.1'
-    msgSenderPort = 10001
-    msgSenderAddress = (msgSenderIP, msgSenderPort)
+    msgSenderPort = config["msgSenderPort"]
+    msgSenderAddress = (mrpIp, msgSenderPort)
 
-    msgEncoderIP = '127.0.0.1'
-    msgEncoderPort = 10004
-    msgEncoderAddress = (msgEncoderIP, msgEncoderPort)
+    msgEncoderPort = config["msgEncoderPort"]
+    msgEncoderAddress = (mrpIp, msgEncoderPort)
 
-    trafficControllerObserverIP = '127.0.0.1'
-    trafficControllerObserverPort = 20006
-    trafficControllerObserverAddress = (trafficControllerObserverIP,trafficControllerObserverPort)
+    trafficControllerObserverPort = config["tcObserverPort"]
+    trafficControllerObserverAddress = (mrpIp,trafficControllerObserverPort)
 
     # Store map payload in a string
-    mapPayload = config.getMapPayload()
+    mapPayload = config["mapPayload"]
 
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
     currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob()
 
     # Create an object of Spat class filled with static information:
     spatObject = Spat.Spat()
-    spatObject.setIntersectionID(config.getIntersectionID())
-    spatObject.setRegionalID(config.getRegionalID())
+    spatObject.setIntersectionID(config["intersectionID"])
+    spatObject.setRegionalID(config["regionalID"])
+
+    # Read controllerIp from the config file and store it.
+    controllerIp = config["controllerIP"]
 
     msgCnt = 0
     while True:
         try:
             spatBlob, addr = s.recvfrom(1024)            
-            if addr[0] == config.getControllerIP():
+            if addr[0] == controllerIp:
                 currentBlob.processNewData(spatBlob)
                 if(msgCnt < 127):
                     msgCnt = msgCnt + 1
@@ -84,7 +85,8 @@ def main():
                 s.sendto(spatJsonString.encode(), trafficControllerObserverAddress)
                 s.sendto(mapPayload.encode(), msgSenderAddress)
 
-                print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
+                print(spatJsonString)
+                #print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")
 
