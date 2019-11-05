@@ -406,7 +406,7 @@ void setupConfigurationAndConnection()
     setupConnection(); // to get arrival time from trajectory aware component (just in case sodeusage is AdaptivePriority) and send the Event list to Signal Controller OR to send the Event list to COP OR to only send the Event list to Signal Controller    
 }
 
-void creatLogFiles()33333
+void creatLogFiles()
 {
 	//------log file name with Time stamp---------------------------
     char timestamp[128];
