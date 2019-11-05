@@ -11,22 +11,16 @@
 #define REQUEST_UPDATE 2
 #define PRIORITY_CANCELLATION 3
 
-//**eliminate the stench of global vatiables**
-//extern double dCountDownIntervalForETA;
-//extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
-//extern int flagForClearingInterfaceCmd;
-//extern char temp_log[256];
-//extern double dCurrentTimeInCycle;
+// ReqListUpdateFlag values
+#define NO_UPDATE 0
+#define ADD_NEW_REQUEST 1 //ADD a new request
+#define UPDATED_REQUEST 2  // UPDATED request (changing the speed, joining the queue, leaving the queue)
+#define DELETE_OBSOLETE_REQUEST 3 // DELETE an obsolete request
+#define CANCEL_REQUEST_LEAVING_INTERSECTION 4 // CANCEL a request due to leaving intersection
 
-extern string RSUID;    // will get from "rsuid.txt"
 extern int outputlog(char *output);
 
 extern char logfilename[256];
-
-//extern int CombinedPhase[8];
-/*RemoveCoord
-extern PriorityConfig priorityConfig;
-*/
 extern double dTime;
 
 

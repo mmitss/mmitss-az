@@ -18,9 +18,9 @@ int main()
     std::ifstream infile;
     int count = 1;
 
-    // infile.open("Mountain_Campbell_Westbound.txt");
+    infile.open("Mountain_Campbell_Westbound.txt");
     // infile.open("Campbell_Northbound.txt");
-    infile.open("Campbell_Southbound.txt");
+    // infile.open("Campbell_Southbound.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;

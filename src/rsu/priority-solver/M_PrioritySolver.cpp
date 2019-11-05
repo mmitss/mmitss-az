@@ -2797,7 +2797,7 @@ void ReqListFromFile_EV(char *filename,LinkedList<ReqEntry>& Req_List)
             // sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
             //     &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
 
-			//DD: No of formatter and specifier don't match. 
+			//Debashis:: No of formatter and specifier don't match. 
 			sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
                 &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
 
