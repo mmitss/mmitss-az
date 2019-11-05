@@ -12,18 +12,9 @@
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "msgEnum.h"
-/*RemoveCoord
-#include "PriorityConfig.h"
-*/
 #include "ManageRequestList.h"
 
-//----- ReqListUpdateFlag=1: ADD a new request
-//----- ReqListUpdateFlag=2: UPDATED request (changing the speed, joining the queue, leaving the queue)
-//----- ReqListUpdateFlag=3: DELETE an obsolete request
-//----- ReqListUpdateFlag=4: CANCEL a request due to leaving intersection
-//----- ReqListUpdateFlag=5:
-//----- ReqListUpdateFlag=6: RESOLVE the problem every 10 seconds if there is coordination in the request table
-//----- ReqListUpdateFlag=7: Update the coordination request
+
 
 using namespace std;
 
@@ -68,6 +59,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iNumberOfEVinList = numberOfEVs(Req_List);
     int SplitPhase = 0;
 
+    //DJC does a 2nd EV in the list then also get a split phase????? This is only called upon receiving a SRM.....
     if ((NewReq.VehClass == EV) && (iNumberOfEVinList == 0)) // if this is the first EV in the list
     {
         SplitPhase = FindSplitPhase(NewReq.Phase, phaseStatus, CombinedPhase);
@@ -98,7 +90,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
             Req_List.Data().iLeavingCounter = 0;
 
-            ReqListUpdateFlag = 1;
+            ReqListUpdateFlag = ADD_NEW_REQUEST;
 
             sprintf(temp_log, "*** Add New Request **** { %s }\t \t FLAG  %d at time (%.2f).\n", RcvMsg,
                     ReqListUpdateFlag, dTime);
@@ -129,7 +121,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
                 // We resolve the problem for the new updated request if the new updated request is EV, or there is not an EV in the list.
                 if ((NewReq.VehClass == EV) || (iNumberOfEVinList == 0))
-                    ReqListUpdateFlag = 2;
+                    ReqListUpdateFlag = UPDATED_REQUEST;
 
                 Req_List.Data() = NewReq; // Update the existed entry.
 
@@ -145,7 +137,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             Req_List.Reset(pos);
 
             if (Req_List.ListSize() > 1) // if there is another request in the table we should solve the problem again
-                ReqListUpdateFlag = 4;
+                ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
             else
                 flagForClearingInterfaceCmd = 1;
 
@@ -162,12 +154,12 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         }
     }
    
-    if (Req_List.ListSize() == 0 && ReqListUpdateFlag != 4)
+    if (Req_List.ListSize() == 0 && ReqListUpdateFlag != CANCEL_REQUEST_LEAVING_INTERSECTION)
     {
         sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
         outputlog(temp_log);
 
-        ReqListUpdateFlag = 0;
+        ReqListUpdateFlag = NO_UPDATE;
     }
      //---------------End of Handling the Received Requests.----------------//
 }
@@ -470,8 +462,8 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
             sprintf(temp_log, "CLEAR the request form list\n");
             outputlog(temp_log);
 
-            if (Req_List.ListSize() > 0) // if there is another request in the table we should colve the problem again
-                ReqListUpdateFlag = 4;
+            if (Req_List.ListSize() > 0) // if there is another request in the table we should solve the problem again
+                ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
             else
                 flagForClearingInterfaceCmd = 1;
 
@@ -491,9 +483,6 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
 
     while (!Req_List.EndOfList())
     {
-        //cout<<"Req_List.Data().dSetRequestTime"<<Req_List.Data().dSetRequestTime<<endl;
-        //cout<<"Dtime"<<dTime<<endl;
-
         // if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
         // SRM has not been updated during this interval, this request is a residual request and should be deleted!
         // Does the SRM get sent on some interval or only once??????????
@@ -504,7 +493,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
             sprintf(temp_log,
                     " ************ Residual request with ID %ld DELETED from the requests list  at time %.2f ************\n",
                     Req_List.Data().VehID, dTime);
-            ReqListUpdateFlag = 3;
+            ReqListUpdateFlag = DELETE_OBSOLETE_REQUEST;
             Req_List.DeleteAt();
             outputlog(temp_log);
             // MZP       continue;
