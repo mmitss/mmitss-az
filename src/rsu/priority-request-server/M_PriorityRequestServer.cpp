@@ -267,8 +267,8 @@ void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &
     updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA);
 
     deleteThePassedVehicle(req_list, ReqListUpdateFlag, flagForClearingInterfaceCmd);
-    // Write the requests list into requests.txt,
 
+    // Write the requests list into requests.txt,
     PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, 1);
 
     //Write the requests list into  requests_combined.txt;
@@ -1258,12 +1258,14 @@ int getPhaseInfo(SignalRequest signalRequest)
     int regionalID = (jsonObject["IntersectionInfo"]["regionalID"]).asInt();
     // std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
 	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
-    std::string fmap = "./map/" + intersectionName + ".map.payload";    
+    std::string fmap = "./map/" + intersectionName + ".map.payload";   
+
     LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
-    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,
-                                                          static_cast<uint8_t>(signalRequest.getInBoundApproachID()),
+    int approachID = plocAwareLib->getApproachIdByLaneId(regionalID, intersectionID, static_cast<uint8_t>(signalRequest.getInBoundLaneID()));
+    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID, approachID,
                                                           static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
 
 	delete plocAwareLib;
 	return phaseNo;
 }
+

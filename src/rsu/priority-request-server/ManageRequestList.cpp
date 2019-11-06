@@ -512,8 +512,9 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                 Req_List.Data().ETA = 0;
 
                 // MZP added 10/30/17
-                 //if the vehicle is leaving intersection iRequestedPhase 
-            if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4))
+                 //if the vehicle is leaving intersection iRequestedPhase
+            //if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4)) 
+            if (Req_List.Data().iRequestType == PRIORITY_CANCELLATION)
                 Req_List.Data().iLeavingCounter++;
             
         }
