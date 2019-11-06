@@ -46,7 +46,7 @@ int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double, const double);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double);
 
 void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, int &);
 

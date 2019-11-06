@@ -43,14 +43,14 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iRecvReqListDiviser = 0;
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
     char RSU_ID[16]{};
-    int reqType = 0;
     
-    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf ", &reqType, RSU_ID, 
+    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf %ld", &NewReq.iRequestType, RSU_ID, 
            &NewReq.VehID, &NewReq.VehClass,
            &NewReq.ETA, &NewReq.Phase, &NewReq.MinGreen, &NewReq.dSetRequestTime,
            &NewReq.iInLane, &NewReq.iOutLane, &NewReq.iStrHour, &NewReq.iStrMinute, &NewReq.iStrSecond,
            &NewReq.iEndHour, &NewReq.iEndMinute, &NewReq.iEndSecond, &NewReq.iVehState, &NewReq.iMsgCnt,
-           &NewReq.dTimeInCycle);
+           &NewReq.dTimeInCycle, &NewReq.lIntersectionId);
+
     // MZP
     if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver
         NewReq.ETA = 0;
@@ -73,7 +73,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int pos = FindInReqList(Req_List, NewReq);
 
     // the vehicle is approaching the intersection or in it is in the queue and requesting a phase
-    if (reqType == PRIORITY_REQUEST && NewReq.Phase > 0)
+    if (NewReq.iRequestType == PRIORITY_REQUEST && NewReq.Phase > 0)
     {
         if (pos < 0) // Request is NOT in the List, problem should be solved by Solver, therefore ReqListUpdateFlag becomes positive
         {
@@ -100,8 +100,8 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         {
             Req_List.Reset(pos);
 
+            //DJC we have already found the request by vehicleID so why are we doing this MsgCnt testing ??????????
             iRecvReqListDiviser = (int)Req_List.Data().iMsgCnt / 10;
-
             iNewReqDiviser = (int)NewReq.iMsgCnt / 10;
 
             // if the received SRM with identical MsgCnt type is not already in the list, we should  add/update the new req to the list.
@@ -130,7 +130,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         }
         //----------------End Update the Requests list according to the received time.--------//
     }
-    else if (reqType == PRIORITY_CANCELLATION)
+    else if (NewReq.iRequestType == PRIORITY_CANCELLATION)
     {
         if (pos >= 0) // this is the first time we receive the clear request
         {
@@ -474,8 +474,7 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
     }
 }
 
-void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag, const double dCountDownIntervalForETA,
-                               const double dCurrentTimeInCycle)
+void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag, const double dCountDownIntervalForETA)
 {
     char temp_log[256];
 

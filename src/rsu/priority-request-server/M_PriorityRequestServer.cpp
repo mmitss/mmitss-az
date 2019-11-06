@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include "net-snmp/net-snmp-config.h"
 #include "net-snmp/net-snmp-includes.h"
+#include "UdpSocket.h"
 #include "json.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
@@ -39,6 +40,7 @@
 #include "locAware.h"
 #include "geoUtils.h"
 #include "SignalRequest.h"
+
 
 using namespace std;
 
@@ -72,6 +74,9 @@ int main(int argc, char *argv[])
     int PhaseStatus[8];                    // Determine the phase status to generate the split phases
     ssize_t iNumOfRxBytes = 0;
     char tempMsg[1024];
+    int IntersectionID{};
+    UdpSocket MsgReceiverSocket(10003);
+
 
     creatLogFile();
 
@@ -82,6 +87,9 @@ int main(int argc, char *argv[])
 
     // Get the current RSU ID from "rsuid.txt"
     Rsu_ID = getRSUid();
+
+    //get intersectionID from IntersectionConfig.json
+    IntersectionID = getIntersectionID();
 
     // Read the configinfo_XX.txt from ConfigInfo.txt
     getSignalConfigFile(ConfigFile, CombinedPhase);
@@ -120,6 +128,8 @@ int main(int argc, char *argv[])
 
             // Update the Req List data structure considering received message
             UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
+
+            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
 
         // There are updated ETA's in the request list
@@ -131,7 +141,9 @@ int main(int argc, char *argv[])
             dLastETAUpdateTime = dTime;
 
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd, dCurrentTimeInCycle);
+                                           flagForClearingInterfaceCmd);
+
+            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
 
         // We need to solve
@@ -141,7 +153,7 @@ int main(int argc, char *argv[])
             outputlog(temp_log);
 
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd, dCurrentTimeInCycle);
+                                           flagForClearingInterfaceCmd);
         }
 
         // If the request list is empty and the last vehicle just passed the intersection
@@ -152,10 +164,12 @@ int main(int argc, char *argv[])
             flagForClearingInterfaceCmd = 0;
 
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd, dCurrentTimeInCycle);
+                                           flagForClearingInterfaceCmd);
 
             if (iAppliedMethod == PRIORITY)
                 sendClearCommandsToInterface();
+
+            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
     }
 
@@ -231,14 +245,14 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
         //All of the following are unused in PRS and in Solver
         //dMinGrn iInLane, iOutLane, iStartMinute iStartSecond iStartHour iEndMinute iEndSecond iEndHour iVehicleState
-        sprintf(tempMsg, "%d %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f",
+        sprintf(tempMsg, "%d %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f %ld",
                 iRequestType,
                 Rsu_id.c_str(),
                 lvehicleID,
                 iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
                 iInLane, iOutLane, iStartHour, iStartMinute, iStartSecond,
                 iEndHour, iEndMinute, iEndSecond,
-                iVehicleState, iMsgCnt, 0.0);
+                iVehicleState, iMsgCnt, 0.0, lintersectionID);
 
         sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
@@ -248,10 +262,9 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 }
 
 void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag,
-                                    const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd,
-                                    const double dCurrentTimeInCycle)
+                                    const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd)
 {
-    updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA, dCurrentTimeInCycle);
+    updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA);
 
     deleteThePassedVehicle(req_list, ReqListUpdateFlag, flagForClearingInterfaceCmd);
     // Write the requests list into requests.txt,
@@ -264,6 +277,44 @@ void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &
 
     printReqestFile2Log(REQUESTFILENAME_COMBINED);
 }
+
+void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket)
+{
+    Json::Value jsonObject;
+    Json::FastWriter fastWriter;
+    std::string jsonString;
+    std::string receiverIP = "127.0.0.1";
+
+    if (!ReqList.ListEmpty())
+    {
+
+        jsonObject["MsgType"] = "SSM";
+        jsonObject["noOfRequest"] = ReqList.ListSize();
+        jsonObject["SignalStatus"]["regionalID"] = 0;
+        jsonObject["SignalStatus"]["intersectionID"] = IntersectionID;
+
+        ReqList.Reset();
+
+        while (!ReqList.EndOfList())
+        {
+            jsonObject["SignalStatus"]["requestorInfo"]["vehicleID"] = ReqList.Data().VehID;
+            jsonObject["SignalStatus"]["requestorInfo"]["msgCount"] = ReqList.Data().iMsgCnt;  
+            jsonObject["SignalStatus"]["requestorInfo"]["basicVehicleRole"] = ReqList.Data().VehClass;
+            jsonObject["SignalStatus"]["requestorInfo"]["inBoundLaneID"] = ReqList.Data().iInLane;
+            jsonObject["SignalStatus"]["requestorInfo"]["ETA_Minute"] = ReqList.Data().ETA / 60;
+            jsonObject["SignalStatus"]["requestorInfo"]["ETA_Second"] = fmod(ReqList.Data().ETA, 60);
+            jsonObject["SignalStatus"]["requestorInfo"]["ETA_Duration"] = 2000;
+            jsonObject["SignalStatus"]["requestorInfo"]["priorityRequestStatus"] = ReqList.Data().iRequestType;
+
+            ReqList.Next();
+        }
+
+        jsonString = fastWriter.write(jsonObject);
+    }
+
+    MsgReceiverSocket.sendData(receiverIP, 10003, jsonString);
+}
+
 
 void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
 {
@@ -1180,7 +1231,17 @@ void creatLogFile()
     }
 }
 
+int getIntersectionID(void)
+{
+    Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
 
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+    
+    return (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();    
+}
 
 int getPhaseInfo(SignalRequest signalRequest)
 {
@@ -1188,7 +1249,7 @@ int getPhaseInfo(SignalRequest signalRequest)
     bool singleFrame = false;
     Json::Value jsonObject;
 	Json::Reader reader;
-	std::ifstream jsonconfigfile("IntersectionConfig.json");
+	std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
 
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject);
