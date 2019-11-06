@@ -41,7 +41,7 @@ int main()
         {
             const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
             // const int bsmReceiverPortNo = 20004;
-            const string LOCALHOST = "127.0.0.1";
+            // const string LOCALHOST = "127.0.0.1";
             std::string bsmJsonString = decoder.bsmDecoder(receivedJsonString);
             decoderSocket.sendData(LOCALHOST, bsmReceiverPortNo, bsmJsonString);
             //std::cout<<"Message is sent"<<std::endl;
@@ -52,7 +52,7 @@ int main()
         {
             const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
             // const int srmReceiverPortNo = 20002;
-            const string LOCALHOST = "127.0.0.1";
+            // const string LOCALHOST = "127.0.0.1";
             std::string srmJsonString = decoder.srmDecoder(receivedJsonString);
             decoderSocket.sendData(LOCALHOST, srmReceiverPortNo, srmJsonString);
             // std::cout<<"Message is sent"<<std::endl;
@@ -66,7 +66,7 @@ int main()
         {
             const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
             // const int ssmReceiverPortNo = 20004;
-            const string LOCALHOST = "127.0.0.1";
+            // const string LOCALHOST = "127.0.0.1";
             std::string ssmJsonString = decoder.ssmDecoder(receivedJsonString);
             decoderSocket.sendData(LOCALHOST, ssmReceiverPortNo,ssmJsonString);
             //std::cout<<"Message is sent"<<std::endl;

@@ -574,14 +574,24 @@ void handleEVCase()
 	int *Phase_Infom=new int[TotalSize];
 	for(int i=0;i<EV_Phase_size;i++)
 	{
-		Phase_Infom[i]=EV_Phase_vc[i];
+		Phase_Infom[i]=EV_Phase_vc[i]; //Debashis::Append requested phase info of EV into Phase_Infom list.
+		cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] <<endl;
 	}
 	for(int i=0;i<size_init;i++)
 	{
 		Phase_Infom[EV_Phase_size+i]=InitPhase[i];
+		cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] <<endl;
 	}
+	
+	
 	selectionSort(Phase_Infom, TotalSize);   // Sort all the involved phases for removing duplicated phases
 	int NoRepeatSize=removeDuplicates(Phase_Infom, TotalSize);
+	/***************Debashis: For Debug purpose*************************/
+	for(int i=0;i<NoRepeatSize;i++)
+	{
+		cout << "Phase_Infom FInally: " << Phase_Infom[i] <<endl;
+	}
+	/******************************************************************/
 	RSUConfig2ConfigFile("/nojournal/bin/ConfigInfo_EV.txt",Phase_Infom,NoRepeatSize,ConfigIS);
 	PrintFile2Log("/nojournal/bin/ConfigInfo_EV.txt");// Log the EV configInfo.
 	delete [] Phase_Infom;

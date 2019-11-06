@@ -1199,8 +1199,8 @@ int getPhaseInfo(SignalRequest signalRequest)
 	std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
     std::string fmap = "./map/" + intersectionName + ".map.payload";    
     LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
-    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID,
-                                                          static_cast<uint8_t>(signalRequest.getInBoundApproachID()),
+    int approachID = plocAwareLib->getApproachIdByLaneId(regionalID, intersectionID, static_cast<uint8_t>(signalRequest.getInBoundLaneID()));
+    phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(regionalID,intersectionID, approachID,
                                                           static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
 
 	delete plocAwareLib;
