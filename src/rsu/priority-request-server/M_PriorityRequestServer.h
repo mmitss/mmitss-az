@@ -45,6 +45,9 @@
 // This file contains the mode weights, coordination phase split time and the coordination weight.
 #define PRIORITY_CONFIG_FILE "/nojournal/bin/priorityConfiguration.txt" 
 
+// Stores the IntersectionID, RegionalID, and Mapfile name for the intersection
+#define INTERSECTION_CONFIG_FILE_JSON "/nojournal/bin/IntersectionConfig.json"
+
 // This file stores the number of requests and the ReqListUpdateFlag and the request's information
 // This file will be modified whenever the request list is updated. The file is being read by Solver. 
 // The Solver will make ReqListUpdateFlag flag zero and rewrite the content in request.txt
@@ -105,9 +108,11 @@ void setupConfigurationAndConnection();
 
 int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
-void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &, const double);
+void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &);
 
 void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase);
+
+void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket);
 
 double getSystemTime();
 
@@ -115,6 +120,8 @@ void identifyColor(int color[2][8], int greenGroup, int redGroup, int yellowGrou
 
 void whichPhaseIsGreen(int phase_Color[8], int greenGroup, int redGroup,
                        int yellowGroup); // this function returns the color of the first argument which is phaseNo.
+
+int getIntersectionID(void);
 
 int getPhaseInfo(SignalRequest signalRequest);
 
