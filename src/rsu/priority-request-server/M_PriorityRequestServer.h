@@ -108,7 +108,7 @@ void setupConfigurationAndConnection();
 
 int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
-void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, const double, int &);
+void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, bool&);
 
 void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase);
 

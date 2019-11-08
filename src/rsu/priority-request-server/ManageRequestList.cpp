@@ -35,7 +35,7 @@ int FindTimesInList(LinkedList<ReqEntry> Req_List, int Veh_Class)
 }
 
 void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8],
-                int &ReqListUpdateFlag, int CombinedPhase[], int &flagForClearingInterfaceCmd)
+                int &ReqListUpdateFlag, int CombinedPhase[], bool &clearSignalControllerCommands)
 {
 
     char temp_log[256];
@@ -139,7 +139,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             if (Req_List.ListSize() > 1) // if there is another request in the table we should solve the problem again
                 ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
             else
-                flagForClearingInterfaceCmd = 1;
+                clearSignalControllerCommands = true;
 
             Req_List.Data() = NewReq;
 
@@ -153,7 +153,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             outputlog(temp_log);
         }
     }
-   
+    
     if (Req_List.ListSize() == 0 && ReqListUpdateFlag != CANCEL_REQUEST_LEAVING_INTERSECTION)
     {
         sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
@@ -446,7 +446,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
     fclose(pFile);
 }
 
-void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag, int &flagForClearingInterfaceCmd)
+void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag, bool &clearSignalControllerCommands)
 {
     char temp_log[256];
 
@@ -455,7 +455,8 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
     while (!Req_List.EndOfList())
     {
          // three time steps after the vehicle leaving request is received, the vehicle is deleted from the list.
-        if (Req_List.Data().iLeavingCounter >= 3)
+         //if (Req_List.Data().iLeavingCounter >= 3)
+        if (Req_List.Data().iLeavingCounter)
         {
             Req_List.DeleteAt();
 
@@ -464,8 +465,8 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
 
             if (Req_List.ListSize() > 0) // if there is another request in the table we should solve the problem again
                 ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
-            else
-                flagForClearingInterfaceCmd = 1;
+            else // else the traffic control interface code will be told to clear the previous commands
+                clearSignalControllerCommands = true;
 
             continue;
         }
@@ -474,46 +475,57 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
     }
 }
 
-void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag, const double dCountDownIntervalForETA)
+void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFlag)
 {
     char temp_log[256];
 
     Req_List.Reset();
-
+    
+    // sequentially examine each list entry
     while (!Req_List.EndOfList())
     {
-        // if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
-        // SRM has not been updated during this interval, this request is a residual request and should be deleted!
-        // Does the SRM get sent on some interval or only once??????????
+        // MZ if the received time of the last SRM is (iObsoleteTimeOfRemainingReq second) ago and the
+        // MZ SRM has not been updated during this interval, this request is a residual request and should be deleted!
+        // MZ Does the SRM get sent on some interval or only once??????????
 
+        // If the difference between the current time and the time the SRM was received is greater than the obsolescence time
+        // we will delete this entry
         if (dTime - Req_List.Data().dSetRequestTime > OBSOLETE_TIME_OF_REMAINED_REQ)
         {
             Req_List.Reset(Req_List.CurrentPosition());
+
             sprintf(temp_log,
                     " ************ Residual request with ID %ld DELETED from the requests list  at time %.2f ************\n",
                     Req_List.Data().VehID, dTime);
+
             ReqListUpdateFlag = DELETE_OBSOLETE_REQUEST;
+
+            // delete the current entry
             Req_List.DeleteAt();
+
             outputlog(temp_log);
             // MZP       continue;
         }
-        else
+        else // update the ETA
         {
             if (Req_List.Data().ETA > 0)
             {
-                if (dTime - Req_List.Data().dUpdateTimeOfETA >= dCountDownIntervalForETA)
+                // if the difference between the current time and the previous time the ETA was updated 
+                if (dTime - Req_List.Data().dUpdateTimeOfETA >= COUNT_DOWN_INTERVAL_FOR_ETA)
                 {
+                    // ETA becomes current time minus last update time
                     Req_List.Data().ETA = max(0.0, Req_List.Data().ETA - (dTime - Req_List.Data().dUpdateTimeOfETA));
-
+                    // saved update time becomes current time
                     Req_List.Data().dUpdateTimeOfETA = dTime;
                 }
             }
+            // the else{} is redundant
             else
                 Req_List.Data().ETA = 0;
 
                 // MZP added 10/30/17
                  //if the vehicle is leaving intersection iRequestedPhase
-            //if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4)) 
+            //MZ if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4)) 
             if (Req_List.Data().iRequestType == PRIORITY_CANCELLATION)
                 Req_List.Data().iLeavingCounter++;
             
