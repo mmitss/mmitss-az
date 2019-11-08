@@ -52,9 +52,9 @@ int main()
         {
             const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
             // const int srmReceiverPortNo = 20002;
-            // const string LOCALHOST = "127.0.0.1";
+            const string srmReceiverIP = "10.254.56.52";
             std::string srmJsonString = decoder.srmDecoder(receivedJsonString);
-            decoderSocket.sendData(LOCALHOST, srmReceiverPortNo, srmJsonString);
+            decoderSocket.sendData(srmReceiverIP, srmReceiverPortNo, srmJsonString);
             // std::cout<<"Message is sent"<<std::endl;
         }
 
