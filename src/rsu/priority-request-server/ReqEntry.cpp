@@ -22,13 +22,15 @@ ReqEntry::ReqEntry(void) {
     dUpdateTimeOfETA = 0.0;
     iLeavingCounter = 0;
     dTimeInCycle = 0.0;
+    lIntersectionId = 0;
+    iRequestType = 0;
 }
 
 
 ReqEntry::ReqEntry(long vehID, int vehClass, float eta, int phase, float mgreen, double dsetRequestTime,
                    int split_phase, int iinLane, int ioutLane, int istrHour, int istrMinute, int istrSecond,
                    int iendHour, int iendMinute, int iendSecond, int ivehState, int imsgcnt, double dupdateTimeOfETA,
-                   int iLeavingCounter, double dTimeInCyc) {
+                   int ileavingCounter, double dtimeInCycle, long lintersectionId, int irequestType) {
     VehID = vehID;
     VehClass = vehClass;
     ETA = eta;
@@ -48,8 +50,10 @@ ReqEntry::ReqEntry(long vehID, int vehClass, float eta, int phase, float mgreen,
     iVehState = ivehState;
     iMsgCnt = imsgcnt;
     dUpdateTimeOfETA = dupdateTimeOfETA;
-    iLeavingCounter = iLeavingCounter;
-    dTimeInCycle = dTimeInCyc;
+    iLeavingCounter = ileavingCounter;
+    dTimeInCycle = dtimeInCycle;
+    lIntersectionId = lintersectionId;
+    iRequestType = irequestType;
 }
 
 
@@ -75,6 +79,8 @@ ReqEntry::ReqEntry(ReqEntry &Req) {
     dUpdateTimeOfETA = Req.dUpdateTimeOfETA;
     iLeavingCounter = Req.iLeavingCounter;
     dTimeInCycle = Req.dTimeInCycle;
+    lIntersectionId = Req.lIntersectionId;
+    iRequestType = Req.iRequestType;
 }
 
 ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
@@ -98,6 +104,8 @@ ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
     dUpdateTimeOfETA = Req.dUpdateTimeOfETA;
     iLeavingCounter = Req.iLeavingCounter;
     dTimeInCycle = Req.dTimeInCycle;
+    lIntersectionId = Req.lIntersectionId;
+    iRequestType = Req.iRequestType;
     return *this;
 }
 

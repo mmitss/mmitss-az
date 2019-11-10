@@ -406,7 +406,7 @@ void setupConfigurationAndConnection()
     setupConnection(); // to get arrival time from trajectory aware component (just in case sodeusage is AdaptivePriority) and send the Event list to Signal Controller OR to send the Event list to COP OR to only send the Event list to Signal Controller    
 }
 
-void creatLogFiles()33333
+void creatLogFiles()
 {
 	//------log file name with Time stamp---------------------------
     char timestamp[128];
@@ -574,14 +574,24 @@ void handleEVCase()
 	int *Phase_Infom=new int[TotalSize];
 	for(int i=0;i<EV_Phase_size;i++)
 	{
-		Phase_Infom[i]=EV_Phase_vc[i];
+		Phase_Infom[i]=EV_Phase_vc[i]; //Debashis::Append requested phase info of EV into Phase_Infom list.
+		cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] <<endl;
 	}
 	for(int i=0;i<size_init;i++)
 	{
 		Phase_Infom[EV_Phase_size+i]=InitPhase[i];
+		cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] <<endl;
 	}
+	
+	
 	selectionSort(Phase_Infom, TotalSize);   // Sort all the involved phases for removing duplicated phases
 	int NoRepeatSize=removeDuplicates(Phase_Infom, TotalSize);
+	/***************Debashis: For Debug purpose*************************/
+	for(int i=0;i<NoRepeatSize;i++)
+	{
+		cout << "Phase_Infom FInally: " << Phase_Infom[i] <<endl;
+	}
+	/******************************************************************/
 	RSUConfig2ConfigFile("/nojournal/bin/ConfigInfo_EV.txt",Phase_Infom,NoRepeatSize,ConfigIS);
 	PrintFile2Log("/nojournal/bin/ConfigInfo_EV.txt");// Log the EV configInfo.
 	delete [] Phase_Infom;
@@ -2794,8 +2804,13 @@ void ReqListFromFile_EV(char *filename,LinkedList<ReqEntry>& Req_List)
         getline(fss,lineread);
         if(lineread.size()!=0)
         {
-             sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
+            // sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
+            //     &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
+
+			//Debashis:: No of formatter and specifier don't match. 
+			sscanf(lineread.c_str(),"%s %s %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d ",RSU_ID,OBU_ID,&Veh_Class,
                 &ETA,&Req_Phase,&MinGrn,&dsetRequestTime,&iInLane,&iOutLane,&iStrHour,&iStrMinute,&iStrSecond,&iEndHour,&iEndMinute,&iEndSecond,&iVehState,&iMsgCnt);
+
             ReqEntry req_temp(OBU_ID,Veh_Class,ETA,Req_Phase,MinGrn,dsetRequestTime,0,iInLane,iOutLane,iStrHour,iStrMinute,iStrSecond,iEndHour,iEndMinute,iEndSecond,iVehState, iMsgCnt);
             Req_List.InsertAfter(req_temp);
          //   cout<<lineread.c_str()<<endl;
