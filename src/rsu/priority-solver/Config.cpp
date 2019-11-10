@@ -508,7 +508,7 @@ void ReadInConfig(char *filename, char* filename2)
 	}
    
     FileRead2.close();
- 
+ //DD: Check with Dr. Head
 	
     ConfigIS.dCoordinationWeight=dCoordinationWeight;
     ConfigIS.iCoordinatedPhase[0]=iCoordinatedPhase[0];
