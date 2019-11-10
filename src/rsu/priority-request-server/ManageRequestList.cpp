@@ -336,15 +336,15 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
     int TotalReqNum = 0;
     int CurPhase;
     int SplitPhase;
-    int times;
 
     if (!ReqList.ListEmpty() && pFile != NULL)
     {
         if (IsCombined == 0) // output to "requests_combined.txt"
         {
-            times = FindTimesInList(ReqList, EV);
+
             ReqList.Reset();
-            if (times == 1) //ONLY have one EV will possiblly call split phase. JD 2012.3.27
+
+            if (FindTimesInList(ReqList, EV) == 1) //ONLY have one EV will possiblly call split phase. JD 2012.3.27
             {
                 while (!ReqList.EndOfList())
                 {
@@ -460,7 +460,7 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
         {
             Req_List.DeleteAt();
 
-            sprintf(temp_log, "CLEAR the request form list\n");
+            sprintf(temp_log, "Deleted the vehicle which has passed the intersection from the list\n\n");
             outputlog(temp_log);
 
             if (Req_List.ListSize() > 0) // if there is another request in the table we should solve the problem again
