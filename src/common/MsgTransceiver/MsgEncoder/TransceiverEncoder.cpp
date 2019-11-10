@@ -4,12 +4,11 @@
 #include <sstream>
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include "json.h"
+#include "json/json.h"
 #include "BasicVehicle.h"
 #include "SignalRequest.h"
 #include "SignalStatus.h"
 #include "TransceiverEncoder.h"
-#include "Spat.h"
 
 const double MPS_TO_KPH_CONVERSION = 3.6;
 
@@ -162,7 +161,6 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     Frame_element_t dsrcFrameIn;
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_spat;
     SPAT_element_t &spatIn = dsrcFrameIn.spat;
-    Spat spatObject;
     std::stringstream payloadstream;
     std::string spatMessagePayload;
 
