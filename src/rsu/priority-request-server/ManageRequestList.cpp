@@ -515,7 +515,8 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                  //if the vehicle is leaving intersection iRequestedPhase
             //if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4)) 
             if (Req_List.Data().iRequestType == PRIORITY_CANCELLATION)
-                Req_List.Data().iLeavingCounter++;
+                Req_List.Data().iLeavingCounter = 4;
+                // Req_List.Data().iLeavingCounter++;
             
         }
 
