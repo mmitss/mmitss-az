@@ -44,6 +44,7 @@
 #include "geoUtils.h"
 #include "msgEnum.h"
 #include "PriorityRequestGenerator.h"
+#include "json/json.h"
 
 using namespace GeoUtils;
 using namespace MsgEnum;

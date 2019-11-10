@@ -3,13 +3,13 @@ BUILD_ROOT=../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
-INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(BUILD_ROOT)/include/common # tell the compiler where to find the j2735 and json include directories
+INCLUDES    := -I$(J2735_INCL) -I$(BUILD_ROOT)/include/common # tell the compiler where to find the j2735 and json include directories
 LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the json shared lib 
 #-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
-LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/3rdparty/jsoncpp -L$(BUILD_ROOT)/lib -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common  #tell the linker where to find the j2735 and json libraries
+LIBS        := -L$(J2735_SO_DIR) -L$(BUILD_ROOT)/lib -ldsrc -lasn -lmmitss-common  #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += main.cpp  TransceiverEncoder.cpp Spat.cpp
+SRC += main.cpp TransceiverEncoder.cpp
 #the name of the executable goes here
 TARGET = TransceiverEncoder 
 
