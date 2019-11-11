@@ -64,9 +64,9 @@ Payload={}'''
     elif msgType == 'SPAT':
         broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0x8002', 7, 'CONT', 172, '', '', '', False, False, msgPayload)
     elif msgType == 'SSM':
-        broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000019', 7, 'CONT', 182, '', '', '', False, False, msgPayload)
+        broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000020', 7, 'ALT', 182, '', '', '', False, False, msgPayload)
     elif msgType == 'SRM':
-        broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000020', 7, 'CONT', 182, '', '', '', False, False, msgPayload)
+        broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000019', 7, 'ALT', 182, '', '', '', False, False, msgPayload)
     elif msgType == 'BSM':
         broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0x20', 7, 'CONT', 172, '', '', '', False, False, msgPayload)
     elif msgType == 'RSM':

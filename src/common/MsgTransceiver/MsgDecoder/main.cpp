@@ -14,7 +14,7 @@ int main()
 	reader.parse(configJsonString.c_str(), jsonObject_config);
     
     TransceiverDecoder decoder;
-    UdpSocket decoderSocket(10004);
+    UdpSocket decoderSocket(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt());
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["MrpIp"].asString();
 
