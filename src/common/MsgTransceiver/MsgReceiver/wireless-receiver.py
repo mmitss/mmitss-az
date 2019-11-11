@@ -46,7 +46,7 @@ def main():
     if DEBUGGING: print("Configuration file read successfully.")
 
     # From config Json object, get the hostIp and Port for this application.
-    hostIp = config["MrpIp"]
+    hostIp = config["HostIp"]
     msgReceiverPort = config["PortNumber"]["MessageTransceiver"]['MessageReceiver']
     hostComm = (hostIp, msgReceiverPort)
 

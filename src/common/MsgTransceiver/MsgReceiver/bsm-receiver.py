@@ -29,7 +29,7 @@ def main():
     if DEBUGGING: print("Configuration file read successfully.")
 
     # From config Json object, get the hostIp and Port for this application.
-    hostIp = config["MrpIp"]
+    hostIp = config["HostIp"]
     bsmReceiverPort = config["PortNumber"]['OBUBSMReceiver']
     hostComm = (hostIp, bsmReceiverPort)
 

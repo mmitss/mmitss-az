@@ -25,7 +25,7 @@
 '''
 
 import socket
-import MsgSenderConfig
+import json
 
 def identifyMsg(uperString:str):
     if uperString[:4] == '0014':
@@ -80,26 +80,42 @@ Payload={}'''
 
 def main():
     
-    config = MsgSenderConfig.MsgSenderConfig("MsgSenderConfig.json")
-    
-    msgSenderIP = config.getCoProcessorIP()
-    msgSenderPort = 10001
-    msgSender = (msgSenderIP, msgSenderPort)
-    # Create a socket
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # Bind the created socket to the server information.
-    s.bind(msgSender)
+    DEBUGGING = False
 
-    sourceDsrcDeviceIP = config.getSourceDsrcDeviceIP()
+    # Open configuration file and load the data into JSON object
+    configFile = open("./../ConfigurationInfo.json", 'r').read()
+    config = (json.loads(configFile))
+    if DEBUGGING: print("Configuration file read successfully.")
+
+    # From config Json object, get the hostIp and Port for this application.
+    hostIp = config["HostIp"]
+    msgSenderPort = config["PortNumber"]["MessageTransceiver"]['MessageSender']
+    hostComm = (hostIp, msgSenderPort)
+
+    # Create a socket
+    outerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Bind the created socket to the server information.
+    outerSocket.bind(hostComm)
+
+    innerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    innerSocket.bind(('127.0.0.1', msgSenderPort))
+
+    sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = 1516
+    sourceDsrcDevicePort_SSM = 1520
     sourceDsrcDevice = (sourceDsrcDeviceIP, sourceDsrcDevicePort)
+    sourceDsrcDevice_SSM = (sourceDsrcDeviceIP, sourceDsrcDevicePort_SSM)
+
 
     while True:
-        receivedMsg, addr = s.recvfrom(2048)
+        receivedMsg, addr = innerSocket.recvfrom(2048)
         print(receivedMsg.decode())
         msgType = identifyMsg(receivedMsg.decode())
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
-        s.sendto(msgPacket.encode(), sourceDsrcDevice)
+        if msgType == "SSM":
+            outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice_SSM)
+        else:
+            outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice)
         print("Sent " + msgType + msgPacket)
 
 if __name__ == '__main__':
