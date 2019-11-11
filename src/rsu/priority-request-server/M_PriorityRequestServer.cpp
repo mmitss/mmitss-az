@@ -66,9 +66,8 @@ int main(int argc, char *argv[])
     int CombinedPhase[8] = {0};
     // char rxMsgBuffer[MAX_MSG_BUFLEN]{}; // a buffer for received messages
     char rxMsgBuffer[1024]{};
-    int iAppliedMethod = 1;                // If the argument is -c 1 , the program will be used with traffic interface (priority and actuation method) . if -c 0 as argument, the program work with ISIG  ( COP )
-    int flagForClearingInterfaceCmd = 0;   // a flag to clear all commands in the interface when the request passed
-    double dCountDownIntervalForETA = 1.0; // The time interval that the ETA of requests in the requests table is updated for the purpose of count d
+    bool clearSignalControllerCommands = false;   // a flag to clear all commands in the interface when the request passed
+    
     double dCurrentTimeInCycle = 100.0;    // For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
     int PhaseStatus[8];                    // Determine the phase status to generate the split phases
     ssize_t iNumOfRxBytes = 0;
@@ -118,28 +117,27 @@ int main(int argc, char *argv[])
         if (iNumOfRxBytes > -1)
         {
             std::string receivedJsonString(rxMsgBuffer);
-            std::cout << receivedJsonString << std::endl;
+            //std::cout << receivedJsonString << std::endl;
 
             processRxMessage(rxMsgBuffer, tempMsg, Rsu_ID, lanePhase);
 
             readPhaseTimingStatus(PhaseStatus); // Get the current phase status for determining the split phases
 
             // Update the Req List data structure considering received message
-            UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, flagForClearingInterfaceCmd);
+            UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, clearSignalControllerCommands);
 
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
 
         // There are updated ETA's in the request list
-        if ((dTime - dLastETAUpdateTime > dCountDownIntervalForETA) && (req_List.ListSize() > 0))
+        if ((dTime - dLastETAUpdateTime > COUNT_DOWN_INTERVAL_FOR_ETA) && (req_List.ListSize() > 0))
         {
             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
             outputlog(temp_log);
 
             dLastETAUpdateTime = dTime;
 
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd);
+            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
@@ -150,22 +148,19 @@ int main(int argc, char *argv[])
             sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
             outputlog(temp_log);
 
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd);
+            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
         }
 
         // If the request list is empty and the last vehicle just passed the intersection
-        if ((ReqListUpdateFlag > NO_UPDATE && req_List.ListSize() == 0) ||
-            flagForClearingInterfaceCmd == 1)
+        if ((ReqListUpdateFlag > NO_UPDATE && req_List.ListSize() == 0) || clearSignalControllerCommands == true)
         {
             ReqListUpdateFlag = NO_UPDATE;
-            flagForClearingInterfaceCmd = 0;
 
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, dCountDownIntervalForETA,
-                                           flagForClearingInterfaceCmd);
+            clearSignalControllerCommands = false;
 
-            if (iAppliedMethod == PRIORITY)
-                sendClearCommandsToInterface();
+            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
+
+            sendClearCommandsToInterface();
 
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
@@ -198,7 +193,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
     currentSRM.json2SignalRequest(receivedSrmJsonString);
 
-    lintersectionID = currentSRM.getIntersectionID();
+    lintersectionID = currentSRM.getIntersectionID();   
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
     if (lanePhase.iIntersectionID == lintersectionID)
@@ -257,12 +252,11 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     }
 }
 
-void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag,
-                                    const double dCountDownIntervalForETA, int &flagForClearingInterfaceCmd)
+void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag, bool &clearSignalControllerCommands)
 {
-    updateETAofRequestsInList(req_list, ReqListUpdateFlag, dCountDownIntervalForETA);
+    updateETAofRequestsInList(req_list, ReqListUpdateFlag);
 
-    deleteThePassedVehicle(req_list, ReqListUpdateFlag, flagForClearingInterfaceCmd);
+    deleteThePassedVehicle(req_list, ReqListUpdateFlag, clearSignalControllerCommands);
 
     // Write the requests list into requests.txt,
     PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, 1);
@@ -509,7 +503,9 @@ void readPhaseTimingStatus(int PhaseStatus[8])
 
         cout << "Signal Gourp green " << out[0] << "  red " << out[1] << " yellow " << out[2] << " next " << out[3]
              << endl;
+        delete out;
     }
+    
     else
     {
         if (status == STAT_SUCCESS)
@@ -914,6 +910,7 @@ void sendClearCommandsToInterface()
                 size);
         outputlog(temp_log);
     }
+    delete event_data;
 }
 
 // void getRSUid(string rsu_id)
