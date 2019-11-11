@@ -3,7 +3,7 @@
 #include <fstream>
 #include <UdpSocket.h>
 #include "msgEnum.h"
-#include "json.h"
+#include "json/json.h"
 
 int main()
 { 

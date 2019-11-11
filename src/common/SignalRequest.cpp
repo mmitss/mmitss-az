@@ -17,7 +17,7 @@
 #include <iostream>
 #include <fstream>
 #include "SignalRequest.h"
-#include "json.h"
+#include "json/json.h"
 
 const int SEQUENCE_NUMBER_MINLIMIT = 0;
 const int SEQUENCE_NUMBER_MAXLIMIT = 127;

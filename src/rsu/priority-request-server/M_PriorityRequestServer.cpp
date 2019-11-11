@@ -28,7 +28,7 @@
 #include "net-snmp/net-snmp-config.h"
 #include "net-snmp/net-snmp-includes.h"
 #include "UdpSocket.h"
-#include "json.h"
+#include "json/json.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
