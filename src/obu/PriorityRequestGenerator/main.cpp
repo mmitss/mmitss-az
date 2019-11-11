@@ -56,7 +56,8 @@ int main()
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
-            mapManager.printAvailableMapList();
+            // mapManager.printAvailableMapList();
+            std::cout << "Map is received" << std::endl;
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_ssm)

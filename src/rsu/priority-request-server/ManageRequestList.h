@@ -18,6 +18,8 @@
 #define DELETE_OBSOLETE_REQUEST 3 // DELETE an obsolete request
 #define CANCEL_REQUEST_LEAVING_INTERSECTION 4 // CANCEL a request due to leaving intersection
 
+#define COUNT_DOWN_INTERVAL_FOR_ETA 1 // The time interval that the ETA of requests in the requests table is updated for the purpose of count down
+
 extern int outputlog(char *output);
 
 extern char logfilename[256];
@@ -28,7 +30,7 @@ extern double dTime;
 //----------------------------------------------------------------------------------------------//
 int FindInReqList(LinkedList <ReqEntry> ReqList, ReqEntry TestEntry);
 
-void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int&, int CombinedPhase[], int &);
+void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int&, int CombinedPhase[], bool &);
 
 void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int, int IsCombined = 0);
 
@@ -46,8 +48,8 @@ int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &);
 
-void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, int &);
+void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, bool &);
 
 int currentFlagInRequestFile(char *filename);

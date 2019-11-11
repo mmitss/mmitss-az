@@ -301,7 +301,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	if (!activeMapList.empty())
 	{
 		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
-		std::cout << "Active Map List is not Empty" << std::endl;
+		// std::cout << "Active Map List is not Empty" << std::endl;
 		fmap = activeMapList.front().activeMapFileDirectory;		
 		intersectionName = activeMapList.front().activeMapFileName; 
 		bool singleFrame = false;									/// TRUE to encode speed limit in lane, FALSE to encode in approach
@@ -342,16 +342,11 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
 		setIntersectionID(intersectionId);
 		setRegionalID(regionalId);
-		//std::cout << "Intersection ID: " << getIntersectionID() << std::endl;
 		setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
-		//std::cout << "LaneID: " << getLaneID() << std::endl;
 		setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
-		//std::cout << "ApproachID: " << getApproachID() << std::endl;
 		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 		distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
-		//std::cout << "Distance: " << distance2go << std::endl;
 		setTime2Go(distance2go, vehicle_Speed);
-		//std::cout << "Time to go: " << getTime2Go() << std::endl;
 		getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 
 		delete plocAwareLib;
@@ -465,6 +460,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		mapManager.deleteActiveMapfromList();
 		activeMapList.clear();
+		ActiveRequestTable.clear();
 		bgetActiveMap = false;
 	}
 
