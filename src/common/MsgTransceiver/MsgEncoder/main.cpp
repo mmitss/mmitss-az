@@ -14,11 +14,12 @@ int main()
 	reader.parse(configJsonString.c_str(), jsonObject_config);
 
 
-    UdpSocket encoderSocket(10003);
+    UdpSocket encoderSocket(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     TransceiverEncoder encoder;
     std::string messagePayload{};
     char receiveBuffer[5120];
     const string LOCALHOST = "127.0.0.1";
+const int messageSenderPortNo = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageSender"]).asInt();
  
     while(true)
     {
@@ -27,35 +28,31 @@ int main()
         
         if (encoder.getMessageType(jsonString) == MsgEnum::DSRCmsgID_bsm)
         {
-            const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]).asInt();//10002; // Need to change Message Decoder port to Msg Sender port.
     
-            messagePayload = encoder.BSMEncoder(jsonString);
-
-            
-            encoderSocket.sendData(LOCALHOST, bsmReceiverPortNo,messagePayload);
+            messagePayload = encoder.BSMEncoder(jsonString);           
+            encoderSocket.sendData(LOCALHOST, messageSenderPortNo,messagePayload);
             
         }
        
         else if (encoder.getMessageType(jsonString) == MsgEnum::DSRCmsgID_srm)
         {
-            const int receiverPortNo = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]).asInt();//10002; // Need to change Message Decoder port to Msg Sender port.
-            messagePayload = encoder.SRMEncoder(jsonString);
-  
-            encoderSocket.sendData(LOCALHOST, receiverPortNo,messagePayload);
+
+            messagePayload = encoder.SRMEncoder(jsonString);  
+            encoderSocket.sendData(LOCALHOST, messageSenderPortNo,messagePayload);
         }
 
         else if (encoder.getMessageType(jsonString) == MsgEnum::DSRCmsgID_spat)
         {
+          
             messagePayload = encoder.SPaTEncoder(jsonString);
+            encoderSocket.sendData(LOCALHOST, messageSenderPortNo,messagePayload);
             
         }
 
         else if (encoder.getMessageType(jsonString) == MsgEnum::DSRCmsgID_ssm)
         {   
-            const int receiverPortNo = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]).asInt();
             messagePayload = encoder.SSMEncoder(jsonString);
-
-            encoderSocket.sendData(LOCALHOST, receiverPortNo,messagePayload);
+            encoderSocket.sendData(LOCALHOST, messageSenderPortNo,messagePayload);
 
         }        
         
