@@ -84,7 +84,7 @@ hugeFont=("Helvetica", 25)
 ##############################################
 #   APPLICATION DYNAMIC LABEL VARIABLES
 ##############################################
-
+'''
 # initialize textvariables for dynamic updates
 speed_value = StringVar()
 mph_value = StringVar()
@@ -109,7 +109,7 @@ received_message4_value.set('Unavailable')
 
 # load all static graphics at start up
 
-
+'''
 
 ##############################################
 #   SET UP PERFORMANCE TEST OUTPUT FILE
