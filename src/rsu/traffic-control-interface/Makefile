@@ -4,10 +4,10 @@ MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
 
-INCLUDES    := -I. -I$(BUILD_ROOT)/include/common/ -I$(BUILD_ROOT)/3rdparty/ -I$(NETSNMP_INCL)   # tell the compiler where to find the j2735 and json include directories
+INCLUDES    := -I. -I$(COMMON_INCL) -I$(BUILD_ROOT)/3rdparty/ -I$(NETSNMP_INCL)   # tell the compiler where to find the j2735 and json include directories
 LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the j2735 shared lib 
 #-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
-LIBS        := -L$(BUILD_ROOT)/lib -L$(NETSNMP_LIB)  -lnetsnmp -lmmitss-common -lstdc++ -lm  #tell the linker where to find the libraries
+LIBS        := -L$(MMITSS_COMMON_LIB) -L$(NETSNMP_LIB)  -lnetsnmp -lmmitss-common -lstdc++ -lm  #tell the linker where to find the libraries
 
 #cpp's go here
 SRC += M_TrafficControllerInterface.cpp Signal.cpp Array.cpp Config.cpp
