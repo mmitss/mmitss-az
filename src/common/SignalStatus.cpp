@@ -17,7 +17,7 @@
 #include <iomanip>
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include "json.h"
+#include "json/json.h"
 #include "SignalStatus.h"
 
 const int ETA_CONVERTION = 60;

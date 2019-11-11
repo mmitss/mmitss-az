@@ -16,14 +16,11 @@ class TransceiverDecoder
     public:
         TransceiverDecoder();
         ~TransceiverDecoder();
-        int getMessageType(std::string payload);
-        // void setSendingString(std::string jsonString);
-        // std::string getSendingString(); 
         
-        // std::string decodeMessagePayload(std::string payload);
+        int getMessageType(std::string payload);
         std::string createJsonStingOfMapPayload(std::string mapPayload);
         std::string bsmDecoder(std::string bsmPayload);
         std::string srmDecoder(std::string srmPayload);
         std::string ssmDecoder(std::string ssmPayload);
-
+        std::string spatDecoder(std::string spatPayload);
 };

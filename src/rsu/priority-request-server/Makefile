@@ -7,7 +7,7 @@ include $(MAKE_ROOT)/newheader.mk
 INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(BUILD_ROOT)/include/common/ -I$(BUILD_ROOT)/3rdparty/ -I$(BUILD_ROOT)/3rdparty/mapengine/include  # tell the compiler where to find the j2735 and json include directories
 LDFLAGS     := -fPIC -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the json shared lib 
 #-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
-LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib -L$(BUILD_ROOT)/3rdparty/net-snmp/lib -llocAware -ldsrc -lasn -ljsoncpp1_8_4 -lmmitss-common -lnetsnmp   #tell the linker where to find the j2735 and json libraries
+LIBS        := -L$(J2735_SO_DIR) -L$(JSONCPP_LIB) -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib -L$(BUILD_ROOT)/3rdparty/net-snmp/lib -llocAware -ldsrc -lasn -lmmitss-common -lnetsnmp   #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
 SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp #PositionLocal3D.cpp BasicVehicle.cpp We will use new version of Basic Vehicle

@@ -44,12 +44,13 @@
 #include "geoUtils.h"
 #include "msgEnum.h"
 #include "PriorityRequestGenerator.h"
+#include "json/json.h"
 
 using namespace GeoUtils;
 using namespace MsgEnum;
 
 const double DISTANCEUNITCONVERSION = 100; //cm to meter
-const double VEHICLEMINSPEED = 0.89408;
+const double VEHICLEMINSPEED = 4;
 const double VEHICLE_SPEED_DEVIATION_LIMIT = 3.0;
 const double ETA_DURATION_SECOND = 2;
 const int HOURSINADAY = 24;
@@ -59,6 +60,7 @@ const int SECONDTOMILISECOND = 1000;
 const double ALLOWEDETADIFFERENCE = 1;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
+const double MIN_ETA = 0.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
@@ -233,6 +235,7 @@ bool PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpee
 	else
 	{
 		bETAValue = false;
+		time2go = MIN_ETA;
 	}
 
 	return bETAValue;
@@ -299,7 +302,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	if (!activeMapList.empty())
 	{
 		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
-		std::cout << "Active Map List is not Empty" << std::endl;
+		// std::cout << "Active Map List is not Empty" << std::endl;
 		fmap = activeMapList.front().activeMapFileDirectory;		
 		intersectionName = activeMapList.front().activeMapFileName; 
 		bool singleFrame = false;									/// TRUE to encode speed limit in lane, FALSE to encode in approach
@@ -340,16 +343,11 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
 		setIntersectionID(intersectionId);
 		setRegionalID(regionalId);
-		//std::cout << "Intersection ID: " << getIntersectionID() << std::endl;
 		setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
-		//std::cout << "LaneID: " << getLaneID() << std::endl;
 		setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
-		//std::cout << "ApproachID: " << getApproachID() << std::endl;
 		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 		distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
-		//std::cout << "Distance: " << distance2go << std::endl;
 		setTime2Go(distance2go, vehicle_Speed);
-		//std::cout << "Time to go: " << getTime2Go() << std::endl;
 		getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 
 		delete plocAwareLib;
@@ -463,6 +461,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		mapManager.deleteActiveMapfromList();
 		activeMapList.clear();
+		ActiveRequestTable.clear();
 		bgetActiveMap = false;
 	}
 

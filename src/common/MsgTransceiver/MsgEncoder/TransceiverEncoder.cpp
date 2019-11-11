@@ -4,12 +4,11 @@
 #include <sstream>
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include "json.h"
+#include "json/json.h"
 #include "BasicVehicle.h"
 #include "SignalRequest.h"
 #include "SignalStatus.h"
 #include "TransceiverEncoder.h"
-#include "Spat.h"
 
 const double MPS_TO_KPH_CONVERSION = 3.6;
 
@@ -62,30 +61,30 @@ std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonS
     std::stringstream payloadstream;
     std::string bsmMessagePayload;
     /// buffer to hold message payload
-	size_t bufSize = DsrcConstants::maxMsgSize;
-	std::vector<uint8_t> buf(bufSize, 0);
+    size_t bufSize = DsrcConstants::maxMsgSize;
+    std::vector<uint8_t> buf(bufSize, 0);
     basicVehicle.json2BasicVehicle(jsonString);
     /// dsrcFrameIn to store input to UPER encoding function
-	Frame_element_t dsrcFrameIn;
-	dsrcFrameIn.reset();
+    Frame_element_t dsrcFrameIn;
+    dsrcFrameIn.reset();
 
     /// manual input bsmIn
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_bsm;
-    BSM_element_t& bsmIn = dsrcFrameIn.bsm;
+    BSM_element_t &bsmIn = dsrcFrameIn.bsm;
     bsmIn.msgCnt = 1;
-    bsmIn.id = basicVehicle.getTemporaryID() ;
+    bsmIn.id = basicVehicle.getTemporaryID();
     bsmIn.timeStampSec = static_cast<int16_t>(basicVehicle.getSecMark_Second());
-    bsmIn.latitude  = DsrcConstants::unit2damega<int32_t>(basicVehicle.getLatitude_DecimalDegree());
+    bsmIn.latitude = DsrcConstants::unit2damega<int32_t>(basicVehicle.getLatitude_DecimalDegree());
     bsmIn.longitude = DsrcConstants::unit2damega<int32_t>(basicVehicle.getLongitude_DecimalDegree());
     bsmIn.elevation = DsrcConstants::unit2deca<int32_t>(basicVehicle.getElevation_Meter());
-    bsmIn.yawRate   = 0;
-	bsmIn.vehLen    = 1200;
-	bsmIn.vehWidth  = 300;
-    bsmIn.speed     = DsrcConstants::kph2unit<uint16_t>(basicVehicle.getSpeed_MeterPerSecond()*MPS_TO_KPH_CONVERSION);
-    bsmIn.heading   = DsrcConstants::heading2unit<uint16_t>(basicVehicle.getHeading_Degree());
+    bsmIn.yawRate = 0;
+    bsmIn.vehLen = 1200;
+    bsmIn.vehWidth = 300;
+    bsmIn.speed = DsrcConstants::kph2unit<uint16_t>(basicVehicle.getSpeed_MeterPerSecond() * MPS_TO_KPH_CONVERSION);
+    bsmIn.heading = DsrcConstants::heading2unit<uint16_t>(basicVehicle.getHeading_Degree());
 
     /// encode BSM payload
-	size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
+    size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
     if (payload_size > 0)
     {
         for (size_t i = 0; i < payload_size; i++)
@@ -111,8 +110,6 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
     /// dsrcFrameIn to store input to UPER encoding function
     Frame_element_t dsrcFrameIn;
     dsrcFrameIn.reset();
-    // std::string fout = "SRM.out";
-    // std::ofstream OS_OUT(fout);
 
     /// manual input ssmIn
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_srm;
@@ -125,20 +122,18 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
     srmIn.reqId = static_cast<int8_t>(signalRequest.getRegionalID());
     srmIn.inApprochId = static_cast<int8_t>(signalRequest.getInBoundApproachID());
     srmIn.inLaneId = static_cast<int8_t>(signalRequest.getInBoundLaneID());
-    // srmIn.outApproachId = 0;
-    // srmIn.outLaneId = outLaneId;
-    srmIn.ETAsec = static_cast<int16_t>(signalRequest.getETA_Second());    
-    srmIn.ETAminute = signalRequest.getETA_Minute(); 
+    srmIn.ETAsec = static_cast<int16_t>(signalRequest.getETA_Second());
+    srmIn.ETAminute = signalRequest.getETA_Minute();
     srmIn.duration = static_cast<int16_t>(signalRequest.getETA_Duration());
     srmIn.vehId = signalRequest.getTemporaryVehicleID();
-    srmIn.latitude = DsrcConstants::unit2damega<int32_t>(signalRequest.getLatitude_DecimalDegree());                              
-    srmIn.longitude = DsrcConstants::unit2damega<int32_t>(signalRequest.getLongitude_DecimalDegree());                             
-    srmIn.elevation = DsrcConstants::unit2deca<int32_t>(signalRequest.getElevation_Meter());                                    
-    srmIn.heading = DsrcConstants::heading2unit<uint16_t>(signalRequest.getHeading_Degree());                                        
-    srmIn.speed = DsrcConstants::kph2unit<uint16_t>(signalRequest.getSpeed_MeterPerSecond()*MPS_TO_KPH_CONVERSION);                                    
-    srmIn.reqType = static_cast<MsgEnum::requestType>(signalRequest.getPriorityRequestType()); 
-    srmIn.vehRole = static_cast<MsgEnum::basicRole>(signalRequest.getBasicVehicleRole());      
-    srmIn.vehType = static_cast<MsgEnum::vehicleType>(signalRequest.getVehicleType());       
+    srmIn.latitude = DsrcConstants::unit2damega<int32_t>(signalRequest.getLatitude_DecimalDegree());
+    srmIn.longitude = DsrcConstants::unit2damega<int32_t>(signalRequest.getLongitude_DecimalDegree());
+    srmIn.elevation = DsrcConstants::unit2deca<int32_t>(signalRequest.getElevation_Meter());
+    srmIn.heading = DsrcConstants::heading2unit<uint16_t>(signalRequest.getHeading_Degree());
+    srmIn.speed = DsrcConstants::kph2unit<uint16_t>(signalRequest.getSpeed_MeterPerSecond() * MPS_TO_KPH_CONVERSION);
+    srmIn.reqType = static_cast<MsgEnum::requestType>(signalRequest.getPriorityRequestType());
+    srmIn.vehRole = static_cast<MsgEnum::basicRole>(signalRequest.getBasicVehicleRole());
+    srmIn.vehType = static_cast<MsgEnum::vehicleType>(signalRequest.getVehicleType());
     /// encode SSM payload
     size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
     if (payload_size > 0)
@@ -166,7 +161,6 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     Frame_element_t dsrcFrameIn;
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_spat;
     SPAT_element_t &spatIn = dsrcFrameIn.spat;
-    Spat spatObject;
     std::stringstream payloadstream;
     std::string spatMessagePayload;
 
@@ -182,7 +176,6 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 
     for (int i = 0; i < 8; i++)
     {
-
         spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(jsonObject["Spat"]["phaseState"][i]["currState"].asInt());
         spatIn.phaseState[i].startTime = jsonObject["Spat"]["phaseState"][i]["startTime"].asInt();
         spatIn.phaseState[i].minEndTime = jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt();
@@ -250,15 +243,11 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
         requestStatus.sequenceNumber = static_cast<int8_t>(msgCount[i]);
         requestStatus.vehRole = static_cast<MsgEnum::basicRole>((basicVehicleRole[i]));
         requestStatus.inLaneId = static_cast<int8_t>(inBoundLaneID[i]);
-        requestStatus.inApprochId  = static_cast<int8_t>(inBoundApproachID[i]); //It is not present in TestDecoder 
-        //requestStatus.ETAminute = signalStatus.getMinuteOfYear() + expectedTimeOfArrival_Minute[i];
-        //requestStatus.ETAsec = expectedTimeOfArrival_Second[i] * ETACONVERTION;
-        //requestStatus.duration = expectedTimeOfArrival_Duration[i] * ETACONVERTION;
+        requestStatus.inApprochId = static_cast<int8_t>(inBoundApproachID[i]); //It is not present in TestDecoder
         requestStatus.ETAminute = expectedTimeOfArrival_Minute[i];
         requestStatus.ETAsec = static_cast<int16_t>(expectedTimeOfArrival_Second[i]);
         requestStatus.duration = static_cast<int16_t>(expectedTimeOfArrival_Duration[i]);
         requestStatus.status = static_cast<MsgEnum::requestStatus>(priorityRequestStatus[i]);
-        //std::cout<< static_cast<int>(requestStatus.status)<<std::endl;
 
         ssmIn.mpSignalRequetStatus.push_back(requestStatus);
     }

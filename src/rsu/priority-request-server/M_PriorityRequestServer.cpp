@@ -28,7 +28,7 @@
 #include "net-snmp/net-snmp-config.h"
 #include "net-snmp/net-snmp-includes.h"
 #include "UdpSocket.h"
-#include "json.h"
+#include "json/json.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
 #include "IntLanePhase.h"
@@ -503,7 +503,9 @@ void readPhaseTimingStatus(int PhaseStatus[8])
 
         cout << "Signal Gourp green " << out[0] << "  red " << out[1] << " yellow " << out[2] << " next " << out[3]
              << endl;
+        delete out;
     }
+    
     else
     {
         if (status == STAT_SUCCESS)
@@ -908,6 +910,7 @@ void sendClearCommandsToInterface()
                 size);
         outputlog(temp_log);
     }
+    delete event_data;
 }
 
 // void getRSUid(string rsu_id)
