@@ -32,7 +32,7 @@ import Spat
 def main():
 
     # Read a config file by creating an object of the time MapSpatBroadcasterConfig
-    configFile = open("./../../common/MsgTransceiver/ConfigurationInfo.json", 'r')
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
 
 
@@ -45,13 +45,10 @@ def main():
     outerSocket.bind(MapSpatBroadcastAddress)
     outerSocket.settimeout(3)
 
-    innerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    innerSocket.bind(("127.0.0.1", port))
-
     msgSenderPort = config["PortNumber"]["MessageTransceiver"]["MessageSender"]
     msgSenderAddress = (mrpIp, msgSenderPort)
 
-    msgEncoderPort = config["PortNumber"]["MessageTransceiver"]
+    msgEncoderPort = config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]
     msgEncoderAddress = (mrpIp, msgEncoderPort)
 
     # Store map payload in a string
@@ -69,6 +66,7 @@ def main():
     controllerIp = config["ControllerIp"]
 
     msgCnt = 0
+    spatMapMsgCount = 0
     while True:
         try:
             spatBlob, addr = outerSocket.recvfrom(1024)            
@@ -81,10 +79,13 @@ def main():
                 spatObject.fillSpatInformation(currentBlob)
                 spatJsonString = spatObject.Spat2Json()
                 
-                innerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
-                innerSocket.sendto(mapPayload.encode(), msgSenderAddress)
-
-                print(spatJsonString)
+                outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
+                print("Sent SPAT to MsgSender")
+                spatMapMsgCount = spatMapMsgCount + 1
+                if spatMapMsgCount > 9:
+                    outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
+                    spatMapMsgCount = 0
+                    print("Sent MAP to MsgSender")
                 #print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")

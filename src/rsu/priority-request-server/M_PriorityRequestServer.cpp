@@ -294,7 +294,7 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
 
         for (int i = 0; !ReqList.EndOfList(); i++)
         {
-            jsonObject["SignalStatus"]["requestorInfo"][i]["vehicleID"] = ReqList.Data().VehID;
+            jsonObject["SignalStatus"]["requestorInfo"][i]["vehicleID"] = static_cast<int>ReqList.Data().VehID;
             jsonObject["SignalStatus"]["requestorInfo"][i]["requestID"] = 0;
             jsonObject["SignalStatus"]["requestorInfo"][i]["msgCount"] = ReqList.Data().iMsgCnt;
             jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ReqList.Data().VehClass;
