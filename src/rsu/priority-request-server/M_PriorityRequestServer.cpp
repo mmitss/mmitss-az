@@ -225,11 +225,6 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
         iMsgCnt = currentSRM.getMsgCount();
 
-        // MZP 10/10/17 deleted vehiceVIN data element population in PRG ---> dMinGrn is
-        // embeded in iETA and obtained using
-        // iVehicleState dMinGrn=((srm->vehicleVIN->id->buf[1]<<8)+srm->vehicleVIN->id->buf[0])/10;
-        // there was no place in SRM to store MinGrn !!!!!
-
         //KLH - concerned about this being a bug
         if (iVehicleState == 3) // vehicle is in queue
             dMinGrn = (double)(fETA);

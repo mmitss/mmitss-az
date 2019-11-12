@@ -14,8 +14,6 @@
 #include "msgEnum.h"
 #include "ManageRequestList.h"
 
-
-
 using namespace std;
 
 int FindTimesInList(LinkedList<ReqEntry> Req_List, int Veh_Class)
@@ -43,15 +41,15 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iRecvReqListDiviser = 0;
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
     char RSU_ID[16]{};
-    
-    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf %ld", &NewReq.iRequestType, RSU_ID, 
+
+    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf %ld", &NewReq.iRequestType, RSU_ID,
            &NewReq.VehID, &NewReq.VehClass,
            &NewReq.ETA, &NewReq.Phase, &NewReq.MinGreen, &NewReq.dSetRequestTime,
            &NewReq.iInLane, &NewReq.iOutLane, &NewReq.iStrHour, &NewReq.iStrMinute, &NewReq.iStrSecond,
            &NewReq.iEndHour, &NewReq.iEndMinute, &NewReq.iEndSecond, &NewReq.iVehState, &NewReq.iMsgCnt,
            &NewReq.dTimeInCycle, &NewReq.lIntersectionId);
 
-    // MZP
+   
     if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver
         NewReq.ETA = 0;
 
@@ -59,8 +57,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     int iNumberOfEVinList = numberOfEVs(Req_List);
     int SplitPhase = 0;
 
-    //DJC does a 2nd EV in the list then also get a split phase????? This is only called upon receiving a SRM.....
-    if ((NewReq.VehClass == EV) && (iNumberOfEVinList == 0)) // if this is the first EV in the list
+    if ((NewReq.VehClass == EV) && (iNumberOfEVinList == 0)) // Only the first EV in the list gets a split phase
     {
         SplitPhase = FindSplitPhase(NewReq.Phase, phaseStatus, CombinedPhase);
         NewReq.Split_Phase = SplitPhase;
@@ -107,18 +104,6 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             // if the received SRM with identical MsgCnt type is not already in the list, we should  add/update the new req to the list.
             if (iRecvReqListDiviser != iNewReqDiviser)
             {
-                // MZP
-                /*
-                   if(NewReq.VehClass==EV)  //Modified by YF: Solve the problem that if duing the first request the split phase is -1, it will never change!!!
-                   {
-                       NewReq.Split_Phase=SplitPhase;
-                   }
-                   else
-                   {
-                       NewReq.Split_Phase=Req_List.Data().Split_Phase;
-                   }
-               */
-
                 // We resolve the problem for the new updated request if the new updated request is EV, or there is not an EV in the list.
                 if ((NewReq.VehClass == EV) || (iNumberOfEVinList == 0))
                     ReqListUpdateFlag = UPDATED_REQUEST;
@@ -130,9 +115,30 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         }
         //----------------End Update the Requests list according to the received time.--------//
     }
+    else if (NewReq.iRequestType == REQUEST_UPDATE)
+    {
+        if (pos >= 0) 
+        {
+            Req_List.Reset(pos);
+
+            Req_List.Data() = NewReq;
+
+            ReqListUpdateFlag = UPDATED_REQUEST; //re-solve based on the update
+
+            sprintf(temp_log, "Updated a request in the list %s at time (%.2f).\n", RcvMsg, dTime);
+            outputlog(temp_log);
+        }
+        else
+        {
+            sprintf(temp_log,
+                    "A request update is received but the request is not in the list. The update is ignored.\n");
+            outputlog(temp_log);
+        }
+
+    }
     else if (NewReq.iRequestType == PRIORITY_CANCELLATION)
     {
-        if (pos >= 0) // this is the first time we receive the clear request
+        if (pos >= 0) // this is the first time we received the clear request
         {
             Req_List.Reset(pos);
 
@@ -153,7 +159,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             outputlog(temp_log);
         }
     }
-    
+
     if (Req_List.ListSize() == 0 && ReqListUpdateFlag != CANCEL_REQUEST_LEAVING_INTERSECTION)
     {
         sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
@@ -161,7 +167,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
         ReqListUpdateFlag = NO_UPDATE;
     }
-     //---------------End of Handling the Received Requests.----------------//
+    //---------------End of Handling the Received Requests.----------------//
 }
 
 int numberOfEVs(LinkedList<ReqEntry> ReqList)
@@ -193,53 +199,53 @@ int FindSplitPhase(int phase, int phaseStatus[8], int CombinedPhase[])
 
     switch (phase)
     {
-        case 1:
-            combined_phase = CombinedPhase[6 - 1];
+    case 1:
+        combined_phase = CombinedPhase[6 - 1];
         break;
 
-        case 2: // if current phase or next phase is 6: we should not call phase 5, because cannot reverse from 6 to 5;
-            if (phaseStatus[6 - 1] == 2 || phaseStatus[6 - 1] == 7) // do not consider not enable case: phaseStatus[6-1]==3
-               combined_phase = -1;
-            else
-               combined_phase = CombinedPhase[5 - 1];
+    case 2:                                                     // if current phase or next phase is 6: we should not call phase 5, because cannot reverse from 6 to 5;
+        if (phaseStatus[6 - 1] == 2 || phaseStatus[6 - 1] == 7) // do not consider not enable case: phaseStatus[6-1]==3
+            combined_phase = -1;
+        else
+            combined_phase = CombinedPhase[5 - 1];
         break;
 
-        case 3:
-            combined_phase = CombinedPhase[8 - 1];
+    case 3:
+        combined_phase = CombinedPhase[8 - 1];
         break;
 
-        case 4:
-            if (phaseStatus[8 - 1] == 2 || phaseStatus[8 - 1] == 7)
-                combined_phase = -1;
-            else
-                combined_phase = CombinedPhase[7 - 1];
-        break;
-    
-        case 5:
-            combined_phase = CombinedPhase[2 - 1];
+    case 4:
+        if (phaseStatus[8 - 1] == 2 || phaseStatus[8 - 1] == 7)
+            combined_phase = -1;
+        else
+            combined_phase = CombinedPhase[7 - 1];
         break;
 
-        case 6:
-            if (phaseStatus[2 - 1] == 2 || phaseStatus[2 - 1] == 7)
-                combined_phase = -1;
-            else
-                combined_phase = CombinedPhase[1 - 1];
+    case 5:
+        combined_phase = CombinedPhase[2 - 1];
         break;
 
-        case 7:
-            combined_phase = CombinedPhase[4 - 1];
+    case 6:
+        if (phaseStatus[2 - 1] == 2 || phaseStatus[2 - 1] == 7)
+            combined_phase = -1;
+        else
+            combined_phase = CombinedPhase[1 - 1];
         break;
 
-        case 8:
-            if (phaseStatus[4 - 1] == 2 || phaseStatus[4 - 1] == 7)
-                combined_phase = -1;
-            else
-                combined_phase = CombinedPhase[3 - 1];
-            break;
+    case 7:
+        combined_phase = CombinedPhase[4 - 1];
+        break;
 
-        default:
-            cout << "*** Wrong Phase Information***" << endl;
-            system("pause");
+    case 8:
+        if (phaseStatus[4 - 1] == 2 || phaseStatus[4 - 1] == 7)
+            combined_phase = -1;
+        else
+            combined_phase = CombinedPhase[3 - 1];
+        break;
+
+    default:
+        cout << "*** Wrong Phase Information***" << endl;
+        system("pause");
         break;
     }
 
@@ -418,7 +424,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
             }
         }
         // EV will have split phase requests: output "requests.txt": will add split_phase in the sequence of data for each EV request
-        else if (IsCombined == 1) 
+        else if (IsCombined == 1)
         {
             TotalReqNum = ReqList.ListSize();
             fprintf(pFile, "Num_req %d %d\n", TotalReqNum, 0);
@@ -454,8 +460,8 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
 
     while (!Req_List.EndOfList())
     {
-         // three time steps after the vehicle leaving request is received, the vehicle is deleted from the list.
-         //if (Req_List.Data().iLeavingCounter >= 3)
+        // three time steps after the vehicle leaving request is received, the vehicle is deleted from the list.
+        //if (Req_List.Data().iLeavingCounter >= 3)
         if (Req_List.Data().iLeavingCounter)
         {
             Req_List.DeleteAt();
@@ -480,7 +486,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
     char temp_log[256];
 
     Req_List.Reset();
-    
+
     // sequentially examine each list entry
     while (!Req_List.EndOfList())
     {
@@ -510,7 +516,7 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         {
             if (Req_List.Data().ETA > 0)
             {
-                // if the difference between the current time and the previous time the ETA was updated 
+                // if the difference between the current time and the previous time the ETA was updated
                 if (dTime - Req_List.Data().dUpdateTimeOfETA >= COUNT_DOWN_INTERVAL_FOR_ETA)
                 {
                     // ETA becomes current time minus last update time
@@ -523,12 +529,11 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
             else
                 Req_List.Data().ETA = 0;
 
-                // MZP added 10/30/17
-                 //if the vehicle is leaving intersection iRequestedPhase
-            //MZ if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4)) 
+            // MZP added 10/30/17
+            //if the vehicle is leaving intersection iRequestedPhase
+            //MZ if ((Req_List.Data().iVehState == 2) || (Req_List.Data().iVehState == 4))
             if (Req_List.Data().iRequestType == PRIORITY_CANCELLATION)
                 Req_List.Data().iLeavingCounter++;
-            
         }
 
         Req_List.Next();
