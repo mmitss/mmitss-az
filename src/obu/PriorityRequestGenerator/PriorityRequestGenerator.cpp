@@ -455,13 +455,13 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityRequest);
 	}
 
-	//else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable != ActiveRequestTable.end())
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox))
+	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		mapManager.deleteActiveMapfromList();
 		activeMapList.clear();
 		ActiveRequestTable.clear();
+		setIntersectionID(0);
 		bgetActiveMap = false;
 	}
 
