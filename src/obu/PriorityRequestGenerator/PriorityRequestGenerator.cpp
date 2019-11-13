@@ -337,18 +337,48 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
 		struct connectedVehicle_t connectedVehicle_t_1 = {0, 0, 0, geoPoint_t_1, motion_t_1, vehicleTracking_t_1, locationAware_t_1, signalAware_t_1};
 
-		//locate vehicle In map
-		plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
+		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane
+		if (counter_VehicleInMap >10 )
+		{
+			if (plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1) == true && unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus) == static_cast<int>(MsgEnum::mapLocType::onInbound))
+			{
+				setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
+				setIntersectionID(intersectionId);
+				setRegionalID(regionalId);
+				setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
+				setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
+				plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
+				distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
+				setTime2Go(distance2go, vehicle_Speed);
+				getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
+			}
 
-		setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
-		setIntersectionID(intersectionId);
-		setRegionalID(regionalId);
-		setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
-		setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
-		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
-		distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
-		setTime2Go(distance2go, vehicle_Speed);
-		getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
+			else
+			{
+				mapManager.deleteActiveMapfromList();
+				activeMapList.clear();
+				ActiveRequestTable.clear();
+				setIntersectionID(0);
+				bgetActiveMap = false;
+			}
+			counter_VehicleInMap = 0;
+
+		}
+
+		else
+		{
+			plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
+			setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
+			setIntersectionID(intersectionId);
+			setRegionalID(regionalId);
+			setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
+			setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
+			plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
+			distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
+			setTime2Go(distance2go, vehicle_Speed);
+			getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
+			counter_VehicleInMap ++;
+		}
 
 		delete plocAwareLib;
 	}
