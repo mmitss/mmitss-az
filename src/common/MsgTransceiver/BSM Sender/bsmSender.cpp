@@ -18,9 +18,7 @@ int main()
     std::ifstream infile;
     int count = 1;
 
-    infile.open("bsmLog..txt");
-    // infile.open("Campbell_Northbound.txt");
-    // infile.open("Campbell_Southbound.txt");
+    infile.open("bsmLog.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;
