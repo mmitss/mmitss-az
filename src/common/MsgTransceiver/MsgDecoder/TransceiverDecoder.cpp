@@ -24,12 +24,11 @@ TransceiverDecoder::TransceiverDecoder()
 
 int TransceiverDecoder::getMessageType(std::string payload)
 {
-
     std::string subPayload = payload.substr(0, 4);
 
     std::vector<std::string> MessageIdentifier;
 
-    MessageIdentifier = {MAPIdentifier, BSMIdentifier, SRMIdentifier, SPaTIdentifier, SSMIdentifier};
+    MessageIdentifier = {MAPIdentifier, BSMIdentifier, SRMIdentifier_UpperCase, SRMIdentifier_LowerCase, SPaTIdentifier, SSMIdentifier_UpperCase, SSMIdentifier_LowerCase};
 
     if (MessageIdentifier.at(0).compare(subPayload) == 0)
     {
@@ -41,16 +40,16 @@ int TransceiverDecoder::getMessageType(std::string payload)
         messageType = MsgEnum::DSRCmsgID_bsm;
     }
 
-    else if (MessageIdentifier.at(2).compare(subPayload) == 0)
+    else if (MessageIdentifier.at(2).compare(subPayload) == 0 || MessageIdentifier.at(3).compare(subPayload) == 0)
     {
         messageType = MsgEnum::DSRCmsgID_srm;
     }
 
-    else if (MessageIdentifier.at(3).compare(subPayload) == 0)
+    else if (MessageIdentifier.at(4).compare(subPayload) == 0)
     {
         messageType = MsgEnum::DSRCmsgID_spat;
     }
-    else if (MessageIdentifier.at(4).compare(subPayload) == 0)
+    else if (MessageIdentifier.at(5).compare(subPayload) == 0 || MessageIdentifier.at(6).compare(subPayload) == 0)
     {
         messageType = MsgEnum::DSRCmsgID_ssm;
     }

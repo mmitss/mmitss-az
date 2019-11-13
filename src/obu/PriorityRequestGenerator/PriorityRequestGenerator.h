@@ -45,6 +45,7 @@ private:
     int basicVehicleRole{};
     int priorityRequestType{};
     double tempVehicleSpeed{}; //tempVehicleSpeed store the vehicle speed of last send out srm. use it to check the speed change. will be set vehicle minimum speed when out of the intersection
+    int counter_VehicleInMap{};
     
 public:
     PriorityRequestGenerator();

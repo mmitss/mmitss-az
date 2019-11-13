@@ -27,39 +27,40 @@ int main()
     while(true)
     {
         decoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedJsonString(receiveBuffer);
+        std::string receivedPayload(receiveBuffer);
+        int msgType = decoder.getMessageType(receivedPayload);
 
-        if (decoder.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_map)
+        if (msgType == MsgEnum::DSRCmsgID_map)
         {
-            std::string mapJsonString = decoder.createJsonStingOfMapPayload(receivedJsonString);
+            std::string mapJsonString = decoder.createJsonStingOfMapPayload(receivedPayload);
             decoderSocket.sendData(LOCALHOST, mapReceiverPortNo, mapJsonString);
             std::cout << "Decoded MAP" << std::endl;
         }
         
-        else if (decoder.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_bsm)
+        else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
-            std::string bsmJsonString = decoder.bsmDecoder(receivedJsonString);
+            std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, bsmReceiverPortNo, bsmJsonString);
             std::cout << "Decoded BSM" << std::endl;
         }
         
-        else if (decoder.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_srm)
+        else if (msgType == MsgEnum::DSRCmsgID_srm)
         {
-            std::string srmJsonString = decoder.srmDecoder(receivedJsonString);
+            std::string srmJsonString = decoder.srmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, srmReceiverPortNo, srmJsonString);
             std::cout << "Decoded SRM" << std::endl;
         }
         
-        else if (decoder.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_spat)
+        else if (msgType == MsgEnum::DSRCmsgID_spat)
         {
-            std::string spatJsonString = decoder.spatDecoder(receivedJsonString);
+            std::string spatJsonString = decoder.spatDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, vehicleHmiPortNo, spatJsonString);
             std::cout << "Decoded SPAT" << std::endl;
         }
         
-        else if (decoder.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_ssm)
+        else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
-            std::string ssmJsonString = decoder.ssmDecoder(receivedJsonString);
+            std::string ssmJsonString = decoder.ssmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, ssmReceiverPortNo,ssmJsonString);
             std::cout << "Decoded SSM" << std::endl;
         }        
