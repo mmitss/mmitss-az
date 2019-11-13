@@ -83,7 +83,7 @@ def main():
     DEBUGGING = False
 
     # Open configuration file and load the data into JSON object
-    configFile = open("./../ConfigurationInfo.json", 'r').read()
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r').read()
     config = (json.loads(configFile))
     if DEBUGGING: print("Configuration file read successfully.")
 
@@ -97,9 +97,6 @@ def main():
     # Bind the created socket to the server information.
     outerSocket.bind(hostComm)
 
-    innerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    innerSocket.bind(('127.0.0.1', msgSenderPort))
-
     sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = 1516
     sourceDsrcDevicePort_SSM = 1520
@@ -108,15 +105,14 @@ def main():
 
 
     while True:
-        receivedMsg, addr = innerSocket.recvfrom(2048)
-        print(receivedMsg.decode())
+        receivedMsg, addr = outerSocket.recvfrom(2048)
         msgType = identifyMsg(receivedMsg.decode())
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
         if msgType == "SSM":
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice_SSM)
         else:
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice)
-        print("Sent " + msgType + msgPacket)
+        print("Sent " + msgType)
 
 if __name__ == '__main__':
     main()

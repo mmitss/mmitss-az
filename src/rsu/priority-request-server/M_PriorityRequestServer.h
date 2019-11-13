@@ -46,7 +46,7 @@
 #define PRIORITY_CONFIG_FILE "/nojournal/bin/priorityConfiguration.txt" 
 
 // Stores the IntersectionID, RegionalID, and Mapfile name for the intersection
-#define INTERSECTION_CONFIG_FILE_JSON "/nojournal/bin/IntersectionConfig.json"
+#define INTERSECTION_CONFIG_FILE_JSON "/nojournal/bin/mmitss-phase3-master-config.json"
 
 // This file stores the number of requests and the ReqListUpdateFlag and the request's information
 // This file will be modified whenever the request list is updated. The file is being read by Solver. 
@@ -110,7 +110,7 @@ int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
 void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, bool&);
 
-void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase);
+void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase, const int IntersectionID);
 
 void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket);
 

@@ -65,7 +65,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
 
     Json::Value jsonObject_config;
     Json::Reader reader;
-    std::ifstream configJson("../ConfigurationInfo.json");
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject_config);
     std::string intersectionName = (jsonObject_config["IntersectionName"]).asString();
