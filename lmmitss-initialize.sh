@@ -34,7 +34,7 @@
 #Request the user-name, user-group, and architecture
 read -p "Username: " username
 read -p "User Group: " usergroup
-read -p "Architecture - x86 or arm: " architecture
+read -p "Architecture - x86 or arm: " arch
 
 
 echo "Creating required directories in the root folder."
@@ -52,8 +52,8 @@ sudo chmod -R 777 /nojournal
 sleep 1s
 
 echo "Add the shared libraries we need to run"
-if architecture = x86
-then
+
+if [ "$arch" = "x86" ]; then
 sudo cp ./3rdparty/net-snmp/lib/x86/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
 sudo cp ./3rdparty/glpk/lib/x86/libglpk.so.35.1.0 /usr/local/lib/mmitss/
 sudo cp ./lib/x86/libmmitss-common.so /usr/local/lib/mmitss/
@@ -69,8 +69,7 @@ sudo ln -s /usr/local/lib/mmitss/libasn.so.1.0 /usr/local/lib/mmitss/libasn.so
 sudo ln -s /usr/local/lib/mmitss/libdsrc.so.1.0 /usr/local/lib/mmitss/libdsrc.so
 fi
 
-if architecture = arm
-then
+if [ "$arch" = "arm" ]; then
 sudo cp ./3rdparty/net-snmp/lib/arm/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
 sudo cp ./3rdparty/glpk/lib/arm/libglpk.so.40.3.0 /usr/local/lib/mmitss/
 sudo cp ./lib/arm/libmmitss-common.so /usr/local/lib/mmitss/
