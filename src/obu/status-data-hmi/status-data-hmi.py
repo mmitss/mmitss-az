@@ -60,72 +60,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hmi))
 
 ##############################################
-#   APPLICATION STATUS DISPLAY
-##############################################
-
-# background colors
-appBackground = 'black'
-statusDisplayBackground = 'black'
-statusPanelBackground = 'gray5'
-statusDisplayBackground = 'gray10'
-textForeground = 'gray90'
-
-# create the frame that holds all dynamic data (everything except the static footer)
-#monitor_gui.status_update_frame = Frame(monitor_gui, relief=FLAT, bd=1, bg=statusPanelBackground)
-#monitor_gui.status_update_frame.grid(row=0, column=0, columnspan=3, rowspan=10, padx=10, pady=10)
-
-# fonts
-smallFont=("Helvetica", 10)
-mediumFont=("Helvetica", 15)
-largeFont=("Helvetica", 20)
-hugeFont=("Helvetica", 25)
-
-
-##############################################
-#   APPLICATION DYNAMIC LABEL VARIABLES
-##############################################
-'''
-# initialize textvariables for dynamic updates
-speed_value = StringVar()
-mph_value = StringVar()
-lat_value = StringVar()
-long_value = StringVar()
-elevation_value = StringVar()
-heading_value = StringVar()
-active_message_value = StringVar()
-active_message_value.set('Unavailable')
-received_message1_value = StringVar()
-received_message1_value.set('Unavailable')
-received_message2_value = StringVar()
-received_message2_value.set('Unavailable')
-received_message3_value = StringVar()
-received_message3_value.set('Unavailable')
-received_message4_value = StringVar()
-received_message4_value.set('Unavailable')
-
-##############################################
-#   APPLICATION STATIC GRAPHICS
-##############################################
-
-# load all static graphics at start up
-
-'''
-
-##############################################
-#   SET UP PERFORMANCE TEST OUTPUT FILE
-##############################################
-
-def initialize_perf_output_file():
-    # Performance Testing
-    # set up a new Excel Workbook and write the send (from data source) and update (after the HMI display is refreshed) times
-
-    perfTest()
-    perfTest.hmi_perf_file = open('hmi_perf_file.csv', mode='w', newline='')
-    perfTest.perf_writer = csv.writer(perfTest.hmi_perf_file)
-    perfTest.perf_writer.writerow(['Message Sent', 'Message Received', 'Display Updated'])
-
-'''
-##############################################
 #   RECEIVE DATA
 ##############################################
 def get_data():
@@ -243,6 +177,81 @@ def get_data():
         perfTest.time_received = time.time()
 
 ##############################################
+#   APPLICATION STATUS DISPLAY
+##############################################
+
+def set_display_fonts_and_colors():
+    # background colors
+    monitor_gui.appBackground = 'black'
+    monitor_gui.statusDisplayBackground = 'black'
+    monitor_gui.statusPanelBackground = 'gray5'
+    monitor_gui.statusDisplayBackground = 'gray10'
+    monitor_gui.textForeground = 'gray90'
+
+    # fonts
+    monitor_gui.smallFont=("Helvetica", 10)
+    monitor_gui.mediumFont=("Helvetica", 15)
+    monitor_gui.largeFont=("Helvetica", 20)
+    monitor_gui.hugeFont=("Helvetica", 25)
+
+
+##############################################
+#   APPLICATION DYNAMIC LABEL VARIABLES
+##############################################
+def set_dynamic_variables():
+    # initialize textvariables for dynamic updates
+    monitor_gui.on_map_value = StringVar()
+    monitor_gui.on_map_value.set('Not On Map')
+    monitor_gui.priority_request_value = StringVar()
+    monitor_gui.priority_request_value.set('Priority Request Not Active')
+    monitor_gui.speed_value = StringVar()
+    monitor_gui.speed_value.set('Speed:')
+    monitor_gui.lat_value = StringVar()
+    monitor_gui.lat_value.set('Latitude:')
+    monitor_gui.long_value = StringVar()
+    monitor_gui.long_value.set('Longitude:')
+    monitor_gui.elevation_value = StringVar()
+    monitor_gui.elevation_value.set('Elevation:')
+    monitor_gui.heading_value = StringVar()
+    monitor_gui.heading_value.set('Heading:')
+    monitor_gui.active_message_value = StringVar()
+    monitor_gui.active_message_value.set('Unavailable')
+    monitor_gui.received_message1_value = StringVar()
+    monitor_gui.received_message1_value.set('Unavailable')
+    monitor_gui.received_message2_value = StringVar()
+    monitor_gui.received_message2_value.set('Unavailable')
+    monitor_gui.received_message3_value = StringVar()
+    monitor_gui.received_message3_value.set('Unavailable')
+    monitor_gui.received_message4_value = StringVar()
+    monitor_gui.received_message4_value.set('Unavailable')
+
+##############################################
+#   APPLICATION STATIC GRAPHICS
+##############################################
+
+def load_static_graphics():
+    # load all static graphics at start up
+ 
+    # signal status icon (red / yellow / green)
+    monitor_gui.signal_red = PhotoImage(file = directory_path + "/images/SignalHead.png") 
+    monitor_gui.signal_red = monitor_gui.signal_red.subsample(5,5) 
+ 
+##############################################
+#   SET UP PERFORMANCE TEST OUTPUT FILE
+##############################################
+
+def initialize_perf_output_file():
+    # Performance Testing
+    # set up a new Excel Workbook and write the send (from data source) and update (after the HMI display is refreshed) times
+
+    perfTest()
+    perfTest.hmi_perf_file = open('hmi_perf_file.csv', mode='w', newline='')
+    perfTest.perf_writer = csv.writer(perfTest.hmi_perf_file)
+    perfTest.perf_writer.writerow(['Message Sent', 'Message Received', 'Display Updated'])
+
+
+
+##############################################
 #   VEHICLE SPEED / POSITION DISPLAY
 ##############################################
 
@@ -263,30 +272,7 @@ def set_speed_warning_level(speedLimit_mph, speed_mph):
         # zero level warning
         current_speed_label.config(bg=statusDisplayBackground, fg=textForeground)
 
-# current_speed_frame (MiddleLeft) Frame and its contents
-current_speed_frame = Frame(speedposition_label_frame, relief=FLAT, bd=1, bg=statusDisplayBackground)
-current_speed_frame.grid(row=6, column=0, rowspan=3, columnspan=1, padx=5, pady=5)
-
-Label(current_speed_frame, text=" Current Speed  ", font=mediumFont, fg=textForeground, bg=statusDisplayBackground).grid(row=0, column=0, padx=20, pady=2)
-current_speed_label = Label(current_speed_frame, textvariable=speed_value, font=hugeFont, fg=textForeground, bg=statusDisplayBackground)
-current_speed_label.grid(row=2, column=0, padx=10, pady=2)
-current_speed_mph_label = Label(current_speed_frame, textvariable=mph_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground)
-current_speed_mph_label.grid(row=3, column=0, padx=10, pady=2)
-
-# vehicle_position_frame (Bottom Left) Frame and its contents
-vehicle_position_frame = Frame(speedposition_label_frame, relief=FLAT, bd=1, bg=statusDisplayBackground)
-vehicle_position_frame.grid(row=9, column=0, rowspan=7, columnspan=1, padx=5, pady=5)
-
-Label(vehicle_position_frame, text="Vehicle Position ", font=mediumFont, fg=textForeground, bg=statusDisplayBackground).grid(row=0, column=0, padx=20, pady=2)
-Label(vehicle_position_frame, textvariable=lat_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
-Label(vehicle_position_frame, textvariable=long_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
-Label(vehicle_position_frame, textvariable=elevation_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2)
-Label(vehicle_position_frame, textvariable=heading_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2)
-Label(vehicle_position_frame, textvariable=lane_value, font=mediumFont, fg=textForeground, bg=statusDisplayBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2)
-
-
-
-
+'''
 ##############################################
 #   MAP MESSAGES DISPLAY
 ##############################################
@@ -322,38 +308,68 @@ Label(received_message_frame, textvariable=received_message4_value, font=mediumF
 
 '''
 def create_status_widgets():
+    # initialize textvariables for dynamic updates
+    set_dynamic_variables()
+    
+    # load the static graphics
+    load_static_graphics()
+
     # create the frame that holds all dynamic data (everything except the static footer)
     
-    # west (left side)
-    monitor_gui.status_west = Frame(monitor_gui, relief=FLAT, bd=1, bg=statusPanelBackground)
-    monitor_gui.status_west.grid(row=0, column=0, columnspan=3, rowspan=10, padx=10, pady=10)
-    
-    # east (right side)
-    monitor_gui.status_east = Frame(monitor_gui, relief=FLAT, bd=1, bg=statusPanelBackground)
-    monitor_gui.status_east.grid(row=0, column=1, columnspan=3, rowspan=10, padx=10, pady=10)
+    ### west (left side) ###
+    monitor_gui.status_west = Frame(monitor_gui, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
+    monitor_gui.status_west.grid(row=0, column=0, columnspan=3, rowspan=3, padx=5, pady=5)
 
     # SPaT Data
-    monitor_gui.SPaT = LabelFrame(monitor_gui.status_west, relief=FLAT, bd=1, bg=statusPanelBackground, text="SPaT Data")
+    monitor_gui.SPaT = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="SPaT Data", fg=monitor_gui.textForeground)
     monitor_gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Signal Data
-    monitor_gui.SPaT = Frame(monitor_gui.SPaT, relief=FLAT, bd=1, bg=statusPanelBackground)
-    monitor_gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.Signal = Label(monitor_gui.SPaT, image=monitor_gui.signal_red, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
+    monitor_gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Phase Data
-    monitor_gui.Phase = Frame(monitor_gui.SPaT, relief=FLAT, bd=1, bg=statusPanelBackground)
+    monitor_gui.Phase = Frame(monitor_gui.SPaT, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
     monitor_gui.Phase.grid(row=1, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Vehicle Position Data
-    monitor_gui.BasicVehicle = LabelFrame(monitor_gui.status_west, relief=FLAT, bd=1, bg=statusPanelBackground, text="Vehicle Speed and Position")
-    monitor_gui.BasicVehicle.grid(row=1, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.BasicVehicle = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, text="Vehicle Speed and Position")
+    monitor_gui.BasicVehicle.grid(row=3, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+
+    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.speed_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
+    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.lat_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
+    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.long_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
+    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.elevation_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2)
+    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.heading_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2)
+    #Label(monitor_gui.BasicVehicle, textvariable=lane_value, font=mediumFont, fg=textForeground, bg=statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2)
+
+    ### east (right side) ###
+    monitor_gui.status_east = Frame(monitor_gui, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
+    monitor_gui.status_east.grid(row=0, column=1, columnspan=3, rowspan=4, padx=5, pady=5)
+
+    # Map Status
+    monitor_gui.Map = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="MAP Status", fg=monitor_gui.textForeground)
+    monitor_gui.Map.grid(row=0, column=1, columnspan=1, rowspan=2, padx=10, pady=10)
+
+    # Map Status text
+    monitor_gui.map_label = Label(monitor_gui.Map, textvariable=monitor_gui.on_map_value, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Map Status", fg=monitor_gui.textForeground)
+    monitor_gui.map_label.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10, sticky=E+W)
+    #Label(monitor_gui.Map, textvariable=monitor_gui.speed_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
+    # priority request status
+    Label(monitor_gui.Map, textvariable=monitor_gui.priority_request_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
+
+    # ART
+    monitor_gui.ART = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="ART", fg=monitor_gui.textForeground)
+    monitor_gui.ART.grid(row=1, column=1, columnspan=1, rowspan=2, padx=10, pady=10)
+
 
 ##############################################
 #   APPLICATION FOOTER
 ##############################################
 
 def create_app_footer():
-    # get the app 
+
+    # app logo
     monitor_gui.app_logo = PhotoImage(file = directory_path + "/images/vehicle-status-display-logo.png") 
     monitor_gui.app_logo = monitor_gui.app_logo.subsample(1,1) 
 
@@ -421,8 +437,9 @@ if __name__ == "__main__":
 #    root = Tk()
 #    monitor_gui = MonitorGUI(root)
     monitor_gui = Tk()
+    set_display_fonts_and_colors()
     monitor_gui.title("Vehicle Status Data Prototype")  
-    monitor_gui['bg'] = 'black'
+    monitor_gui['bg'] = monitor_gui.appBackground
 
     # create the application footer with s
     create_app_footer()
