@@ -38,23 +38,23 @@ def getMsgPayload(rawMsg:str, psidDict:dict, msgIdDict:dict):
 
 
 def main():
-    DEBUGGING = False
+    DEBUGGING = True
 
     # Open configuration file and load the data into JSON object
-    configFile = open("./../ConfigurationInfo.json", 'r').read()
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r').read()
     config = (json.loads(configFile))
     if DEBUGGING: print("Configuration file read successfully.")
 
     # From config Json object, get the hostIp and Port for this application.
-    hostIp = config["MrpIp"]
+    hostIp = config["HostIp"]
     msgReceiverPort = config["PortNumber"]["MessageTransceiver"]['MessageReceiver']
     hostComm = (hostIp, msgReceiverPort)
 
     transceiverDecoderPort = config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]
-    transceiverDecoderComm = ('127.0.0.1', transceiverDecoderPort)
+    transceiverDecoderComm = (hostIp, transceiverDecoderPort)
 
     rsmDecoderPort = config["PortNumber"]["RsmDecoder"]
-    rsmDecoderComm = ('127.0.0.1', rsmDecoderPort)
+    rsmDecoderComm = (hostIp, rsmDecoderPort)
 
     psidDict = config["psid"]
     msgIdDict = config["msgId"]
@@ -81,10 +81,19 @@ def main():
         receivedMsg, addr = s.recvfrom(4096)
         receivedMsg = receivedMsg.hex()
         msgPayload = getMsgPayload(receivedMsg, psidDict, msgIdDict)
-        if msgPayload[:4]=="0021": s.sendto(msgPayload.encode(), rsmDecoderComm)
-        else: s.sendto(msgPayload.encode(), transceiverDecoderComm)
+        if msgPayload[:4]=="0021": 
+            s.sendto(msgPayload.encode(), rsmDecoderComm)
+            if DEBUGGING: print("Received RSM from OBU")
+        else: 
+            s.sendto(msgPayload.encode(), transceiverDecoderComm)
+            if DEBUGGING: 
+                if msgPayload[:4]=="0014": print("Received BSM from RSU")
+                elif msgPayload[:4]=="0012": print("Received MAP from OBU")
+                elif msgPayload[:4]=="0013": print("Received SPAT from OBU")
+                elif msgPayload[:4]=="001d": print("Received SRM from RSU")
+                elif msgPayload[:4]=="001e": print("Received SSM from OBU")
+                else: print ("Received invalid message.")
         
-        if DEBUGGING: print(msgPayload)
     s.close()
 if __name__ == "__main__":
     main()

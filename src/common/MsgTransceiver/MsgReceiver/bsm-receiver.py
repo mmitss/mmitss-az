@@ -24,17 +24,17 @@ def main():
     DEBUGGING = True
 
     # Open configuration file and load the data into JSON object
-    configFile = open("./../ConfigurationInfo.json", 'r').read()
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r').read()
     config = (json.loads(configFile))
     if DEBUGGING: print("Configuration file read successfully.")
 
     # From config Json object, get the hostIp and Port for this application.
-    hostIp = config["MrpIp"]
+    hostIp = config["HostIp"]
     bsmReceiverPort = config["PortNumber"]['OBUBSMReceiver']
     hostComm = (hostIp, bsmReceiverPort)
 
     transceiverDecoderPort = config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]
-    transceiverDecoderComm = ('127.0.0.1', transceiverDecoderPort)
+    transceiverDecoderComm = (hostIp, transceiverDecoderPort)
 
     # Create a socket and bind it to the information extracted from the config.
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -59,7 +59,7 @@ def main():
         receivedMsg = receivedMsg.hex()
         bsmPayload = receivedMsg[receivedMsg.find("0014"):]
         s.sendto(bsmPayload.encode(), transceiverDecoderComm)
-        if DEBUGGING: print(bsmPayload)
+        if DEBUGGING: print("Received BSM from OBU")
     s.close()
 if __name__ == "__main__":
     main()

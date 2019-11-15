@@ -9,9 +9,11 @@ class TransceiverDecoder
         std::string sendingJsonString;
         std::string MAPIdentifier ="0012";
         std::string BSMIdentifier = "0014";
-        std::string SRMIdentifier = "001D";
+        std::string SRMIdentifier_UpperCase = "001D";
+        std::string SRMIdentifier_LowerCase = "001d";
         std::string SPaTIdentifier = "0013";
-        std::string SSMIdentifier = "001E";
+        std::string SSMIdentifier_UpperCase = "001E";
+        std::string SSMIdentifier_LowerCase = "001e";
 
     public:
         TransceiverDecoder();

@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     double dLastETAUpdateTime = 0.0;
     char temp_log[256];
     //int iPORT = 4444;       //  Socket Port: For receiving request from PriorityRequestGenerator ( PRG )
-    int iPORT = 20002;                 //  Socket Port: For receiving SRM from Transciever/Encoder
+    //int iPORT = 20002;                 //  Socket Port: For receiving SRM from Transciever/Encoder
     long lTimeOut = 300000;            // Time out of waiting for a new socket 0.3 sec!
     string Rsu_ID;                     // will get intersection name from "rsuid.txt"
     int ReqListUpdateFlag = NO_UPDATE; // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
@@ -73,7 +73,18 @@ int main(int argc, char *argv[])
     ssize_t iNumOfRxBytes = 0;
     char tempMsg[1024];
     int IntersectionID{};
-    UdpSocket MsgReceiverSocket(50003);
+
+    Json::Value jsonObject;
+    Json::Reader reader;
+    Json::FastWriter fastWriter;
+    std::string jsonString;
+
+    std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);    
+    int iPORT = (jsonObject["PortNumber"]["PriorityRequestServer"]).asInt();
+
+    UdpSocket MsgReceiverSocket(jsonObject["PortNumber"]["PriorityRequestServer_SendSSM"].asInt());
 
     creatLogFile();
 
@@ -119,7 +130,7 @@ int main(int argc, char *argv[])
             std::string receivedJsonString(rxMsgBuffer);
             //std::cout << receivedJsonString << std::endl;
 
-            processRxMessage(rxMsgBuffer, tempMsg, Rsu_ID, lanePhase);
+            processRxMessage(rxMsgBuffer, tempMsg, Rsu_ID, lanePhase, IntersectionID);
 
             readPhaseTimingStatus(PhaseStatus); // Get the current phase status for determining the split phases
 
@@ -169,7 +180,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase)
+void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase, const int IntersectionID)
 {
     float fETA{};
     int iRequestedPhase{};
@@ -196,7 +207,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     lintersectionID = currentSRM.getIntersectionID();   
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
-    if (lanePhase.iIntersectionID == lintersectionID)
+    if (IntersectionID == lintersectionID)
     {
         iRequestType = currentSRM.getPriorityRequestType(); //request or request_clear
 
@@ -266,10 +277,15 @@ void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &
 void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket)
 {
     Json::Value jsonObject;
+    Json::Reader reader;
     Json::FastWriter fastWriter;
     std::string jsonString;
-    std::string EVreceiverIP = "10.254.56.52";
-    std::string TransitreceiverIP = "10.254.56.30";
+
+    std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);    
+    std::string ssmReceiverIP = (jsonObject["HostIp"]).asString();
+    int ssmReceiverPort = (jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
 
     int listSize = ReqList.ListSize();
 
@@ -289,7 +305,7 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
 
         for (int i = 0; !ReqList.EndOfList(); i++)
         {
-            jsonObject["SignalStatus"]["requestorInfo"][i]["vehicleID"] = ReqList.Data().VehID;
+            jsonObject["SignalStatus"]["requestorInfo"][i]["vehicleID"] = static_cast<int>(ReqList.Data().VehID);
             jsonObject["SignalStatus"]["requestorInfo"][i]["requestID"] = 0;
             jsonObject["SignalStatus"]["requestorInfo"][i]["msgCount"] = ReqList.Data().iMsgCnt;
             jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ReqList.Data().VehClass;
@@ -306,8 +322,8 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
         jsonString = fastWriter.write(jsonObject);
     }
     // cout<<"SSM Json String: "<<jsonString <<endl;
-    MsgReceiverSocket.sendData(EVreceiverIP, 10003, jsonString);
-    MsgReceiverSocket.sendData(TransitreceiverIP, 10003, jsonString);
+    MsgReceiverSocket.sendData(ssmReceiverIP, ssmReceiverPort, jsonString);
+
 }
 
 void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
@@ -1233,7 +1249,7 @@ int getIntersectionID(void)
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject);
 
-    return (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
+    return (jsonObject["IntersectionID"]).asInt();
 }
 
 int getPhaseInfo(SignalRequest signalRequest)
@@ -1247,10 +1263,10 @@ int getPhaseInfo(SignalRequest signalRequest)
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject);
 
-    int intersectionID = (jsonObject["IntersectionInfo"]["intersectionID"]).asInt();
-    int regionalID = (jsonObject["IntersectionInfo"]["regionalID"]).asInt();
+    int intersectionID = (jsonObject["IntersectionID"]).asInt();
+    int regionalID = (jsonObject["RegionalID"]).asInt();
     // std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
-    std::string intersectionName = (jsonObject["IntersectionInfo"]["mapFileName"]).asString();
+    std::string intersectionName = (jsonObject["IntersectionName"]).asString();
     std::string fmap = "./map/" + intersectionName + ".map.payload";
 
     LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
