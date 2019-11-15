@@ -178,7 +178,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     int iOutLane = 0;
 
     // the following are not used in PRS or solver. They are simply passed back and forth
-    double dMinGrn;                                                                                            //unused
+    double dMinGrn{};                                                                                            //unused
     int iStartMinute{}, iStartSecond{}, iEndMinute{}, iEndSecond{}, iStartHour{}, iEndHour{}, iVehicleState{}; //unused
 
     long lvehicleID{};
