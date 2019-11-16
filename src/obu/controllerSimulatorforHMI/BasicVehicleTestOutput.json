@@ -1,0 +1,16 @@
+{
+	"BasicVehicle" : 
+	{
+		"heading_Degree" : 89.924774169921875,
+		"position" : 
+		{
+			"elevation_Meter" : 751.35272216796875,
+			"latitude_DecimalDegree" : 32.231706965201219,
+			"longitude_DecimalDegree" : -110.95094061035199
+		},
+		"secMark_Second" : 16500,
+		"speed_MeterPerSecond" : 15.128838539123535,
+		"temporaryID" : 1,
+		"vehicleType" : 100
+	}
+}
