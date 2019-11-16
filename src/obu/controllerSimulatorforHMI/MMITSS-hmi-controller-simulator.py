@@ -35,6 +35,17 @@ hmiPort = 5002
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
+spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
+              1 : "dark", 
+              2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
+              3 : "stop-And-Remain", # red light (Red ball)
+              4 : "pre-Movement", # not used in US
+              5 : "permissive-Movement-Allowed", # permissive green (Green ball)
+              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?)
+              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow
+              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow (direction? - look at heading?)
+              9 : "caution-Conflicting-Traffic", # flashign yellow (yield)
+              } 
 
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -65,20 +76,26 @@ while (f.readline()):
    
     # Create a Basic Vehicle that represents the host vehicle
     hv_position = Position3D(hv_latitude_DecimalDegree, hv_longitude_DecimalDegree, hv_elevation_Meter)
-    hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, 'transit')
+    hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, hv_vehicleType)
+
+    #need to acquire current lane and current lane signal group
+    hv_currentLane = 2
+    hv_currentLaneSignalGroup = 2
 
     #this is all remote vehicle information
+
+    index_remoteVehicle = 9
     numRemoteVehicles = int(data_array[8])
     
     remoteVehicles = []
     for vehicle in range(0, 5): # assuming up to 5 remote vehicles for now
-        rv_tempID = data_array[9 + vehicle*7]
-        rv_vehicleType = data_array[10 + vehicle*7]
-        rv_latitude_DecimalDegree= float(data_array[11 + vehicle*7])
-        rv_longitude_DecimalDegree= float(data_array[12 + vehicle*7])
-        rv_elevation_Meter= float(data_array[13 + vehicle*7])
-        rv_heading_Degree= float(data_array[14 + vehicle*7])
-        rv_speed_Meterpersecond= float(data_array[15 + vehicle*7])
+        rv_tempID = data_array[index_remoteVehicle + vehicle*7]
+        rv_vehicleType = data_array[index_remoteVehicle + 1 + vehicle*7]
+        rv_latitude_DecimalDegree= float(data_array[index_remoteVehicle + 2 + vehicle*7])
+        rv_longitude_DecimalDegree= float(data_array[index_remoteVehicle + 3 + vehicle*7])
+        rv_elevation_Meter= float(data_array[index_remoteVehicle + 4 + vehicle*7])
+        rv_heading_Degree= float(data_array[index_remoteVehicle + 5 + vehicle*7])
+        rv_speed_Meterpersecond= float(data_array[index_remoteVehicle + 6 + vehicle*7])
         rv_speed_mph= round((float(rv_speed_Meterpersecond) * 2.23694),2)
 
         rv_position = Position3D(rv_latitude_DecimalDegree, rv_longitude_DecimalDegree, rv_elevation_Meter)
@@ -90,13 +107,32 @@ while (f.readline()):
 
 
  # infrastructure map data
-    availableMaps = dict({"availableMaps":[                        
-                            {"IntersectionID": 101, "DescriptiveName": "Daisy Mountain and Gavilan Peak", "active": False, "age" : 100},
-                            {"IntersectionID": 102, "DescriptiveName": "Daisy Mountain and Dedication", "active": False, "age" : 200},
-                            {"IntersectionID": 103, "DescriptiveName": "Gavilan Peak and Boulder Creek High School", "active": True, "age" : 0},
-                            {"IntersectionID": 104, "DescriptiveName": "Gavilan Peak and Memorial Way", "active": False, "age" : 333},
-                            {"IntersectionID": 105, "DescriptiveName": "Daisy Mountain and Hastings", "active": False, "age": 270 }
-                        ]})
+
+    numReceivedMaps = data_array[44]
+    availableMaps = []
+    for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
+        map_intersectionID = data_array[45 + receivedMap*4]
+        map_DescriptiveName = data_array[46 + receivedMap*4]
+        map_active = bool_map[data_array[47 + receivedMap*4]]
+        map_age = data_array[48 + receivedMap*4]
+        if receivedMap < numRemoteVehicles:
+            availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                       
+ 
+ # infrastructure SPaT data
+
+    numSPaT = 8 # currently we have one SPaT value for each signal phase. This needs to be per lane of the active map.
+    SPaT = []
+    spat_currentPhase = data_array[65]
+    for spat in range(0, numSPaT):
+        spat_phase = data_array[66 + spat*6]
+        spat_currState = spat_state[int(data_array[67 + spat*6])]
+        spat_startTime = data_array[68 + spat*6]
+        spat_minEndTime = data_array[69 + spat*6]
+        spat_maxEndTime = data_array[70 + spat*6]
+        spat_elapsedTime = data_array[71 + spat*6]
+        SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
+
+
 
     interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
@@ -122,12 +158,10 @@ while (f.readline()):
             
             "infrastructure": 
             {
-                 "mapCache":
-            {
-                "availableMaps": availableMaps
+                "availableMaps": availableMaps,
+                "currentPhase" : spat_currentPhase,
+                "phaseStates" : SPaT,
             },
-            }
-            
         }
     })
     s.sendto(interfaceJsonString.encode(),hmi)
