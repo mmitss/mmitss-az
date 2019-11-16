@@ -38,6 +38,7 @@ class perfTest():
 
 # UI
 from tkinter import *
+import tkinter.ttk as ttk
 
 # directory manipulation
 import os 
@@ -307,6 +308,18 @@ Label(received_message_frame, textvariable=received_message4_value, font=mediumF
 
 
 '''
+
+##############################################
+#   VEHICLE SPEED / POSITION DISPLAY
+##############################################
+
+def build_BSM_tree():
+    monitor_gui.bsm_tree = ttk.Treeview(monitor_gui.BSM)
+    monitor_gui.bsm_tree["columns"]=("Request Entry", "Active", "Vehicle ID", "Vehicle Type", "In Lane", "Out Lane", "Phase(s)", "Arrival Time", "Time of Service")
+
+##############################################
+#  STATUS WIDGET INITIAL DISPLAY
+##############################################
 def create_status_widgets():
     # initialize textvariables for dynamic updates
     set_dynamic_variables()
@@ -330,11 +343,11 @@ def create_status_widgets():
 
     # Phase Data
     monitor_gui.Phase = Frame(monitor_gui.SPaT, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.Phase.grid(row=1, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.Phase.grid(row=2, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Vehicle Position Data
-    monitor_gui.BasicVehicle = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, text="Vehicle Speed and Position")
-    monitor_gui.BasicVehicle.grid(row=3, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.BasicVehicle = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, text="Host Vehicle Data", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground)
+    monitor_gui.BasicVehicle.grid(row=4, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.speed_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
     Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.lat_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
@@ -349,7 +362,7 @@ def create_status_widgets():
 
     # Map Status
     monitor_gui.Map = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="MAP Status", fg=monitor_gui.textForeground)
-    monitor_gui.Map.grid(row=0, column=1, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.Map.grid(row=0, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
 
     # Map Status text
     monitor_gui.map_label = Label(monitor_gui.Map, textvariable=monitor_gui.on_map_value, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Map Status", fg=monitor_gui.textForeground)
@@ -360,8 +373,32 @@ def create_status_widgets():
 
     # ART
     monitor_gui.ART = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="ART", fg=monitor_gui.textForeground)
-    monitor_gui.ART.grid(row=1, column=1, columnspan=1, rowspan=2, padx=10, pady=10)
+    monitor_gui.ART.grid(row=2, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    Label(monitor_gui.ART, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
 
+    # Basic Vehicle Messages
+    monitor_gui.BSM = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Remote Vehicles: Basic Vehicle Data", fg=monitor_gui.textForeground)
+    monitor_gui.BSM.grid(row=4, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    Label(monitor_gui.BSM, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+
+    # Bottom Row (EV, School Zone, and Available Maps)
+    monitor_gui.Multi = Frame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground)
+    monitor_gui.Multi.grid(row=6, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+ 
+    # EV
+    monitor_gui.EV = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Emergency Vehicles", fg=monitor_gui.textForeground)
+    monitor_gui.EV.grid(row=0, column=0, padx=10, pady=10, sticky=W)
+    Label(monitor_gui.EV, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+
+    # School Zone
+    monitor_gui.SchoolZone = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="School Zone", fg=monitor_gui.textForeground)
+    monitor_gui.SchoolZone.grid(row=0, column=1, padx=10, pady=10, sticky=W)
+    Label(monitor_gui.SchoolZone, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+
+    # Available Maps
+    monitor_gui.AvailableMaps = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Available Maps", fg=monitor_gui.textForeground)
+    monitor_gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
+    Label(monitor_gui.AvailableMaps, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
 
 ##############################################
 #   APPLICATION FOOTER
@@ -387,6 +424,9 @@ def update_display():
     # read JSON
     #get_data()
 	
+    # build the treeview containing BSMs
+    build_BSM_tree()
+
     # refresh dynamic data labels that were set to type class StringVar
     # class StringVar updates dynamically with root.update_idletasks()
     monitor_gui.update_idletasks()
