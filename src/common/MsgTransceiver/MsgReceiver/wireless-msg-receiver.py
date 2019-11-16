@@ -74,7 +74,7 @@ def main():
     while True:
         if DEBUGGING and firstIteration == True:
             if s.recvfrom(4096):
-                print("Started receiving basic safety messages.")
+                print("Started receiving wireless messages.")
                 firstIteration = False
 
         # Receive a binary message packet and convert it to hex packet.

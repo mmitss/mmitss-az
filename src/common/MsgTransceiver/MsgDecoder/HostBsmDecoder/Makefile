@@ -1,5 +1,5 @@
 # TransceiverDecoder Makefile 
-BUILD_ROOT=../../../..
+BUILD_ROOT=../../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
@@ -9,9 +9,9 @@ INCLUDES    := -I$(J2735_INCL) -I$(COMMON_INCL) # tell the compiler where to fin
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -ldsrc -lasn -lmmitss-common #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += main.cpp  TransceiverDecoder.cpp 
+SRC += main.cpp  ./../TransceiverDecoder.cpp 
 #the name of the executable goes here
-TARGET = TransceiverDecoder
+TARGET = HostBsmDecoder
 
 # list the .o's corresponding to .cpp's
 # see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html

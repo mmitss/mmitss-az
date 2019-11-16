@@ -33,7 +33,7 @@ def main():
     bsmReceiverPort = config["PortNumber"]['OBUBSMReceiver']
     hostComm = (hostIp, bsmReceiverPort)
 
-    transceiverDecoderPort = config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]
+    transceiverDecoderPort = config["PortNumber"]["HostBsmDecoder"]
     transceiverDecoderComm = (hostIp, transceiverDecoderPort)
 
     # Create a socket and bind it to the information extracted from the config.
@@ -50,12 +50,12 @@ def main():
 
     while True:
         if DEBUGGING and firstIteration == True:
-            if s.recvfrom(2048):
+            if s.recvfrom(4096):
                 print("Started receiving basic safety messages.")
                 firstIteration = False
 
         # Receive a binary message packet and convert it to hex packet.
-        receivedMsg, addr = s.recvfrom(1024)
+        receivedMsg, addr = s.recvfrom(4096)
         receivedMsg = receivedMsg.hex()
         bsmPayload = receivedMsg[receivedMsg.find("0014"):]
         s.sendto(bsmPayload.encode(), transceiverDecoderComm)
