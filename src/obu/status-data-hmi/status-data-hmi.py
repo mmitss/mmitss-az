@@ -317,20 +317,42 @@ Label(received_message_frame, textvariable=received_message4_value, font=mediumF
 ##############################################
 
 def build_BSM_tree():
-    monitor_gui.bsm_tree = ttk.Treeview(monitor_gui.BSM)
-    monitor_gui.bsm_tree["columns"]=("Vehicle ID", "Vehicle Type")
-    monitor_gui.bsm_tree.column("#0", width=100)
-    monitor_gui.bsm_tree.column("Vehicle ID", width=100)
+    monitor_gui.bsm_tree = ttk.Treeview(monitor_gui.BSM, selectmode='none')
+    monitor_gui.bsm_tree["columns"]=("Time", "Temp ID", "Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
+    monitor_gui.bsm_tree.column("#0", width=1)
+    monitor_gui.bsm_tree.column("Time", width=100)
+    monitor_gui.bsm_tree.column("Temp ID", width=100)
     monitor_gui.bsm_tree.column("Vehicle Type", width=100) 
-    monitor_gui.bsm_tree.heading("Vehicle ID", text="Vehicle ID") 
+    monitor_gui.bsm_tree.column("Latitude", width=100)
+    monitor_gui.bsm_tree.column("Longitude", width=100)
+    monitor_gui.bsm_tree.column("Elevation", width=100) 
+    monitor_gui.bsm_tree.column("Heading", width=100)
+    monitor_gui.bsm_tree.column("Speed", width=100)
+    monitor_gui.bsm_tree.heading('Time', text='Time') 
+    monitor_gui.bsm_tree.heading("Temp ID", text="Temp ID") 
     monitor_gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
-    '''
-    monitor_gui.bsm_tree.insert('',1,'', text='2', values=('Transit'), tags=('odd'))
-    monitor_gui.bsm_tree.insert('',1,'', text='3', values=('Fleet'), tags=('even'))   
-    monitor_gui.bsm_tree.insert('',1,'', text='4', values=('Transit'), tags=('odd'))
-    '''
+    monitor_gui.bsm_tree.heading("Latitude", text="Latitude") 
+    monitor_gui.bsm_tree.heading("Longitude", text="Longitude") 
+    monitor_gui.bsm_tree.heading("Elevation", text="Elevation") 
+    monitor_gui.bsm_tree.heading("Heading", text="Heading") 
+    monitor_gui.bsm_tree.heading("Speed", text="Speed") 
+    #monitor_gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+
+    # set style
+    style = ttk.Style()
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=monitor_gui.smallFont) # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=monitor_gui.smallFont) # Modify the font of the headings
+    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    
+    
+    #monitor_gui.bsm_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
+    #monitor_gui.bsm_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
+    #monitor_gui.bsm_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
+    
     monitor_gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
- 
+    
+    monitor_gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
+
     # tag styles
     monitor_gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
     monitor_gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
@@ -496,7 +518,7 @@ if __name__ == "__main__":
 
     # set up communications
     hmiIP = '127.0.0.1'
-    hmiPort = 20010
+    hmiPort = 5002
     hmi = (hmiIP, hmiPort)
 
     # Create a socket
