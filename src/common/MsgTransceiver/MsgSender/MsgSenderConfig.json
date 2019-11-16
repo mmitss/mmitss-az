@@ -1,0 +1,7 @@
+{
+    "MsgSenderConfig":
+    {
+        "coProcessorIP": "10.254.56.101",
+        "sourceDsrcDeviceIP": "10.254.56.46"
+    }
+}

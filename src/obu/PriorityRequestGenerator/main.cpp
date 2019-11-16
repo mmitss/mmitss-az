@@ -49,6 +49,7 @@ int main()
                 std::cout << "SRM is sent" << std::endl;
             }
             mapManager.deleteMap();
+            PRG.printART();
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_map)

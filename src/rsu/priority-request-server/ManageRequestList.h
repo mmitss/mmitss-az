@@ -5,24 +5,22 @@
 #define TRANSIT 2 ////*Transit bus: will have one request and priority as 2
 #define TRUCK 3
 #define COORDINATION 6
-#define OBSOLETE_TIME_OF_REMAINED_REQ 30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
+#define OBSOLETE_TIME_OF_REMAINED_REQ 300 //30   // if a request is not updated for iObsoleteTimeOfRemainingReq second in request list, it should be deleted ??????
 
-//**eliminate the stench of global vatiables**
-//extern double dCountDownIntervalForETA;
-//extern int ReqListUpdateFlag;    // The Flag to identify the ReqList update
-//extern int flagForClearingInterfaceCmd;
-//extern char temp_log[256];
-//extern double dCurrentTimeInCycle;
+#define PRIORITY_REQUEST 1
+#define REQUEST_UPDATE 2
+#define PRIORITY_CANCELLATION 3
 
-extern string RSUID;    // will get from "rsuid.txt"
+// ReqListUpdateFlag values
+#define NO_UPDATE 0
+#define ADD_NEW_REQUEST 1 //ADD a new request
+#define UPDATED_REQUEST 2  // UPDATED request (changing the speed, joining the queue, leaving the queue)
+#define DELETE_OBSOLETE_REQUEST 3 // DELETE an obsolete request
+#define CANCEL_REQUEST_LEAVING_INTERSECTION 4 // CANCEL a request due to leaving intersection
+
 extern int outputlog(char *output);
 
 extern char logfilename[256];
-
-//extern int CombinedPhase[8];
-/*RemoveCoord
-extern PriorityConfig priorityConfig;
-*/
 extern double dTime;
 
 
@@ -48,7 +46,7 @@ int numberOfEVs(LinkedList <ReqEntry> Req_List);
 
 int FindTimesInList(LinkedList <ReqEntry> Req_List, int Veh_Class);
 
-void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double, const double);
+void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &, const double);
 
 void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, int &);
 

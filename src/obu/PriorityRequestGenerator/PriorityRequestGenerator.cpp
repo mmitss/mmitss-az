@@ -44,12 +44,13 @@
 #include "geoUtils.h"
 #include "msgEnum.h"
 #include "PriorityRequestGenerator.h"
+#include "json/json.h"
 
 using namespace GeoUtils;
 using namespace MsgEnum;
 
 const double DISTANCEUNITCONVERSION = 100; //cm to meter
-const double VEHICLEMINSPEED = 0.89408;
+const double VEHICLEMINSPEED = 4;
 const double VEHICLE_SPEED_DEVIATION_LIMIT = 3.0;
 const double ETA_DURATION_SECOND = 2;
 const int HOURSINADAY = 24;
@@ -59,6 +60,7 @@ const int SECONDTOMILISECOND = 1000;
 const double ALLOWEDETADIFFERENCE = 1;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
+const double MIN_ETA = 0.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
@@ -233,6 +235,7 @@ bool PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpee
 	else
 	{
 		bETAValue = false;
+		time2go = MIN_ETA;
 	}
 
 	return bETAValue;
@@ -457,7 +460,8 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityRequest);
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable == ActiveRequestTable.end())
+	//else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable != ActiveRequestTable.end())
+	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox))
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		mapManager.deleteActiveMapfromList();

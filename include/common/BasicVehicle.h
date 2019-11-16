@@ -21,7 +21,6 @@
 
 #include <string>
 #include <cstdint>
-#include <json.h>
 #include <Position3D.h>
 
 const double VALID_HEADINGMINDEG = 0;

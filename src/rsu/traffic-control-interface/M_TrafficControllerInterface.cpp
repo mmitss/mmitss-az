@@ -92,7 +92,7 @@ char predir [64] 		  = "/nojournal/bin/";
 char logfilename[256] 	  = "/nojournal/bin/log/MMITSS_MRP_TrafficControllerInterface_";
 char ConfigInfo[256]	  = "/nojournal/bin/ConfigInfo.txt";
 char rsuid_filename[64]   = "/nojournal/bin/rsuid.txt";
-char IPInfo[64]           ="/nojournal/bin/ntcipIP.txt";  //stores the virtual asc3 Controller IP address
+char IPInfo[64]           ="/nojournal/bin/IPInfo.txt";  //stores the virtual asc3 Controller IP address
 
 
 
