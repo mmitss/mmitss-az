@@ -47,19 +47,6 @@ import os
 import socket
 import json
 
-# get current working directory
-directory_path = os.getcwd()
-
-# set up communications
-hmiIP = '127.0.0.1'
-hmiPort = 20010
-hmi = (hmiIP, hmiPort)
-
-# Create a socket
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# Bind the created socket to the server information.
-s.bind((hmi))
-
 ##############################################
 #   RECEIVE DATA
 ##############################################
@@ -237,6 +224,22 @@ def load_static_graphics():
     monitor_gui.signal_red = PhotoImage(file = directory_path + "/images/SignalHead.png") 
     monitor_gui.signal_red = monitor_gui.signal_red.subsample(5,5) 
  
+    # ev icon dark means ev not present
+    monitor_gui.ev_dark = PhotoImage(file = directory_path + "/images/ev_dark.png") 
+    monitor_gui.ev_dark = monitor_gui.ev_dark.subsample(2,2) 
+
+   # ev icon means ev present
+    monitor_gui.ev = PhotoImage(file = directory_path + "/images/EV.png") 
+    monitor_gui.ev = monitor_gui.ev.subsample(2,2) 
+ 
+    # school zone icon dark means school zone not present
+    monitor_gui.school_zone_dark = PhotoImage(file = directory_path + "/images/school_zone_dark.png") 
+    monitor_gui.school_zone_dark = monitor_gui.school_zone_dark.subsample(3,3) 
+
+   # school zone icon means school zone present
+    monitor_gui.school_zone = PhotoImage(file = directory_path + "/images/school_zone.png") 
+    monitor_gui.school_zone = monitor_gui.school_zone.subsample(3,3) 
+ 
 ##############################################
 #   SET UP PERFORMANCE TEST OUTPUT FILE
 ##############################################
@@ -315,7 +318,22 @@ Label(received_message_frame, textvariable=received_message4_value, font=mediumF
 
 def build_BSM_tree():
     monitor_gui.bsm_tree = ttk.Treeview(monitor_gui.BSM)
-    monitor_gui.bsm_tree["columns"]=("Request Entry", "Active", "Vehicle ID", "Vehicle Type", "In Lane", "Out Lane", "Phase(s)", "Arrival Time", "Time of Service")
+    monitor_gui.bsm_tree["columns"]=("Vehicle ID", "Vehicle Type")
+    monitor_gui.bsm_tree.column("#0", width=100)
+    monitor_gui.bsm_tree.column("Vehicle ID", width=100)
+    monitor_gui.bsm_tree.column("Vehicle Type", width=100) 
+    monitor_gui.bsm_tree.heading("Vehicle ID", text="Vehicle ID") 
+    monitor_gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+    '''
+    monitor_gui.bsm_tree.insert('',1,'', text='2', values=('Transit'), tags=('odd'))
+    monitor_gui.bsm_tree.insert('',1,'', text='3', values=('Fleet'), tags=('even'))   
+    monitor_gui.bsm_tree.insert('',1,'', text='4', values=('Transit'), tags=('odd'))
+    '''
+    monitor_gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
+ 
+    # tag styles
+    monitor_gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
+    monitor_gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
 
 ##############################################
 #  STATUS WIDGET INITIAL DISPLAY
@@ -379,26 +397,26 @@ def create_status_widgets():
     # Basic Vehicle Messages
     monitor_gui.BSM = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Remote Vehicles: Basic Vehicle Data", fg=monitor_gui.textForeground)
     monitor_gui.BSM.grid(row=4, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.BSM, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    Label(monitor_gui.BSM, text="No Vehicle Data", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
 
     # Bottom Row (EV, School Zone, and Available Maps)
-    monitor_gui.Multi = Frame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground)
+    monitor_gui.Multi = Frame(monitor_gui, relief=RAISED, bd=1, bg=monitor_gui.statusPanelBackground)
     monitor_gui.Multi.grid(row=6, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
  
     # EV
-    monitor_gui.EV = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Emergency Vehicles", fg=monitor_gui.textForeground)
+    monitor_gui.EV = Frame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
     monitor_gui.EV.grid(row=0, column=0, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.EV, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    Label(monitor_gui.EV, image=monitor_gui.ev_dark, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
     # School Zone
-    monitor_gui.SchoolZone = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="School Zone", fg=monitor_gui.textForeground)
+    monitor_gui.SchoolZone = Frame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
     monitor_gui.SchoolZone.grid(row=0, column=1, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.SchoolZone, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    Label(monitor_gui.SchoolZone, image=monitor_gui.school_zone_dark, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
     # Available Maps
-    monitor_gui.AvailableMaps = LabelFrame(monitor_gui.Multi, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Available Maps", fg=monitor_gui.textForeground)
+    monitor_gui.AvailableMaps = LabelFrame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusDisplayBackground, font=monitor_gui.mediumFont, text="Available Maps", fg=monitor_gui.textForeground)
     monitor_gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.AvailableMaps, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    Label(monitor_gui.AvailableMaps, text="placeholder", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
 ##############################################
 #   APPLICATION FOOTER
@@ -473,9 +491,21 @@ if __name__ == "__main__":
     if args.perf:
         initialize_perf_output_file()
 
-    # create Monitor GUI
-#    root = Tk()
-#    monitor_gui = MonitorGUI(root)
+    # get current working directory
+    directory_path = os.getcwd()
+
+    # set up communications
+    hmiIP = '127.0.0.1'
+    hmiPort = 20010
+    hmi = (hmiIP, hmiPort)
+
+    # Create a socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # Bind the created socket to the server information.
+    s.bind((hmi))
+        # create Monitor GUI
+    #    root = Tk()
+    #monitor_gui = MonitorGUI(root)
     monitor_gui = Tk()
     set_display_fonts_and_colors()
     monitor_gui.title("Vehicle Status Data Prototype")  
