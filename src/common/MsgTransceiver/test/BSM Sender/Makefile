@@ -1,5 +1,5 @@
 # Sample Makefile for building with the uper codec and json libraries
-BUILD_ROOT=../../../..
+BUILD_ROOT=../../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
