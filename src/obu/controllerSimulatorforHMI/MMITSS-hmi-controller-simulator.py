@@ -46,13 +46,27 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
-spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "permissive-Movement-Allowed" : "green", "protected-clearance" : "yellow"}
+spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-clearance" : "yellow"}
 
 def signal_head(phase_status):
     current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
                             "maxEndTime" : phase_status["maxEndTime"]}
     current_phase_status[spat_signal_head[phase_status['currState']]] = True
     return current_phase_status
+
+priority_responseStatus = {0 : "unknown", 
+                           1 : "requested",
+                           2 : "processing",
+                           3 : "watchOtherTraffic",
+                           4 : "granted",
+                           5 : "rejected",
+                           6 : "maxPresence",
+                           7 : "reserviceLocked"}
+
+basicVehicleRoles = {0 : "basicVehicle",
+                    9 : "truck",
+                    13 : "ev-fire",
+                    16 : "transit"}
 
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -128,15 +142,16 @@ while (f.readline()):
  # infrastructure SPaT data
     #signal phase status 
     numSPaT = 8 # currently we have one SPaT value for each signal phase. 
+    index_spat = 65
     SPaT = []
-    spat_currentPhase = int(data_array[65]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
+    spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
     for spat in range(0, numSPaT):
-        spat_phase = data_array[66 + spat*6]
-        spat_currState = spat_state[int(data_array[67 + spat*6])]
-        spat_startTime = round(float(data_array[68 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[69 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[70 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[71 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        spat_phase = data_array[index_spat + 1 + spat*6]
+        spat_currState = spat_state[int(data_array[index_spat + 2 + spat*6])]
+        spat_startTime = round(float(data_array[index_spat + 3 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[index_spat + 4 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_spat + 5 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[index_spat + 6 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
         SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     #ped phase status
@@ -153,9 +168,36 @@ while (f.readline()):
         pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-
-    
     current_phase_status = signal_head(SPaT[spat_currentPhase])
+
+    # add the 8-phase signal and ped status data
+
+    #acquire priority status data
+    index_priority = 162 # index is the column in the csv file
+    activeRequestTable = []
+    onMAP = bool_map[data_array[index_priority]]
+    requestSent = bool_map[data_array[index_priority + 1]]
+    for request in range(0, 5): # 5 test requests of data
+        numActiveRequests = int(data_array[index_priority + 2])
+        vehicleID = int(data_array[index_priority + 3])
+        requestID = int(data_array[index_priority + 4])
+        msgCount = int(data_array[index_priority + 5])
+        inBoundLaneID = int(data_array[index_priority + 6])
+        basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7])]
+        vehicleETA = round(float(data_array[index_priority + 8]), 1)
+        duration = round(float(data_array[index_priority + 9]), 1)
+        priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10])]
+        if request < numActiveRequests:
+            activeRequestTable.append({"vehicleID" : vehicleID, 
+                                      "requestID" : requestID,
+                                      "msgCount" : msgCount,
+                                      "inBoundLane" : inBoundLaneID,
+                                      "basicVehicleRole" : basicVehicleRole,
+                                      "vehicleETA" : vehicleETA,
+                                      "duration" : duration})
+
+
+
 
     interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
@@ -174,7 +216,8 @@ while (f.readline()):
                 "temporaryID" : hv_tempID,
                 "vehicleType" : hv_vehicleType,
                 "lane": 1, # this is desireable data
-                "speed_mph": hv_speed_mph
+                "speed_mph": hv_speed_mph,
+                "priority" : {"OnMAP" : onMAP, "requestSent" : requestSent}
             },
             "remoteVehicles" :
                 remoteVehicles,
@@ -183,10 +226,11 @@ while (f.readline()):
             {
                 "availableMaps": availableMaps,
                 "currentPhase" : current_phase_status,
-                "phaseStates" : SPaT,
+                "phaseStates" : SPaT, # this needs to be replaced with 8-phase display
+                "activeRequestTable" : activeRequestTable
             },
         }
     })
     s.sendto(interfaceJsonString.encode(),hmi)
-    time.sleep(1)
+    time.sleep(0.1)
 s.close() 
