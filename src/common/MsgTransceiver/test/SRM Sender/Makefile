@@ -1,5 +1,5 @@
 # Sample Makefile for building with the uper codec and json libraries
-BUILD_ROOT=../../../..
+BUILD_ROOT=../../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
@@ -9,10 +9,10 @@ LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the
 LIBS        := -L$(J2735_SO_DIR) -L$(BUILD_ROOT)/lib -L$(BUILD_ROOT)/3rdparty/mapengine/lib -ldsrc -lasn -lmmitss-common #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += bsmSender.cpp
+SRC += srmSender.cpp
 #the name of the executable goes here
 #the name of the executable goes here
-TARGET = bsm
+TARGET = srm
 
 # list the .o's corresponding to .cpp's
 # see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html

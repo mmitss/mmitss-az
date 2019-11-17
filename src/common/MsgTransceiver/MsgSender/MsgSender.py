@@ -105,7 +105,7 @@ def main():
 
 
     while True:
-        receivedMsg, addr = outerSocket.recvfrom(2048)
+        receivedMsg, addr = outerSocket.recvfrom(4096)
         msgType = identifyMsg(receivedMsg.decode())
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
         if msgType == "SSM":

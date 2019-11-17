@@ -1,4 +1,4 @@
-#include "TransceiverDecoder.h"
+#include "../TransceiverDecoder.h"
 #include <iostream>
 #include <fstream>
 #include <UdpSocket.h>
@@ -19,7 +19,7 @@ int main()
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
 
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
+    const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
