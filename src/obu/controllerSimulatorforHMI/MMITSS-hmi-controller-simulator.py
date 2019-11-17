@@ -38,14 +38,21 @@ bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this c
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
               1 : "dark", 
               2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
-              3 : "stop-And-Remain", # red light (Red ball)
+              3 : "stop-And-Remain", # red light (Red ball) [Don't walk]
               4 : "pre-Movement", # not used in US
               5 : "permissive-Movement-Allowed", # permissive green (Green ball)
-              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?)
-              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow
-              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow (direction? - look at heading?)
-              9 : "caution-Conflicting-Traffic", # flashign yellow (yield)
+              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
+              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
+              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
+              9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
+spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "permissive-Movement-Allowed" : "green", "protected-clearance" : "yellow"}
+
+def signal_head(phase_status):
+    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
+                            "maxEndTime" : phase_status["maxEndTime"]}
+    current_phase_status[spat_signal_head[phase_status['currState']]] = True
+    return current_phase_status
 
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -107,32 +114,48 @@ while (f.readline()):
 
 
  # infrastructure map data
-
+    index_maps = 45
     numReceivedMaps = data_array[44]
     availableMaps = []
     for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
-        map_intersectionID = data_array[45 + receivedMap*4]
-        map_DescriptiveName = data_array[46 + receivedMap*4]
-        map_active = bool_map[data_array[47 + receivedMap*4]]
-        map_age = data_array[48 + receivedMap*4]
+        map_intersectionID = data_array[index_maps + receivedMap*4]
+        map_DescriptiveName = data_array[index_maps + 1 + receivedMap*4]
+        map_active = bool_map[data_array[index_maps + 2 + receivedMap*4]]
+        map_age = data_array[index_maps + 3 + receivedMap*4]
         if receivedMap < numRemoteVehicles:
             availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                       
  
  # infrastructure SPaT data
-
-    numSPaT = 8 # currently we have one SPaT value for each signal phase. This needs to be per lane of the active map.
+    #signal phase status 
+    numSPaT = 8 # currently we have one SPaT value for each signal phase. 
     SPaT = []
-    spat_currentPhase = data_array[65]
+    spat_currentPhase = int(data_array[65]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
     for spat in range(0, numSPaT):
         spat_phase = data_array[66 + spat*6]
         spat_currState = spat_state[int(data_array[67 + spat*6])]
-        spat_startTime = data_array[68 + spat*6]
-        spat_minEndTime = data_array[69 + spat*6]
-        spat_maxEndTime = data_array[70 + spat*6]
-        spat_elapsedTime = data_array[71 + spat*6]
+        spat_startTime = round(float(data_array[68 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[69 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[70 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[71 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
         SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
+    #ped phase status
+    numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
+    pedSPaT = []
+    index_ped_spat = 114
+    for spat in range(0, numSPaT):
+        spat_phase = data_array[index_ped_spat + spat*6]
+        spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
+        spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[index_ped_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
+    # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
+
+    
+    current_phase_status = signal_head(SPaT[spat_currentPhase])
 
     interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
@@ -159,7 +182,7 @@ while (f.readline()):
             "infrastructure": 
             {
                 "availableMaps": availableMaps,
-                "currentPhase" : spat_currentPhase,
+                "currentPhase" : current_phase_status,
                 "phaseStates" : SPaT,
             },
         }

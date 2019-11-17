@@ -16,3 +16,4 @@ cmake*
 CMake*
 
 docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
+*.pyc
