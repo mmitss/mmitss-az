@@ -11,7 +11,7 @@ INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(COMMON_INCL) -I$(BUILD_ROOT
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -L$(NETSNMP_LIB) -llocAware -ldsrc -lasn -lmmitss-common -lnetsnmp   #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += M_PriorityRequestServer.cpp ReqEntry.cpp IntLanePhase.cpp ManageRequestList.cpp #PositionLocal3D.cpp BasicVehicle.cpp We will use new version of Basic Vehicle
+SRC += M_PriorityRequestServer.cpp ReqEntry.cpp ManageRequestList.cpp #PositionLocal3D.cpp BasicVehicle.cpp We will use new version of Basic Vehicle
 #the name of the executable goes here
 TARGET = M_PriorityRequestServer
 

@@ -332,7 +332,7 @@ void PrintList(LinkedList<ReqEntry> &ReqList)
     }
 }
 
-void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEntry> &ReqList, int ReqListUpdateFlag, int IsCombined)
+void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEntry> &ReqList, int ReqListUpdateFlag, const bool IsCombinedFile)
 {
     // If IsCombined=1 (There is no EV) print combined phase information into "requests.txt". // BY DJ 2012.3.27
     // The argument of IsCombined is optional, default value is 0, means no EV
@@ -345,7 +345,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
 
     if (!ReqList.ListEmpty() && pFile != NULL)
     {
-        if (IsCombined == 0) // output to "requests_combined.txt"
+        if (IsCombinedFile) // output to "requests_combined.txt"
         {
 
             ReqList.Reset();
@@ -424,7 +424,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
             }
         }
         // EV will have split phase requests: output "requests.txt": will add split_phase in the sequence of data for each EV request
-        else if (IsCombined == 1)
+        else //write to requests.txt
         {
             TotalReqNum = ReqList.ListSize();
             fprintf(pFile, "Num_req %d %d\n", TotalReqNum, 0);

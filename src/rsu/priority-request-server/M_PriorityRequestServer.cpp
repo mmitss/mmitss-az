@@ -31,7 +31,6 @@
 #include "json/json.h"
 #include "LinkedList.h"
 #include "ReqEntry.h"
-#include "IntLanePhase.h"
 #include "ManageRequestList.h"
 #include "msgEnum.h"
 #include "M_PriorityRequestServer.h"
@@ -104,11 +103,7 @@ int main(int argc, char *argv[])
 
     setupConnection(iPORT, lTimeOut);
 
-    readPhaseTimingStatus(PhaseStatus); // First find the unused(enabled) phases if there are any.
-
-    IntLanePhase lanePhase{};
-
-    lanePhase.ReadLanePhaseMap(LANEPHASE_FILENAME);
+    readPhaseTimingStatus(PhaseStatus); // First find the unused(enabled) phases if there are any.;
 
     LinkedList<ReqEntry> req_List; // List of all received requests
 
@@ -130,7 +125,7 @@ int main(int argc, char *argv[])
             std::string receivedJsonString(rxMsgBuffer);
             //std::cout << receivedJsonString << std::endl;
 
-            processRxMessage(rxMsgBuffer, tempMsg, Rsu_ID, lanePhase, IntersectionID);
+            processRxMessage(rxMsgBuffer, tempMsg, Rsu_ID, IntersectionID);
 
             readPhaseTimingStatus(PhaseStatus); // Get the current phase status for determining the split phases
 
@@ -180,7 +175,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase, const int IntersectionID)
+void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const int IntersectionID)
 {
     float fETA{};
     int iRequestedPhase{};
@@ -260,16 +255,20 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
 void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag, bool &clearSignalControllerCommands)
 {
+    bool isCombinedFile{};
+
     updateETAofRequestsInList(req_list, ReqListUpdateFlag);
 
     deleteThePassedVehicle(req_list, ReqListUpdateFlag, clearSignalControllerCommands);
 
     // Write the requests list into requests.txt,
-    PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, 1);
+    //isCombinedFile = false;
+    PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile=false);
 
     //Write the requests list into  requests_combined.txt;
     //This file will be different than requests.txt when we have EV
-    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, 0);
+    //isCombinedFile = true;
+    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile=true);
 
     printReqestFile2Log(REQUESTFILENAME_COMBINED);
 }

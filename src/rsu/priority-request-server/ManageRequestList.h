@@ -32,7 +32,7 @@ int FindInReqList(LinkedList <ReqEntry> ReqList, ReqEntry TestEntry);
 
 void UpdateList(LinkedList <ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8], int&, int CombinedPhase[], bool &);
 
-void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int, int IsCombined = 0);
+void PrintList2File(const char *Filename, const string& rsu_id, LinkedList <ReqEntry> &ReqList, int, const bool IsCombinedFile);
 
 void PrintList(LinkedList <ReqEntry> &ReqList);
 
