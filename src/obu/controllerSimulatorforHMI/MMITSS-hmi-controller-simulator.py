@@ -46,11 +46,17 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
-spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-clearance" : "yellow"}
+spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark"}
+phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G"}
+ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W"}
+def phase_status_state(phase_status):
+    for key in phase_status:
+        if phase_status[key] == True:
+            return key
 
 def signal_head(phase_status):
     current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
-                            "maxEndTime" : phase_status["maxEndTime"]}
+                            "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
     current_phase_status[spat_signal_head[phase_status['currState']]] = True
     return current_phase_status
 
@@ -171,6 +177,14 @@ while (f.readline()):
     current_phase_status = signal_head(SPaT[spat_currentPhase])
 
     # add the 8-phase signal and ped status data
+    phase_table = []
+    for phase in range(0,8):
+        phase_state = signal_head(SPaT[phase])
+        ped_state = signal_head(pedSPaT[phase])
+        phase_table.append({"phase" : phase, 
+                            "phase_status" : phase_status_map[phase_status_state(phase_state)], 
+                            "ped_status" : ped_status_map[phase_status_state(ped_state)]})
+
 
     #acquire priority status data
     index_priority = 162 # index is the column in the csv file
@@ -225,8 +239,8 @@ while (f.readline()):
             "infrastructure": 
             {
                 "availableMaps": availableMaps,
-                "currentPhase" : current_phase_status,
-                "phaseStates" : SPaT, # this needs to be replaced with 8-phase display
+                "currentPhase" : current_phase_status, # data for signal head, min, and max
+                "phaseStates" : phase_table, #data for 8-phase display table
                 "activeRequestTable" : activeRequestTable
             },
         }
