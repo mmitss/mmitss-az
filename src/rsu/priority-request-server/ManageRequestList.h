@@ -53,3 +53,5 @@ void updateETAofRequestsInList(LinkedList <ReqEntry> &Req_List, int &);
 void deleteThePassedVehicle(LinkedList <ReqEntry> &Req_List, int &, bool &);
 
 int currentFlagInRequestFile(char *filename);
+
+void writeRequestData(const ReqEntry &Req_Entry);
