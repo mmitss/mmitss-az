@@ -90,40 +90,40 @@ while (f.readline()):
     line = line.replace('\n','')
     data_array = line.split(',')
     secMark = int(data_array[0])
-    #this is all vehicle information
+    #this is host vehicle information
     print("second = ", secMark)
     hv_tempID = int(data_array[1])
     hv_vehicleType = data_array[2]
-    hv_latitude_DecimalDegree= float(data_array[32])
-    hv_longitude_DecimalDegree= float(data_array[4])
-    hv_elevation_Meter= float(data_array[5])
-    hv_heading_Degree= float(data_array[6])
+    hv_latitude_DecimalDegree= round(float(data_array[3]), 8)
+    hv_longitude_DecimalDegree= round(float(data_array[4]), 8)
+    hv_elevation_Meter= round(float(data_array[5]), 1)
+    hv_heading_Degree= round(float(data_array[6]), 4)
     hv_speed_Meterpersecond= float(data_array[7])
-    hv_speed_mph= round((float(hv_speed_Meterpersecond) * 2.23694),2)
+    hv_speed_mph= int((float(hv_speed_Meterpersecond) * 2.23694))
    
     # Create a Basic Vehicle that represents the host vehicle
     hv_position = Position3D(hv_latitude_DecimalDegree, hv_longitude_DecimalDegree, hv_elevation_Meter)
     hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, hv_vehicleType)
 
     #need to acquire current lane and current lane signal group
-    hv_currentLane = 2
-    hv_currentLaneSignalGroup = 2
+    hv_currentLane = int(data_array[8])
+    hv_currentLaneSignalGroup = int(data_array[9])
 
     #this is all remote vehicle information
 
-    index_remoteVehicle = 9
-    numRemoteVehicles = int(data_array[8])
+    index_remoteVehicle = 10
+    numRemoteVehicles = int(data_array[index_remoteVehicle])
     
     remoteVehicles = []
     for vehicle in range(0, 5): # assuming up to 5 remote vehicles for now
         rv_tempID = data_array[index_remoteVehicle + vehicle*7]
-        rv_vehicleType = data_array[index_remoteVehicle + 1 + vehicle*7]
-        rv_latitude_DecimalDegree= float(data_array[index_remoteVehicle + 2 + vehicle*7])
-        rv_longitude_DecimalDegree= float(data_array[index_remoteVehicle + 3 + vehicle*7])
-        rv_elevation_Meter= float(data_array[index_remoteVehicle + 4 + vehicle*7])
-        rv_heading_Degree= float(data_array[index_remoteVehicle + 5 + vehicle*7])
-        rv_speed_Meterpersecond= float(data_array[index_remoteVehicle + 6 + vehicle*7])
-        rv_speed_mph= round((float(rv_speed_Meterpersecond) * 2.23694),2)
+        rv_vehicleType = data_array[index_remoteVehicle + 2 + vehicle*7]
+        rv_latitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 3 + vehicle*7]), 8)
+        rv_longitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 4 + vehicle*7]), 8)
+        rv_elevation_Meter= round(float(data_array[index_remoteVehicle + 5 + vehicle*7]), 1)
+        rv_heading_Degree= round(float(data_array[index_remoteVehicle + 6 + vehicle*7]), 4)
+        rv_speed_Meterpersecond= float(data_array[index_remoteVehicle + 7 + vehicle*7])
+        rv_speed_mph= int((float(rv_speed_Meterpersecond) * 2.23694))
 
         rv_position = Position3D(rv_latitude_DecimalDegree, rv_longitude_DecimalDegree, rv_elevation_Meter)
         remoteVehicle = BasicVehicle(rv_tempID, secMark, rv_position, rv_speed_mph, rv_heading_Degree, rv_vehicleType)
@@ -132,38 +132,37 @@ while (f.readline()):
              bv_dict = remoteVehicle.BasicVehicle2Dict()
              remoteVehicles.append(bv_dict)
 
-
  # infrastructure map data
-    index_maps = 45
-    numReceivedMaps = data_array[44]
+    index_maps = 46
+    numReceivedMaps = int(data_array[index_maps])
     availableMaps = []
     for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
-        map_intersectionID = data_array[index_maps + receivedMap*4]
-        map_DescriptiveName = data_array[index_maps + 1 + receivedMap*4]
-        map_active = bool_map[data_array[index_maps + 2 + receivedMap*4]]
-        map_age = data_array[index_maps + 3 + receivedMap*4]
-        if receivedMap < numRemoteVehicles:
+        map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
+        map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
+        map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
+        map_age = int(data_array[index_maps + 4 + receivedMap*4])
+        if receivedMap < numReceivedMaps:
             availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                       
- 
+
  # infrastructure SPaT data
     #signal phase status 
     numSPaT = 8 # currently we have one SPaT value for each signal phase. 
-    index_spat = 65
+    index_spat = 67
     SPaT = []
-    spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
+    #spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
     for spat in range(0, numSPaT):
-        spat_phase = data_array[index_spat + 1 + spat*6]
-        spat_currState = spat_state[int(data_array[index_spat + 2 + spat*6])]
-        spat_startTime = round(float(data_array[index_spat + 3 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[index_spat + 4 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[index_spat + 5 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[index_spat + 6 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        spat_phase = data_array[index_spat + spat*6]
+        spat_currState = spat_state[int(data_array[index_spat + 1 + spat*6])]
+        spat_startTime = round(float(data_array[index_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[index_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[index_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
         SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     #ped phase status
     numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
     pedSPaT = []
-    index_ped_spat = 114
+    index_ped_spat = 115
     for spat in range(0, numSPaT):
         spat_phase = data_array[index_ped_spat + spat*6]
         spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
@@ -174,7 +173,7 @@ while (f.readline()):
         pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-    current_phase_status = signal_head(SPaT[spat_currentPhase])
+    current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup]) #use the vehicles current signal group (phase)
 
     # add the 8-phase signal and ped status data
     phase_table = []
@@ -187,7 +186,7 @@ while (f.readline()):
 
 
     #acquire priority status data
-    index_priority = 162 # index is the column in the csv file
+    index_priority = 163 # index is the column in the csv file
     activeRequestTable = []
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]
@@ -218,19 +217,19 @@ while (f.readline()):
         {
             "hostVehicle" :
             {
-                "heading_Degree" : hv_heading_Degree,
+                "secMark_Second" : secMark,
+                "temporaryID" : hv_tempID,
+                "vehicleType" : hv_vehicleType,
                 "position" :
                 {
                     "elevation_Meter" : hv_elevation_Meter,
                     "latitude_DecimalDegree" : hv_latitude_DecimalDegree,
                     "longitude_DecimalDegree" : hv_longitude_DecimalDegree
                 },
-                "secMark_Second" : secMark,
-                "speed_MeterPerSecond" : hv_speed_Meterpersecond,
-                "temporaryID" : hv_tempID,
-                "vehicleType" : hv_vehicleType,
-                "lane": 1, # this is desireable data
+                "heading_Degree" : hv_heading_Degree,
                 "speed_mph": hv_speed_mph,
+                "lane": hv_currentLane, 
+                "signalGroup" : hv_currentLaneSignalGroup,
                 "priority" : {"OnMAP" : onMAP, "requestSent" : requestSent}
             },
             "remoteVehicles" :
