@@ -207,7 +207,8 @@ while (f.readline()):
                                       "inBoundLane" : inBoundLaneID,
                                       "basicVehicleRole" : basicVehicleRole,
                                       "vehicleETA" : vehicleETA,
-                                      "duration" : duration})
+                                      "duration" : duration,
+                                      "priorityRequestStatus" : priorityRequestStatus})
 
 
 
