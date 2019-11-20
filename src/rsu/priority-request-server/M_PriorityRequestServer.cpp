@@ -987,7 +987,7 @@ void printReqestFile2Log(const char *resultsfile)
         exit(1);
     }
     string lineread;
-    sprintf(temp_log, " Content of requeast files  :");
+    sprintf(temp_log, " Content of request files  :");
     outputlog(temp_log);
     while (!fss.eof())
     {
