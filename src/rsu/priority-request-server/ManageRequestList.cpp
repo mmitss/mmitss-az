@@ -49,11 +49,13 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
            &NewReq.iEndHour, &NewReq.iEndMinute, &NewReq.iEndSecond, &NewReq.iVehState, &NewReq.iMsgCnt,
            &NewReq.dTimeInCycle, &NewReq.lIntersectionId);
 
-   
-    if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver
-        NewReq.ETA = 0;
+    // DC - We never put anything from the SRM into MinGreen and solver does not use it...........
+    //if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver
+    //    NewReq.ETA = 0;
 
     NewReq.dUpdateTimeOfETA = dTime;
+
+    // Handle split phases for EVs in list
     int iNumberOfEVinList = numberOfEVs(Req_List);
     int SplitPhase = 0;
 
@@ -65,11 +67,11 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     else
         NewReq.Split_Phase = 0;
 
-    //---------------Beginning of Handling the Received Requests.----------------//
+    // Begin processing the received request
 
     int pos = FindInReqList(Req_List, NewReq);
 
-    // the vehicle is approaching the intersection or in it is in the queue and requesting a phase
+    // the vehicle is approaching the intersection and requesting a phase (or it is in the queue... DC - old comment? not tested here? ) 
     if (NewReq.iRequestType == PRIORITY_REQUEST && NewReq.Phase > 0)
     {
         if (pos < 0) // Request is NOT in the List, problem should be solved by Solver, therefore ReqListUpdateFlag becomes positive
@@ -89,11 +91,18 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
             ReqListUpdateFlag = ADD_NEW_REQUEST;
 
-            sprintf(temp_log, "*** Add New Request **** { %s }\t \t FLAG  %d at time (%.2f).\n", RcvMsg,
-                    ReqListUpdateFlag, dTime);
-            outputlog(temp_log);
+            #ifdef CONSOLE_OUTPUT
+                cout << "Adding new request to list --" << endl;
+                writeRequestData(Req_List.Data());
+            #endif
+
+            #ifdef LOGGING
+                sprintf(temp_log, "*** Add New Request **** { %s }\t \t FLAG  %d at time (%.2f).\n", RcvMsg,
+                        ReqListUpdateFlag, dTime);
+                outputlog(temp_log);
+            #endif
         }
-        else // The request is already in the list.
+/*        else // The request is already in the list.
         {
             Req_List.Reset(pos);
 
@@ -114,6 +123,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             }
         }
         //----------------End Update the Requests list according to the received time.--------//
+*/        
     }
     else if (NewReq.iRequestType == REQUEST_UPDATE)
     {
@@ -123,16 +133,25 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
             Req_List.Data() = NewReq;
 
-            ReqListUpdateFlag = UPDATED_REQUEST; //re-solve based on the update
+            // We resolve the problem for the new updated request if the new updated request is EV, or there is not an EV in the list.
+            //if ((NewReq.VehClass == EV) || (iNumberOfEVinList == 0))
 
-            sprintf(temp_log, "Updated a request in the list %s at time (%.2f).\n", RcvMsg, dTime);
-            outputlog(temp_log);
+            ReqListUpdateFlag = UPDATED_REQUEST; //re-solve based on the update
+            
+            Req_List.Data().dUpdateTimeOfETA = dTime;            
+
+            #ifdef LOGGING
+                sprintf(temp_log, "Updated a request in the list %s at time (%.2f).\n", RcvMsg, dTime);
+                outputlog(temp_log);
+            #endif
         }
         else
         {
-            sprintf(temp_log,
-                    "A request update is received but the request is not in the list. The update is ignored.\n");
-            outputlog(temp_log);
+            #ifdef LOGGING
+                sprintf(temp_log,
+                        "A request update is received but the request is not in the list. The update is ignored.\n");
+                outputlog(temp_log);
+            #endif    
         }
 
     }
@@ -149,21 +168,27 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
             Req_List.Data() = NewReq;
 
-            sprintf(temp_log, "Set the clear request in the list %s at time (%.2f).\n", RcvMsg, dTime);
-            outputlog(temp_log);
+            #ifdef LOGGING
+                sprintf(temp_log, "Set the clear request in the list %s at time (%.2f).\n", RcvMsg, dTime);
+                outputlog(temp_log);
+            #endif    
         }
         else
         {
-            sprintf(temp_log,
-                    "A new cancel request is received but the request is not in the list. The request is ignored.\n");
-            outputlog(temp_log);
+            #ifdef LOGGING
+                sprintf(temp_log,
+                        "A new cancel request is received but the request is not in the list. The request is ignored.\n");
+                outputlog(temp_log);
+            #endif
         }
     }
 
     if (Req_List.ListSize() == 0 && ReqListUpdateFlag != CANCEL_REQUEST_LEAVING_INTERSECTION)
     {
-        sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
-        outputlog(temp_log);
+        #ifdef LOGGING
+            sprintf(temp_log, "*************Empty List at time (%.2f).\n", dTime);
+            outputlog(temp_log);
+        #endif
 
         ReqListUpdateFlag = NO_UPDATE;
     }
@@ -288,8 +313,10 @@ int currentFlagInRequestFile(char *filename)
     if (lineread.size() != 0)
         sscanf(lineread.c_str(), "%*s %d %d", &iRequestNumber, &iCurrentFlag);
 
-    sprintf(cTemp, " Number of Requests in the requests_combined.txt is:  %d", iRequestNumber);
-    outputlog(temp_log);
+    #ifdef LOGGING    
+        sprintf(cTemp, " Number of Requests in the requests_combined.txt is:  %d", iRequestNumber);
+        outputlog(temp_log);
+    #endif
 
     fss.close();
 
@@ -332,10 +359,8 @@ void PrintList(LinkedList<ReqEntry> &ReqList)
     }
 }
 
-void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEntry> &ReqList, int ReqListUpdateFlag, int IsCombined)
+void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEntry> &ReqList, int ReqListUpdateFlag, const bool IsCombinedFile)
 {
-    // If IsCombined=1 (There is no EV) print combined phase information into "requests.txt". // BY DJ 2012.3.27
-    // The argument of IsCombined is optional, default value is 0, means no EV
     // phase_status is from the ASC controller
 
     FILE *pFile = fopen(Filename, "w");
@@ -345,7 +370,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
 
     if (!ReqList.ListEmpty() && pFile != NULL)
     {
-        if (IsCombined == 0) // output to "requests_combined.txt"
+        if (IsCombinedFile) // output to "requests_combined.txt"
         {
 
             ReqList.Reset();
@@ -368,7 +393,7 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
 
                 while (!ReqList.EndOfList())
                 {
-                    CurPhase = ReqList.Data().Phase; // Current request phase
+                    CurPhase = ReqList.Data().Phase; // current requested phase
                     SplitPhase = ReqList.Data().Split_Phase;
 
                     if (SplitPhase <= 0 || ReqList.Data().VehClass != EV)
@@ -423,9 +448,8 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
                 }
             }
         }
-        // EV will have split phase requests: output "requests.txt": will add split_phase in the sequence of data for each EV request
-        else if (IsCombined == 1)
-        {
+        else //not a combined file so we write to requests.txt instead
+        {    // EV will have split phase requests so we will add split_phase in the sequence of data for each EV request
             TotalReqNum = ReqList.ListSize();
             fprintf(pFile, "Num_req %d %d\n", TotalReqNum, 0);
 
@@ -466,8 +490,10 @@ void deleteThePassedVehicle(LinkedList<ReqEntry> &Req_List, int &ReqListUpdateFl
         {
             Req_List.DeleteAt();
 
-            sprintf(temp_log, "Deleted the vehicle which has passed the intersection from the list\n\n");
-            outputlog(temp_log);
+            #ifdef LOGGING
+                sprintf(temp_log, "Deleted the vehicle which has passed the intersection from the list\n\n");
+                outputlog(temp_log);
+            #endif
 
             if (Req_List.ListSize() > 0) // if there is another request in the table we should solve the problem again
                 ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
@@ -500,17 +526,17 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         {
             Req_List.Reset(Req_List.CurrentPosition());
 
-            sprintf(temp_log,
-                    " ************ Residual request with ID %ld DELETED from the requests list  at time %.2f ************\n",
-                    Req_List.Data().VehID, dTime);
-
             ReqListUpdateFlag = DELETE_OBSOLETE_REQUEST;
 
             // delete the current entry
             Req_List.DeleteAt();
 
-            outputlog(temp_log);
-            // MZP       continue;
+            #ifdef LOGGING
+                sprintf(temp_log,
+                        " ************ Residual request with ID %ld DELETED from the requests list  at time %.2f ************\n",
+                        Req_List.Data().VehID, dTime);
+                outputlog(temp_log);
+            #endif    
         }
         else // update the ETA
         {
@@ -525,7 +551,6 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
                     Req_List.Data().dUpdateTimeOfETA = dTime;
                 }
             }
-            // the else{} is redundant
             else
                 Req_List.Data().ETA = 0;
 
@@ -539,3 +564,9 @@ void updateETAofRequestsInList(LinkedList<ReqEntry> &Req_List, int &ReqListUpdat
         Req_List.Next();
     }
 }
+
+void writeRequestData(const ReqEntry &Req_Entry)
+{
+
+
+} 
