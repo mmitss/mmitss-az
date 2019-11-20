@@ -62,10 +62,10 @@ int main(int argc, char *argv[])
     char ConfigFile[256];
     int CombinedPhase[8] = {0};
     char rxMsgBuffer[1024]{};
-    bool clearSignalControllerCommands = false;   // a flag to clear all commands in the interface when the request passed
-    
-    double dCurrentTimeInCycle = 100.0;    // For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
-    int PhaseStatus[8];                    // Determine the phase status to generate the split phases
+    bool clearSignalControllerCommands = false; // a flag to clear all commands in the interface when the request passed
+
+    double dCurrentTimeInCycle = 100.0; // For example, if cycle is 100 and offset is 30, this variable will be between [-30 70)
+    int PhaseStatus[8];                 // Determine the phase status to generate the split phases
     ssize_t iNumOfRxBytes = 0;
     char tempMsg[1024];
     int IntersectionID{};
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
     std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);    
+    reader.parse(configJsonString.c_str(), jsonObject);
     int iPORT = (jsonObject["PortNumber"]["PriorityRequestServer"]).asInt();
 
     UdpSocket MsgReceiverSocket(jsonObject["PortNumber"]["PriorityRequestServer_SendSSM"].asInt());
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
         dTime = getSystemTime();
 
         // Read combined request file to see if PRS has set the update flag
-        ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);        
+        ReqListUpdateFlag = getCurrentFlagInReqFile(REQUESTFILENAME_COMBINED);
 
         iNumOfRxBytes = recvfrom(iSockfd, rxMsgBuffer, 1024, 0, (struct sockaddr *)&recvaddr,
                                  (socklen_t *)&iAddrLeng);
@@ -135,10 +135,10 @@ int main(int argc, char *argv[])
         // There are updated ETA's in the request list
         if (((dTime - dLastETAUpdateTime) > COUNT_DOWN_INTERVAL_FOR_ETA) && (req_List.ListSize() > 0))
         {
-            #ifdef LOGGING
-                sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
-                outputlog(temp_log);
-            #endif        
+#ifdef LOGGING
+            sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
+            outputlog(temp_log);
+#endif
 
             dLastETAUpdateTime = dTime;
 
@@ -152,10 +152,10 @@ int main(int argc, char *argv[])
         {
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
-            #ifdef LOGGING
-                sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
-                outputlog(temp_log);
-            #endif
+#ifdef LOGGING
+            sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
+            outputlog(temp_log);
+#endif
         }
 
         // If the request list is empty and the last vehicle just passed the intersection
@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
             ReqListUpdateFlag = NO_UPDATE;
 
             clearSignalControllerCommands = false;
-
+            
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
             sendClearCommandsToInterface();
@@ -185,7 +185,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     int iOutLane = 0;
 
     // the following are not used in PRS or solver. They are simply passed back and forth
-    double dMinGrn{};                                                                                            //unused
+    double dMinGrn{};                                                                                          //unused
     int iStartMinute{}, iStartSecond{}, iEndMinute{}, iEndSecond{}, iStartHour{}, iEndHour{}, iVehicleState{}; //unused
 
     long lvehicleID{};
@@ -200,7 +200,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
     currentSRM.json2SignalRequest(receivedSrmJsonString);
 
-    lintersectionID = currentSRM.getIntersectionID();   
+    lintersectionID = currentSRM.getIntersectionID();
 
     // if the intersection ID in SRM matches the MAP ID of the intersection, SRM should be processed
     if (IntersectionID == lintersectionID)
@@ -247,12 +247,12 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
                 iEndHour, iEndMinute, iEndSecond,
                 iVehicleState, iMsgCnt, 0.0, lintersectionID);
 
-        #ifdef LOGGING
-            sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
-            outputlog(temp_log);
-            sprintf(temp_log, "%s\t \n", tempMsg);
-            outputlog(temp_log);
-        #endif
+#ifdef LOGGING
+        sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
+        outputlog(temp_log);
+        sprintf(temp_log, "%s\t \n", tempMsg);
+        outputlog(temp_log);
+#endif
     }
 }
 
@@ -266,16 +266,16 @@ void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &
 
     // Write the requests list into requests.txt,
     //isCombinedFile = false;
-    PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile=false);
+    PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile = false);
 
     //Write the requests list into  requests_combined.txt;
     //This file will be different than requests.txt when we have EV
     isCombinedFile = true;
-    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile=true);
+    PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile = true);
 
-    #ifdef LOGGING
-        printReqestFile2Log(REQUESTFILENAME_COMBINED);
-    #endif
+#ifdef LOGGING
+    printReqestFile2Log(REQUESTFILENAME_COMBINED);
+#endif
 }
 
 void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket)
@@ -287,7 +287,7 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
 
     std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);    
+    reader.parse(configJsonString.c_str(), jsonObject);
     std::string ssmReceiverIP = (jsonObject["HostIp"]).asString();
     int ssmReceiverPort = (jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
 
@@ -327,7 +327,6 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
     }
     // cout<<"SSM Json String: "<<jsonString <<endl;
     MsgReceiverSocket.sendData(ssmReceiverIP, ssmReceiverPort, jsonString);
-
 }
 
 void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
@@ -347,9 +346,9 @@ void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
 
         cout << ConfigFile << endl;
 
-        #ifdef LOGGING
-            outputlog(ConfigFile);
-        #endif
+#ifdef LOGGING
+        outputlog(ConfigFile);
+#endif
 
         fs_phase.open(ConfigFile);
 
@@ -524,7 +523,7 @@ void readPhaseTimingStatus(int PhaseStatus[8])
              << endl;
         delete out;
     }
-    
+
     else
     {
         if (status == STAT_SUCCESS)
@@ -924,12 +923,12 @@ void sendClearCommandsToInterface()
 
     if (sendto(iSockfd, event_data, size + 1, 0, (struct sockaddr *)&sendaddr, addr_length))
     {
-        #ifdef LOGGING
-            sprintf(temp_log,
-                    " The Event List sent to SignalControllerInterface to delete all previous commands, The size is %d  \n",
-                    size);
-            outputlog(temp_log);
-        #endif
+#ifdef LOGGING
+        sprintf(temp_log,
+                " The Event List sent to SignalControllerInterface to delete all previous commands, The size is %d  \n",
+                size);
+        outputlog(temp_log);
+#endif
     }
 
     delete event_data;
@@ -947,11 +946,11 @@ string getRSUid() //Debashis: changed it to return as string
 
     if (rsu_id.size() != 0)
     {
-        #ifdef LOGGING
-            sprintf(temp, " RSU ID %s\n", rsu_id.c_str());
-            cout << temp << endl;
-            outputlog(temp);
-        #endif
+#ifdef LOGGING
+        sprintf(temp, " RSU ID %s\n", rsu_id.c_str());
+        cout << temp << endl;
+        outputlog(temp);
+#endif
     }
     else
     {
