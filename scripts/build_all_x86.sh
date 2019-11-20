@@ -33,7 +33,6 @@ echo "Building Wireless Message Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/WirelessMsgDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -52,7 +51,6 @@ echo "Building Host BSM Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -73,7 +71,6 @@ echo "Building Priority Request Generator..."
 cd ./../src/obu/PriorityRequestGenerator
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -94,7 +91,6 @@ echo "Building Priority Request Server..."
 cd ./../src/rsu/priority-request-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -113,7 +109,6 @@ echo "Building Priority Solver..."
 cd ./../src/rsu/priority-solver
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -132,7 +127,6 @@ echo "Building Traffic Controller Interface..."
 cd ./../src/rsu/traffic-control-interface
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then

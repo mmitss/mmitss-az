@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 **********************************************************************************
  © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
