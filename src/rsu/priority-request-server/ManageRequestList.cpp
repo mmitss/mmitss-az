@@ -102,7 +102,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
                 outputlog(temp_log);
             #endif
         }
-        else // The request is already in the list.
+/*        else // The request is already in the list.
         {
             Req_List.Reset(pos);
 
@@ -123,6 +123,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             }
         }
         //----------------End Update the Requests list according to the received time.--------//
+*/        
     }
     else if (NewReq.iRequestType == REQUEST_UPDATE)
     {
@@ -132,7 +133,12 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
 
             Req_List.Data() = NewReq;
 
+            // We resolve the problem for the new updated request if the new updated request is EV, or there is not an EV in the list.
+            //if ((NewReq.VehClass == EV) || (iNumberOfEVinList == 0))
+
             ReqListUpdateFlag = UPDATED_REQUEST; //re-solve based on the update
+            
+            Req_List.Data().dUpdateTimeOfETA = dTime;            
 
             #ifdef LOGGING
                 sprintf(temp_log, "Updated a request in the list %s at time (%.2f).\n", RcvMsg, dTime);
