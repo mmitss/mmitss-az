@@ -10,11 +10,11 @@ nocolor='\033[0m'
 ################################## COMMON APPLICATIONS ################################
 
 #######################################################################################
-echo "Building Message Encoder..."
+echo "Cleaning Message Encoder..."
 cd ./../src/common/MsgTransceiver/MsgEncoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
@@ -26,10 +26,11 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Wireless Message Decoder..."
+echo "Cleaning Wireless Message Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/WirelessMsgDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -44,10 +45,11 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Host BSM Decoder..."
+echo "Cleaning Host BSM Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -62,12 +64,13 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 ################################# VEHICLE APPLICATIONS ################################
 
 #######################################################################################
-echo "Building Priority Request Generator..."
+echo "Cleaning Priority Request Generator..."
 cd ./../src/obu/PriorityRequestGenerator
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -82,12 +85,13 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 ############################### INTERSECTION APPLICATIONS #############################
 
 #######################################################################################
-echo "Building Priority Request Server..."
+echo "Cleaning Priority Request Server..."
 cd ./../src/rsu/priority-request-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -102,10 +106,11 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Priority Solver..."
+echo "Cleaning Priority Solver..."
 cd ./../src/rsu/priority-solver
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -120,10 +125,11 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Traffic Controller Interface..."
+echo "Cleaning Traffic Controller Interface..."
 cd ./../src/rsu/traffic-control-interface
 # Clean the folder and build for linux.
 make clean &> /dev/null
@@ -138,4 +144,5 @@ fi
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
+sleep 1s
 #######################################################################################
