@@ -59,44 +59,39 @@ int TransceiverDecoder::getMessageType(std::string payload)
 
 std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPayload)
 {
+    std::ofstream outputfile;
+    std::string fmap{};
+    std::string intersectionName{};
+    std::string mapName{};
+    bool singleFrame = false;
+    std::string deleteFileName = "Map.map.payload";
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    std::string jsonString;
-
+    std::string jsonString{};
     Json::Value jsonObject_config;
     Json::Reader reader;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+
     reader.parse(configJsonString.c_str(), jsonObject_config);
-
-    const char *path = "/nojournal/bin";
-    std::stringstream ss;
-    ss << path;
-    std::string s;
-    ss >> s;
-    std::ofstream outputfile;
-    
-    outputfile.open(s + "/" + "Map" + ".map.payload");
-
+    outputfile.open("Map.map.payload");
     outputfile << "payload"
                << " "
-               << "Map" << " " << mapPayload << std::endl;
+               << "Map"
+               << " " << mapPayload << std::endl;
     outputfile.close();
 
-    std::string fmap ="/nojournal/bin/Map.map.payload";
-	std::string intersectionName = "Map";
-	bool singleFrame = false;
+    fmap = "Map.map.payload";
+    intersectionName = "Map";
     /// instance class LocAware (Map Engine)
-	LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
-    std::string mapName = "Map" + std::to_string(plocAwareLib->getIntersectionIdByName(intersectionName));
-
+    LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
+    mapName = "Map" + std::to_string(plocAwareLib->getIntersectionIdByName(intersectionName));
 
     jsonObject["MsgType"] = "MAP";
     jsonObject["IntersectionName"] = mapName;
     jsonObject["MapPayload"] = mapPayload;
     jsonString = fastWriter.write(jsonObject);
-    
-    std::string deleteFileName = "/nojournal/bin/Map.map.payload";
+
     remove(deleteFileName.c_str());
 
     return jsonString;
