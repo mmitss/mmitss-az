@@ -12,7 +12,7 @@ LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -ldsrc -
 SRC += main.cpp PriorityRequestGenerator.cpp MapManager.cpp locAware.cpp geoUtils.cpp
 
 #the name of the executable goes here
-TARGET = PRG
+TARGET = M_PriorityRequestGenerator
 
 # list the .o's corresponding to .cpp's
 # see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html

@@ -77,6 +77,9 @@ sudo cp ./3rdparty/mapengine/lib/arm/liblocAware.so.1.0 /usr/local/lib/mmitss/
 sudo cp ./3rdparty/asn1j2735/lib/arm/libasn.so.1.0 /usr/local/lib/mmitss/
 sudo cp ./3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
 sudo cp ./lib/mmitss.conf /etc/ld.so.conf.d/
+sudo cp ./3rdparty/openssl/* /usr/local/lib
+
+
 echo "Create the symbolic links for the copied libraries."
 sudo ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35
 sudo ln -s /usr/local/lib/mmitss/libglpk.so.40.3.0 /usr/local/lib/mmitss/libglpk.so.40
