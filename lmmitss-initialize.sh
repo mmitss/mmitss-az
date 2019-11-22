@@ -38,6 +38,8 @@ read -p "Architecture - x86 or arm: " arch
 
 
 echo "Creating required directories in the root folder."
+sudo rm -r /nojournal/
+sudo rm -r /usr/local/lib/mmitss
 sudo mkdir -p /nojournal/bin/log
 sudo mkdir /usr/local/lib/mmitss
 sleep 1s

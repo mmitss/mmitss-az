@@ -49,18 +49,6 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
-#######################################################################################
-echo "Starting Host BSM Receiver..."
-cd ./../src/common/MsgTransceiver/MsgReceiver
-# Clean the folder and build for linux.
-python3 M_HostBsmReceiver.py > /dev/null 2>&1 &
-
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-
-sleep 1s
-#######################################################################################
-
 ############################### INTERSECTION APPLICATIONS #############################
 
 #######################################################################################

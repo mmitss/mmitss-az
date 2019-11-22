@@ -45,25 +45,6 @@ rm ./*.o &> /dev/null
 cd - &> /dev/null
 #######################################################################################
 
-#######################################################################################
-echo "Building Host BSM Decoder..."
-cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux ARM=1 &> /dev/null
-
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-#######################################################################################
-
 ############################### INTERSECTION APPLICATIONS #############################
 
 #######################################################################################
