@@ -68,7 +68,6 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject_config);
-    // std::string intersectionName = (jsonObject_config["IntersectionName"]).asString();
 
     const char *path = "/nojournal/bin";
     std::stringstream ss;
@@ -89,10 +88,6 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
 	bool singleFrame = false;
     /// instance class LocAware (Map Engine)
 	LocAware* plocAwareLib = new LocAware(fmap, singleFrame);
-	/// get intersection reference id
-	// uint32_t referenceId = plocAwareLib->getIntersectionIdByName(intersectionName);
-    // uint16_t regionalId = static_cast<uint16_t>((referenceId >> 16) & 0xFFFF);
-	// uint16_t intersectionId = static_cast<uint16_t>(referenceId & 0xFFFF);
     std::string mapName = "Map" + std::to_string(plocAwareLib->getIntersectionIdByName(intersectionName));
 
 
@@ -100,7 +95,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     jsonObject["IntersectionName"] = mapName;
     jsonObject["MapPayload"] = mapPayload;
     jsonString = fastWriter.write(jsonObject);
-    std::cout << jsonString << std::endl;
+    
     std::string deleteFileName = "/nojournal/bin/Map.map.payload";
     remove(deleteFileName.c_str());
 
