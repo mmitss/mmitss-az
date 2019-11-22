@@ -110,7 +110,7 @@ int FindVehClassInList(LinkedList <ReqEntry> Req_List, int VehClass);
 
 void startUpdateETAofRequestsInList(const string &, LinkedList <ReqEntry> &, int&, bool&);
 
-void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const IntLanePhase lanePhase, const int IntersectionID);
+void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const int IntersectionID);
 
 void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket);
 
