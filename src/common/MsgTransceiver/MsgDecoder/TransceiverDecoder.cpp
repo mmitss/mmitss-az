@@ -68,7 +68,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject_config);
     std::string intersectionName = (jsonObject_config["IntersectionName"]).asString();
-    const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
+    // const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
 
     jsonObject["MsgType"] = "MAP";
     jsonObject["IntersectionName"] = intersectionName;

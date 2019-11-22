@@ -11,14 +11,14 @@ int main()
 {
     //Socket Communication
     UdpSocket bsmSenderSocket(20010);
-    const string LOCALHOST = "127.0.0.1";
-    const int receiverPortNo = 10004;
+    const string LOCALHOST = "10.12.6.57";
+    const int receiverPortNo = 10007;
     std::string sendingJsonString;
 
     std::ifstream infile;
     int count = 1;
 
-    infile.open("bsmLog.txt");
+    infile.open("bsmLog_fullLoop.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;
