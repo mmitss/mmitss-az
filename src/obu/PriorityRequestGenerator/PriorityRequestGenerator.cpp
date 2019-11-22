@@ -61,6 +61,7 @@ const double ALLOWEDETADIFFERENCE = 1;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
 const double MIN_ETA = 0.0;
+const double SRM_GAPOUT_TIME = 1.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
@@ -163,7 +164,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
-	if (bgetActiveMap == true) //check if there is active or not
+	if (bgetActiveMap == true && abs(tempSRMTimeStamp-getMsOfMinute()/SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
 	{
 		if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
 		{
@@ -195,6 +196,9 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			bSendRequest = true;
 		}
 	}
+
+	if (bSendRequest == true)
+		tempSRMTimeStamp = getMsOfMinute()/SECONDTOMILISECOND;
 
 	return bSendRequest;
 }
@@ -433,7 +437,7 @@ int PriorityRequestGenerator::getVehicleType()
 {
 	Json::Value jsonObject_config;
 	Json::Reader reader;
-	std::ifstream configJson("VehicleConfiguration.json");
+	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
 	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject_config);
 	vehicleType = (jsonObject_config["VehicleType"]).asInt();
