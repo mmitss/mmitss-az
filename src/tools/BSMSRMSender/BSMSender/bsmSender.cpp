@@ -18,7 +18,7 @@ int main()
     std::ifstream infile;
     int count = 1;
 
-    infile.open("bsmLog_fullLoop.txt");
+    infile.open("bsmLog.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;
