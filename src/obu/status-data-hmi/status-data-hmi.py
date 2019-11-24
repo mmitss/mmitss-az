@@ -314,34 +314,34 @@ def initialize_perf_output_file():
 ##############################################
 
 def build_phase_tree():
-    gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none')
+    gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none', height=2)
     gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
-    gui.phase_tree.column("#0", width=100)
-    gui.phase_tree.column("1", width=30)
-    gui.phase_tree.column("2", width=30)
-    gui.phase_tree.column("3", width=30) 
-    gui.phase_tree.column("4", width=30)
-    gui.phase_tree.column("5", width=30)
-    gui.phase_tree.column("6", width=30) 
-    gui.phase_tree.column("7", width=30)
-    gui.phase_tree.column("8", width=30)
-    gui.phase_tree.heading('#0', text='Phases') 
-    gui.phase_tree.heading('1', text='1') 
-    gui.phase_tree.heading("2", text="2") 
-    gui.phase_tree.heading("3", text="3") 
-    gui.phase_tree.heading("4", text="4") 
-    gui.phase_tree.heading("5", text="5") 
-    gui.phase_tree.heading("6", text="6") 
-    gui.phase_tree.heading("7", text="7") 
-    gui.phase_tree.heading("8", text="8") 
+    gui.phase_tree.column("#0", width=100, anchor='center')
+    gui.phase_tree.column("1", width=30, anchor='center')
+    gui.phase_tree.column("2", width=30, anchor='center')
+    gui.phase_tree.column("3", width=30, anchor='center') 
+    gui.phase_tree.column("4", width=30, anchor='center')
+    gui.phase_tree.column("5", width=30, anchor='center')
+    gui.phase_tree.column("6", width=30, anchor='center') 
+    gui.phase_tree.column("7", width=30, anchor='center')
+    gui.phase_tree.column("8", width=30, anchor='center')
+    gui.phase_tree.heading('#0', text='Phases', anchor='center') 
+    gui.phase_tree.heading('1', text='1', anchor='center') 
+    gui.phase_tree.heading("2", text="2", anchor='center') 
+    gui.phase_tree.heading("3", text="3", anchor='center') 
+    gui.phase_tree.heading("4", text="4", anchor='center') 
+    gui.phase_tree.heading("5", text="5", anchor='center') 
+    gui.phase_tree.heading("6", text="6", anchor='center') 
+    gui.phase_tree.heading("7", text="7", anchor='center') 
+    gui.phase_tree.heading("8", text="8", anchor='center') 
 
-    gui.phase_tree.grid(row=1, column=0, rowspan=3, sticky=E+W)
+    gui.phase_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
 
     # set style
     style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont) # Modify the font of the body
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
-    #style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
     gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=('R', 'R', 'R', 'G', 'R', 'R', '', 'R'), tags=('odd'))
     gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
@@ -356,25 +356,25 @@ def build_phase_tree():
 ##############################################
 
 def build_ART_tree():
-    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none')
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=5)
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
-    gui.ART_tree.column("RequestID", width=100)
-    gui.ART_tree.column("VehicleID", width=100)
-    gui.ART_tree.column("BasicVehicleRole", width=100) 
-    gui.ART_tree.column("PriorityRequestStatus", width=100)
-    gui.ART_tree.column("MessageCount", width=100)
-    gui.ART_tree.column("InBoundLane", width=100) 
-    gui.ART_tree.column("VehicleETA", width=100)
-    gui.ART_tree.column("VehicleDuration", width=100)
-    gui.ART_tree.heading('RequestID', text='Request ID') 
-    gui.ART_tree.heading("VehicleID", text="Vehicle ID") 
-    gui.ART_tree.heading("BasicVehicleRole", text="Basic Vehicle Role") 
-    gui.ART_tree.heading("PriorityRequestStatus", text="PriorityRequestStatus") 
-    gui.ART_tree.heading("MessageCount", text="MessageCount") 
-    gui.ART_tree.heading("InBoundLane", text="In Bound Lane") 
-    gui.ART_tree.heading("VehicleETA", text="Vehicle ETA") 
-    gui.ART_tree.heading("VehicleDuration", text="Vehicle Duration") 
+    gui.ART_tree.column("RequestID", width=100, anchor='center', stretch=True)
+    gui.ART_tree.column("VehicleID", width=100, anchor='center', stretch=True)
+    gui.ART_tree.column("BasicVehicleRole", width=100, anchor='center', stretch=True) 
+    gui.ART_tree.column("PriorityRequestStatus", width=100, anchor='center', stretch=True)
+    gui.ART_tree.column("MessageCount", width=100, anchor='center', stretch=True)
+    gui.ART_tree.column("InBoundLane", width=100, anchor='center', stretch=True) 
+    gui.ART_tree.column("VehicleETA", width=100, anchor='center', stretch=True)
+    gui.ART_tree.column("VehicleDuration", width=100, anchor='center', stretch=True)
+    gui.ART_tree.heading('RequestID', text='Request ID', anchor='center') 
+    gui.ART_tree.heading("VehicleID", text="Vehicle ID", anchor='center') 
+    gui.ART_tree.heading("BasicVehicleRole", text="Basic Vehicle Role", anchor='center') 
+    gui.ART_tree.heading("PriorityRequestStatus", text="PriorityRequestStatus", anchor='center') 
+    gui.ART_tree.heading("MessageCount", text="MessageCount", anchor='center') 
+    gui.ART_tree.heading("InBoundLane", text="In Bound Lane", anchor='center') 
+    gui.ART_tree.heading("VehicleETA", text="Vehicle ETA", anchor='center') 
+    gui.ART_tree.heading("VehicleDuration", text="Vehicle Duration", anchor='center') 
     #gui.ART_tree.heading("Vehicle Type", text="Vehicle Type") 
 
     # set style
@@ -384,7 +384,8 @@ def build_ART_tree():
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
     
-    gui.ART_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
+    gui.ART_tree.insert('', 'end', iid='2', text='2', values=('1234', 'transit', 'granted', '3', '12', '17.4', '4.1'), tags=('odd'))
+    #gui.ART_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
     #gui.ART_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
     #gui.ART_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
     
@@ -401,7 +402,7 @@ def build_ART_tree():
 ##############################################
 
 def build_BSM_tree():
-    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none')
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=5)
     gui.bsm_tree["columns"]=("Time", "Temp ID", "Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
     gui.bsm_tree.column("Time", width=100)
