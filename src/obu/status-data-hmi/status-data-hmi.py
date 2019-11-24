@@ -102,7 +102,7 @@ def get_data():
     # SPaT status
     # get the status
     currentPhase = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["currentPhase"]
-    print(currentPhase)
+    #print(currentPhase)
     # build the treeview containing the Phase Table
     redStatus = bool(currentPhase['red'])
     yellowStatus = bool(currentPhase['yellow'])
@@ -127,6 +127,15 @@ def get_data():
     #    print(phase['ped_status'],phase['phase'], phase['phase_status'])
     # build the treeview containing the Phase Table
     build_phase_tree(phaseTable)
+
+    # ART Active Requests
+    # get list of Priority Requests
+    activeRequestTable = []
+    activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
+
+    # build the treeview containing ART
+    build_ART_tree(activeRequestTable)
+
    
     # MAP messages
     # get list of available maps
@@ -303,7 +312,7 @@ def build_phase_tree(phaseTable):
 #   ACTIVE REQUEST DISPLAY
 ##############################################
 
-def build_ART_tree():
+def build_ART_tree(activeRequestTable):
     gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=5)
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
@@ -331,16 +340,12 @@ def build_ART_tree():
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
+    for request in activeRequestTable:
+        print(request)
+        gui.ART_tree.insert('', 'end', iid="request['RequestID']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ))
+        
+    gui.ART_tree.grid(row=0, column=0, sticky=E+W)
     
-    gui.ART_tree.insert('', 'end', iid='2', text='2', values=('1234', 'transit', 'granted', '3', '12', '17.4', '4.1'), tags=('odd'))
-    #gui.ART_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
-    #gui.ART_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
-    #gui.ART_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
-    
-    gui.ART_tree.grid(row=1, column=0, sticky=E+W)
-    
-    gui.ART_tree.tag_configure('odd', background='#e8e8e8')
-
     # tag styles
     gui.ART_tree.tag_configure('odd', background='#e8e8e8')
     gui.ART_tree.tag_configure('odd', background='#dfdfdf')
@@ -415,8 +420,6 @@ def build_MAP_tree(availableMaps):
     style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
-
-    mapList = []
 
     for map in availableMaps:
         #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
@@ -539,12 +542,6 @@ def update_display():
     # read JSON
     get_data()
 	
-    # build the treeview containing Active Requests
-    build_ART_tree()
-
-    # build the treeview containing BSMs
-    build_BSM_tree()
-
     # refresh dynamic data labels that were set to type class StringVar
     # class StringVar updates dynamically with root.update_idletasks()
     gui.update_idletasks()
