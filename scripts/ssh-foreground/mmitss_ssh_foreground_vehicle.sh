@@ -1,10 +1,16 @@
 #!/bin/bash
 
-mate-terminal -e ./HostBsmDecoder.sh
-mate-terminal -e ./HostBsmReceiver.sh
-mate-terminal -e ./MsgEncoder.sh
-mate-terminal -e ./MsgSender.sh
-mate-terminal -e ./PriorityRequestGenerator.sh
-mate-terminal -e ./WirelessMsgDecoder.sh
-mate-terminal -e ./WirelessMsgReceiver.sh
+read -p "IP Address of RaspberryPi: " targetIp
+read -p "Username on RaspberryPi: " username
+
+export targetIp
+export username
+
+mate-terminal -e ./app_scripts/HostBsmDecoder.sh
+mate-terminal -e ./app_scripts/HostBsmReceiver.sh
+mate-terminal -e ./app_scripts/MsgEncoder.sh
+mate-terminal -e ./app_scripts/MsgSender.sh
+mate-terminal -e ./app_scripts/PriorityRequestGenerator.sh
+mate-terminal -e ./app_scripts/WirelessMsgDecoder.sh
+mate-terminal -e ./app_scripts/WirelessMsgReceiver.sh
 
