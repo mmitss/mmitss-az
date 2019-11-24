@@ -14,7 +14,7 @@ int main()
 	reader.parse(configJsonString.c_str(), jsonObject_config);
     
     TransceiverDecoder decoder;
-    UdpSocket decoderSocket(jsonObject_config["PortNumber"]["HostBsmDecoder"].asInt());
+    UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HostBsmDecoder"].asInt()));
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
@@ -24,7 +24,7 @@ int main()
         decoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string receivedPayload(receiveBuffer);
         std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
-        decoderSocket.sendData(LOCALHOST, bsmReceiverPortNo, bsmJsonString);
+        decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
         std::cout << "Decoded BSM" << std::endl;
     }
     
