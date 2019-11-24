@@ -69,62 +69,7 @@ def get_data():
     requestSent = bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["requestSent"])
     #signalGroup= (interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["lane"])
 
-    '''
-    for i in range(0, lenL(availableMaps)): # assuming up to 5 maps have been received 
-        gui.map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
-        gui.map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
-        gui.map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
-    
-    if vehicleLane == 0: # vehicle is not in work zone
-        # reallocate memory for lane display
-        reallocatelaneDisplay() 
-        workers_present_value.set('                ')
-        set_speed_limit(0)
-        set_speed_warning_level(0, int(speed_mph))
-        gui.reallocation_counter = 0
-    else:
-         # vehicle is in work zone
-        statusOfLanes = []
-
-        statusOfLanes = (interfaceJson["mmitss_hmi_interface"]["lanes"])
-
-        laneList = []
-
-        numLanes = len(statusOfLanes)
-
-        for i in range(0, numLanes):
-            # get info
-            ThisLaneKey = 'Lane ' + str(i)
-            laneList.append(LaneStatus(ThisLaneKey))
-            laneList[i].laneKey = ThisLaneKey
-            laneList[i].laneSpeedLimit_mph = statusOfLanes[i][ThisLaneKey]['laneSpeedLimit_mph']
-            laneList[i].laneSpeedChangeDistance = float(statusOfLanes[i][ThisLaneKey]['speedLimitDistance'])
-            laneList[i].laneClosed = statusOfLanes[i][ThisLaneKey]['laneClosed']
-            laneList[i].laneClosedDistance = float(statusOfLanes[i][ThisLaneKey]['laneClosedDistance'])
-            laneList[i].taperRight = bool(statusOfLanes[i][ThisLaneKey]['taperRight'])
-            laneList[i].taperLeft = bool(statusOfLanes[i][ThisLaneKey]['taperLeft'])
- 
-             # set values that are common for lanes
-            if i == 0:
-                workers_present = bool(statusOfLanes[i][ThisLaneKey]['workersPresent'])
-                if workers_present == True:
-                    workers_present_value.set('Workers Present')
-                else:
-                    workers_present_value.set('                ')
-
-                set_speed_limit(int(laneList[i].laneSpeedLimit_mph))
-                set_speed_warning_level(int(laneList[i].laneSpeedLimit_mph), int(speed_mph))
-                distance = round(laneList[i].laneSpeedChangeDistance)
-                if distance > 5:
-                    speedDist_value.set(str(distance) + ' ft')
-                else:
-                    speedDist_value.set('       ')
-
-            # display status
-            update_lane_display(laneList[i], i+1, vehicleLane, numLanes)
-
-    '''
-    # vehicle current speed and position
+    # Host Vehicle BSM vehicle current speed and position
     gui.latString = "{:.7f}".format(latitude_DecimalDegree) # want 7 digits showing to right of decimal
     gui.lat_value.set("Latitude: " + gui.latString)
     gui.longString = "{:.7f}".format(longitude_DecimalDegree) # want 7 digits showing to right of decimal
@@ -155,13 +100,34 @@ def get_data():
     # gui.signal_group_value.set(str("Signal Group: " + signalGroup))
 
     # SPaT status
-    # get maps
+    # get the status
+    currentPhase = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["currentPhase"]
+    print(currentPhase)
+    # build the treeview containing the Phase Table
+    redStatus = bool(currentPhase['red'])
+    yellowStatus = bool(currentPhase['yellow'])
+    greenStatus = bool(currentPhase['green'])
+    
+    # set signal head icon
+    if redStatus == True:    
+        gui.Signal.config(image=gui.signal_red)
+    else:
+        if yellowStatus == True:    
+            gui.Signal.config(image=gui.signal_yellow)
+        else:
+            if greenStatus == True:    
+                gui.Signal.config(image=gui.signal_green)
+
+
+
+    # get the phase status
     phaseTable = []
     phaseTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["phaseStates"]
-    for phase in phaseTable:
-        print(phase['ped_status'],phase['phase'], phase['phase_status'])
-    
-  
+    #for phase in phaseTable:
+    #    print(phase['ped_status'],phase['phase'], phase['phase_status'])
+    # build the treeview containing the Phase Table
+    build_phase_tree(phaseTable)
+   
     # MAP messages
     # get list of available maps
     availableMaps = []
@@ -323,14 +289,14 @@ def build_phase_tree(phaseTable):
         phaseList.append(phase['phase_status'])
         pedList.append(phase['ped_status'])
     
-    #phaseString =  "'R', 'R', 'R', 'G', 'R', 'R', '', 'R'"   
     gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=(phaseList), tags=('odd'))
     gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('even'))
     #gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
+    #gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
     
     # tag styles
-    #gui.phase_tree.tag_configure('odd', background='#e8e8e8')
-    #gui.phase_tree.tag_configure('odd', background='#dfdfdf')
+    gui.phase_tree.tag_configure('odd', background='#e8e8e8')
+    gui.phase_tree.tag_configure('odd', background='#dfdfdf')
 
 
 ##############################################
@@ -428,7 +394,7 @@ def build_BSM_tree():
 ##############################################
 
 def build_MAP_tree(availableMaps):
-    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=5)
+    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=len(availableMaps))
     gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
     gui.MAP_tree.column("#0", width=1, anchor='center')
     gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
