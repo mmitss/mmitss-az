@@ -56,28 +56,43 @@ def get_data():
     # set dyanamic text variables for labels
     receivedData, addr = s.recvfrom(2048)
     interfaceJson = json.loads(receivedData.decode())
-    secMark = int(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["secMark_Second"])
-    latitude_DecimalDegree= float(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["position"]["latitude_DecimalDegree"])
-    longitude_DecimalDegree= float(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["position"]["longitude_DecimalDegree"])
-    elevation_Meter= float(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["position"]["elevation_Meter"])
-    heading_Degree= float(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["heading_Degree"])
-    speed_MeterPerSecond= float(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["speed_MeterPerSecond"])
-    speed_mph= int(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["speed_mph"])
-    vehicleType= int(interfaceJson["controller_hmi_interface"]["BasicVehicle"]["vehicleType"])
-    vehicleLane= (interfaceJson["controller_hmi_interface"]["BasicVehicle"]["lane"])
+    secMark = int(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["secMark_Second"])
+    latitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["latitude_DecimalDegree"])
+    longitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["longitude_DecimalDegree"])
+    elevation_Meter= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["elevation_Meter"])
+    heading_Degree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["heading_Degree"])
+    speed_mph= str(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["speed_mph"])
+    temporaryID= str(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["temporaryID"])
+    vehicleType= str(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["vehicleType"])
+    vehicleLane= (interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["lane"])
+    onMap= bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["OnMAP"])
+    requestSent = bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["requestSent"])
+    #signalGroup= (interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["lane"])
 
+    # get maps
+    availableMaps = []
+    availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
+    print(len(availableMaps))
+    print(availableMaps)
+
+    '''
+    for i in range(0, lenL(availableMaps)): # assuming up to 5 maps have been received 
+        gui.map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
+        gui.map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
+        gui.map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
+    
     if vehicleLane == 0: # vehicle is not in work zone
         # reallocate memory for lane display
         reallocatelaneDisplay() 
         workers_present_value.set('                ')
         set_speed_limit(0)
         set_speed_warning_level(0, int(speed_mph))
-        monitor_gui.reallocation_counter = 0
+        gui.reallocation_counter = 0
     else:
          # vehicle is in work zone
         statusOfLanes = []
 
-        statusOfLanes = (interfaceJson["controller_hmi_interface"]["lanes"])
+        statusOfLanes = (interfaceJson["mmitss_hmi_interface"]["lanes"])
 
         laneList = []
 
@@ -115,29 +130,48 @@ def get_data():
             update_lane_display(laneList[i], i+1, vehicleLane, numLanes)
 
     # get map info
-    activeMap = interfaceJson["controller_hmi_interface"]["mapCache"]["activeMap"]
-    availableMaps = interfaceJson["controller_hmi_interface"]["mapCache"]["availableMaps"]
-    
+    activeMap = interfaceJson["mmitss_hmi_interface"]["mapCache"]["activeMap"]
+    availableMaps = interfaceJson["mmitss_hmi_interface"]["mapCache"]["availableMaps"]
+    '''
     # vehicle current speed and position
-    latString = "{:.7f}".format(latitude_DecimalDegree) # want 7 digits showing to right of decimal
-    lat_value.set("Latitude: " + latString)
-    longString = "{:.7f}".format(longitude_DecimalDegree) # want 7 digits showing to right of decimal
-    long_value.set("Longitude: " + longString)
-    elevation_value.set("Elevation: " + str(elevation_Meter))
-    heading_value.set("Heading: " + str(heading_Degree))
-    lane_value.set("Lane: " + str(vehicleLane))
-    # set speed limit display variables
-    speed_value.set(str(speed_mph))
-    mph_value.set('mph')       
-        
+    gui.latString = "{:.7f}".format(latitude_DecimalDegree) # want 7 digits showing to right of decimal
+    gui.lat_value.set("Latitude: " + gui.latString)
+    gui.longString = "{:.7f}".format(longitude_DecimalDegree) # want 7 digits showing to right of decimal
+    gui.long_value.set("Longitude: " + gui.longString)
+    gui.elevation_value.set("Elevation: " + str(elevation_Meter))
+    gui.heading_value.set("Heading: " + str(heading_Degree))
+    gui.lane_value.set("Lane: " + str(vehicleLane))
+    gui.speed_value.set(str("Speed: " + speed_mph + " mph"))
+    gui.vehicle_type_value.set(str("Vehicle Type: " + vehicleType))
+    gui.temporaryID_value.set(str("Temporary ID: " + temporaryID))
+    
+    # on map?
+    if onMap == True:
+        gui.on_map_value.set("    On Map    ")
+        gui.map_label.config(bg = 'pale green', fg='black', padx=5, pady=5)	
+    else:
+        gui.on_map_value.set("  Not On Map  ")
+        gui.map_label.config(bg = 'black', fg='pale green', padx=5, pady=5)	
 
-    # work zone (WZ) messages
-    active_message_value.set(str(activeMap["descriptiveName"]))
+    # priority request sent?
+    if requestSent == True:
+        gui.priority_request_value.set("Priority Request is ACTIVE")
+        gui.priority_label.config(bg='yellow', fg='black', padx=2, pady=5)
+    else:
+        gui.priority_request_value.set("   No Request Sent   ")
+        gui.priority_label.config(bg='black', fg='yellow', padx=2, pady=5)
+
+    # gui.signal_group_value.set(str("Signal Group: " + signalGroup))
+        
+    # MAP messages
+#    active_message_value.set(str(activeMap["descriptiveName"]))
     # get list of available maps
-    message1_descriptive_name = availableMaps["availableMaps"][0]["descriptiveName"]
-    message2_descriptive_name = availableMaps["availableMaps"][1]["descriptiveName"]
-    message3_descriptive_name = availableMaps["availableMaps"][2]["descriptiveName"]
-    message4_descriptive_name = availableMaps["availableMaps"][3]["descriptiveName"]
+    '''
+    message1_descriptive_name = availableMaps["availableMaps"][0]["DescriptiveName"]
+    message2_descriptive_name = availableMaps["availableMaps"][1]["DescriptiveName"]
+    message3_descriptive_name = availableMaps["availableMaps"][2]["DescriptiveName"]
+    message4_descriptive_name = availableMaps["availableMaps"][3]["DescriptiveName"]
+    message5_descriptive_name = availableMaps["availableMaps"][4]["DescriptiveName"]
 	
     # set the correct display values for each available map
     if (message1_descriptive_name == ''):
@@ -156,7 +190,11 @@ def get_data():
         received_message4_value.set('Unavailable')
     else:
         received_message4_value.set(message4_descriptive_name)
-	
+    if (message1_descriptive_name == ''):
+        received_message5_value.set('Unavailable')
+    else:
+        received_message5_value.set(message4_descriptive_name)
+	'''
 
     # adjust manual updates (graphics)
  
@@ -170,17 +208,21 @@ def get_data():
 
 def set_display_fonts_and_colors():
     # background colors
-    monitor_gui.appBackground = 'black'
-    monitor_gui.statusDisplayBackground = 'black'
-    monitor_gui.statusPanelBackground = 'gray5'
-    monitor_gui.statusDisplayBackground = 'gray10'
-    monitor_gui.textForeground = 'gray90'
+    gui.appBackground = 'black'
+    gui.statusDisplayBackground = 'black'
+    gui.statusPanelBackground = 'gray5'
+    gui.statusDisplayBackground = 'gray10'
+    gui.textForeground = 'gray90'
+    gui.onMapBackground = gui.statusDisplayBackground
+    gui.requestSentBackground = gui.statusDisplayBackground
+    gui.onMapForeground = 'pale green'
+    gui.requestSentForeground = 'light yellow'
 
     # fonts
-    monitor_gui.smallFont=("Helvetica", 10)
-    monitor_gui.mediumFont=("Helvetica", 15)
-    monitor_gui.largeFont=("Helvetica", 20)
-    monitor_gui.hugeFont=("Helvetica", 25)
+    gui.smallFont=("Helvetica", 10)
+    gui.mediumFont=("Helvetica", 15)
+    gui.largeFont=("Helvetica", 20)
+    gui.hugeFont=("Helvetica", 25)
 
 
 ##############################################
@@ -188,30 +230,38 @@ def set_display_fonts_and_colors():
 ##############################################
 def set_dynamic_variables():
     # initialize textvariables for dynamic updates
-    monitor_gui.on_map_value = StringVar()
-    monitor_gui.on_map_value.set('Not On Map')
-    monitor_gui.priority_request_value = StringVar()
-    monitor_gui.priority_request_value.set('Priority Request Not Active')
-    monitor_gui.speed_value = StringVar()
-    monitor_gui.speed_value.set('Speed:')
-    monitor_gui.lat_value = StringVar()
-    monitor_gui.lat_value.set('Latitude:')
-    monitor_gui.long_value = StringVar()
-    monitor_gui.long_value.set('Longitude:')
-    monitor_gui.elevation_value = StringVar()
-    monitor_gui.elevation_value.set('Elevation:')
-    monitor_gui.heading_value = StringVar()
-    monitor_gui.heading_value.set('Heading:')
-    monitor_gui.active_message_value = StringVar()
-    monitor_gui.active_message_value.set('Unavailable')
-    monitor_gui.received_message1_value = StringVar()
-    monitor_gui.received_message1_value.set('Unavailable')
-    monitor_gui.received_message2_value = StringVar()
-    monitor_gui.received_message2_value.set('Unavailable')
-    monitor_gui.received_message3_value = StringVar()
-    monitor_gui.received_message3_value.set('Unavailable')
-    monitor_gui.received_message4_value = StringVar()
-    monitor_gui.received_message4_value.set('Unavailable')
+    gui.on_map_value = StringVar()
+    gui.on_map_value.set('Not On Map')
+    gui.priority_request_value = StringVar()
+    gui.priority_request_value.set('Priority Request Not Active')
+    gui.speed_value = StringVar()
+    gui.speed_value.set('Speed:')
+    gui.lat_value = StringVar()
+    gui.lat_value.set('Latitude:')
+    gui.long_value = StringVar()
+    gui.long_value.set('Longitude:')
+    gui.elevation_value = StringVar()
+    gui.elevation_value.set('Elevation:')
+    gui.heading_value = StringVar()
+    gui.heading_value.set('Heading:')
+    gui.lane_value = StringVar()
+    gui.lane_value.set('Lane:')
+    gui.temporaryID_value = StringVar()
+    gui.temporaryID_value.set('Temporary ID:')
+    gui.vehicle_type_value = StringVar()
+    gui.vehicle_type_value.set('Vehicle Type:')
+    gui.active_message_value = StringVar()
+    gui.active_message_value.set('Unavailable')
+    gui.received_message1_value = StringVar()
+    gui.received_message1_value.set('Unavailable')
+    gui.received_message2_value = StringVar()
+    gui.received_message2_value.set('Unavailable')
+    gui.received_message3_value = StringVar()
+    gui.received_message3_value.set('Unavailable')
+    gui.received_message4_value = StringVar()
+    gui.received_message4_value.set('Unavailable')
+    gui.received_message5_value = StringVar()
+    gui.received_message5_value.set('Unavailable')
 
 ##############################################
 #   APPLICATION STATIC GRAPHICS
@@ -221,24 +271,30 @@ def load_static_graphics():
     # load all static graphics at start up
  
     # signal status icon (red / yellow / green)
-    monitor_gui.signal_red = PhotoImage(file = directory_path + "/images/SignalHead.png") 
-    monitor_gui.signal_red = monitor_gui.signal_red.subsample(5,5) 
+    gui.signal_red = PhotoImage(file = directory_path + "/images/SignalHeadRed.png") 
+    gui.signal_red = gui.signal_red.subsample(4,4) 
  
+    gui.signal_yellow = PhotoImage(file = directory_path + "/images/SignalHeadYellow.png") 
+    gui.signal_yellow = gui.signal_red.subsample(5,5) 
+
+    gui.signal_green = PhotoImage(file = directory_path + "/images/SignalHeadGreen.png") 
+    gui.signal_greem = gui.signal_red.subsample(5,5) 
+
     # ev icon dark means ev not present
-    monitor_gui.ev_dark = PhotoImage(file = directory_path + "/images/ev_dark.png") 
-    monitor_gui.ev_dark = monitor_gui.ev_dark.subsample(2,2) 
+    gui.ev_dark = PhotoImage(file = directory_path + "/images/ev_dark.png") 
+    gui.ev_dark = gui.ev_dark.subsample(2,2) 
 
    # ev icon means ev present
-    monitor_gui.ev = PhotoImage(file = directory_path + "/images/EV.png") 
-    monitor_gui.ev = monitor_gui.ev.subsample(2,2) 
+    gui.ev = PhotoImage(file = directory_path + "/images/EV.png") 
+    gui.ev = gui.ev.subsample(2,2) 
  
     # school zone icon dark means school zone not present
-    monitor_gui.school_zone_dark = PhotoImage(file = directory_path + "/images/school_zone_dark.png") 
-    monitor_gui.school_zone_dark = monitor_gui.school_zone_dark.subsample(3,3) 
+    gui.school_zone_dark = PhotoImage(file = directory_path + "/images/school_zone_dark.png") 
+    gui.school_zone_dark = gui.school_zone_dark.subsample(3,3) 
 
    # school zone icon means school zone present
-    monitor_gui.school_zone = PhotoImage(file = directory_path + "/images/school_zone.png") 
-    monitor_gui.school_zone = monitor_gui.school_zone.subsample(3,3) 
+    gui.school_zone = PhotoImage(file = directory_path + "/images/school_zone.png") 
+    gui.school_zone = gui.school_zone.subsample(3,3) 
  
 ##############################################
 #   SET UP PERFORMANCE TEST OUTPUT FILE
@@ -253,109 +309,136 @@ def initialize_perf_output_file():
     perfTest.perf_writer = csv.writer(perfTest.hmi_perf_file)
     perfTest.perf_writer.writerow(['Message Sent', 'Message Received', 'Display Updated'])
 
-
-
 ##############################################
-#   VEHICLE SPEED / POSITION DISPLAY
+#   8-PHASE STATUS DISPLAY
 ##############################################
 
-def set_speed_warning_level(speedLimit_mph, speed_mph):
-    current_speed_label.config(bg=statusDisplayBackground)
-    if speedLimit_mph > 0:
-        warning_level = speed_mph - speedLimit_mph
-        if warning_level > 5:
-            # red level warning
-            current_speed_label.config(fg='red', padx=5, pady=5)	
-        elif warning_level > 0:
-            # yellow level warning
-            current_speed_label.config(fg='yellow', padx=5, pady=5)
-        else:
-            # zero level warning
-            current_speed_label.config(bg=statusDisplayBackground, fg=textForeground)
-    else: # not in work zone
-        # zero level warning
-        current_speed_label.config(bg=statusDisplayBackground, fg=textForeground)
+def build_phase_tree():
+    gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none')
+    gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
+    gui.phase_tree.column("#0", width=100)
+    gui.phase_tree.column("1", width=30)
+    gui.phase_tree.column("2", width=30)
+    gui.phase_tree.column("3", width=30) 
+    gui.phase_tree.column("4", width=30)
+    gui.phase_tree.column("5", width=30)
+    gui.phase_tree.column("6", width=30) 
+    gui.phase_tree.column("7", width=30)
+    gui.phase_tree.column("8", width=30)
+    gui.phase_tree.heading('#0', text='Phases') 
+    gui.phase_tree.heading('1', text='1') 
+    gui.phase_tree.heading("2", text="2") 
+    gui.phase_tree.heading("3", text="3") 
+    gui.phase_tree.heading("4", text="4") 
+    gui.phase_tree.heading("5", text="5") 
+    gui.phase_tree.heading("6", text="6") 
+    gui.phase_tree.heading("7", text="7") 
+    gui.phase_tree.heading("8", text="8") 
 
-'''
-##############################################
-#   MAP MESSAGES DISPLAY
-##############################################
-
-# message status frame for work zone message status
-message_status_frame = LabelFrame(monitor_gui.status_update_frame, font=mediumFont, text = "Work Zone Messages", fg=textForeground, bg=statusPanelBackground)
-message_status_frame.grid(row=2, column=1, padx=10, pady=10, sticky=N+E+W)
-
-# WZ Active Message Frame (Top Right) and its contents
-active_message_frame = LabelFrame(message_status_frame, font=mediumFont, relief=FLAT, fg=textForeground, bg=statusPanelBackground)
-active_message_frame.grid(row=0, column=0, padx=10, pady=10, sticky=N)
-
-# active message label
-Label(active_message_frame, text="     Active     ", font=mediumFont, foreground="green", bg=statusPanelBackground).grid(row=0, column=0, padx=100, pady=2)
-# active message content
-Label(active_message_frame, textvariable=active_message_value, font=mediumFont, foreground="green", bg=statusPanelBackground).grid(row=1, column=0, padx=50, pady=2)
-
-# WZ Received Message Frame (Top Right) and its contents
-received_message_frame = LabelFrame(message_status_frame, font=mediumFont, relief=FLAT, fg=textForeground, bg=statusPanelBackground)
-received_message_frame.grid(row=0, column=1, padx=10, pady=10, sticky=N)
-
-# received message(s) label
-Label(received_message_frame, text="    Received    ", font=mediumFont, foreground="RoyalBlue1", bg=statusPanelBackground).grid(row=2, column=0, padx=100, pady=2)
-# received message content
-Label(received_message_frame, textvariable=received_message1_value, font=mediumFont, foreground="RoyalBlue1", bg=statusPanelBackground).grid(row=3, column=0, padx=50, pady=2)
-Label(received_message_frame, textvariable=received_message2_value, font=mediumFont, foreground="RoyalBlue1", bg=statusPanelBackground).grid(row=4, column=0, padx=50, pady=2)
-Label(received_message_frame, textvariable=received_message3_value, font=mediumFont, foreground="RoyalBlue1", bg=statusPanelBackground).grid(row=5, column=0, padx=50, pady=2)
-Label(received_message_frame, textvariable=received_message4_value, font=mediumFont, foreground="RoyalBlue1", bg=statusPanelBackground).grid(row=6, column=0, padx=100, pady=2)
-
-
-
-
-
-'''
-
-##############################################
-#   VEHICLE SPEED / POSITION DISPLAY
-##############################################
-
-def build_BSM_tree():
-    monitor_gui.bsm_tree = ttk.Treeview(monitor_gui.BSM, selectmode='none')
-    monitor_gui.bsm_tree["columns"]=("Time", "Temp ID", "Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
-    monitor_gui.bsm_tree.column("#0", width=1)
-    monitor_gui.bsm_tree.column("Time", width=100)
-    monitor_gui.bsm_tree.column("Temp ID", width=100)
-    monitor_gui.bsm_tree.column("Vehicle Type", width=100) 
-    monitor_gui.bsm_tree.column("Latitude", width=100)
-    monitor_gui.bsm_tree.column("Longitude", width=100)
-    monitor_gui.bsm_tree.column("Elevation", width=100) 
-    monitor_gui.bsm_tree.column("Heading", width=100)
-    monitor_gui.bsm_tree.column("Speed", width=100)
-    monitor_gui.bsm_tree.heading('Time', text='Time') 
-    monitor_gui.bsm_tree.heading("Temp ID", text="Temp ID") 
-    monitor_gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
-    monitor_gui.bsm_tree.heading("Latitude", text="Latitude") 
-    monitor_gui.bsm_tree.heading("Longitude", text="Longitude") 
-    monitor_gui.bsm_tree.heading("Elevation", text="Elevation") 
-    monitor_gui.bsm_tree.heading("Heading", text="Heading") 
-    monitor_gui.bsm_tree.heading("Speed", text="Speed") 
-    #monitor_gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+    gui.phase_tree.grid(row=1, column=0, rowspan=3, sticky=E+W)
 
     # set style
     style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=monitor_gui.smallFont) # Modify the font of the body
-    style.configure("mystyle.Treeview.Heading", font=monitor_gui.smallFont) # Modify the font of the headings
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont) # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
+    #style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    
+    gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=('R', 'R', 'R', 'G', 'R', 'R', '', 'R'), tags=('odd'))
+    gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
+    
+    # tag styles
+    #gui.phase_tree.tag_configure('odd', background='#e8e8e8')
+    #gui.phase_tree.tag_configure('odd', background='#dfdfdf')
+
+
+##############################################
+#   ACTIVE REQUEST DISPLAY
+##############################################
+
+def build_ART_tree():
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none')
+    gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
+    gui.ART_tree.column("#0", width=1)
+    gui.ART_tree.column("RequestID", width=100)
+    gui.ART_tree.column("VehicleID", width=100)
+    gui.ART_tree.column("BasicVehicleRole", width=100) 
+    gui.ART_tree.column("PriorityRequestStatus", width=100)
+    gui.ART_tree.column("MessageCount", width=100)
+    gui.ART_tree.column("InBoundLane", width=100) 
+    gui.ART_tree.column("VehicleETA", width=100)
+    gui.ART_tree.column("VehicleDuration", width=100)
+    gui.ART_tree.heading('RequestID', text='Request ID') 
+    gui.ART_tree.heading("VehicleID", text="Vehicle ID") 
+    gui.ART_tree.heading("BasicVehicleRole", text="Basic Vehicle Role") 
+    gui.ART_tree.heading("PriorityRequestStatus", text="PriorityRequestStatus") 
+    gui.ART_tree.heading("MessageCount", text="MessageCount") 
+    gui.ART_tree.heading("InBoundLane", text="In Bound Lane") 
+    gui.ART_tree.heading("VehicleETA", text="Vehicle ETA") 
+    gui.ART_tree.heading("VehicleDuration", text="Vehicle Duration") 
+    #gui.ART_tree.heading("Vehicle Type", text="Vehicle Type") 
+
+    # set style
+    style = ttk.Style()
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont) # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
     
-    #monitor_gui.bsm_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
-    #monitor_gui.bsm_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
-    #monitor_gui.bsm_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
+    gui.ART_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
+    #gui.ART_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
+    #gui.ART_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
     
-    monitor_gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
+    gui.ART_tree.grid(row=1, column=0, sticky=E+W)
     
-    monitor_gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
+    gui.ART_tree.tag_configure('odd', background='#e8e8e8')
 
     # tag styles
-    monitor_gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
-    monitor_gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
+    gui.ART_tree.tag_configure('odd', background='#e8e8e8')
+    gui.ART_tree.tag_configure('odd', background='#dfdfdf')
+
+##############################################
+#   REMOTE BSM DISPLAY
+##############################################
+
+def build_BSM_tree():
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none')
+    gui.bsm_tree["columns"]=("Time", "Temp ID", "Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
+    gui.bsm_tree.column("#0", width=1)
+    gui.bsm_tree.column("Time", width=100)
+    gui.bsm_tree.column("Temp ID", width=100)
+    gui.bsm_tree.column("Vehicle Type", width=100) 
+    gui.bsm_tree.column("Latitude", width=100)
+    gui.bsm_tree.column("Longitude", width=100)
+    gui.bsm_tree.column("Elevation", width=100) 
+    gui.bsm_tree.column("Heading", width=100)
+    gui.bsm_tree.column("Speed", width=100)
+    gui.bsm_tree.heading('Time', text='Time') 
+    gui.bsm_tree.heading("Temp ID", text="Temp ID") 
+    gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+    gui.bsm_tree.heading("Latitude", text="Latitude") 
+    gui.bsm_tree.heading("Longitude", text="Longitude") 
+    gui.bsm_tree.heading("Elevation", text="Elevation") 
+    gui.bsm_tree.heading("Heading", text="Heading") 
+    gui.bsm_tree.heading("Speed", text="Speed") 
+    #gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+
+    # set style
+    style = ttk.Style()
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, foreground="green", background="black") # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
+    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    
+    gui.bsm_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
+    #gui.bsm_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
+    #gui.bsm_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
+    
+    gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
+    
+    gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
+
+    # tag styles
+    gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
+    gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
 
 ##############################################
 #  STATUS WIDGET INITIAL DISPLAY
@@ -367,78 +450,75 @@ def create_status_widgets():
     # load the static graphics
     load_static_graphics()
 
-    # create the frame that holds all dynamic data (everything except the static footer)
-    
-    ### west (left side) ###
-    monitor_gui.status_west = Frame(monitor_gui, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.status_west.grid(row=0, column=0, columnspan=3, rowspan=3, padx=5, pady=5)
-
     # SPaT Data
-    monitor_gui.SPaT = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="SPaT Data", fg=monitor_gui.textForeground)
-    monitor_gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    gui.SPaT = LabelFrame(gui, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="SPaT Data", fg=gui.textForeground)
+    gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Signal Data
-    monitor_gui.Signal = Label(monitor_gui.SPaT, image=monitor_gui.signal_red, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    gui.Signal = Label(gui.SPaT, image=gui.signal_red, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Phase Data
-    monitor_gui.Phase = Frame(monitor_gui.SPaT, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.Phase.grid(row=2, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    gui.Phase = Frame(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.Phase.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Vehicle Position Data
-    monitor_gui.BasicVehicle = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, text="Host Vehicle Data", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground)
-    monitor_gui.BasicVehicle.grid(row=4, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    gui.BasicVehicle = LabelFrame(gui, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, text='Host Vehicle', font=gui.mediumFont, fg=gui.textForeground)
+    gui.BasicVehicle.grid(row=4, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
-    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.speed_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
-    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.lat_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
-    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.long_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
-    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.elevation_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2)
-    Label(monitor_gui.BasicVehicle, textvariable=monitor_gui.heading_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2)
-    #Label(monitor_gui.BasicVehicle, textvariable=lane_value, font=mediumFont, fg=textForeground, bg=statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2)
-
-    ### east (right side) ###
-    monitor_gui.status_east = Frame(monitor_gui, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.status_east.grid(row=0, column=1, columnspan=3, rowspan=4, padx=5, pady=5)
+    Label(gui.BasicVehicle, textvariable=gui.temporaryID_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.vehicle_type_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.speed_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.lat_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.long_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.elevation_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.heading_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=6, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.lane_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=7, column=0, padx=5, pady=2)
 
     # Map Status
-    monitor_gui.Map = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="MAP Status", fg=monitor_gui.textForeground)
-    monitor_gui.Map.grid(row=0, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    gui.Map = LabelFrame(gui, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="MAP Status", fg=gui.textForeground)
+    gui.Map.grid(row=0, column=1, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
 
-    # Map Status text
-    monitor_gui.map_label = Label(monitor_gui.Map, textvariable=monitor_gui.on_map_value, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Map Status", fg=monitor_gui.textForeground)
-    monitor_gui.map_label.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10, sticky=E+W)
-    #Label(monitor_gui.Map, textvariable=monitor_gui.speed_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
+    # Map Status
+    gui.map_label = Label(gui.Map, textvariable=gui.on_map_value, relief=RIDGE, bd=1, bg=gui.onMapBackground, font=gui.mediumFont, text="Map Status", fg=gui.onMapForeground)
+    gui.map_label.grid(row=0, column=0, columnspan=1, padx=10, pady=10, sticky=E+W)
     # priority request status
-    Label(monitor_gui.Map, textvariable=monitor_gui.priority_request_value, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
+    gui.priority_label = Label(gui.Map, textvariable=gui.priority_request_value, relief=RIDGE, font=gui.mediumFont, fg=gui.requestSentForeground, bg=gui.requestSentBackground, justify=LEFT)
+    gui.priority_label.grid(row=1, column=0, rowspan=1, padx=5, pady=2, sticky=E+W)
 
     # ART
-    monitor_gui.ART = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="ART", fg=monitor_gui.textForeground)
-    monitor_gui.ART.grid(row=2, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.ART, text="PLACEHOLDER", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    gui.ART = LabelFrame(gui, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Active Request Table", fg=gui.textForeground)
+    gui.ART.grid(row=2, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    #Label(gui.ART, text="PLACEHOLDER", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
 
-    # Basic Vehicle Messages
-    monitor_gui.BSM = LabelFrame(monitor_gui, relief=RIDGE, bd=1, bg=monitor_gui.statusPanelBackground, font=monitor_gui.mediumFont, text="Remote Vehicles: Basic Vehicle Data", fg=monitor_gui.textForeground)
-    monitor_gui.BSM.grid(row=4, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.BSM, text="No Vehicle Data", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+    # Remote Basic Vehicle Messages
+    gui.BSM = LabelFrame(gui, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Remote Vehicles: Basic Vehicle Data", fg=gui.textForeground)
+    gui.BSM.grid(row=4, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    Label(gui.BSM, text="No Vehicle Data", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
 
     # Bottom Row (EV, School Zone, and Available Maps)
-    monitor_gui.Multi = Frame(monitor_gui, relief=RAISED, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.Multi.grid(row=6, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
+    gui.Multi = Frame(gui, relief=RAISED, bd=1, bg=gui.statusPanelBackground)
+    gui.Multi.grid(row=6, column=1, columnspan=1, rowspan=2, padx=10, pady=10, sticky=W)
  
     # EV
-    monitor_gui.EV = Frame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.EV.grid(row=0, column=0, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.EV, image=monitor_gui.ev_dark, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
+    gui.EV = Frame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.EV.grid(row=0, column=0, padx=10, pady=10, sticky=W)
+    Label(gui.EV, image=gui.ev_dark, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
     # School Zone
-    monitor_gui.SchoolZone = Frame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusPanelBackground)
-    monitor_gui.SchoolZone.grid(row=0, column=1, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.SchoolZone, image=monitor_gui.school_zone_dark, font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
+    gui.SchoolZone = Frame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.SchoolZone.grid(row=0, column=1, padx=10, pady=10, sticky=W)
+    Label(gui.SchoolZone, image=gui.school_zone_dark, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
     # Available Maps
-    monitor_gui.AvailableMaps = LabelFrame(monitor_gui.Multi, relief=FLAT, bd=1, bg=monitor_gui.statusDisplayBackground, font=monitor_gui.mediumFont, text="Available Maps", fg=monitor_gui.textForeground)
-    monitor_gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
-    Label(monitor_gui.AvailableMaps, text="placeholder", font=monitor_gui.mediumFont, fg=monitor_gui.textForeground, bg=monitor_gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
+    gui.AvailableMaps = LabelFrame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusDisplayBackground, font=gui.mediumFont, text="Available Maps", fg=gui.textForeground)
+    gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
+    Label(gui.AvailableMaps, text="placeholder", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
+    Label(gui.AvailableMaps, textvariable=gui.received_message1_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=0, column=0, padx=50, pady=2)
+    Label(gui.AvailableMaps, textvariable=gui.received_message2_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=1, column=0, padx=50, pady=2)
+    Label(gui.AvailableMaps, textvariable=gui.received_message3_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=2, column=0, padx=50, pady=2)
+    Label(gui.AvailableMaps, textvariable=gui.received_message4_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=3, column=0, padx=100, pady=2)
+    Label(gui.AvailableMaps, textvariable=gui.received_message5_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=4, column=0, padx=100, pady=2)
 
 ##############################################
 #   APPLICATION FOOTER
@@ -447,11 +527,11 @@ def create_status_widgets():
 def create_app_footer():
 
     # app logo
-    monitor_gui.app_logo = PhotoImage(file = directory_path + "/images/vehicle-status-display-logo.png") 
-    monitor_gui.app_logo = monitor_gui.app_logo.subsample(1,1) 
+    gui.app_logo = PhotoImage(file = directory_path + "/images/vehicle-status-display-logo.png") 
+    gui.app_logo = gui.app_logo.subsample(1,1) 
 
     # create the footer, add , and place it at the bottom of the application
-    logo_label = Label(monitor_gui, image = monitor_gui.app_logo, relief=RIDGE, bd=6, bg='white')   
+    logo_label = Label(gui, image = gui.app_logo, relief=RIDGE, bd=6, bg='white')   
     logo_label.grid(row=15, column=0, columnspan=4, padx = 20, pady = 20, sticky=S+E+W) 
 
 ##############################################
@@ -462,14 +542,20 @@ def update_display():
     # refresh data
 
     # read JSON
-    #get_data()
+    get_data()
 	
+    # build the treeview containing Phases
+    build_phase_tree()
+
+    # build the treeview containing Active Requests
+    build_ART_tree()
+
     # build the treeview containing BSMs
     build_BSM_tree()
 
     # refresh dynamic data labels that were set to type class StringVar
     # class StringVar updates dynamically with root.update_idletasks()
-    monitor_gui.update_idletasks()
+    gui.update_idletasks()
     
     # Performance Testing
     if args.perf:
@@ -478,7 +564,7 @@ def update_display():
         perfTest.perf_writer.writerow([perfTest.time_sent, perfTest.time_received, perfTest.time_refreshed])	
     
     # reset refresh timer
-    monitor_gui.after(800, update_display)
+    gui.after(100, update_display)
 
 ##############################################
 #   MONITOR GUI (APPLICATION) ON CLOSING
@@ -491,7 +577,7 @@ def on_closing():
     
     # kill the socket
     s.close()
-    monitor_gui.destroy()
+    gui.destroy()
 '''
 class MonitorGUI:
     def __init__(self, master):
@@ -527,11 +613,11 @@ if __name__ == "__main__":
     s.bind((hmi))
         # create Monitor GUI
     #    root = Tk()
-    #monitor_gui = MonitorGUI(root)
-    monitor_gui = Tk()
+    #gui = MonitorGUI(root)
+    gui = Tk()
     set_display_fonts_and_colors()
-    monitor_gui.title("Vehicle Status Data Prototype")  
-    monitor_gui['bg'] = monitor_gui.appBackground
+    gui.title("Vehicle Status Data Prototype")  
+    gui['bg'] = gui.appBackground
 
     # create the application footer with s
     create_app_footer()
@@ -540,12 +626,12 @@ if __name__ == "__main__":
     create_status_widgets()
 
     # set timer for updating data and call the update function
-    monitor_gui.after(800, update_display)
+    gui.after(100, update_display)
 
 
     # handle event for closing the application
-    monitor_gui.protocol("WM_DELETE_WINDOW", on_closing)
+    gui.protocol("WM_DELETE_WINDOW", on_closing)
 	
     # fire up the Monitor GUI
-    monitor_gui.mainloop()
+    gui.mainloop()
 
