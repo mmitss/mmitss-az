@@ -136,6 +136,14 @@ def get_data():
     # build the treeview containing ART
     build_ART_tree(activeRequestTable)
 
+    # Remote BSMs
+    # get list of Remote BSMs
+    remoteVehicles = []
+    remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
+
+    # build the treeview containing ART
+    #build_BSM_tree(remoteVehicles)
+
    
     # MAP messages
     # get list of available maps
@@ -354,12 +362,13 @@ def build_ART_tree(activeRequestTable):
 #   REMOTE BSM DISPLAY
 ##############################################
 
-def build_BSM_tree():
+def build_BSM_tree(remoteVehicles):
     gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=5)
-    gui.bsm_tree["columns"]=("Time", "Temp ID", "Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
+    gui.bsm_tree["columns"]=("Line ID","Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
-    gui.bsm_tree.column("Time", width=100)
+    gui.bsm_tree.column("Line ID", width=1)
     gui.bsm_tree.column("Temp ID", width=100)
+    gui.bsm_tree.column("Time", width=100)
     gui.bsm_tree.column("Vehicle Type", width=100) 
     gui.bsm_tree.column("Latitude", width=100)
     gui.bsm_tree.column("Longitude", width=100)
@@ -382,9 +391,14 @@ def build_BSM_tree():
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
-    gui.bsm_tree.insert('', 1, '36500', text='2', values=('transit'), tags=('odd'))
-    #gui.bsm_tree.TreeAdd('', 1, '36500', text='3', values=('truck'), tags=('even'))   
-    #gui.bsm_tree.insert('', 1, '36500', text='4', values=('passenger'), tags=('odd'))
+    lineID = 0
+
+    for vehicle in remoteVehicles:
+        lineID = lineID + 1
+        print(lineID)
+        print(vehicle)
+        gui.bsm_tree.insert('', 'end', iid="lineID", text="", values=('lineID', vehicle['temporaryID'], vehicle['secMark_Second'], vehicle['vehicleType'], vehicle['latitude_DecimalDegree'], vehicle['longitude_DecimalDegree'], rvehicleequest['elevationMeter'], vehicle['heading_Degree'], vehicle['speed_mph'], vehicle['speed_mph'] ))
+        
     
     gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
     
