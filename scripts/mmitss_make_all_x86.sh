@@ -1,9 +1,30 @@
 #!/bin/bash
-# This script finds all the Makefiles present in the rse sources, builds that 
-# project for linux and copies it to the applications folder in this directory
+#############################################################################################
+#                                                                                           
+# NOTICE:  Copyright 2018 Arizona Board of Regents on behalf of University of Arizona.      
+# All information, intellectual, and technical concepts contained herein is and shall       
+# remain the proprietary information of Arizona Board of Regents and may be covered         
+# by U.S. and Foreign Patents, and patents in process.  Dissemination of this information          
+# or reproduction of this material is strictly forbidden unless prior written permission    
+# is obtained from Arizona Board of Regents or University of Arizona.                       
+#                                                                                           
+# mmitss_make_all_x86.sh                                                                     
+# Created by Niraj Altekar                                                                  
+# Transportation Research Institute                                                         
+# Systems and Industrial Engineering                                                        
+# The University of Arizona                                                                 
+#                                                                                           
+# This code was develop under the supervision of Professor Larry Head                       
+# in the Transportation Research Institute.                                                 
+#                                                                                           
+# Operational Description:                                                                   
+# This script builds all mmitss applications (vehicle, intersection, and common),
+# under the x86 environment. The primary reason for such builds is development and testing.
+# This script can not be used in the ARM architecture based devices.                                                                                                  
+#############################################################################################
 
+# Define colors:
 red='\033[0;31m'
-
 green='\033[0;32m'
 nocolor='\033[0m'
 
@@ -22,7 +43,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -41,7 +62,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -60,7 +81,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -81,7 +102,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -102,7 +123,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -121,7 +142,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -140,7 +161,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
