@@ -34,6 +34,9 @@ def main():
     bsmReceiverPort = config["PortNumber"]['OBUBSMReceiver']
     hostComm = (hostIp, bsmReceiverPort)
 
+    cvwz_bsmDecoderPort = 40002
+    cvwz_bsmDecoderComm = (hostIp, cvwz_bsmDecoderPort)
+
     transceiverDecoderPort = config["PortNumber"]["HostBsmDecoder"]
     transceiverDecoderComm = (hostIp, transceiverDecoderPort)
 
@@ -60,6 +63,8 @@ def main():
         receivedMsg = receivedMsg.hex()
         bsmPayload = receivedMsg[receivedMsg.find("0014"):]
         s.sendto(bsmPayload.encode(), transceiverDecoderComm)
+        s.sendto(bsmPayload.encode(), cvwz_bsmDecoderPort)    
+
         if DEBUGGING: print("Received BSM from OBU")
     s.close()
 if __name__ == "__main__":
