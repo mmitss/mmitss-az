@@ -45,6 +45,7 @@ private:
     int basicVehicleRole{};
     int priorityRequestType{};
     double tempVehicleSpeed{}; //tempVehicleSpeed store the vehicle speed of last send out srm. use it to check the speed change. will be set vehicle minimum speed when out of the intersection
+    double tempSRMTimeStamp{}; //temporary store the time when last SRM has been sent
     int counter_VehicleInMap{};
     
 public:

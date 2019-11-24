@@ -81,6 +81,8 @@ int main(int argc, char *argv[])
     int iPORT = (jsonObject["PortNumber"]["PriorityRequestServer"]).asInt();
 
     UdpSocket MsgReceiverSocket(jsonObject["PortNumber"]["PriorityRequestServer_SendSSM"].asInt());
+    deleteMapPayloadFile();
+    writeMAPPayloadInFile();
 
     creatLogFile();
 
@@ -164,7 +166,7 @@ int main(int argc, char *argv[])
             ReqListUpdateFlag = NO_UPDATE;
 
             clearSignalControllerCommands = false;
-            
+
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
             sendClearCommandsToInterface();
@@ -172,6 +174,8 @@ int main(int argc, char *argv[])
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
     }
+
+    deleteMapPayloadFile();
 
     return 0;
 }
@@ -1279,7 +1283,7 @@ int getPhaseInfo(SignalRequest signalRequest)
     int regionalID = (jsonObject["RegionalID"]).asInt();
     // std::string fmap = (jsonObject["IntersectionInfo"]["mapFileDirectory"]).asString();
     std::string intersectionName = (jsonObject["IntersectionName"]).asString();
-    std::string fmap = "./map/" + intersectionName + ".map.payload";
+    std::string fmap = "/nojournal/bin/" + intersectionName + ".map.payload";
 
     LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
     int approachID = plocAwareLib->getApproachIdByLaneId(regionalID, intersectionID, static_cast<uint8_t>(signalRequest.getInBoundLaneID()));
@@ -1288,4 +1292,46 @@ int getPhaseInfo(SignalRequest signalRequest)
 
     delete plocAwareLib;
     return phaseNo;
+}
+
+void writeMAPPayloadInFile()
+{
+    Json::Value jsonObject;
+    Json::Reader reader;
+    std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
+
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+
+    std::string intersectionName = (jsonObject["IntersectionName"]).asString();
+    std::string mapPayload = (jsonObject["MapPayload"]).asString();
+
+    const char *path = "/nojournal/bin";
+    std::stringstream ss;
+    ss << path;
+    std::string s;
+    ss >> s;
+    std::ofstream outputfile;
+
+    outputfile.open(s + "/" + intersectionName + ".map.payload");
+
+    outputfile << "payload"
+               << " "
+               << intersectionName << " " << mapPayload << std::endl;
+    outputfile.close();
+}
+
+void deleteMapPayloadFile()
+{
+    Json::Value jsonObject;
+    Json::Reader reader;
+    std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
+
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+
+    std::string intersectionName = (jsonObject["IntersectionName"]).asString();
+
+    std::string deleteFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
+    remove(deleteFileName.c_str());
 }
