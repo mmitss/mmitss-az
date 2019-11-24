@@ -69,12 +69,6 @@ def get_data():
     requestSent = bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["requestSent"])
     #signalGroup= (interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["lane"])
 
-    # get maps
-    availableMaps = []
-    availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
-    print(len(availableMaps))
-    print(availableMaps)
-
     '''
     for i in range(0, lenL(availableMaps)): # assuming up to 5 maps have been received 
         gui.map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
@@ -129,9 +123,6 @@ def get_data():
             # display status
             update_lane_display(laneList[i], i+1, vehicleLane, numLanes)
 
-    # get map info
-    activeMap = interfaceJson["mmitss_hmi_interface"]["mapCache"]["activeMap"]
-    availableMaps = interfaceJson["mmitss_hmi_interface"]["mapCache"]["availableMaps"]
     '''
     # vehicle current speed and position
     gui.latString = "{:.7f}".format(latitude_DecimalDegree) # want 7 digits showing to right of decimal
@@ -162,42 +153,23 @@ def get_data():
         gui.priority_label.config(bg='black', fg='yellow', padx=2, pady=5)
 
     # gui.signal_group_value.set(str("Signal Group: " + signalGroup))
-        
-    # MAP messages
-#    active_message_value.set(str(activeMap["descriptiveName"]))
-    # get list of available maps
-    '''
-    message1_descriptive_name = availableMaps["availableMaps"][0]["DescriptiveName"]
-    message2_descriptive_name = availableMaps["availableMaps"][1]["DescriptiveName"]
-    message3_descriptive_name = availableMaps["availableMaps"][2]["DescriptiveName"]
-    message4_descriptive_name = availableMaps["availableMaps"][3]["DescriptiveName"]
-    message5_descriptive_name = availableMaps["availableMaps"][4]["DescriptiveName"]
-	
-    # set the correct display values for each available map
-    if (message1_descriptive_name == ''):
-        received_message1_value.set('Unavailable')
-    else:
-        received_message1_value.set(message1_descriptive_name)
-    if (message2_descriptive_name == ''):
-        received_message2_value.set('Unavailable')
-    else:
-        received_message2_value.set(message2_descriptive_name)
-    if (message1_descriptive_name == ''):
-        received_message3_value.set('Unavailable')
-    else:
-        received_message3_value.set(message3_descriptive_name)
-    if (message1_descriptive_name == ''):
-        received_message4_value.set('Unavailable')
-    else:
-        received_message4_value.set(message4_descriptive_name)
-    if (message1_descriptive_name == ''):
-        received_message5_value.set('Unavailable')
-    else:
-        received_message5_value.set(message4_descriptive_name)
-	'''
 
-    # adjust manual updates (graphics)
- 
+    # SPaT status
+    # get maps
+    phaseTable = []
+    phaseTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["phaseStates"]
+    for phase in phaseTable:
+        print(phase['ped_status'],phase['phase'], phase['phase_status'])
+    
+  
+    # MAP messages
+    # get list of available maps
+    availableMaps = []
+    availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
+
+    # build the treeview containing MAPs
+    build_MAP_tree(availableMaps)
+
     # performance test time that HMI receives message
     if args.perf:
         perfTest.time_received = time.time()
@@ -313,7 +285,7 @@ def initialize_perf_output_file():
 #   8-PHASE STATUS DISPLAY
 ##############################################
 
-def build_phase_tree():
+def build_phase_tree(phaseTable):
     gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none', height=2)
     gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
     gui.phase_tree.column("#0", width=100, anchor='center')
@@ -342,9 +314,19 @@ def build_phase_tree():
     style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+
+    phaseList = []
+    pedList = []
+
+    for phase in phaseTable:
+        #print(phase['ped_status'],phase['phase'], phase['phase_status'])
+        phaseList.append(phase['phase_status'])
+        pedList.append(phase['ped_status'])
     
-    gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=('R', 'R', 'R', 'G', 'R', 'R', '', 'R'), tags=('odd'))
-    gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
+    #phaseString =  "'R', 'R', 'R', 'G', 'R', 'R', '', 'R'"   
+    gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=(phaseList), tags=('odd'))
+    gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('even'))
+    #gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
     
     # tag styles
     #gui.phase_tree.tag_configure('odd', background='#e8e8e8')
@@ -442,6 +424,49 @@ def build_BSM_tree():
     gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
 
 ##############################################
+#   AVAILABLE MAP DISPLAY
+##############################################
+
+def build_MAP_tree(availableMaps):
+    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=5)
+    gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
+    gui.MAP_tree.column("#0", width=1, anchor='center')
+    gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
+    gui.MAP_tree.column("DescriptiveName", width=200, anchor='center')
+    gui.MAP_tree.column("Active", width=100, anchor='center') 
+    gui.MAP_tree.column("Age", width=100, anchor='center')
+    gui.MAP_tree.heading('#0', text='', anchor='center') 
+    gui.MAP_tree.heading('IntersectionID', text='Intersection ID', anchor='center') 
+    gui.MAP_tree.heading("DescriptiveName", text="DescriptiveName", anchor='center') 
+    gui.MAP_tree.heading("Active", text="Active", anchor='center') 
+    gui.MAP_tree.heading("Age", text="Age", anchor='center') 
+
+    # placement
+    gui.MAP_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
+
+    # set style
+    style = ttk.Style()
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
+    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
+    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+
+    mapList = []
+
+    for map in availableMaps:
+        #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
+        gui.MAP_tree.insert('', 'end', iid="map['IntersectionID']", text="", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ))
+    
+    #phaseString =  "'R', 'R', 'R', 'G', 'R', 'R', '', 'R'"   
+    #gui.MAP_tree.insert('', 'end', iid='', text='', values=(mapList), tags=('odd'))
+    #gui.MAP_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('even'))
+    #gui.MAP_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
+    
+    # tag styles
+    #gui.MAP_tree.tag_configure('odd', background='#e8e8e8')
+    #gui.MAP_tree.tag_configure('odd', background='#dfdfdf')
+
+
+##############################################
 #  STATUS WIDGET INITIAL DISPLAY
 ##############################################
 def create_status_widgets():
@@ -514,12 +539,15 @@ def create_status_widgets():
     # Available Maps
     gui.AvailableMaps = LabelFrame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusDisplayBackground, font=gui.mediumFont, text="Available Maps", fg=gui.textForeground)
     gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
+    
+    '''
     Label(gui.AvailableMaps, text="placeholder", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
     Label(gui.AvailableMaps, textvariable=gui.received_message1_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=0, column=0, padx=50, pady=2)
     Label(gui.AvailableMaps, textvariable=gui.received_message2_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=1, column=0, padx=50, pady=2)
     Label(gui.AvailableMaps, textvariable=gui.received_message3_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=2, column=0, padx=50, pady=2)
     Label(gui.AvailableMaps, textvariable=gui.received_message4_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=3, column=0, padx=100, pady=2)
     Label(gui.AvailableMaps, textvariable=gui.received_message5_value, font=gui.mediumFont, foreground="RoyalBlue1", bg=gui.statusPanelBackground).grid(row=4, column=0, padx=100, pady=2)
+    '''
 
 ##############################################
 #   APPLICATION FOOTER
@@ -545,9 +573,6 @@ def update_display():
     # read JSON
     get_data()
 	
-    # build the treeview containing Phases
-    build_phase_tree()
-
     # build the treeview containing Active Requests
     build_ART_tree()
 
