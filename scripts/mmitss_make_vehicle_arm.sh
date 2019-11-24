@@ -22,7 +22,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -41,7 +41,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -60,7 +60,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -81,7 +81,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null

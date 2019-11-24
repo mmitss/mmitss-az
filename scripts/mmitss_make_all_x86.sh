@@ -1,9 +1,7 @@
 #!/bin/bash
-# This script finds all the Makefiles present in the rse sources, builds that 
-# project for linux and copies it to the applications folder in this directory
 
+# Define colors:
 red='\033[0;31m'
-
 green='\033[0;32m'
 nocolor='\033[0m'
 
@@ -22,7 +20,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -41,7 +39,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -60,7 +58,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -81,7 +79,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -102,7 +100,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -121,7 +119,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
@@ -140,7 +138,7 @@ if [ "$?" -eq "0" ]; then
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Clean the folder before leaving to keep it clean for svn and/or other stuff
+# Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
