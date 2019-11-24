@@ -15,11 +15,19 @@
 
 #include "PriorityRequestGenerator.h"
 #include <iostream>
+#include <fstream>
 #include <UdpSocket.h>
 #include "msgEnum.h"
+#include "json/json.h"
 
 int main()
 {
+    Json::Value jsonObject_config;
+	Json::Reader reader;
+	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject_config);
+    
     PriorityRequestGenerator PRG;
     MapManager mapManager;
     BasicVehicle basicVehicle;
@@ -27,9 +35,9 @@ int main()
     SignalRequest signalRequest;
 
     //Socket Communication
-    UdpSocket priorityRequestGeneratorSocket(20004);
-    const string LOCALHOST = "127.0.0.1";
-    const int receiverPortNo = 10003;
+    UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
+    const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     char receiveBuffer[5120];
     std::string sendingJsonString;
 
@@ -45,7 +53,7 @@ int main()
             if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
                 sendingJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-                priorityRequestGeneratorSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
+                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), sendingJsonString);
                 std::cout << "SRM is sent" << std::endl;
             }
             mapManager.deleteMap();

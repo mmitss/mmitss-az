@@ -193,7 +193,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE) //If vehicleID is in ART and vehicle ETA is changed by 1 second, vehicle should send srm
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle ETAhas been changed from" << findVehicleIDOnTable->vehicleETA << "to" << getTime2Go() << std::endl;
+			std::cout << "SRM is sent since vehicle ETAhas been changed from" << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
