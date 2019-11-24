@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# lmmitss-initialize.sh                                                                     
+# mmitss_launch_all.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -17,12 +17,11 @@
 # This code was develop under the supervision of Professor Larry Head                       
 # in the Transportation Research Institute.                                                 
 #                                                                                           
-# Revision History:                                                                         
-# Rev00: Initial Release.                                                                   
-# This script configures the directory structure and libraries required by the MMITSS apps. 
-# The intersection configuration files will be stored in /nojournal/bin/                    
-# The log files for each simulation run will be stored in /nojournal/bin/log/               
-#                                                                                           
+# Operational Description:                                                                  
+# This script launches all mmitss applications (vehicle, intersection, and common) in the 
+# background, and discards the output by redirecting it to /dev/null. This script assumes
+# that all applications are already built, and the executables are available in the 
+# source directories.                                                                                                     
 #############################################################################################
 
 ################################## COMMON APPLICATIONS ################################
@@ -31,6 +30,7 @@
 echo "Starting Message Encoder..."
 cd ./../src/common/MsgTransceiver/MsgEncoder
 ./M_MsgEncoder > /dev/null 2>&1 &
+
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
 sleep 1s

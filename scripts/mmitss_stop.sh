@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# lmmitss-initialize.sh                                                                     
+# mmitss_stop.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -17,11 +17,9 @@
 # This code was develop under the supervision of Professor Larry Head                       
 # in the Transportation Research Institute.                                                 
 #                                                                                           
-# Revision History:                                                                         
-# Rev00: Initial Release.                                                                   
-# This script configures the directory structure and libraries required by the MMITSS apps. 
-# The intersection configuration files will be stored in /nojournal/bin/                    
-# The log files for each simulation run will be stored in /nojournal/bin/log/               
-#                                                                                           
+# Operational Description:                                                                  
+# This script stops all corrently running processes specific to mmitss.
 #############################################################################################
+
+# Kill the processes pertaining to mmitss. The processes pertaining to mmitss are identified by the pattern M_
 pkill -9 -f M_

@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# lmmitss-initialize.sh                                                                     
+# mmitss_start_savari_obu.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -17,14 +17,16 @@
 # This code was develop under the supervision of Professor Larry Head                       
 # in the Transportation Research Institute.                                                 
 #                                                                                           
-# Revision History:                                                                         
-# Rev00: Initial Release.                                                                   
-# This script configures the directory structure and libraries required by the MMITSS apps. 
-# The intersection configuration files will be stored in /nojournal/bin/                    
-# The log files for each simulation run will be stored in /nojournal/bin/log/               
-#                                                                                           
+# Operational Description:                                                                  
+# This script launches the patches developed by Savari for match the needs of MMITSS apps.
+# This script is intended to run atleast 2 minuts after the startup of the OBU.
+#                                                                                                
 #############################################################################################
+
+# Start the DSRC Message Forwarder application. This application forwards the messages received over DSRC to the vehicleside processor.
+# Correct ports need to defined in /etc/config/v2vi_obe.conf and /etc/config/DsrcForward.conf. Use the scripts ./savariPatchConfig/* for configuration.
 dsrc_message_forward -f /etc/config/DsrcForward.conf &
 sleep 1s
+
 /usr/local/bin/IFM &
 sleep 1s

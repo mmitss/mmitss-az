@@ -21,8 +21,7 @@
 # Rev00: Initial Release.                                                                   
 # This script configures the directory structure and libraries required by the MMITSS apps. 
 # The intersection configuration files will be stored in /nojournal/bin/                    
-# The log files for each simulation run will be stored in /nojournal/bin/log/               
-#                                                                                           
+# The log files for each simulation run will be stored in /nojournal/bin/log/                                                                                                   
 #############################################################################################
 halt &>/dev/null
 
