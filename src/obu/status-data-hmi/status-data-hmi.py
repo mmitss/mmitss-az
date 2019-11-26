@@ -351,13 +351,12 @@ def build_ART_tree(activeRequestTable):
     
     for request in activeRequestTable:
         #print(request)
-        gui.ART_tree.insert('', 'end', iid="']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ))
+        gui.ART_tree.insert('', 'end', iid="']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
         
     gui.ART_tree.grid(row=0, column=0, sticky=E+W)
     
     # tag styles
-    gui.ART_tree.tag_configure('odd', background='#e8e8e8')
-    gui.ART_tree.tag_configure('odd', background='#dfdfdf')
+    gui.ART_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
 ##############################################
 #   REMOTE BSM DISPLAY
