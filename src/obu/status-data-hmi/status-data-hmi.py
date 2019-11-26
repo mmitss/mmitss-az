@@ -132,6 +132,7 @@ def get_data():
     # get list of Priority Requests
     activeRequestTable = []
     activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
+    #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
 
     # build the treeview containing ART
     build_ART_tree(activeRequestTable)
@@ -140,15 +141,17 @@ def get_data():
     # get list of Remote BSMs
     remoteVehicles = []
     remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
+    print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
 
     # build the treeview containing ART
-    #build_BSM_tree(remoteVehicles)
+    build_BSM_tree(remoteVehicles)
 
    
     # MAP messages
     # get list of available maps
     availableMaps = []
     availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
+    #print("Available Maps", len(availableMaps), availableMaps)
 
     # build the treeview containing MAPs
     build_MAP_tree(availableMaps)
@@ -349,8 +352,8 @@ def build_ART_tree(activeRequestTable):
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
     for request in activeRequestTable:
-        print(request)
-        gui.ART_tree.insert('', 'end', iid="request['RequestID']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ))
+        #print(request)
+        gui.ART_tree.insert('', 'end', iid="']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ))
         
     gui.ART_tree.grid(row=0, column=0, sticky=E+W)
     
@@ -394,10 +397,7 @@ def build_BSM_tree(remoteVehicles):
     lineID = 0
 
     for vehicle in remoteVehicles:
-        lineID = lineID + 1
-        print(lineID)
-        print(vehicle)
-        gui.bsm_tree.insert('', 'end', iid="lineID", text="", values=('lineID', vehicle['temporaryID'], vehicle['secMark_Second'], vehicle['vehicleType'], vehicle['latitude_DecimalDegree'], vehicle['longitude_DecimalDegree'], rvehicleequest['elevationMeter'], vehicle['heading_Degree'], vehicle['speed_mph'], vehicle['speed_mph'] ))
+        gui.bsm_tree.insert('', 'end', iid="", text="", values=(vehicle['BasicVehicle']['temporaryID'], vehicle['BasicVehicle']['secMark_Second'], vehicle['BasicVehicle']['vehicleType'], vehicle['BasicVehicle']['position']['latitude_DecimalDegree'], vehicle['BasicVehicle']['position']['longitude_DecimalDegree'], vehicle['BasicVehicle']['position']['elevation_Meter'], vehicle['BasicVehicle']['heading_Degree'], vehicle['BasicVehicle']['speed_MeterPerSecond']))
         
     
     gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
@@ -436,8 +436,9 @@ def build_MAP_tree(availableMaps):
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
     for map in availableMaps:
+        print(map)
         #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
-        gui.MAP_tree.insert('', 'end', iid="map['IntersectionID']", text="", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ))
+        gui.MAP_tree.insert('', 'end', iid="", text="", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ))
     
     #phaseString =  "'R', 'R', 'R', 'G', 'R', 'R', '', 'R'"   
     #gui.MAP_tree.insert('', 'end', iid='', text='', values=(mapList), tags=('odd'))
