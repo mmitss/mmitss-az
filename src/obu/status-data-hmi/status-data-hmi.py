@@ -132,7 +132,7 @@ def get_data():
     # get list of Priority Requests
     activeRequestTable = []
     activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
-    #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
+    print("activeRequestTable", len(activeRequestTable), activeRequestTable)
 
     # build the treeview containing ART
     build_ART_tree(activeRequestTable)
@@ -141,7 +141,7 @@ def get_data():
     # get list of Remote BSMs
     remoteVehicles = []
     remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
-    print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
+    #print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
 
     # build the treeview containing ART
     build_BSM_tree(remoteVehicles)
@@ -293,13 +293,14 @@ def build_phase_tree(phaseTable):
     gui.phase_tree.heading("7", text="7", anchor='center') 
     gui.phase_tree.heading("8", text="8", anchor='center') 
 
-    gui.phase_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
-
     # set style
-    style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
-    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
-    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    gui.phase_tree.style = ttk.Style()
+    gui.phase_tree.style.configure("gui.phase_tree", background=gui.statusPanelBackground, foreground=gui.textForeground) # Modify the font of the body
+    gui.phase_tree.style.configure("gui.phase_tree.Heading", background=gui.statusPanelBackground, foreground=gui.textForeground) # Modify the font of the headings
+    #style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+
+    # placement
+    gui.phase_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
 
     phaseList = []
     pedList = []
@@ -309,14 +310,11 @@ def build_phase_tree(phaseTable):
         phaseList.append(phase['phase_status'])
         pedList.append(phase['ped_status'])
     
-    gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=(phaseList), tags=('odd'))
-    gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('even'))
-    #gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
-    #gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
+    gui.phase_tree.insert('', 'end', iid='Signal', text='Signal', values=(phaseList), tags=('data'))
+    gui.phase_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('data'))
     
     # tag styles
-    gui.phase_tree.tag_configure('odd', background='#e8e8e8')
-    gui.phase_tree.tag_configure('odd', background='#dfdfdf')
+    gui.phase_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
 
 ##############################################
@@ -324,7 +322,7 @@ def build_phase_tree(phaseTable):
 ##############################################
 
 def build_ART_tree(activeRequestTable):
-    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=5)
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=len(activeRequestTable))
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
     gui.ART_tree.column("RequestID", width=100, anchor='center', stretch=True)
@@ -366,7 +364,7 @@ def build_ART_tree(activeRequestTable):
 ##############################################
 
 def build_BSM_tree(remoteVehicles):
-    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=5)
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=len(remoteVehicles))
     gui.bsm_tree["columns"]=("Line ID","Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
     gui.bsm_tree.column("Line ID", width=1)
@@ -431,24 +429,14 @@ def build_MAP_tree(availableMaps):
 
     # set style
     style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30) # Modify the font of the body
+    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30, background=gui.statusPanelBackground) # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
     for map in availableMaps:
-        print(map)
+        #print(map)
         #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
         gui.MAP_tree.insert('', 'end', iid="", text="", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ))
-    
-    #phaseString =  "'R', 'R', 'R', 'G', 'R', 'R', '', 'R'"   
-    #gui.MAP_tree.insert('', 'end', iid='', text='', values=(mapList), tags=('odd'))
-    #gui.MAP_tree.insert('', 'end', iid='Ped', text='Ped', values=(pedList), tags=('even'))
-    #gui.MAP_tree.insert('', 'end', iid='Ped', text='Ped', values=('-', 'DW', '-', 'W', '-', 'DW', '-', 'DW'), tags=('even'))
-    
-    # tag styles
-    #gui.MAP_tree.tag_configure('odd', background='#e8e8e8')
-    #gui.MAP_tree.tag_configure('odd', background='#dfdfdf')
-
 
 ##############################################
 #  STATUS WIDGET INITIAL DISPLAY
