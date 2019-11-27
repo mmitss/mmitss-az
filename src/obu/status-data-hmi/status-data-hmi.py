@@ -337,7 +337,7 @@ def populate_phase_tree(phaseTable):
 ##############################################
 
 def build_ART_tree():
-    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=2)
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=5)
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
     gui.ART_tree.column("RequestID", width=100, anchor='center', stretch=True)
@@ -362,7 +362,7 @@ def populate_ART_tree(activeRequestTable):
 
     gui.ART_tree.delete(*gui.ART_tree.get_children())
 
-    gui.ART_tree.configure(height=len(activeRequestTable))
+    gui.ART_tree.configure(height=5)
 
     for request in activeRequestTable:
         #print(request)
@@ -378,7 +378,7 @@ def populate_ART_tree(activeRequestTable):
 ##############################################
 
 def build_BSM_tree():
-    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=2)
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=4)
     gui.bsm_tree["columns"]=("Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
     gui.bsm_tree.column("Temp ID", width=100, anchor='center')
@@ -403,7 +403,7 @@ def populate_BSM_tree(remoteVehicles):
 
     gui.bsm_tree.delete(*gui.bsm_tree.get_children())
 
-    gui.bsm_tree.config(height=len(remoteVehicles))
+    gui.bsm_tree.config(height=5)
     #gui.update_idletasks()
 
     for vehicle in remoteVehicles:
@@ -420,7 +420,7 @@ def populate_BSM_tree(remoteVehicles):
 ##############################################
 
 def build_MAP_tree():
-    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=2)
+    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=5)
     gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
     gui.MAP_tree.column("#0", width=1, anchor='center')
     gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
@@ -446,13 +446,10 @@ def populate_MAP_tree(availableMaps):
 
     gui.MAP_tree.delete(*gui.MAP_tree.get_children())
 
-    gui.MAP_tree.config(height=len(availableMaps))
-
-    #gui.update_idletasks()
+    #gui.MAP_tree.config(height=len(availableMaps))
+    gui.MAP_tree.config(height=5)
 
     for map in availableMaps:
-        #print(map)
-        #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
         gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
 
     # tag styles
@@ -485,9 +482,9 @@ def create_status_widgets():
     gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Min / Max Data
-    gui.min = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.min_value, font=gui.mediumFont, fg=gui.textForeground,)
+    gui.min = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.min_value, font=gui.mediumFont, fg=gui.textForeground)
     gui.min.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
-    gui.max = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.max_value, font=gui.mediumFont, fg=gui.textForeground,)
+    gui.max = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.max_value, font=gui.mediumFont, fg=gui.textForeground)
     gui.max.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Phase Data
