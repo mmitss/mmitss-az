@@ -81,6 +81,7 @@ s.bind((controller))
 
 directory_path = os.getcwd()
 f = open(directory_path + '/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
+#f = open('HMIControllerSimulatorData.1.csv', 'r')
 
 f.readline()
 f.readline() 
