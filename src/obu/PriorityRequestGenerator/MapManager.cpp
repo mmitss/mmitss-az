@@ -35,7 +35,7 @@
 using namespace GeoUtils;
 using namespace MsgEnum;
 
-const int TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 5; 
+const double TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 300.0; 
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
@@ -55,6 +55,7 @@ void MapManager::json2MapPayload(std::string jsonString)
 
     mapPayload = (jsonObject["MapPayload"]).asString();
     intersectionMapName =(jsonObject["IntersectionName"]).asString();
+    intersectinID = (jsonObject["IntersectionID"]).asInt();
 }
 
 /*
@@ -128,12 +129,14 @@ bool MapManager::deleteMapPayLoadFromList()
     {
         for (size_t i = 0; i < availableMapList.size(); i++)
         {
-            if (abs((getMapPayloadReceivedTime() - availableMapList[i].minuteOfYear) >= TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD)) //If year changed getMapPayloadReceivedTime() will less than availableMapList[i].minuteOfYear. Thus, abs() is used.
+            if (availableMapList[i].mapAge >= TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD) //If year changed getMapPayloadReceivedTime() will less than availableMapList[i].minuteOfYear. Thus, abs() is used.
             {
                 deleteMapPayload = true;
                 setTimedOutMapPayLoad(availableMapList[i].availableMapPayload);
                 break;
             }
+
+
         }
     }
 
@@ -182,6 +185,20 @@ int MapManager::getMapPayloadReceivedTime()
 }
 
 /*
+	- Obtain current time in second;
+*/
+int MapManager::getMapPayloadReceivedSecondOfMinute()
+{
+	int secondOfMinute{};
+	time_t t = time(NULL);
+	tm *timePtr = gmtime(&t);
+
+	secondOfMinute = timePtr->tm_sec;;
+
+	return secondOfMinute;
+}
+
+/*
     - Check whether mapPayload has to be added in the availableMapList or updated the received time of mapPayload
 */
 void MapManager::maintainAvailableMapList() //check Map.h
@@ -197,7 +214,11 @@ void MapManager::maintainAvailableMapList() //check Map.h
         availableMap.availableMapPayload = mapPayload;
         availableMap.availableMapFileName = mapName;
         availableMap.availableMapFileDirectory = mapFileDirectory;
+        availableMap.mapIntersectionID = intersectinID;
+        availableMap.mapAge =1;
         availableMap.minuteOfYear = getMapPayloadReceivedTime();
+        availableMap.secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        availableMap.activeMapStatus = "False";
         availableMapList.insert(availableMapList.begin(), availableMap);
     }
 
@@ -206,8 +227,26 @@ void MapManager::maintainAvailableMapList() //check Map.h
         std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
-        findMapPayLoad->availableMapPayload = mapPayload;
-        findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
+            findMapPayLoad->availableMapPayload = mapPayload;
+            findMapPayLoad->mapAge = 1.0;
+            findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
+            findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        
+        // if(getMapPayloadReceivedSecondOfMinute() >= findMapPayLoad->secondOfMinute)
+        // {
+        //     findMapPayLoad->availableMapPayload = mapPayload;
+        //     findMapPayLoad->mapAge = (abs(getMapPayloadReceivedTime() - findMapPayLoad->minuteOfYear)) * SECONDSINAMINUTE + (getMapPayloadReceivedSecondOfMinute() - findMapPayLoad->secondOfMinute);
+        //     findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
+        //     findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        // }
+
+        // else if(getMapPayloadReceivedSecondOfMinute() < findMapPayLoad->secondOfMinute)
+        // {
+        //     findMapPayLoad->availableMapPayload = mapPayload;
+        //     findMapPayLoad->mapAge = (abs(getMapPayloadReceivedTime() - findMapPayLoad->minuteOfYear)) * SECONDSINAMINUTE + (getMapPayloadReceivedSecondOfMinute() + SECONDSINAMINUTE  - findMapPayLoad->secondOfMinute);
+        //     findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
+        //     findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        // }
     }
 }
 
@@ -297,6 +336,28 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 }
 
 /*
+	-If vehicle is on map then active map status in the availableMapList will be set to true for corresponding Map.
+*/
+void MapManager::changeMapStatusInAvailableMapList()
+{
+    if(!activeMapList.empty())
+    {
+        std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
+                                                                                [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
+
+        findMapPayLoad->activeMapStatus = "True";
+    }
+
+    else
+    {
+        for (size_t i = 0; i < availableMapList.size(); i++)
+        {
+            availableMapList[i].activeMapStatus = "False";
+        }
+    }                                                                           
+}
+
+/*
 	-If vehicle is out of the intersection, activeMapList has to cleared.
 */
 void MapManager::deleteActiveMapfromList()
@@ -304,9 +365,41 @@ void MapManager::deleteActiveMapfromList()
 	activeMapList.clear();
 }
 
+void MapManager::updateMapAge()
+{
+    for (size_t i = 0; i < availableMapList.size(); i++)
+    {
+        if(getMapPayloadReceivedSecondOfMinute() >= availableMapList[i].secondOfMinute)
+        {
+            
+            availableMapList[i].mapAge = availableMapList[i].mapAge + (getMapPayloadReceivedSecondOfMinute() - availableMapList[i].secondOfMinute);
+            availableMapList[i].minuteOfYear = getMapPayloadReceivedTime();
+            availableMapList[i].secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        }
+
+        else if(getMapPayloadReceivedSecondOfMinute() < availableMapList[i].secondOfMinute)
+        {
+            availableMapList[i].mapAge = availableMapList[i].mapAge + (getMapPayloadReceivedSecondOfMinute() + SECONDSINAMINUTE - availableMapList[i].secondOfMinute);
+            availableMapList[i].minuteOfYear = getMapPayloadReceivedTime();
+            availableMapList[i].secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+        }
+    }
+       
+}
+/*
+	- Getters for Active map List
+*/
 std::vector<Map::ActiveMap> MapManager::getActiveMapList()
 {
     return activeMapList;
+}
+
+/*
+	- Getters for Available map List
+*/
+std::vector<Map::AvailableMap> MapManager::getAavailableMapList()
+{
+    return availableMapList;
 }
 
 MapManager::~MapManager()

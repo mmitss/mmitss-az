@@ -10,15 +10,15 @@ unsigned int microseconds = 100000;
 int main()
 {
     //Socket Communication
-    UdpSocket bsmSenderSocket(20010);
+    UdpSocket bsmSenderSocket(20030);
     const string LOCALHOST = "10.12.6.103";
-    const int receiverPortNo = 10007;
+    const int receiverPortNo = 10004;
     std::string sendingJsonString;
 
     std::ifstream infile;
     int count = 1;
 
-    infile.open("bsmLog.txt");
+    infile.open("mapPayload.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;

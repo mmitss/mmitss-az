@@ -14,6 +14,7 @@
 */
 
 #include "PriorityRequestGenerator.h"
+#include "PriorityRequestGeneratorStatus.h"
 #include <iostream>
 #include <fstream>
 #include <UdpSocket.h>
@@ -30,6 +31,7 @@ int main()
     
     PriorityRequestGenerator PRG;
     MapManager mapManager;
+    PriorityRequestGeneratorStatus prgStatus;
     BasicVehicle basicVehicle;
     SignalStatus signalStatus;
     SignalRequest signalRequest;
@@ -38,8 +40,10 @@ int main()
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
+    const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
     char receiveBuffer[5120];
-    std::string sendingJsonString;
+    std::string srmJsonString;
+    std::string prgStatusJsonString;
 
     while (true)
     {
@@ -52,12 +56,17 @@ int main()
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
             if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
-                sendingJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), sendingJsonString);
+                srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
+                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 std::cout << "SRM is sent" << std::endl;
             }
+            mapManager.updateMapAge();
             mapManager.deleteMap();
-            PRG.printART();
+            prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle, mapManager);
+            std::cout << prgStatusJsonString << std::endl;
+            priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
+            std::cout << "Message sent to HMI Conrtoller" << std::endl;
+            // PRG.printART();
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_map)

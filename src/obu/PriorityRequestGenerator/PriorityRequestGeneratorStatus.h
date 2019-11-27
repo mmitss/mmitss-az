@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include "PriorityRequestGenerator.h"
+#include "MapManager.h"
 #include "BasicVehicle.h"
 #include "Position3D.h"
 #include "Map.h"
@@ -25,12 +26,27 @@
 class PriorityRequestGeneratorStatus
 {
 private:
+  // int noOfRequest{};
+  // int *vehicleID = new int[noOfRequest];
+	// int *requestID = new int[noOfRequest];
+	// int *msgCount = new int[noOfRequest];
+	// int *inBoundLaneID = new int[noOfRequest];
+	// int *inBoundApproachID = new int[noOfRequest];
+	// int *basicVehicleRole = new int[noOfRequest];
+	// int *expectedTimeOfArrival_Minute = new int[noOfRequest];
+	// double *expectedTimeOfArrival_Second = new double[noOfRequest];
+	// double *expectedTimeOfArrival_Duration = new double[noOfRequest];
+	// int *priorityRequestStatus = new int[noOfRequest];
+  std::vector<Map::AvailableMap> availableMapList;
+  std::vector<ActiveRequest>ActiveRequestTable;
 
 public:
     PriorityRequestGeneratorStatus();
     ~PriorityRequestGeneratorStatus();
-
-    std::string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle, std::vector<Map::AvailableMap> availableMapList, std::vector<ActiveRequest> ActiveRequestTable);
+    std::vector<Map::AvailableMap>getAavailableMapList(MapManager mapManager);
+    std::vector<ActiveRequest>getActiveRequestTable(PriorityRequestGenerator PRG);
+    // std::string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle, std::vector<Map::AvailableMap>availableMapList, std::vector<ActiveRequest>ActiveRequestTable);
+    std::string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle, MapManager mapManager);
 };
 
 

@@ -29,6 +29,7 @@ private:
     std::string mapPayload{};
     std::string intersectionMapName{};
     std::string timedOutMapPayLoad{};
+    int intersectinID{};
 
 public:
     MapManager();
@@ -42,10 +43,14 @@ public:
     bool updateMapPayLoadList();
     bool deleteMapPayLoadFromList();
     int getMapPayloadReceivedTime();
+    int getMapPayloadReceivedSecondOfMinute();
     void maintainAvailableMapList();
     void deleteMap();
     void printAvailableMapList();
     void createActiveMapList(BasicVehicle basicVehicle);
     void deleteActiveMapfromList();
+    void changeMapStatusInAvailableMapList();
     std::vector<Map::ActiveMap>getActiveMapList();
+    std::vector<Map::AvailableMap>getAavailableMapList();
+    void updateMapAge();
 };
