@@ -149,20 +149,30 @@ while (f.readline()):
     numSPaT = 8 # currently we have one SPaT value for each signal phase. 
     index_spat = 67
     SPaT = []
+
+    spat_regionalID = int(data_array[index_spat])
+    spat_intersectionID = int(data_array[index_spat + 1])
+    spat_msgCnt = int(data_array[index_spat + 2])
+    spat_minutesOfYear = int(data_array[index_spat + 3])
+    spat_msOfMinute = int(data_array[index_spat + 4])
+    spat_status = int(data_array[index_spat + 5])
     #spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
+
+    index_phase_spat = 73
     for spat in range(0, numSPaT):
-        spat_phase = data_array[index_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_spat + 1 + spat*6])]
-        spat_startTime = round(float(data_array[index_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[index_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[index_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[index_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+       
+        spat_phase = data_array[index_phase_spat + spat*6]
+        spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
+        spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[index_phase_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
         SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     #ped phase status
     numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
     pedSPaT = []
-    index_ped_spat = 115
+    index_ped_spat = 121
     for spat in range(0, numSPaT):
         spat_phase = data_array[index_ped_spat + spat*6]
         spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
@@ -186,7 +196,7 @@ while (f.readline()):
 
 
     #acquire priority status data
-    index_priority = 163 # index is the column in the csv file
+    index_priority = 169 # index is the column in the csv file
     activeRequestTable = []
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]

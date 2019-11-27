@@ -68,7 +68,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((bsm_spat_sim))
 
 directory_path = os.getcwd()
-f = open(directory_path + '/mmitss/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
+f = open(directory_path + '/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
 
 ticks_init = time.time()
 
@@ -122,37 +122,55 @@ while (f.readline()):
     numSPaT = 8 # currently we have one SPaT value for each signal phase. 
     index_spat = 67
     SPaT = []
-    #spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
+    spat_regionalID = int(data_array[index_spat])
+    spat_intersectionID = int(data_array[index_spat + 1])
+    spat_msgCnt = int(data_array[index_spat + 2])
+    spat_minutesOfYear = int(data_array[index_spat + 3])
+    spat_msOfMinute = int(data_array[index_spat + 4])
+    spat_status = int(data_array[index_spat + 5])
+    
+    index_phase_spat = 73
     for spat in range(0, numSPaT):
-        spat_phase = data_array[index_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_spat + 1 + spat*6])]
-        spat_startTime = round(float(data_array[index_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[index_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[index_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[index_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
-        SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
-
+        spat_phase = data_array[index_phase_spat + spat*6]
+        spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
+        spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_elapsedTime = round(float(data_array[index_phase_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        SPaT.append({"phaseNo" : spat_phase, "currState" : spat_currState, "startTime": spat_startTime, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime, "elapsedTime" : spat_elapsedTime})
+    
     #ped phase status
     numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
     pedSPaT = []
-    index_ped_spat = 115
+    index_ped_spat = 121
     for spat in range(0, numSPaT):
         spat_phase = data_array[index_ped_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
+        spat_currState = int(data_array[index_ped_spat + 1 + spat*6])
         spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
         spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
         spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
         spat_elapsedTime = round(float(data_array[index_ped_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
-        pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
-
+        pedSPaT.append({"phaseNo" : spat_phase, "currState" : spat_currState, "startTime": spat_startTime, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime, "elapsedTime" : spat_elapsedTime})
+    
     interfaceJsonString = json.dumps({
-            "infrastructure": 
+           "MsgType": "SPAT",   
+	        "Spat":
             {
-                "SPaT" : SPaT,
-                "pedSPaT" : pedSPaT
-            },
+                "IntersectionState":
+                {
+                    "regionalID": spat_regionalID,
+                    "intersectionID": spat_intersectionID
+                },
+                "msgCnt": spat_msgCnt,
+                "minuteOfYear": spat_minutesOfYear,
+                "msOfMinute": spat_msOfMinute,
+                "status": spat_status,
+                "phaseState" : SPaT,
+                "pedPhaseState" : pedSPaT
+
+            }
     })
     s.sendto(interfaceJsonString.encode(),hmi_controller)
     print("sent spat at time: ", time.time() - ticks_init)
-    time.sleep(0.1/(numRemoteVehicles+1))
+    time.sleep(0.1/(numRemoteVehicles + 1))
 s.close() 
