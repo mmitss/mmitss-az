@@ -17,3 +17,4 @@ CMake*
 
 docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
 *.pyc
+.DS_Store
