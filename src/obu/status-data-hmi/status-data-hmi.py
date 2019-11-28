@@ -108,7 +108,7 @@ def get_data():
     yellowStatus = bool(currentPhase['yellow'])
     greenStatus = bool(currentPhase['green'])
     darkStatus = bool(currentPhase['dark'])
-    print("Signal ", redStatus, yellowStatus, greenStatus, darkStatus)
+    #print("Signal ", redStatus, yellowStatus, greenStatus, darkStatus)
 
     # set signal head icon
     if redStatus == True:    
@@ -420,7 +420,7 @@ def populate_BSM_tree(remoteVehicles):
 ##############################################
 
 def build_MAP_tree():
-    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=5)
+    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=6)
     gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
     gui.MAP_tree.column("#0", width=1, anchor='center')
     gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
@@ -447,7 +447,7 @@ def populate_MAP_tree(availableMaps):
     gui.MAP_tree.delete(*gui.MAP_tree.get_children())
 
     #gui.MAP_tree.config(height=len(availableMaps))
-    gui.MAP_tree.config(height=5)
+    gui.MAP_tree.config(height=6)
 
     for map in availableMaps:
         gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
@@ -639,7 +639,7 @@ if __name__ == "__main__":
     #gui = MonitorGUI(root)
     gui = Tk()
     set_display_fonts_and_colors()
-    gui.title("Vehicle Status Data Prototype")  
+    gui.title("MMITSS Vehicle Status")  
     gui['bg'] = gui.appBackground
 
     # create the application footer with s
@@ -653,6 +653,7 @@ if __name__ == "__main__":
     build_ART_tree()
     build_BSM_tree()
     build_MAP_tree()
+    #populate_MAP_tree('')
 
     # set timer for updating data and call the update function
     gui.after(100, update_display)
