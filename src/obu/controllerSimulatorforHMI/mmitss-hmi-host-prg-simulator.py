@@ -69,7 +69,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((prg_sim))
 
 directory_path = os.getcwd()
-f = open(directory_path + '/src/obu/controllerSimulatorforHMI/prg-simulator-data.csv', 'r')
+#f = open(directory_path + '/src/obu/controllerSimulatorforHMI/prg-simulator-data.csv', 'r')
+f = open('HMIControllerSimulatorData.1.csv', 'r')
 
 f.readline() 
 f.readline() # there are three informational lines at the top of the data file (top is category, second is data_array cound, third is data lable)
@@ -98,7 +99,7 @@ while (f.readline()):
     hv_currentLaneSignalGroup = int(data_array[9])
 
  # infrastructure map data
-    index_maps = 10
+    index_maps = 46
     numReceivedMaps = int(data_array[index_maps])
     availableMaps = []
     for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
@@ -111,7 +112,7 @@ while (f.readline()):
 
  
     #acquire priority status data
-    index_priority = 31 # index is the column in the csv file
+    index_priority = 169 # index is the column in the csv file
     activeRequestTable = []
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]
