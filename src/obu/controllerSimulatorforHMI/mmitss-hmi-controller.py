@@ -27,11 +27,11 @@ from BasicVehicle import BasicVehicle
 
 
 controllerIP = '127.0.0.1'
-controllerPort = 5001
+controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
-hmiPort = 5002
+hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
@@ -74,42 +74,125 @@ basicVehicleRoles = {0 : "basicVehicle",
                     13 : "ev-fire",
                     16 : "transit"}
 
+# initialize all the data
+#host vehicle data
+hv_tempID = int(0)
+hv_vehicleType = ""
+hv_latitude_DecimalDegree= round(0.0, 8)
+hv_longitude_DecimalDegree= round(0.0, 8)
+hv_elevation_Meter= round(0.0, 1)
+hv_heading_Degree= round(0.0, 4)
+hv_speed_Meterpersecond= float(0)
+hv_speed_mph= int((float(hv_speed_Meterpersecond) * 2.23694))
+hv_currentLane = int(0)
+hv_currentLaneSignalGroup = int(0)
+onMAP = False
+requestSent = False
+availableMaps = []
+current_phase_status = 0
+activeRequestTable = []
+
+#remote vehicle data
+rv_tempID = data_array[index_remoteVehicle + vehicle*7]
+rv_vehicleType = ""
+rv_latitude_DecimalDegree= round(0.0, 8)
+rv_longitude_DecimalDegree= round(0.0, 8)
+rv_elevation_Meter= round(0.0, 1)
+rv_heading_Degree= round(0.0, 4)
+rv_speed_Meterpersecond= float(0.0)
+rv_speed_mph= int((float(rv_speed_Meterpersecond) * 2.23694))
+remoteVehicles = []
+
+#SPaT data
+spat_regionalID = int(0)
+spat_intersectionID = int(0)
+spat_msgCnt = int(0)
+spat_minutesOfYear = int(0)
+spat_msOfMinute = int(0)
+spat_status = int(0)
+
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Bind the created socket to the server information.
 s.bind((controller))
 
-directory_path = os.getcwd()
-f = open(directory_path + '/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
-#f = open('HMIControllerSimulatorData.1.csv', 'r')
 
-f.readline()
-f.readline() 
-f.readline() # there are three informational lines at the top of the data file (top is category, second is data_array cound, third is data lable)
-while (f.readline()):
-    line = f.readline()
-    line = line.replace('\n','')
-    data_array = line.split(',')
-    secMark = int(data_array[0])
-    #this is host vehicle information
-    print("second = ", secMark)
-    hv_tempID = int(data_array[1])
-    hv_vehicleType = data_array[2]
-    hv_latitude_DecimalDegree= round(float(data_array[3]), 8)
-    hv_longitude_DecimalDegree= round(float(data_array[4]), 8)
-    hv_elevation_Meter= round(float(data_array[5]), 1)
-    hv_heading_Degree= round(float(data_array[6]), 4)
-    hv_speed_Meterpersecond= float(data_array[7])
-    hv_speed_mph= int((float(hv_speed_Meterpersecond) * 2.23694))
+while True:
+    
+    #receive data from mmitss components
+    line, addr = s.recvfrom(2048) 
+    line = line.decode()
+    sourceIP, sourcePort = addr
+
+    if sourcePort == 10004 :
+        # process the remote vehicle and SPaT data
+        print('remote bsm and spat data', line)
+
+        # load the json
+        remoteInterfacejson = json.loads(line)
+        print('remoteInterfacejson', remoteInterfacejson)
+
+        if 'BSM' in remoteInterfacejson :
+            #translate basic vehicle data
+            print(' BSM data found')
+            remoteVehicles = remoteInterfacejson["BSM"]["BasicVehicle"] #how do I want to deal with a collection of remote vehicle data????
+        elif 'MsgType' in remoteInterfacejson :
+            #check to make sure it is spat
+            if remoteInterfacejson["MsgType"] == 'SPaT' :
+                print('SPaT data found')
+                SPaT = []
+                spat_regionalID = int()
+                spat_intersectionID = int()
+                spat_msgCnt = int()
+                spat_minutesOfYear = int()
+                spat_msOfMinute = int()
+                spat_status = int()
+
+        else : 
+            print('ERROR: remote vehicle or SPaT data expected')
+
+        #publish the data to the HMI
+
+
+    elif sourcePort == 20004 :
+        # load the json
+        hostAndInfrastructureData = json.load(line)
+
+        # process the host vehicle and infrastructure data
+        print('host vehicle and infrastructure data', line)
+        hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
+        hv_vehicleType = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
+        hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
+        hv_longitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["longitude_DecimalDegree"], 8)
+        hv_elevation_Meter= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["elevation_Meter"], 1)
+        hv_heading_Degree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["heading_Degree"], 4)
+        hv_speed_Meterpersecond= float(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["speed_MeterPerSecond"])
+        hv_speed_mph= int((float(hv_speed_Meterpersecond) * 2.23694))
+    
+        # Create a Basic Vehicle that represents the host vehicle
+        hv_position = Position3D(hv_latitude_DecimalDegree, hv_longitude_DecimalDegree, hv_elevation_Meter)
+        hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, hv_vehicleType)
+
+        #need to acquire current lane and current lane signal group
+        hv_currentLane = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"])
+        hv_currentLaneSignalGroup = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"])
+        onMAP = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"]]
+        requestSent = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]]
+
+        availableMaps = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]
+        current_phase_status = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["currentPhase"]
+        activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
+
+    else :
+        print('ERROR: data received from unknown source')
+
+
    
-    # Create a Basic Vehicle that represents the host vehicle
-    hv_position = Position3D(hv_latitude_DecimalDegree, hv_longitude_DecimalDegree, hv_elevation_Meter)
-    hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, hv_vehicleType)
+   #####################################################
+   # THIS IS ALL OLD CODE TO BE INTEGRATED
+   #####################################################
 
-    #need to acquire current lane and current lane signal group
-    hv_currentLane = int(data_array[8])
-    hv_currentLaneSignalGroup = int(data_array[9])
-
+   
     #this is all remote vehicle information
 
     index_remoteVehicle = 10
@@ -117,7 +200,7 @@ while (f.readline()):
     
     remoteVehicles = []
     for vehicle in range(0, 5): # assuming up to 5 remote vehicles for now
-        rv_tempID = int(data_array[index_remoteVehicle + 1 + vehicle*7])
+        rv_tempID = data_array[index_remoteVehicle + vehicle*7]
         rv_vehicleType = data_array[index_remoteVehicle + 2 + vehicle*7]
         rv_latitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 3 + vehicle*7]), 8)
         rv_longitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 4 + vehicle*7]), 8)
@@ -149,7 +232,7 @@ while (f.readline()):
     #signal phase status 
     numSPaT = 8 # currently we have one SPaT value for each signal phase. 
     index_spat = 67
-    SPaT = []
+   
 
     spat_regionalID = int(data_array[index_spat])
     spat_intersectionID = int(data_array[index_spat + 1])
@@ -199,8 +282,7 @@ while (f.readline()):
     #acquire priority status data
     index_priority = 169 # index is the column in the csv file
     activeRequestTable = []
-    onMAP = bool_map[data_array[index_priority]]
-    requestSent = bool_map[data_array[index_priority + 1]]
+
     for request in range(0, 5): # 5 test requests of data
         numActiveRequests = int(data_array[index_priority + 2])
         vehicleID = int(data_array[index_priority + 3])
