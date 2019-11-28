@@ -26,7 +26,7 @@
 class PriorityRequestGeneratorStatus
 {
 private:
-  // int noOfRequest{};
+  // int noOfRequest = ActiveRequestTable.size();
   // int *vehicleID = new int[noOfRequest];
 	// int *requestID = new int[noOfRequest];
 	// int *msgCount = new int[noOfRequest];

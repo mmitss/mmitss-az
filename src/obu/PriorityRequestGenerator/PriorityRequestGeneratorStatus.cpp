@@ -15,6 +15,7 @@
 
 #include "PriorityRequestGeneratorStatus.h"
 #include "json/json.h"
+#include <fstream>
 
 const double ETA_DURATION_SECOND = 2;
 
@@ -57,10 +58,10 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["prioritystatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
     for (unsigned int i = 0; i < availableMapList.size(); i++)
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"][i]["availableMaps"]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"][i]["availableMaps"]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"][i]["availableMaps"]["map_active"] =  availableMapList[i].activeMapStatus;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"][i]["availableMaps"]["map_age"] = availableMapList[i].mapAge;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_active"] =  availableMapList[i].activeMapStatus;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_age"] = availableMapList[i].mapAge;
     }
     for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
     {
@@ -74,7 +75,9 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["ETA_Duration"] = ETA_DURATION_SECOND;
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
     }
-
+    Json::StyledStreamWriter styledStreamWriter;
+    std::ofstream outputter("output.json");
+    styledStreamWriter.write(outputter, jsonObject);
     jsonString = fastWriter.write(jsonObject);
     return jsonString;
 }

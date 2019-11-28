@@ -11,12 +11,11 @@ int main()
 {
     //Socket Communication
     UdpSocket bsmSenderSocket(20030);
-    const string LOCALHOST = "10.12.6.103";
+    const string LOCALHOST = "10.12.6.57";
     const int receiverPortNo = 10004;
     std::string sendingJsonString;
 
     std::ifstream infile;
-    int count = 1;
 
     infile.open("mapPayload.txt");
 
@@ -29,9 +28,7 @@ int main()
         {
 
             bsmSenderSocket.sendData(LOCALHOST, receiverPortNo, line);
-            std::cout << "sent" << count << std::endl;
-            count++;
-            usleep(microseconds);
+            std::cout << "sent" << std::endl;
         }
     }
 }
