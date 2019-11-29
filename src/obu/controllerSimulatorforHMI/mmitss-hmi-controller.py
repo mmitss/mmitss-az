@@ -12,7 +12,7 @@
   Operational Description:
 
   This application does the following tasks:
-  1. Reads data from a .csv file 
+  1. Listents to port 20009 to receive updated from message transiever (remote bsm and spat data) and host vehicle (bsm, map, and priority status)
   2. Builds json representing the HMI states to send to the HMI
   3. Sends the json to the HMI
 '''
@@ -76,6 +76,7 @@ basicVehicleRoles = {0 : "basicVehicle",
 
 # initialize all the data
 #host vehicle data
+secMark = 0
 hv_tempID = int(0)
 hv_vehicleType = ""
 hv_latitude_DecimalDegree= round(0.0, 8)
@@ -89,11 +90,10 @@ hv_currentLaneSignalGroup = int(0)
 onMAP = False
 requestSent = False
 availableMaps = []
-current_phase_status = 0
 activeRequestTable = []
 
 #remote vehicle data
-rv_tempID = data_array[index_remoteVehicle + vehicle*7]
+rv_tempID = int(0)
 rv_vehicleType = ""
 rv_latitude_DecimalDegree= round(0.0, 8)
 rv_longitude_DecimalDegree= round(0.0, 8)
@@ -110,6 +110,14 @@ spat_msgCnt = int(0)
 spat_minutesOfYear = int(0)
 spat_msOfMinute = int(0)
 spat_status = int(0)
+phase_table = []
+current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : 999.9,
+                            "maxEndTime" : 999.9, "dark" : True}
+phase_table = []
+for phase in range(0,8) :
+    phase_table.append({"phase" : phase, 
+                            "phase_status" : '-', 
+                            "ped_status" : '-'})
 
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -120,7 +128,7 @@ s.bind((controller))
 while True:
     
     #receive data from mmitss components
-    line, addr = s.recvfrom(2048) 
+    line, addr = s.recvfrom(4096) 
     line = line.decode()
     sourceIP, sourcePort = addr
 
@@ -130,23 +138,39 @@ while True:
 
         # load the json
         remoteInterfacejson = json.loads(line)
-        print('remoteInterfacejson', remoteInterfacejson)
 
         if 'BSM' in remoteInterfacejson :
-            #translate basic vehicle data
-            print(' BSM data found')
-            remoteVehicles = remoteInterfacejson["BSM"]["BasicVehicle"] #how do I want to deal with a collection of remote vehicle data????
+            #translate remote basic vehicle data
+            print(' BSM data received')
+            remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
         elif 'MsgType' in remoteInterfacejson :
             #check to make sure it is spat
             if remoteInterfacejson["MsgType"] == 'SPaT' :
-                print('SPaT data found')
+                print('SPaT data received')
+                SPaT_data = remoteInterfacejson
                 SPaT = []
-                spat_regionalID = int()
-                spat_intersectionID = int()
-                spat_msgCnt = int()
-                spat_minutesOfYear = int()
-                spat_msOfMinute = int()
-                spat_status = int()
+                pedSPaT = []
+                spat_regionalID = int(SPaT_data["Spat"]["IntersectionState"]["regionalID"])
+                spat_intersectionID = int(SPaT_data["Spat"]["IntersectionState"]["intersectionID"])
+                spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
+                spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
+                spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
+                spat_status = int(SPaT_data["Spat"]["status"])
+                SPaT = SPaT_data["Spat"]["phaseState"]
+                pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
+
+                # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
+                current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup])
+
+                # add the 8-phase signal and ped status data
+                phase_table = []
+                for phase in range(0,8):
+                    phase_state = signal_head(SPaT[phase])
+                    ped_state = signal_head(pedSPaT[phase])
+                    phase_table.append({"phase" : phase, 
+                                        "phase_status" : phase_status_map[phase_status_state(phase_state)], 
+                                        "ped_status" : ped_status_map[phase_status_state(ped_state)]})
+
 
         else : 
             print('ERROR: remote vehicle or SPaT data expected')
@@ -155,11 +179,13 @@ while True:
 
 
     elif sourcePort == 20004 :
+
+        print('host vehicle and infrastructure data', line)
+        
         # load the json
-        hostAndInfrastructureData = json.load(line)
+        hostAndInfrastructureData = json.loads(line)
 
         # process the host vehicle and infrastructure data
-        print('host vehicle and infrastructure data', line)
         hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
         hv_vehicleType = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
         hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
@@ -176,137 +202,16 @@ while True:
         #need to acquire current lane and current lane signal group
         hv_currentLane = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"])
         hv_currentLaneSignalGroup = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"])
-        onMAP = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"]]
-        requestSent = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]]
+        onMAP = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"]
+
+        requestSent = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]
 
         availableMaps = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]
-        current_phase_status = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["currentPhase"]
+        
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
 
-    else :
-        print('ERROR: data received from unknown source')
-
-
-   
-   #####################################################
-   # THIS IS ALL OLD CODE TO BE INTEGRATED
-   #####################################################
-
-   
-    #this is all remote vehicle information
-
-    index_remoteVehicle = 10
-    numRemoteVehicles = int(data_array[index_remoteVehicle])
-    
-    remoteVehicles = []
-    for vehicle in range(0, 5): # assuming up to 5 remote vehicles for now
-        rv_tempID = data_array[index_remoteVehicle + vehicle*7]
-        rv_vehicleType = data_array[index_remoteVehicle + 2 + vehicle*7]
-        rv_latitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 3 + vehicle*7]), 8)
-        rv_longitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 4 + vehicle*7]), 8)
-        rv_elevation_Meter= round(float(data_array[index_remoteVehicle + 5 + vehicle*7]), 1)
-        rv_heading_Degree= round(float(data_array[index_remoteVehicle + 6 + vehicle*7]), 4)
-        rv_speed_Meterpersecond= float(data_array[index_remoteVehicle + 7 + vehicle*7])
-        rv_speed_mph= int((float(rv_speed_Meterpersecond) * 2.23694))
-
-        rv_position = Position3D(rv_latitude_DecimalDegree, rv_longitude_DecimalDegree, rv_elevation_Meter)
-        remoteVehicle = BasicVehicle(rv_tempID, secMark, rv_position, rv_speed_mph, rv_heading_Degree, rv_vehicleType)
-        
-        if vehicle < numRemoteVehicles:
-             bv_dict = remoteVehicle.BasicVehicle2Dict()
-             remoteVehicles.append(bv_dict)
-
- # infrastructure map data
-    index_maps = 46
-    numReceivedMaps = int(data_array[index_maps])
-    availableMaps = []
-    for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
-        map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
-        map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
-        map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
-        map_age = int(data_array[index_maps + 4 + receivedMap*4])
-        if receivedMap < numReceivedMaps:
-            availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                       
-
- # infrastructure SPaT data
-    #signal phase status 
-    numSPaT = 8 # currently we have one SPaT value for each signal phase. 
-    index_spat = 67
-   
-
-    spat_regionalID = int(data_array[index_spat])
-    spat_intersectionID = int(data_array[index_spat + 1])
-    spat_msgCnt = int(data_array[index_spat + 2])
-    spat_minutesOfYear = int(data_array[index_spat + 3])
-    spat_msOfMinute = int(data_array[index_spat + 4])
-    spat_status = int(data_array[index_spat + 5])
-    #spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
-
-    index_phase_spat = 73
-    for spat in range(0, numSPaT):
-       
-        spat_phase = data_array[index_phase_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
-        spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[index_phase_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
-        SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
-
-    #ped phase status
-    numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
-    pedSPaT = []
-    index_ped_spat = 121
-    for spat in range(0, numSPaT):
-        spat_phase = data_array[index_ped_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
-        spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
-        spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
-        spat_elapsedTime = round(float(data_array[index_ped_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
-        pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
-
-    # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-    current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup]) #use the vehicles current signal group (phase)
-
-    # add the 8-phase signal and ped status data
-    phase_table = []
-    for phase in range(0,8):
-        phase_state = signal_head(SPaT[phase])
-        ped_state = signal_head(pedSPaT[phase])
-        phase_table.append({"phase" : phase, 
-                            "phase_status" : phase_status_map[phase_status_state(phase_state)], 
-                            "ped_status" : ped_status_map[phase_status_state(ped_state)]})
-
-
-    #acquire priority status data
-    index_priority = 169 # index is the column in the csv file
-    activeRequestTable = []
-
-    for request in range(0, 5): # 5 test requests of data
-        numActiveRequests = int(data_array[index_priority + 2])
-        vehicleID = int(data_array[index_priority + 3])
-        requestID = int(data_array[index_priority + 4])
-        msgCount = int(data_array[index_priority + 5])
-        inBoundLaneID = int(data_array[index_priority + 6])
-        basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7])]
-        vehicleETA = round(float(data_array[index_priority + 8]), 1)
-        duration = round(float(data_array[index_priority + 9]), 1)
-        priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10])]
-        if request < numActiveRequests:
-            activeRequestTable.append({"vehicleID" : vehicleID, 
-                                      "requestID" : requestID,
-                                      "msgCount" : msgCount,
-                                      "inBoundLane" : inBoundLaneID,
-                                      "basicVehicleRole" : basicVehicleRole,
-                                      "vehicleETA" : vehicleETA,
-                                      "duration" : duration,
-                                      "priorityRequestStatus" : priorityRequestStatus})
-
-
-
-
-    interfaceJsonString = json.dumps({
+        #update the HMI with new data (assuming the 10 Hz host vehilce data is the update trigger)
+        interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
         {
             "hostVehicle" :
@@ -328,7 +233,6 @@ while True:
             },
             "remoteVehicles" :
                 remoteVehicles,
-            
             "infrastructure": 
             {
                 "availableMaps": availableMaps,
@@ -337,7 +241,14 @@ while True:
                 "activeRequestTable" : activeRequestTable
             },
         }
-    })
-    s.sendto(interfaceJsonString.encode(),hmi)
-    time.sleep(0.1)
+        })
+        s.sendto(interfaceJsonString.encode(),hmi)
+        print('update hmi: ', interfaceJsonString)
+
+        #reset lists for next reporting period
+        remoteVehicles = []
+
+    else :
+        print('ERROR: data received from unknown source')
+    
 s.close() 

@@ -34,7 +34,7 @@ prg_simIP = '127.0.0.1'
 prg_simPort = 20004
 prg_sim = (prg_simIP, prg_simPort)
 
-bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
+bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False, "false" : False, "true" : True} # this could be come the SPaT phaseStatus data map
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
               1 : "dark", 
               2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
