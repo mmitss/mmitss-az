@@ -108,7 +108,7 @@ while (f.readline()):
         map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
         map_age = int(data_array[index_maps + 4 + receivedMap*4])
         if receivedMap < numReceivedMaps:
-            availableMaps.append({"map_intersectionID": map_intersectionID, "map_descriptiveName": map_DescriptiveName, "map_active": map_active, "map_age" : map_age})                       
+            availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                        
 
  
     #acquire priority status data

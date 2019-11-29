@@ -31,7 +31,7 @@ controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
-hmiPort = 5002  #20010 - needs to be CHANGED to match mmitss configuration
+hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
@@ -46,19 +46,10 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
+
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark"}
 phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G"}
 ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W"}
-def phase_status_state(phase_status):
-    for key in phase_status:
-        if phase_status[key] == True:
-            return key
-
-def signal_head(phase_status):
-    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
-                            "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
-    current_phase_status[spat_signal_head[phase_status['currState']]] = True
-    return current_phase_status
 
 priority_responseStatus = {0 : "unknown", 
                            1 : "requested",
@@ -74,11 +65,52 @@ basicVehicleRoles = {0 : "basicVehicle",
                     13 : "ev-fire",
                     16 : "transit"}
 
+def phase_status_state(phase_status):
+    for key in phase_status:
+        if phase_status[key] == True:
+            return key
+
+def signal_head(phase_status):
+    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
+                            "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
+    current_phase_status[spat_signal_head[phase_status['currState']]] = True
+    return current_phase_status
+
+def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
+    # get the id of the new BSM data
+    vehicleID = remoteBSMjson["BasicVehicle"]["temporaryID"]
+    vehicleInformation = remoteBSMjson["BasicVehicle"]
+    # cpp message uses key "type" instead of "vehicleType"
+    vehicleInformation['vehicleType'] = remoteBSMjson["BasicVehicle"]["type"]
+    vehicleInformation.pop('type')
+    vehicleUpdateTime = time.time()
+    # if there are no vehicles in the list, add the current vehicle 
+    if len(remoteVehicleList) == 0 : 
+        remoteVehicleList.append({"vehicleID" : vehicleID, "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
+        return remoteVehicleList
+    # update existing vehicles
+    rv_updated = False
+    for rv in remoteVehicleList :
+        if rv["vehicleID"] == vehicleID :
+            print("rv data: ", rv["vehicleInformation"])
+            rv["vehicleInformation"] = {"BasicVehicle" : vehicleInformation}
+            rv["vehicleUpdateTime"] = vehicleUpdateTime
+            rv_updated = True
+    if not rv_updated : #vehicle wasn't in the list of active vehicles, add it to the list
+        remoteVehicleList.append({"vehicleID" : vehicleID, "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
+    return remoteVehicleList
+
+def removeOldRemoteVehicles(remoteVehicleList) :
+    tick = time.time()
+    newRemoteVehicleList = [rv for rv in remoteVehicleList if not ((tick - rv["vehicleUpdateTime"]) > 0.5)]
+    return newRemoteVehicleList
+
+    
 # initialize all the data
 #host vehicle data
 secMark = 0
 hv_tempID = int(0)
-hv_vehicleType = ""
+hv_vehicleType = " "
 hv_latitude_DecimalDegree= round(0.0, 8)
 hv_longitude_DecimalDegree= round(0.0, 8)
 hv_elevation_Meter= round(0.0, 1)
@@ -94,14 +126,14 @@ activeRequestTable = []
 
 #remote vehicle data
 rv_tempID = int(0)
-rv_vehicleType = ""
+rv_vehicleType = " "
 rv_latitude_DecimalDegree= round(0.0, 8)
 rv_longitude_DecimalDegree= round(0.0, 8)
 rv_elevation_Meter= round(0.0, 1)
 rv_heading_Degree= round(0.0, 4)
 rv_speed_Meterpersecond= float(0.0)
 rv_speed_mph= int((float(rv_speed_Meterpersecond) * 2.23694))
-remoteVehicles = []
+remoteVehicleList = []
 
 #SPaT data
 spat_regionalID = int(0)
@@ -139,38 +171,38 @@ while True:
         # load the json
         remoteInterfacejson = json.loads(line)
 
-        if 'BSM' in remoteInterfacejson :
+        if remoteInterfacejson["MsgType"] =='BSM' :
             #translate remote basic vehicle data
             print(' BSM data received')
-            remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
-        elif 'MsgType' in remoteInterfacejson :
+            manageRemoteVehicleList(remoteInterfacejson, remoteVehicleList)
+            #remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
+
+        elif remoteInterfacejson["MsgType"] == 'SPaT' :
             #check to make sure it is spat
-            if remoteInterfacejson["MsgType"] == 'SPaT' :
-                print('SPaT data received')
-                SPaT_data = remoteInterfacejson
-                SPaT = []
-                pedSPaT = []
-                spat_regionalID = int(SPaT_data["Spat"]["IntersectionState"]["regionalID"])
-                spat_intersectionID = int(SPaT_data["Spat"]["IntersectionState"]["intersectionID"])
-                spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
-                spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
-                spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
-                spat_status = int(SPaT_data["Spat"]["status"])
-                SPaT = SPaT_data["Spat"]["phaseState"]
-                pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
+            print('SPaT data received')
+            SPaT_data = remoteInterfacejson
+            SPaT = []
+            pedSPaT = []
+            spat_regionalID = int(SPaT_data["Spat"]["IntersectionState"]["regionalID"])
+            spat_intersectionID = int(SPaT_data["Spat"]["IntersectionState"]["intersectionID"])
+            spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
+            spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
+            spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
+            spat_status = int(SPaT_data["Spat"]["status"])
+            SPaT = SPaT_data["Spat"]["phaseState"]
+            pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
 
-                # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-                current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup])
+            # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
+            current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup])
 
-                # add the 8-phase signal and ped status data
-                phase_table = []
-                for phase in range(0,8):
-                    phase_state = signal_head(SPaT[phase])
-                    ped_state = signal_head(pedSPaT[phase])
-                    phase_table.append({"phase" : phase, 
-                                        "phase_status" : phase_status_map[phase_status_state(phase_state)], 
-                                        "ped_status" : ped_status_map[phase_status_state(ped_state)]})
-
+            # add the 8-phase signal and ped status data
+            phase_table = []
+            for phase in range(0,8):
+                phase_state = signal_head(SPaT[phase])
+                ped_state = signal_head(pedSPaT[phase])
+                phase_table.append({"phase" : phase, 
+                                    "phase_status" : phase_status_map[phase_status_state(phase_state)], 
+                                    "ped_status" : ped_status_map[phase_status_state(ped_state)]})
 
         else : 
             print('ERROR: remote vehicle or SPaT data expected')
@@ -210,6 +242,13 @@ while True:
         
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
 
+        # prepare the list of remote vehicles for display
+        remoteVehicleList = removeOldRemoteVehicles(remoteVehicleList)
+        remoteVehicles = []
+        for rv in remoteVehicleList :
+            remoteVehicles.append(rv["vehicleInformation"])
+
+
         #update the HMI with new data (assuming the 10 Hz host vehilce data is the update trigger)
         interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
@@ -244,9 +283,6 @@ while True:
         })
         s.sendto(interfaceJsonString.encode(),hmi)
         print('update hmi: ', interfaceJsonString)
-
-        #reset lists for next reporting period
-        remoteVehicles = []
 
     else :
         print('ERROR: data received from unknown source')

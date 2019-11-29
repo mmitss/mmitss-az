@@ -31,7 +31,7 @@ controllerPort = 5001
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
-hmiPort = 5002
+hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
@@ -80,8 +80,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((controller))
 
 directory_path = os.getcwd()
-f = open(directory_path + '/mmitss/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
-#f = open('HMIControllerSimulatorData.1.csv', 'r')
+#f = open(directory_path + '/src/obu/controllerSimulatorforHMI/HMIControllerSimulatorData.1.csv', 'r')
+f = open('HMIControllerSimulatorData.1.csv', 'r')
 
 f.readline()
 f.readline() 
