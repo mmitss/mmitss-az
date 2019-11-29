@@ -132,7 +132,7 @@ def get_data():
     # get list of Priority Requests
     activeRequestTable = []
     activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
-    print("activeRequestTable", len(activeRequestTable), activeRequestTable)
+    #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
 
     # build the treeview containing ART
     build_ART_tree(activeRequestTable)
@@ -351,7 +351,7 @@ def build_ART_tree(activeRequestTable):
     
     for request in activeRequestTable:
         #print(request)
-        gui.ART_tree.insert('', 'end', iid="']", text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
+        gui.ART_tree.insert('', 'end', iid=None, text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
         
     gui.ART_tree.grid(row=0, column=0, sticky=E+W)
     
@@ -364,9 +364,8 @@ def build_ART_tree(activeRequestTable):
 
 def build_BSM_tree(remoteVehicles):
     gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=len(remoteVehicles))
-    gui.bsm_tree["columns"]=("Line ID","Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
+    gui.bsm_tree["columns"]=("Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
-    gui.bsm_tree.column("Line ID", width=1)
     gui.bsm_tree.column("Temp ID", width=100)
     gui.bsm_tree.column("Time", width=100)
     gui.bsm_tree.column("Vehicle Type", width=100) 
@@ -394,7 +393,7 @@ def build_BSM_tree(remoteVehicles):
     lineID = 0
 
     for vehicle in remoteVehicles:
-        gui.bsm_tree.insert('', 'end', iid="", text="", values=(vehicle['BasicVehicle']['temporaryID'], vehicle['BasicVehicle']['secMark_Second'], vehicle['BasicVehicle']['vehicleType'], vehicle['BasicVehicle']['position']['latitude_DecimalDegree'], vehicle['BasicVehicle']['position']['longitude_DecimalDegree'], vehicle['BasicVehicle']['position']['elevation_Meter'], vehicle['BasicVehicle']['heading_Degree'], vehicle['BasicVehicle']['speed_MeterPerSecond']))
+        gui.bsm_tree.insert('', 'end', iid=None, text=" ", values=(vehicle['BasicVehicle']['temporaryID'], vehicle['BasicVehicle']['secMark_Second'], vehicle['BasicVehicle']['vehicleType'], vehicle['BasicVehicle']['position']['latitude_DecimalDegree'], vehicle['BasicVehicle']['position']['longitude_DecimalDegree'], vehicle['BasicVehicle']['position']['elevation_Meter'], vehicle['BasicVehicle']['heading_Degree'], vehicle['BasicVehicle']['speed_MeterPerSecond']), tag='data')
         
     
     gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
@@ -402,8 +401,7 @@ def build_BSM_tree(remoteVehicles):
     gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
 
     # tag styles
-    gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
-    gui.bsm_tree.tag_configure('odd', background='#dfdfdf')
+    gui.bsm_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
 ##############################################
 #   AVAILABLE MAP DISPLAY
@@ -435,7 +433,10 @@ def build_MAP_tree(availableMaps):
     for map in availableMaps:
         #print(map)
         #mapList.append(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'])
-        gui.MAP_tree.insert('', 'end', iid="", text="", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ))
+        gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
+
+    # tag styles
+    gui.MAP_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
 ##############################################
 #  STATUS WIDGET INITIAL DISPLAY
