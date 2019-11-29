@@ -201,25 +201,24 @@ while (f.readline()):
     activeRequestTable = []
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]
-    for request in range(0, 5): # 5 test requests of data
-        numActiveRequests = int(data_array[index_priority + 2])
-        vehicleID = int(data_array[index_priority + 3])
-        requestID = int(data_array[index_priority + 4])
-        msgCount = int(data_array[index_priority + 5])
-        inBoundLaneID = int(data_array[index_priority + 6])
-        basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7])]
-        vehicleETA = round(float(data_array[index_priority + 8]), 1)
-        duration = round(float(data_array[index_priority + 9]), 1)
-        priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10])]
-        if request < numActiveRequests:
-            activeRequestTable.append({"vehicleID" : vehicleID, 
-                                      "requestID" : requestID,
-                                      "msgCount" : msgCount,
-                                      "inBoundLane" : inBoundLaneID,
-                                      "basicVehicleRole" : basicVehicleRole,
-                                      "vehicleETA" : vehicleETA,
-                                      "duration" : duration,
-                                      "priorityRequestStatus" : priorityRequestStatus})
+    numActiveRequests = int(data_array[index_priority + 2])
+    for request in range(0, numActiveRequests): 
+        vehicleID = int(data_array[index_priority + 3 + request*8])
+        requestID = int(data_array[index_priority + 4 + request*8])
+        msgCount = int(data_array[index_priority + 5 + request*8])
+        inBoundLaneID = int(data_array[index_priority + 6 + request*8])
+        basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7 + request*8])]
+        vehicleETA = round(float(data_array[index_priority + 8 + request*8]), 1)
+        duration = round(float(data_array[index_priority + 9 + request*8]), 1)
+        priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10 + request*8])]
+        activeRequestTable.append({"vehicleID" : vehicleID, 
+                                    "requestID" : requestID,
+                                    "msgCount" : msgCount,
+                                    "inBoundLane" : inBoundLaneID,
+                                    "basicVehicleRole" : basicVehicleRole,
+                                    "vehicleETA" : vehicleETA,
+                                    "duration" : duration,
+                                    "priorityRequestStatus" : priorityRequestStatus})
 
 
 
