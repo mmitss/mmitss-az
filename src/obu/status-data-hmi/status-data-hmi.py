@@ -229,14 +229,14 @@ def load_static_graphics():
     # load all static graphics at start up
  
     # signal status icon (red / yellow / green)
-    gui.signal_red = PhotoImage(file = directory_path + "/images/SignalHeadRed.png") 
-    gui.signal_red = gui.signal_red.subsample(4,4) 
+    gui.signal_red = PhotoImage(file = directory_path + "/images/Red.png") 
+    gui.signal_red = gui.signal_red.subsample(1,1) 
  
-    gui.signal_yellow = PhotoImage(file = directory_path + "/images/SignalHeadYellow.png") 
-    gui.signal_yellow = gui.signal_red.subsample(5,5) 
+    gui.signal_yellow = PhotoImage(file = directory_path + "/images/Yellow.png") 
+    gui.signal_yellow = gui.signal_red.subsample(1,1) 
 
-    gui.signal_green = PhotoImage(file = directory_path + "/images/SignalHeadGreen.png") 
-    gui.signal_greem = gui.signal_red.subsample(5,5) 
+    gui.signal_green = PhotoImage(file = directory_path + "/images/Green.png") 
+    gui.signal_greem = gui.signal_red.subsample(1,1) 
 
     # ev icon dark means ev not present
     gui.ev_dark = PhotoImage(file = directory_path + "/images/ev_dark.png") 
