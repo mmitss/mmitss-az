@@ -54,7 +54,7 @@ def get_data():
     # receive the JSON data from the controller
     # set local data to be refreshed
     # set dyanamic text variables for labels
-    receivedData, addr = s.recvfrom(2048)
+    receivedData, addr = s.recvfrom(4096)
     interfaceJson = json.loads(receivedData.decode())
     secMark = int(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["secMark_Second"])
     latitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["latitude_DecimalDegree"])
