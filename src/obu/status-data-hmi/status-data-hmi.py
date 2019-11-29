@@ -108,6 +108,7 @@ def get_data():
     yellowStatus = bool(currentPhase['yellow'])
     greenStatus = bool(currentPhase['green'])
     print("Signal ", redStatus, yellowStatus, greenStatus)
+
     # set signal head icon
     if redStatus == True:    
         gui.Signal.config(image=gui.signal_red)
@@ -118,7 +119,9 @@ def get_data():
             if greenStatus == True:    
                 gui.Signal.config(image=gui.signal_green)
 
-
+    # set min and max end times
+    gui.min_value.set("Min End Time: " + str(currentPhase['minEndTime'])) 
+    gui.max_value.set("Max End Time: " + str(currentPhase['maxEndTime'])) 
 
     # get the phase status
     phaseTable = []
@@ -188,6 +191,10 @@ def set_display_fonts_and_colors():
 ##############################################
 def set_dynamic_variables():
     # initialize textvariables for dynamic updates
+    gui.min_value = StringVar()
+    gui.min_value.set('Min End Time: ')
+    gui.max_value = StringVar()
+    gui.max_value.set('Max End Time: ')
     gui.on_map_value = StringVar()
     gui.on_map_value.set('Not On Map')
     gui.priority_request_value = StringVar()
@@ -479,15 +486,21 @@ def create_status_widgets():
 
     # SPaT Data
     gui.SPaT = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="SPaT Data", fg=gui.textForeground)
-    gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+    gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Signal Data
     gui.Signal = Label(gui.SPaT, image=gui.signal_red, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
     gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
+    # Min / Max Data
+    gui.min = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.min_value, font=gui.mediumFont, fg=gui.textForeground,)
+    gui.min.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+    gui.max = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.max_value, font=gui.mediumFont, fg=gui.textForeground,)
+    gui.max.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+
     # Phase Data
     gui.Phase = Frame(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
-    gui.Phase.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+    gui.Phase.grid(row=3, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Vehicle Position Data
     gui.BasicVehicle = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, text='Host Vehicle', font=gui.mediumFont, fg=gui.textForeground)
