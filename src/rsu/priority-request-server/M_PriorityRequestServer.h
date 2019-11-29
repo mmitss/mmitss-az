@@ -123,3 +123,4 @@ int getPhaseInfo(SignalRequest signalRequest);
 
 void writeMAPPayloadInFile();
 void deleteMapPayloadFile();
+int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList,SignalRequest signalRequest);

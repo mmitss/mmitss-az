@@ -237,6 +237,10 @@ int main(int argc, char *argv[])
 	double dEndTime = 0.0; //time stamps used to determine whether we connect to the RSE or not.
 	testConnectionToController();
 	// initializeRedStartVar(red_start_time,previous_signal_color);  			// in case of Adaptive Priority
+	ofstream outputfile;
+	ifstream infile;
+	outputfile.open("/nojournal/bin/log/PRSolver_Mod_Dat.txt");
+	outputfile.clear();
 	while (true)
 	{
 		dStartTime = GetSeconds();
@@ -259,6 +263,15 @@ int main(int argc, char *argv[])
 					handleEVCase();
 					LinkList2DatFileForEV(Req_List_Combined, prioritydatafile, InitTime, InitPhase, GrnElapse, ConfigIS_EV, HaveEVInList); // construct .dat file for the glpk
 					PrintFile2Log(prioritydatafile);																					   // Log the .dat file for glpk solver
+
+					//Debashis added this for analysis befor the demo.
+					outputfile << "EV is in List" << endl;
+					infile.open("/nojournal/bin/NewModelData.dat");
+					for (std::string line; getline(infile, line);)
+					{
+						outputfile << line << endl;
+					}
+
 					deleteMissingPhaseFromList();
 				}
 				if ((HaveEVInList == 0) && (Req_List_Combined.ListSize() > 0)) // At least one priority vehicle except EV is in the list!
@@ -266,6 +279,14 @@ int main(int argc, char *argv[])
 					LinkList2DatFile(Req_List_Combined, prioritydatafile, InitTime, InitPhase, GrnElapse); // construct .dat file for the glpk
 					//LinkList2DatFileForAdaptivePriority(Req_List_Combined,prioritydatafile,InitTime,InitPhase,GrnElapse, ConfigIS.dTransitWeight, ConfigIS.dTruckWeight,ConfigIS.dCoordinationWeight,dVehDistToStpBar,dVehSpd,iVehPhase,Ratio,indic,laneNumber,dQsizeOfEachLane, Tq ); // construct .dat file for the glpk
 					PrintFile2Log(prioritydatafile); // Log the .dat file for glpk solver
+
+					//Debashis added this for analysis befor the demo.
+					outputfile << "EV is not in List" << endl;
+					infile.open("/nojournal/bin/NewModelData.dat");
+					for (std::string line; getline(infile, line);)
+					{
+						outputfile << line << endl;
+					}
 				}
 				// Rewright the request list into the file and SET the ReqListUpdateFlag in requests.txt to:"0"   ***IMPORTANT***
 				ReqListUpdateFlag = 0;
@@ -277,13 +298,18 @@ int main(int argc, char *argv[])
 				dEndTimeOfGLPKcall = GetSeconds();
 				sprintf(tmp_log, "Time for solving the problem is about: {%.3f}.\n", dEndTimeOfGLPKcall - dStartTimeOfGLPKcall);
 				outputlog(tmp_log);
+				sprintf(tmp_log, "Current : {%.3f}.\n", dEndTimeOfGLPKcall - dStartTimeOfGLPKcall);
+				outputlog(tmp_log);
 				int success = GLPKSolutionValidation(resultsfile);
 				if (success == 1)
 				{
 					sprintf(tmp_log, "...............New optimal signal schedule is being set..............:\t At time: %.2f\n", GetSeconds());
 					outputlog(tmp_log);
 					PrintFile2Log(resultsfile);
-					
+
+					outputfile << "...............New optimal signal schedule is being set..............:\t At time: " << GetSeconds() << endl;
+					outputfile << endl;
+
 					if (HaveEVInList == 1)
 						readOptPlanFromFileForEV(resultsfile, adCriticalPoints, omitPhase);
 					else
@@ -309,6 +335,8 @@ int main(int argc, char *argv[])
 				{
 					sprintf(temp_log, " No feasible solution found !!!!!!!! At time: %.2f.......... \n", GetSeconds());
 					outputlog("No feasible solution!\n");
+					outputfile << "No feasible solution found !!!!!!!! At time: " << GetSeconds() << endl;
+					outputfile << endl;
 				}
 			}
 			/* if (codeUsage==ADAPTIVE_PRIORITY) 		// Integrated Priority Alg and Adaptive Control				
@@ -318,6 +346,8 @@ int main(int argc, char *argv[])
 			{
 				sprintf(tmp_log, "No Need to solve, At time: %.2f \n", GetSeconds());
 				outputlog("\n");
+				outputfile << "No Need to solve, At time: " << GetSeconds() << endl;
+				outputfile << endl;
 				msleep(100);
 			}
 			msleep(20);
@@ -330,6 +360,8 @@ int main(int argc, char *argv[])
 			continue;
 		} //
 	}	 // end of While(true)
+	outputfile.close();
+	infile.close();
 	fs_log.close();
 	fs_signal_plan.close();
 	return 0;
@@ -659,7 +691,9 @@ int outputlog(char *output)
 			return -1;
 		}
 		fs.close();
-		cout << output << endl << endl <<endl;
+		cout << output << endl
+			 << endl
+			 << endl;
 	}
 	return 1;
 }
