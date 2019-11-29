@@ -80,6 +80,9 @@ def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     # get the id of the new BSM data
     vehicleID = remoteBSMjson["BasicVehicle"]["temporaryID"]
     vehicleInformation = remoteBSMjson["BasicVehicle"]
+    # cpp message uses key "type" instead of "vehicleType"
+    vehicleInformation['vehicleType'] = remoteBSMjson["BasicVehicle"]["type"]
+    vehicleInformation.pop('type')
     vehicleUpdateTime = time.time()
     # if there are no vehicles in the list, add the current vehicle 
     if len(remoteVehicleList) == 0 : 
