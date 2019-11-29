@@ -31,7 +31,7 @@ controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
-hmiPort = 20010 - needs to be CHANGED to match mmitss configuration
+hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
@@ -107,7 +107,7 @@ def removeOldRemoteVehicles(remoteVehicleList) :
 #host vehicle data
 secMark = 0
 hv_tempID = int(0)
-hv_vehicleType = ""
+hv_vehicleType = " "
 hv_latitude_DecimalDegree= round(0.0, 8)
 hv_longitude_DecimalDegree= round(0.0, 8)
 hv_elevation_Meter= round(0.0, 1)
@@ -123,7 +123,7 @@ activeRequestTable = []
 
 #remote vehicle data
 rv_tempID = int(0)
-rv_vehicleType = ""
+rv_vehicleType = " "
 rv_latitude_DecimalDegree= round(0.0, 8)
 rv_longitude_DecimalDegree= round(0.0, 8)
 rv_elevation_Meter= round(0.0, 1)
