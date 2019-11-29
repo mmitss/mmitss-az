@@ -125,8 +125,8 @@ def get_data():
     phaseTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["phaseStates"]
     #for phase in phaseTable:
     #    print(phase['ped_status'],phase['phase'], phase['phase_status'])
-    # build the treeview containing the Phase Table
-    build_phase_tree(phaseTable)
+    # populate the treeview containing the Phase Table
+    populate_phase_tree(phaseTable)
 
     # ART Active Requests
     # get list of Priority Requests
@@ -134,8 +134,8 @@ def get_data():
     activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
     #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
 
-    # build the treeview containing ART
-    build_ART_tree(activeRequestTable)
+    # populate the treeview containing ART
+    populate_ART_tree(activeRequestTable)
 
     # Remote BSMs
     # get list of Remote BSMs
@@ -143,8 +143,8 @@ def get_data():
     remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
     #print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
 
-    # build the treeview containing ART
-    build_BSM_tree(remoteVehicles)
+    # populate the treeview containing ART
+    populate_BSM_tree(remoteVehicles)
 
    
     # MAP messages
@@ -153,8 +153,8 @@ def get_data():
     availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
     #print("Available Maps", len(availableMaps), availableMaps)
 
-    # build the treeview containing MAPs
-    build_MAP_tree(availableMaps)
+    # populate the treeview containing MAPs
+    populate_MAP_tree(availableMaps)
 
     # performance test time that HMI receives message
     if args.perf:
@@ -271,7 +271,7 @@ def initialize_perf_output_file():
 #   8-PHASE STATUS DISPLAY
 ##############################################
 
-def build_phase_tree(phaseTable):
+def build_phase_tree():
     gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none', height=2)
     gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
     gui.phase_tree.column("#0", width=100, anchor='center')
@@ -302,8 +302,12 @@ def build_phase_tree(phaseTable):
     # placement
     gui.phase_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
 
+def populate_phase_tree(phaseTable):
+
     phaseList = []
     pedList = []
+
+    gui.phase_tree.delete(*gui.phase_tree.get_children())
 
     for phase in phaseTable:
         #print(phase['ped_status'],phase['phase'], phase['phase_status'])
@@ -321,8 +325,8 @@ def build_phase_tree(phaseTable):
 #   ACTIVE REQUEST DISPLAY
 ##############################################
 
-def build_ART_tree(activeRequestTable):
-    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=len(activeRequestTable))
+def build_ART_tree():
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=2)
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
     gui.ART_tree.column("RequestID", width=100, anchor='center', stretch=True)
@@ -349,6 +353,12 @@ def build_ART_tree(activeRequestTable):
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
     
+def populate_ART_tree(activeRequestTable):
+
+    gui.ART_tree.delete(*gui.ART_tree.get_children())
+
+    gui.ART_tree.configure(height=len(activeRequestTable))
+
     for request in activeRequestTable:
         #print(request)
         gui.ART_tree.insert('', 'end', iid=None, text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
@@ -362,8 +372,8 @@ def build_ART_tree(activeRequestTable):
 #   REMOTE BSM DISPLAY
 ##############################################
 
-def build_BSM_tree(remoteVehicles):
-    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=len(remoteVehicles))
+def build_BSM_tree():
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=2)
     gui.bsm_tree["columns"]=("Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
     gui.bsm_tree.column("Temp ID", width=100)
@@ -389,8 +399,13 @@ def build_BSM_tree(remoteVehicles):
     style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, foreground="green", background="black") # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
-    
-    lineID = 0
+
+def populate_BSM_tree(remoteVehicles):
+
+    gui.bsm_tree.delete(*gui.bsm_tree.get_children())
+
+    gui.bsm_tree.config(height=len(remoteVehicles))
+    gui.update_idletasks()
 
     for vehicle in remoteVehicles:
         gui.bsm_tree.insert('', 'end', iid=None, text=" ", values=(vehicle['BasicVehicle']['temporaryID'], vehicle['BasicVehicle']['secMark_Second'], vehicle['BasicVehicle']['vehicleType'], vehicle['BasicVehicle']['position']['latitude_DecimalDegree'], vehicle['BasicVehicle']['position']['longitude_DecimalDegree'], vehicle['BasicVehicle']['position']['elevation_Meter'], vehicle['BasicVehicle']['heading_Degree'], vehicle['BasicVehicle']['speed_MeterPerSecond']), tag='data')
@@ -398,8 +413,6 @@ def build_BSM_tree(remoteVehicles):
     
     gui.bsm_tree.grid(row=0, column=0, sticky=E+W)
     
-    gui.bsm_tree.tag_configure('odd', background='#e8e8e8')
-
     # tag styles
     gui.bsm_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
@@ -407,8 +420,8 @@ def build_BSM_tree(remoteVehicles):
 #   AVAILABLE MAP DISPLAY
 ##############################################
 
-def build_MAP_tree(availableMaps):
-    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=len(availableMaps))
+def build_MAP_tree():
+    gui.MAP_tree = ttk.Treeview(gui.AvailableMaps, selectmode='none', height=2)
     gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
     gui.MAP_tree.column("#0", width=1, anchor='center')
     gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
@@ -429,6 +442,14 @@ def build_MAP_tree(availableMaps):
     style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30, background=gui.statusPanelBackground) # Modify the font of the body
     style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
     style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+
+def populate_MAP_tree(availableMaps):
+
+    gui.MAP_tree.delete(*gui.MAP_tree.get_children())
+
+    gui.MAP_tree.config(height=len(availableMaps))
+
+    gui.update_idletasks()
 
     for map in availableMaps:
         #print(map)
@@ -613,9 +634,15 @@ if __name__ == "__main__":
 
     # create the application footer with s
     create_app_footer()
-    
+
     # create the frame that holds all dynamic data (everything except the static footer)
     create_status_widgets()
+
+    # build the lists for phase, ART, BSM, and MAP    
+    build_phase_tree()
+    build_ART_tree()
+    build_BSM_tree()
+    build_MAP_tree()
 
     # set timer for updating data and call the update function
     gui.after(100, update_display)
