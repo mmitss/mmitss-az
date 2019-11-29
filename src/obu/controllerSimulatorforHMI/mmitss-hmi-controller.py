@@ -31,7 +31,7 @@ controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
-hmiPort = 20010
+hmiPort = 5002  #20010 - needs to be CHANGED to match mmitss configuration
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
