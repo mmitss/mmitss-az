@@ -85,7 +85,7 @@ while (f.readline()):
     numRemoteVehicles = int(data_array[index_remoteVehicle])
 
     for vehicle in range(0, numRemoteVehicles): # assuming up to 5 remote vehicles for now
-        rv_tempID = data_array[index_remoteVehicle + vehicle*7]
+        rv_tempID = data_array[index_remoteVehicle + 1 + vehicle*7]
         rv_vehicleType = data_array[index_remoteVehicle + 2 + vehicle*7]
         rv_latitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 3 + vehicle*7]), 8)
         rv_longitude_DecimalDegree= round(float(data_array[index_remoteVehicle + 4 + vehicle*7]), 8)
@@ -96,9 +96,8 @@ while (f.readline()):
         
         if vehicle < numRemoteVehicles:          
             interfaceJsonString = json.dumps({
-                "BSM": 
-                    {
-                        "BasicVehicle" : 
+                "MsgType": "BSM", 
+                "BasicVehicle" : 
                         {
                             "temporaryID" : rv_tempID,
                             "secMark_Second" : secMark,
@@ -112,7 +111,6 @@ while (f.readline()):
                             "heading_Degree" : rv_heading_Degree,
                             "type" : rv_vehicleType
                         }
-                    },
             })
             s.sendto(interfaceJsonString.encode(),hmi_controller)
             print("sent remote bsm at time: ", time.time() - ticks_init)
