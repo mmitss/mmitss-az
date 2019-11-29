@@ -478,11 +478,11 @@ def create_status_widgets():
 
     # east display (left half of screen)
     gui.east = LabelFrame(gui, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, fg=gui.textForeground)
-    gui.east.grid(row=0, column=0, columnspan=1, rowspan=4, padx=10, pady=10)
+    gui.east.grid(row=0, column=0, columnspan=1, rowspan=4, padx=10, pady=10, sticky=N)
 
     # west display (right half of screen)
     gui.west = LabelFrame(gui, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, fg=gui.textForeground)
-    gui.west.grid(row=0, column=1, columnspan=1, rowspan=6, padx=10, pady=10)
+    gui.west.grid(row=0, column=1, columnspan=1, rowspan=6, padx=10, pady=10, sticky=N)
 
     # SPaT Data
     gui.SPaT = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="SPaT Data", fg=gui.textForeground)
@@ -506,18 +506,18 @@ def create_status_widgets():
     gui.BasicVehicle = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, text='Host Vehicle', font=gui.mediumFont, fg=gui.textForeground)
     gui.BasicVehicle.grid(row=4, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
-    Label(gui.BasicVehicle, textvariable=gui.temporaryID_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.vehicle_type_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.speed_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.lat_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.long_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.elevation_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.heading_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=6, column=0, padx=5, pady=2)
-    Label(gui.BasicVehicle, textvariable=gui.lane_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=7, column=0, padx=5, pady=2)
+    Label(gui.BasicVehicle, textvariable=gui.temporaryID_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.vehicle_type_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.speed_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.lat_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.long_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.elevation_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.heading_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=6, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.lane_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=7, column=0, padx=5, pady=2, sticky=W)
 
     # Map Status
     gui.Map = LabelFrame(gui.west, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="MAP Status", fg=gui.textForeground)
-    gui.Map.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
+    gui.Map.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=N+E+W)
 
     # Map Status
     gui.map_label = Label(gui.Map, textvariable=gui.on_map_value, relief=RIDGE, bd=1, bg=gui.onMapBackground, font=gui.mediumFont, text="Map Status", fg=gui.onMapForeground)
@@ -538,7 +538,7 @@ def create_status_widgets():
 
     # Bottom Row (EV, School Zone, and Available Maps)
     gui.Multi = Frame(gui.west, relief=RAISED, bd=1, bg=gui.statusPanelBackground)
-    gui.Multi.grid(row=3, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
+    gui.Multi.grid(row=3, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=S)
  
     # EV
     gui.EV = Frame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
