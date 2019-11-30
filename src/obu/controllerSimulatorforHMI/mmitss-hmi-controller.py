@@ -51,29 +51,20 @@ spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash"
 phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G", "unknown" : "-"}
 ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W", "unknown" : "-"}
 
-priority_responseStatus = {0 : "unknown", 
-                           1 : "requested",
-                           2 : "processing",
-                           3 : "watchOtherTraffic",
-                           4 : "granted",
-                           5 : "rejected",
-                           6 : "maxPresence",
-                           7 : "reserviceLocked"}
-
-basicVehicleRoles = {0 : "basicVehicle",
-                    9 : "truck",
-                    13 : "ev-fire",
-                    16 : "transit"}
-
 def phase_status_state(phase_status):
     for key in phase_status:
         if phase_status[key] == True:
             return key
 
-def signal_head(phase_status):
+def signal_head(currentPhase, phase_status):
     current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
                             "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
-    current_phase_status[spat_signal_head[phase_status['currState']]] = True
+    if currentPhase == 0 : #there is no SPaT data
+        current_phase_status["dark"] = True
+        current_phase_status["minEndTime"] = '--'
+        current_phase_status["maxEndTime"] = '--'
+    else :
+        current_phase_status[spat_signal_head[phase_status['currState']]] = True
     return current_phase_status
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
@@ -105,6 +96,14 @@ def removeOldRemoteVehicles(remoteVehicleList) :
     newRemoteVehicleList = [rv for rv in remoteVehicleList if not ((tick - rv["vehicleUpdateTime"]) > 0.5)]
     return newRemoteVehicleList
 
+def changeSPaTTimes2Strings(SPaT) :
+    newSPaT = SPaT
+    for phase in range(0,8) :
+        newSPaT[phase]['maxEndTime'] = str(SPaT[phase]['maxEndTime'])
+        newSPaT[phase]['minEndTime'] = str(SPaT[phase]['minEndTime'])
+        newSPaT[phase]['startTime'] = str(SPaT[phase]['startTime'])
+        newSPaT[phase]['elapsedTime'] = str(SPaT[phase]['elapsedTime'])
+    return newSPaT
     
 # initialize all the data
 #host vehicle data
@@ -143,8 +142,8 @@ spat_minutesOfYear = int(0)
 spat_msOfMinute = int(0)
 spat_status = int(0)
 phase_table = []
-current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : 999.9,
-                            "maxEndTime" : 999.9, "dark" : True}
+current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : '--',
+                            "maxEndTime" : '--', "dark" : True}
 phase_table = []
 for phase in range(0,8) :
     phase_table.append({"phase" : phase, 
@@ -190,16 +189,18 @@ while True:
             spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
             spat_status = int(SPaT_data["Spat"]["status"])
             SPaT = SPaT_data["Spat"]["phaseState"]
+            SPaT = changeSPaTTimes2Strings(SPaT)
             pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
+            pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
             # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-            current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup])
+            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
 
             # add the 8-phase signal and ped status data
             phase_table = []
             for phase in range(0,8):
-                phase_state = signal_head(SPaT[phase])
-                ped_state = signal_head(pedSPaT[phase])
+                phase_state = signal_head(hv_currentLaneSignalGroup, SPaT[phase])
+                ped_state = signal_head(hv_currentLaneSignalGroup, pedSPaT[phase])
                 phase_table.append({"phase" : phase, 
                                     "phase_status" : phase_status_map[phase_status_state(phase_state)], 
                                     "ped_status" : ped_status_map[phase_status_state(ped_state)]})
