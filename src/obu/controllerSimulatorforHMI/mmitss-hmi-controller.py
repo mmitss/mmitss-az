@@ -46,10 +46,10 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
-
-spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark"}
-phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G"}
-ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W"}
+spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
+    "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown"}
+phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G", "unknown" : "-"}
+ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W", "unknown" : "-"}
 
 priority_responseStatus = {0 : "unknown", 
                            1 : "requested",

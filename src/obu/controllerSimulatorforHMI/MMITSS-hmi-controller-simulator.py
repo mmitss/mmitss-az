@@ -50,15 +50,21 @@ spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash"
     "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown"}
 phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G", "unknown" : "-"}
 ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W", "unknown" : "-"}
+
 def phase_status_state(phase_status):
     for key in phase_status:
         if phase_status[key] == True:
             return key
 
-def signal_head(phase_status):
+def signal_head(currentPhase, phase_status):
     current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
                             "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
-    current_phase_status[spat_signal_head[phase_status['currState']]] = True
+    if currentPhase == 0 : #there is no SPaT data
+        current_phase_status["dark"] = True
+        current_phase_status["minEndTime"] = '--'
+        current_phase_status["maxEndTime"] = '--'
+    else :
+        current_phase_status[spat_signal_head[phase_status['currState']]] = True
     return current_phase_status
 
 priority_responseStatus = {0 : "unknown", 
@@ -109,7 +115,7 @@ while (f.readline()):
 
     #need to acquire current lane and current lane signal group
     hv_currentLane = int(data_array[8])
-    hv_currentLaneSignalGroup = int(data_array[9])
+    hv_currentLaneSignalGroup = int(data_array[9])  # signals are 1-8, but data is 0-7
 
     #this is all remote vehicle information
 
@@ -166,9 +172,25 @@ while (f.readline()):
         spat_phase = data_array[index_phase_spat + spat*6]
         spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
         spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        if hv_currentLaneSignalGroup == 0 :
+            spat_startTime = '--'
+        else :
+            spat_startTime = str(spat_startTime)
         spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        if hv_currentLaneSignalGroup == 0 :
+            spat_minEndTime = '--'
+        else :
+            spat_minEndTime = str(spat_maxEndTime)
         spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        if hv_currentLaneSignalGroup == 0 :
+            spat_maxEndTime = '--'
+        else :
+            spat_maxEndTime = str(spat_maxEndTime)
         spat_elapsedTime = round(float(data_array[index_phase_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        if hv_currentLaneSignalGroup == 0 :
+            spat_elapsedTime = '--'
+        else :
+            spat_elapsedTime = str(spat_elapsedTime)
         SPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     #ped phase status
@@ -179,19 +201,38 @@ while (f.readline()):
         spat_phase = data_array[index_ped_spat + spat*6]
         spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
         spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
+        if hv_currentLaneSignalGroup == 0 :
+            spat_startTime = '--'
+        else :
+            spat_startTime = str(spat_startTime)
         spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        if hv_currentLaneSignalGroup == 0 :
+            spat_minEndTime = '--'
+        else :
+            spat_minEndTime = str(spat_maxEndTime)
         spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        if hv_currentLaneSignalGroup == 0 :
+            spat_maxEndTime = '--'
+        else :
+            spat_maxEndTime = str(spat_maxEndTime)
         spat_elapsedTime = round(float(data_array[index_ped_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        if hv_currentLaneSignalGroup == 0 :
+            spat_elapsedTime = '--'
+        else :
+            spat_elapsedTime = str(spat_elapsedTime)
         pedSPaT.append({"phase" : spat_phase, "currState" : spat_currState, "minEndTime" : spat_minEndTime, "maxEndTime": spat_maxEndTime})
 
     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-    current_phase_status = signal_head(SPaT[hv_currentLaneSignalGroup]) #use the vehicles current signal group (phase)
+    if hv_currentLaneSignalGroup == 0 : # the signal head sould be dark
+        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup ])
+    else :
+        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup - 1]) #use the vehicles current signal group (phase)
 
     # add the 8-phase signal and ped status data
     phase_table = []
     for phase in range(0,8):
-        phase_state = signal_head(SPaT[phase])
-        ped_state = signal_head(pedSPaT[phase])
+        phase_state = signal_head(hv_currentLaneSignalGroup, SPaT[phase])
+        ped_state = signal_head(hv_currentLaneSignalGroup, pedSPaT[phase])
         phase_table.append({"phase" : phase, 
                             "phase_status" : phase_status_map[phase_status_state(phase_state)], 
                             "ped_status" : ped_status_map[phase_status_state(ped_state)]})
