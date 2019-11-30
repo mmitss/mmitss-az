@@ -1,9 +1,11 @@
 #include "../TransceiverDecoder.h"
+#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <UdpSocket.h>
 #include "json/json.h"
 #include "msgEnum.h"
+#include <BasicVehicle.h>
 
 int main()
 {
@@ -18,15 +20,32 @@ int main()
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
+    BasicVehicle basicVehicle;
+    double latitude{};
+    double longitude{};
+    int secMark{};
+    double elevation{};
+    double heading{};
+    double speed{};
+    std::ofstream locationLog("locationLog.csv");
+    locationLog << "secMark,latitude,longitude,elevation,heading,speed" << std::endl;
 
     while(true)
     {
         decoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string receivedPayload(receiveBuffer);
         std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
+        basicVehicle.json2BasicVehicle(bsmJsonString);
+        secMark = basicVehicle.getSecMark_Second();
+        latitude = basicVehicle.getLatitude_DecimalDegree();
+        longitude = basicVehicle.getLongitude_DecimalDegree();
+        elevation = basicVehicle.getElevation_Meter();
+        heading = basicVehicle.getHeading_Degree();
+        speed = basicVehicle.getSpeed_MeterPerSecond();
+        locationLog << secMark*1000 << "," << std::setprecision(10) << latitude << "," << longitude << "," << std::setprecision(5) << elevation << "," << std::setprecision(2) << heading << "," << std::setprecision(2) << speed << std::endl;
+        std::cout << secMark*1000 << "," << std::setprecision(10) << latitude << "," << longitude << "," << std::setprecision(5) << elevation << "," << heading << "," << speed << std::endl;
         decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
-        std::cout << "Decoded BSM" << std::endl;
     }
-    
+    locationLog.close();
     return 0;
 }

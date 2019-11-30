@@ -79,7 +79,7 @@ def main():
                 firstIteration = False
 
         # Receive a binary message packet and convert it to hex packet.
-        receivedMsg, addr = s.recvfrom(4096)
+        receivedMsg, addr = s.recvfrom(5120)
         receivedMsg = receivedMsg.hex()
         msgPayload = getMsgPayload(receivedMsg, psidDict, msgIdDict)
         if msgPayload[:4]=="0021": 

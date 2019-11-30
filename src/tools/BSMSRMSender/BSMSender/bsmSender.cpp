@@ -5,20 +5,20 @@
 #include <UdpSocket.h>
 #include <unistd.h>
 
-unsigned int microseconds = 100000;
+unsigned int microseconds = 10000;
 
 int main()
 {
     //Socket Communication
     UdpSocket bsmSenderSocket(20010);
-    const string LOCALHOST = "10.12.6.57";
+    const string LOCALHOST = "10.12.6.109";
     const int receiverPortNo = 10007;
     std::string sendingJsonString;
 
     std::ifstream infile;
     int count = 1;
 
-    infile.open("bsmLog.txt");
+    infile.open("AnthemDemoFullRoute.txt");
 
     if (infile.fail())
         std::cout << "Fail to open file" << std::endl;
