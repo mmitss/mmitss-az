@@ -3,41 +3,28 @@
 	{
 		"hostVehicle" : 
 		{
-			"heading_Degree" : 265.0,
-			"laneID" : 4,
+			"heading_Degree" : 6.0,
+			"laneID" : 0,
 			"position" : 
 			{
-				"elevation_Meter" : 510.30000000000001,
-				"latitude_DecimalDegree" : 33.843051600000003,
-				"longitude_DecimalDegree" : -112.13460980000001
+				"elevation_Meter" : 510.39999999999998,
+				"latitude_DecimalDegree" : 33.843512799999999,
+				"longitude_DecimalDegree" : -112.1365163
 			},
 			"priorityStatus" : 
 			{
-				"OnMAP" : "True",
+				"OnMAP" : "False",
 				"requestSent" : "False"
 			},
-			"secMark_Second" : 51.100000000000001,
-			"signalGroup" : 6,
-			"speed_MeterPerSecond" : 0.0,
+			"secMark_Second" : 27.100000000000001,
+			"signalGroup" : 0,
+			"speed_MeterPerSecond" : 7.0,
 			"vehicleID" : 1865818398,
 			"vehicleType" : 6
 		},
 		"infrastructure" : 
 		{
-			"activeRequestTable" : 
-			[
-				{
-					"ETA" : 0.0,
-					"ETA_Duration" : 2.0,
-					"basicVehicleRole" : 2,
-					"inBoundApproachID" : 0,
-					"inBoundLaneID" : 25,
-					"msgCount" : 37,
-					"priorityRequestStatus" : 2,
-					"requestID" : 0,
-					"vehicleID" : 1865818398
-				}
-			],
+			"activeRequestTable" : null,
 			"availableMaps" : 
 			[
 				{

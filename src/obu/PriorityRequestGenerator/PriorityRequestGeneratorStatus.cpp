@@ -59,7 +59,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
 
     if (availableMapList.empty())
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"];
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]= {};
     }
     
     else
@@ -75,7 +75,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
 
     if (ActiveRequestTable.empty())
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"];
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"] = {};
     }
     
     else
