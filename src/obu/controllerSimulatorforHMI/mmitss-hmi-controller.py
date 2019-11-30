@@ -83,7 +83,7 @@ def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     rv_updated = False
     for rv in remoteVehicleList :
         if rv["vehicleID"] == vehicleID :
-            print("rv data: ", rv["vehicleInformation"])
+            #print("rv data: ", rv["vehicleInformation"])
             rv["vehicleInformation"] = {"BasicVehicle" : vehicleInformation}
             rv["vehicleUpdateTime"] = vehicleUpdateTime
             rv_updated = True
@@ -134,7 +134,18 @@ rv_speed_Meterpersecond= float(0.0)
 rv_speed_mph= int((float(rv_speed_Meterpersecond) * 2.23694))
 remoteVehicleList = []
 
-#SPaT data
+#SPaT data minitialization and reset
+markSPaTtime = 0.0
+def reset_SPaT() :
+    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : '--',
+                            "maxEndTime" : '--', "dark" : True} 
+    phase_table = []
+    for phase in range(0,8) :
+        phase_table.append({"phase" : phase, 
+                            "phase_status" : '--', 
+                            "ped_status" : '--'})
+    return current_phase_status, phase_table
+
 spat_regionalID = int(0)
 spat_intersectionID = int(0)
 spat_msgCnt = int(0)
@@ -147,8 +158,10 @@ current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "g
 phase_table = []
 for phase in range(0,8) :
     phase_table.append({"phase" : phase, 
-                            "phase_status" : '-', 
-                            "ped_status" : '-'})
+                            "phase_status" : '--', 
+                            "ped_status" : '--'})
+
+reset_SPaT() 
 
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -165,20 +178,21 @@ while True:
 
     if sourcePort == 10004 :
         # process the remote vehicle and SPaT data
-        print('remote bsm and spat data', line)
+        #print('remote bsm and spat data', line)
 
         # load the json
         remoteInterfacejson = json.loads(line)
 
         if remoteInterfacejson["MsgType"] =='BSM' :
             #translate remote basic vehicle data
-            print(' BSM data received')
+            #print(' BSM data received')
             manageRemoteVehicleList(remoteInterfacejson, remoteVehicleList)
             #remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
 
         elif remoteInterfacejson["MsgType"] == 'SPaT' :
             #check to make sure it is spat
-            print('SPaT data received')
+            #print('SPaT data received')
+            markSPaTtime = time.time()
             SPaT_data = remoteInterfacejson
             SPaT = []
             pedSPaT = []
@@ -213,7 +227,7 @@ while True:
 
     elif sourcePort == 20004 :
 
-        print('host vehicle and infrastructure data', line)
+        #print('host vehicle and infrastructure data', line)
         
         # load the json
         hostAndInfrastructureData = json.loads(line)
@@ -249,6 +263,10 @@ while True:
         for rv in remoteVehicleList :
             remoteVehicles.append(rv["vehicleInformation"])
 
+        #check to see if SPaT data is stale (defined to be older than 0.5 seconds)
+        if (time.time() - markSPaTtime) > 0.5 :
+            print("current time: ", time.time(), "lastSPaT time:", markSPaTtime, "time difference: ", time.time() - markSPaTtime)
+            current_phase_status, phase_table = reset_SPaT()
 
         #update the HMI with new data (assuming the 10 Hz host vehilce data is the update trigger)
         interfaceJsonString = json.dumps({
@@ -283,7 +301,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        print('update hmi: ', interfaceJsonString)
+        #print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')
