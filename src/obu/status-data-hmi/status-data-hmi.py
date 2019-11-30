@@ -107,7 +107,8 @@ def get_data():
     redStatus = bool(currentPhase['red'])
     yellowStatus = bool(currentPhase['yellow'])
     greenStatus = bool(currentPhase['green'])
-    print("Signal ", redStatus, yellowStatus, greenStatus)
+    darkStatus = bool(currentPhase['dark'])
+    print("Signal ", redStatus, yellowStatus, greenStatus, darkStatus)
 
     # set signal head icon
     if redStatus == True:    
@@ -235,15 +236,18 @@ def set_dynamic_variables():
 def load_static_graphics():
     # load all static graphics at start up
  
-    # signal status icon (red / yellow / green)
+    # signal status icon (red / yellow / green / dark)
     gui.signal_red = PhotoImage(file = directory_path + "/images/Red.png") 
     gui.signal_red = gui.signal_red.subsample(1,1) 
  
     gui.signal_yellow = PhotoImage(file = directory_path + "/images/Yellow.png") 
-    gui.signal_yellow = gui.signal_red.subsample(1,1) 
+    gui.signal_yellow = gui.signal_yellow.subsample(1,1) 
 
     gui.signal_green = PhotoImage(file = directory_path + "/images/Green.png") 
-    gui.signal_greem = gui.signal_red.subsample(1,1) 
+    gui.signal_green = gui.signal_green.subsample(1,1) 
+
+    gui.signal_dark = PhotoImage(file = directory_path + "/images/Dark.png") 
+    gui.signal_dark = gui.signal_dark.subsample(1,1) 
 
     # ev icon dark means ev not present
     gui.ev_dark = PhotoImage(file = directory_path + "/images/ev_dark.png") 
@@ -489,7 +493,7 @@ def create_status_widgets():
     gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Signal Data
-    gui.Signal = Label(gui.SPaT, image=gui.signal_red, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.Signal = Label(gui.SPaT, image=gui.signal_dark, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
     gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Min / Max Data
