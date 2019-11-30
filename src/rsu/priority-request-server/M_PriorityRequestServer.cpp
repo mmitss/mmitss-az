@@ -1296,7 +1296,7 @@ int getPhaseInfo(SignalRequest signalRequest)
     return phaseNo;
 }
 
-// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList, SignalRequest signalRequest)
+// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
 // {
 //     int priorityRequestStatus{};
     
