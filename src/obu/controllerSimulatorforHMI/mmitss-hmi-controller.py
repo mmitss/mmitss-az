@@ -257,8 +257,12 @@ while True:
         requestSent = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]
 
         availableMaps = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]
+        if availableMaps == None :
+            availableMaps = []
         
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
+        if activeRequestTable == None :
+            activeRequestTable = []
 
         # prepare the list of remote vehicles for display
         remoteVehicleList = removeOldRemoteVehicles(remoteVehicleList)
@@ -304,7 +308,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        print('update hmi: ', interfaceJsonString)
+        #print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')
