@@ -1296,47 +1296,47 @@ int getPhaseInfo(SignalRequest signalRequest)
     return phaseNo;
 }
 
-int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList, SignalRequest signalRequest)
-{
-    int priorityRequestStatus{};
+// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList, SignalRequest signalRequest)
+// {
+//     int priorityRequestStatus{};
     
-    std::list<ReqEntry>::iterator FindEV_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 2; });
-    std::list<ReqEntry>::iterator FindTransit_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 1; });
-    std::list<ReqEntry>::iterator FindTruck_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 3; });
+//     std::list<ReqEntry>::iterator FindEV_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 2; });
+//     std::list<ReqEntry>::iterator FindTransit_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 1; });
+//     std::list<ReqEntry>::iterator FindTruck_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 3; });
 
-    if(!ReqList.empty())
-    {
-        for (size_t i = 0; i < ReqList.size(); i++)
-        {
-            if(ReqList[i].VehClass == 2 )
-            {
-                priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
-            }
+//     if(!ReqList.empty())
+//     {
+//         for (size_t i = 0; i < ReqList.size(); i++)
+//         {
+//             if(ReqList[i].VehClass == 2 )
+//             {
+//                 priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+//             }
 
-            else if(ReqList[i].VehClass == 1 && FindEV_VehClassInList == ReqList.end())
-            {
-                priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
-            }
+//             else if(ReqList[i].VehClass == 1 && FindEV_VehClassInList == ReqList.end())
+//             {
+//                 priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+//             }
 
-            else if(ReqList[i].VehClass == 1 && FindEV_VehClassInList != ReqList.end())
-            {
-                priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
-            }
+//             else if(ReqList[i].VehClass == 1 && FindEV_VehClassInList != ReqList.end())
+//             {
+//                 priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
+//             }
 
-            else if(ReqList[i].VehClass == 3 && FindEV_VehClassInList == ReqList.end() && FindTransit_VehClassInList == ReqList.end())
-            {
-                priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
-            }
+//             else if(ReqList[i].VehClass == 3 && FindEV_VehClassInList == ReqList.end() && FindTransit_VehClassInList == ReqList.end())
+//             {
+//                 priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+//             }
 
-            else if(ReqList[i].VehClass == 3 && FindEV_VehClassInList != ReqList.end())
-            {
-                priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
-            }
-        }
-    }
+//             else if(ReqList[i].VehClass == 3 && FindEV_VehClassInList != ReqList.end())
+//             {
+//                 priorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
+//             }
+//         }
+//     }
 	
-    return priorityRequestStatus;
-}
+//     return priorityRequestStatus;
+// }
 
 void writeMAPPayloadInFile()
 {

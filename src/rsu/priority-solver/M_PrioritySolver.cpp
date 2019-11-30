@@ -38,6 +38,9 @@
 #include <stdlib.h>
 #include <glpk.h>
 
+#include <chrono> 
+#include <ctime> 
+
 #include "math.h"
 #include "GetInfo.h"
 #include "Mib.h"
@@ -237,9 +240,11 @@ int main(int argc, char *argv[])
 	double dEndTime = 0.0; //time stamps used to determine whether we connect to the RSE or not.
 	testConnectionToController();
 	// initializeRedStartVar(red_start_time,previous_signal_color);  			// in case of Adaptive Priority
+	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now()); 
 	ofstream outputfile;
 	ifstream infile;
 	outputfile.open("/nojournal/bin/log/PRSolver_Mod_Dat.txt");
+	// infile.open("/nojournal/bin/NewModelData.dat");
 	outputfile.clear();
 	while (true)
 	{
@@ -265,12 +270,13 @@ int main(int argc, char *argv[])
 					PrintFile2Log(prioritydatafile);																					   // Log the .dat file for glpk solver
 
 					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is in List" << endl;
+					outputfile << "EV is in List" << ctime(&timenow) << endl;
 					infile.open("/nojournal/bin/NewModelData.dat");
 					for (std::string line; getline(infile, line);)
 					{
 						outputfile << line << endl;
 					}
+					infile.close();
 
 					deleteMissingPhaseFromList();
 				}
@@ -281,12 +287,13 @@ int main(int argc, char *argv[])
 					PrintFile2Log(prioritydatafile); // Log the .dat file for glpk solver
 
 					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is not in List" << endl;
+					outputfile << "EV is not in List" << ctime(&timenow) << endl;
 					infile.open("/nojournal/bin/NewModelData.dat");
 					for (std::string line; getline(infile, line);)
 					{
 						outputfile << line << endl;
 					}
+					infile.close();
 				}
 				// Rewright the request list into the file and SET the ReqListUpdateFlag in requests.txt to:"0"   ***IMPORTANT***
 				ReqListUpdateFlag = 0;
@@ -307,7 +314,7 @@ int main(int argc, char *argv[])
 					outputlog(tmp_log);
 					PrintFile2Log(resultsfile);
 
-					outputfile << "...............New optimal signal schedule is being set..............:\t At time: " << GetSeconds() << endl;
+					outputfile << "...............New optimal signal schedule is being set..............:\t At time: " << ctime(&timenow) << endl;
 					outputfile << endl;
 
 					if (HaveEVInList == 1)
@@ -335,7 +342,7 @@ int main(int argc, char *argv[])
 				{
 					sprintf(temp_log, " No feasible solution found !!!!!!!! At time: %.2f.......... \n", GetSeconds());
 					outputlog("No feasible solution!\n");
-					outputfile << "No feasible solution found !!!!!!!! At time: " << GetSeconds() << endl;
+					outputfile << "No feasible solution found !!!!!!!! At time: " << ctime(&timenow) << endl;
 					outputfile << endl;
 				}
 			}
@@ -346,8 +353,8 @@ int main(int argc, char *argv[])
 			{
 				sprintf(tmp_log, "No Need to solve, At time: %.2f \n", GetSeconds());
 				outputlog("\n");
-				outputfile << "No Need to solve, At time: " << GetSeconds() << endl;
-				outputfile << endl;
+				// outputfile << "No Need to solve, At time: " << ctime(&timenow) << endl;
+				// outputfile << endl;
 				msleep(100);
 			}
 			msleep(20);
@@ -361,7 +368,7 @@ int main(int argc, char *argv[])
 		} //
 	}	 // end of While(true)
 	outputfile.close();
-	infile.close();
+	// infile.close();
 	fs_log.close();
 	fs_signal_plan.close();
 	return 0;
