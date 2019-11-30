@@ -120,6 +120,9 @@ def get_data():
         else:
             if greenStatus == True:    
                 gui.Signal.config(image=gui.signal_green)
+            else:
+                if darkStatus == True:    
+                    gui.Signal.config(image=gui.signal_dark)
 
     # set min and max end times
     gui.min_value.set("Min End Time: " + str(currentPhase['minEndTime'])) 
@@ -176,6 +179,7 @@ def set_display_fonts_and_colors():
     gui.statusPanelBackground = 'gray5'
     gui.statusDisplayBackground = 'gray10'
     gui.textForeground = 'gray90'
+    gui.tableTitleForeground = 'alice blue'
     gui.onMapBackground = gui.statusDisplayBackground
     gui.requestSentBackground = gui.statusDisplayBackground
     gui.onMapForeground = 'pale green'
@@ -338,7 +342,7 @@ def populate_phase_tree(phaseTable):
 ##############################################
 
 def build_ART_tree():
-    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=5)
+    gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=6)
     gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
     gui.ART_tree.column("RequestID", width=100, anchor='center', stretch=True)
@@ -363,7 +367,7 @@ def populate_ART_tree(activeRequestTable):
 
     gui.ART_tree.delete(*gui.ART_tree.get_children())
 
-    gui.ART_tree.configure(height=5)
+    gui.ART_tree.configure(height=6)
 
     for request in activeRequestTable:
         #print(request)
@@ -379,7 +383,7 @@ def populate_ART_tree(activeRequestTable):
 ##############################################
 
 def build_BSM_tree():
-    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=4)
+    gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=6)
     gui.bsm_tree["columns"]=("Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
     gui.bsm_tree.column("Temp ID", width=100, anchor='center')
@@ -404,7 +408,7 @@ def populate_BSM_tree(remoteVehicles):
 
     gui.bsm_tree.delete(*gui.bsm_tree.get_children())
 
-    gui.bsm_tree.config(height=5)
+    gui.bsm_tree.config(height=6)
     #gui.update_idletasks()
 
     for vehicle in remoteVehicles:
@@ -475,7 +479,7 @@ def create_status_widgets():
     gui.west.grid(row=0, column=1, columnspan=1, rowspan=6, padx=10, pady=10, sticky=N)
 
     # SPaT Data
-    gui.SPaT = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="SPaT Data", fg=gui.textForeground)
+    gui.SPaT = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text=" SPaT Data ", fg=gui.tableTitleForeground)
     gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Signal Data
@@ -493,20 +497,24 @@ def create_status_widgets():
     gui.Phase.grid(row=3, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
 
     # Vehicle Position Data
-    gui.BasicVehicle = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, text='Host Vehicle', font=gui.mediumFont, fg=gui.textForeground)
-    gui.BasicVehicle.grid(row=4, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
+    gui.BasicVehicle = LabelFrame(gui.east, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, text=' Host Vehicle ', font=gui.mediumFont, fg=gui.tableTitleForeground)
+    gui.BasicVehicle.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
 
-    Label(gui.BasicVehicle, textvariable=gui.temporaryID_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.vehicle_type_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.speed_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.lat_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.long_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.elevation_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.heading_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=6, column=0, padx=5, pady=2, sticky=W)
-    Label(gui.BasicVehicle, textvariable=gui.lane_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=7, column=0, padx=5, pady=2, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.temporaryID_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.vehicle_type_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=1, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.speed_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=2, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.lat_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=3, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.long_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=4, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.elevation_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=5, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.heading_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=6, column=0, padx=10, pady=3, sticky=W)
+    Label(gui.BasicVehicle, textvariable=gui.lane_value, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=7, column=0, padx=10, pady=3, sticky=W)
 
-    # Map Status
-    gui.Map = LabelFrame(gui.west, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="MAP Status", fg=gui.textForeground)
+     # Bottom Row (EV, School Zone, and Available Maps)
+    gui.Multi = Frame(gui.west, relief=RAISED, bd=1, bg=gui.statusPanelBackground)
+    gui.Multi.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=S)
+ 
+   # Top Multi-Column Status
+    gui.Map = LabelFrame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, fg=gui.textForeground)
     gui.Map.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=N+E+W)
 
     # Map Status
@@ -516,33 +524,29 @@ def create_status_widgets():
     gui.priority_label = Label(gui.Map, textvariable=gui.priority_request_value, relief=RIDGE, font=gui.mediumFont, fg=gui.requestSentForeground, bg=gui.requestSentBackground, justify=LEFT)
     gui.priority_label.grid(row=1, column=0, rowspan=1, padx=5, pady=2, sticky=E+W)
 
-    # ART
-    gui.ART = LabelFrame(gui.west, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Active Request Table", fg=gui.textForeground)
-    gui.ART.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
-    #Label(gui.ART, text="PLACEHOLDER", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
-
-    # Remote Basic Vehicle Messages
-    gui.BSM = LabelFrame(gui.west, relief=RIDGE, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Remote Vehicles: Basic Vehicle Data", fg=gui.textForeground)
-    gui.BSM.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
-    Label(gui.BSM, text="No Vehicle Data", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
-
-    # Bottom Row (EV, School Zone, and Available Maps)
-    gui.Multi = Frame(gui.west, relief=RAISED, bd=1, bg=gui.statusPanelBackground)
-    gui.Multi.grid(row=3, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=S)
- 
     # EV
     gui.EV = Frame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
-    gui.EV.grid(row=0, column=0, padx=10, pady=10, sticky=W)
+    gui.EV.grid(row=0, column=1, padx=10, pady=10, sticky=W)
     Label(gui.EV, image=gui.ev_dark, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
     # School Zone
     gui.SchoolZone = Frame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
-    gui.SchoolZone.grid(row=0, column=1, padx=10, pady=10, sticky=W)
+    gui.SchoolZone.grid(row=0, column=2, padx=10, pady=10, sticky=W)
     Label(gui.SchoolZone, image=gui.school_zone_dark, font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusPanelBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)
 
+    # ART
+    gui.ART = LabelFrame(gui.west, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Active Request Table", fg=gui.tableTitleForeground)
+    gui.ART.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
+    #Label(gui.ART, text="PLACEHOLDER", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+
+    # Remote Basic Vehicle Messages
+    gui.BSM = LabelFrame(gui.west, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Remote Vehicles", fg=gui.tableTitleForeground)
+    gui.BSM.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10, sticky=W)
+    Label(gui.BSM, text="No Vehicle Data", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=E+W)
+
     # Available Maps
-    gui.AvailableMaps = LabelFrame(gui.Multi, relief=FLAT, bd=1, bg=gui.statusDisplayBackground, font=gui.mediumFont, text="Available Maps", fg=gui.textForeground)
-    gui.AvailableMaps.grid(row=0, column=2, padx=10, pady=10, sticky=W)
+    gui.AvailableMaps = LabelFrame(gui.west, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, text="Available Maps", fg=gui.tableTitleForeground)
+    gui.AvailableMaps.grid(row=3, column=0, padx=10, pady=10, sticky=E+W)
     
     '''
     Label(gui.AvailableMaps, text="placeholder", font=gui.mediumFont, fg=gui.textForeground, bg=gui.statusDisplayBackground, justify=LEFT).grid(row=0, column=0, padx=5, pady=2, sticky=S+E+W)

@@ -102,13 +102,16 @@ while (f.readline()):
     index_maps = 46
     numReceivedMaps = int(data_array[index_maps])
     availableMaps = []
-    for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
-        map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
-        map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
-        map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
-        map_age = int(data_array[index_maps + 4 + receivedMap*4])
-        if receivedMap < numReceivedMaps:
-            availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                        
+    if availableMaps == 0 :
+        availableMaps == None
+    else :
+        for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
+            map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
+            map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
+            map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
+            map_age = int(data_array[index_maps + 4 + receivedMap*4])
+            if receivedMap < numReceivedMaps:
+                availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                        
 
  
     #acquire priority status data
@@ -117,23 +120,26 @@ while (f.readline()):
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]
     numActiveRequests = int(data_array[index_priority + 2])
-    for request in range(0, numActiveRequests): 
-        vehicleID = int(data_array[index_priority + 3 + request*8])
-        requestID = int(data_array[index_priority + 4 + request*8])
-        msgCount = int(data_array[index_priority + 5 + request*8])
-        inBoundLaneID = int(data_array[index_priority + 6 + request*8])
-        basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7 + request*8])]
-        vehicleETA = round(float(data_array[index_priority + 8 + request*8]), 1)
-        duration = round(float(data_array[index_priority + 9 + request*8]), 1)
-        priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10 + request*8])]
-        activeRequestTable.append({"vehicleID" : vehicleID, 
-                                    "requestID" : requestID,
-                                    "msgCount" : msgCount,
-                                    "inBoundLane" : inBoundLaneID,
-                                    "basicVehicleRole" : basicVehicleRole,
-                                    "vehicleETA" : vehicleETA,
-                                    "duration" : duration,
-                                    "priorityRequestStatus" : priorityRequestStatus})
+    if numActiveRequests == 0 :
+        activeRequestTable = None
+    else :
+        for request in range(0, numActiveRequests): 
+            vehicleID = int(data_array[index_priority + 3 + request*8])
+            requestID = int(data_array[index_priority + 4 + request*8])
+            msgCount = int(data_array[index_priority + 5 + request*8])
+            inBoundLaneID = int(data_array[index_priority + 6 + request*8])
+            basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7 + request*8])]
+            vehicleETA = round(float(data_array[index_priority + 8 + request*8]), 1)
+            duration = round(float(data_array[index_priority + 9 + request*8]), 1)
+            priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10 + request*8])]
+            activeRequestTable.append({"vehicleID" : vehicleID, 
+                                        "requestID" : requestID,
+                                        "msgCount" : msgCount,
+                                        "inBoundLane" : inBoundLaneID,
+                                        "basicVehicleRole" : basicVehicleRole,
+                                        "vehicleETA" : vehicleETA,
+                                        "duration" : duration,
+                                        "priorityRequestStatus" : priorityRequestStatus})
 
 
 

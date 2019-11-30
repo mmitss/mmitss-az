@@ -19,9 +19,9 @@ int main()
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
 
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
+    const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
-    const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
+    const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
 
     while(true)

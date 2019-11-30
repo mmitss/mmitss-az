@@ -27,6 +27,7 @@
 		"TrafficControllerObserver": 20006,
 		"PerformanceObserver": 20007,
 		"ISIG": 20008,
+        "HMIController": 20009,
 		"MapSPaTBroadcaster": 6053,
 		"RSUOBUImageForwarder": 1516,
         "PriorityRequestServer_SendSSM": 50003

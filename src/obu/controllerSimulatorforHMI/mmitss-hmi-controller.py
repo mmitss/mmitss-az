@@ -64,7 +64,7 @@ def signal_head(currentPhase, phase_status):
         current_phase_status["minEndTime"] = '--'
         current_phase_status["maxEndTime"] = '--'
     else :
-        current_phase_status[spat_signal_head[phase_status['currState']]] = True
+        current_phase_status[spat_signal_head[spat_state[phase_status['currState']]]] = True
     return current_phase_status
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
@@ -102,7 +102,7 @@ def changeSPaTTimes2Strings(SPaT) :
         newSPaT[phase]['maxEndTime'] = str(SPaT[phase]['maxEndTime'])
         newSPaT[phase]['minEndTime'] = str(SPaT[phase]['minEndTime'])
         newSPaT[phase]['startTime'] = str(SPaT[phase]['startTime'])
-        newSPaT[phase]['elapsedTime'] = str(SPaT[phase]['elapsedTime'])
+        #newSPaT[phase]['elapsedTime'] = str(SPaT[phase]['elapsedTime'])
     return newSPaT
     
 # initialize all the data
@@ -252,13 +252,17 @@ while True:
         #need to acquire current lane and current lane signal group
         hv_currentLane = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"])
         hv_currentLaneSignalGroup = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"])
-        onMAP = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"]
+        onMAP = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"]]
 
-        requestSent = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]
+        requestSent = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]]
 
         availableMaps = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]
+        if availableMaps == None :
+            availableMaps = []
         
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
+        if activeRequestTable == None :
+            activeRequestTable = []
 
         # prepare the list of remote vehicles for display
         remoteVehicleList = removeOldRemoteVehicles(remoteVehicleList)
