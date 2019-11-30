@@ -56,7 +56,7 @@ def get_data():
     # set dyanamic text variables for labels
     receivedData, addr = s.recvfrom(4096)
     interfaceJson = json.loads(receivedData.decode())
-    #print(interfaceJson)
+    print(interfaceJson)
     secMark = int(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["secMark_Second"])
     latitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["latitude_DecimalDegree"])
     longitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["longitude_DecimalDegree"])

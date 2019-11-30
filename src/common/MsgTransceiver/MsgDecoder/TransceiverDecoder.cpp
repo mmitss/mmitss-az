@@ -315,7 +315,7 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
         Json::Value jsonObject;
         Json::FastWriter fastWriter;
 
-        jsonObject["MsgType"] = "SPAT";
+        jsonObject["MsgType"] = "SPaT";
         jsonObject["Spat"]["IntersectionState"]["regionalID"] = spatOut.regionalId;
         jsonObject["Spat"]["IntersectionState"]["intersectionID"] = spatOut.id;
         jsonObject["Spat"]["msgCnt"] = static_cast<unsigned int>(spatOut.msgCnt);
