@@ -199,7 +199,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since matchID doesn't match" << std::endl;
+			std::cout << "SRM is sent since msgID doesn't match" << std::endl;
 		}
 	}
 
