@@ -208,7 +208,10 @@ while True:
             pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
             # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+            if hv_currentLaneSignalGroup == 0 :
+                current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+            else :
+                current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
 
             # add the 8-phase signal and ped status data
             phase_table = []
@@ -264,9 +267,9 @@ while True:
             remoteVehicles.append(rv["vehicleInformation"])
 
         #check to see if SPaT data is stale (defined to be older than 0.5 seconds)
-        if (time.time() - markSPaTtime) > 0.5 :
-            print("current time: ", time.time(), "lastSPaT time:", markSPaTtime, "time difference: ", time.time() - markSPaTtime)
-            current_phase_status, phase_table = reset_SPaT()
+        #if (time.time() - markSPaTtime) > 0.5 :
+        #   print("current time: ", time.time(), "lastSPaT time:", markSPaTtime, "time difference: ", time.time() - markSPaTtime)
+        #   current_phase_status, phase_table = reset_SPaT()
 
         #update the HMI with new data (assuming the 10 Hz host vehilce data is the update trigger)
         interfaceJsonString = json.dumps({
@@ -301,7 +304,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        #print('update hmi: ', interfaceJsonString)
+        print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')
