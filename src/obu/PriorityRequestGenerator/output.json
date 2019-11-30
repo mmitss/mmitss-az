@@ -3,22 +3,22 @@
 	{
 		"hostVehicle" : 
 		{
-			"heading_Degree" : 159.0,
-			"laneID" : 23,
+			"heading_Degree" : 265.0,
+			"laneID" : 4,
 			"position" : 
 			{
-				"elevation_Meter" : 511.39999999999998,
-				"latitude_DecimalDegree" : 33.844524999999997,
-				"longitude_DecimalDegree" : -112.13563480000001
+				"elevation_Meter" : 510.30000000000001,
+				"latitude_DecimalDegree" : 33.843051600000003,
+				"longitude_DecimalDegree" : -112.13460980000001
 			},
-			"prioritystatus" : 
+			"priorityStatus" : 
 			{
-				"OnMap" : "True",
+				"OnMAP" : "True",
 				"requestSent" : "False"
 			},
-			"secMark_Second" : 57.899999999999999,
-			"signalGroup" : 4,
-			"speed_MeterPerSecond" : 8.0,
+			"secMark_Second" : 51.100000000000001,
+			"signalGroup" : 6,
+			"speed_MeterPerSecond" : 0.0,
 			"vehicleID" : 1865818398,
 			"vehicleType" : 6
 		},
@@ -27,12 +27,12 @@
 			"activeRequestTable" : 
 			[
 				{
-					"ETA" : 19.0,
+					"ETA" : 0.0,
 					"ETA_Duration" : 2.0,
 					"basicVehicleRole" : 2,
 					"inBoundApproachID" : 0,
-					"inBoundLaneID" : 23,
-					"msgCount" : 5,
+					"inBoundLaneID" : 25,
+					"msgCount" : 37,
 					"priorityRequestStatus" : 2,
 					"requestID" : 0,
 					"vehicleID" : 1865818398
@@ -40,12 +40,6 @@
 			],
 			"availableMaps" : 
 			[
-				{
-					"map_active" : "False",
-					"map_age" : 21.0,
-					"map_descriptiveName" : "Map26379",
-					"map_intersectionID" : 26379
-				},
 				{
 					"map_active" : "False",
 					"map_age" : 2.0,

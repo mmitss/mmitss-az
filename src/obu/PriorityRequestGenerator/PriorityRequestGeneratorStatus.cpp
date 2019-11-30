@@ -23,13 +23,13 @@ PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
 }
 
-std::vector<Map::AvailableMap>PriorityRequestGeneratorStatus::getAavailableMapList(MapManager mapManager)
+std::vector<Map::AvailableMap> PriorityRequestGeneratorStatus::getAavailableMapList(MapManager mapManager)
 {
-	availableMapList = mapManager.getAavailableMapList();
-	return availableMapList;
+    availableMapList = mapManager.getAavailableMapList();
+    return availableMapList;
 }
 
-std::vector<ActiveRequest>PriorityRequestGeneratorStatus::getActiveRequestTable(PriorityRequestGenerator PRG)
+std::vector<ActiveRequest> PriorityRequestGeneratorStatus::getActiveRequestTable(PriorityRequestGenerator PRG)
 {
     ActiveRequestTable = PRG.getActiveRequestTable();
     return ActiveRequestTable;
@@ -45,36 +45,55 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     getActiveRequestTable(priorityRequestGenerator);
 
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["secMark_Second"] = basicVehicle.getSecMark_Second();
-    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"] = basicVehicle.getTemporaryID() ;
-    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"] = priorityRequestGenerator.getVehicleType() ;
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"] = basicVehicle.getTemporaryID();
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"] = priorityRequestGenerator.getVehicleType();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"] = basicVehicle.getLatitude_DecimalDegree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["longitude_DecimalDegree"] = basicVehicle.getLongitude_DecimalDegree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["elevation_Meter"] = basicVehicle.getElevation_Meter();
-    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["heading_Degree"] = basicVehicle.getHeading_Degree() ;
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["heading_Degree"] = basicVehicle.getHeading_Degree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["speed_MeterPerSecond"] = basicVehicle.getSpeed_MeterPerSecond();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"] = priorityRequestGenerator.getLaneID();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getVehicleCurrentSignalGroup();
-    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["prioritystatus"]["OnMap"] =  priorityRequestGenerator.getVehicleMapStatus();
-    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["prioritystatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
-    for (unsigned int i = 0; i < availableMapList.size(); i++)
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"] = priorityRequestGenerator.getVehicleMapStatus();
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
+
+    if (availableMapList.empty())
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_active"] =  availableMapList[i].activeMapStatus;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_age"] = availableMapList[i].mapAge;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"];
     }
-    for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
+    
+    else
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["vehicleID"] = ActiveRequestTable[i].vehicleID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["requestID"] = ActiveRequestTable[i].requestID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["msgCount"] = ActiveRequestTable[i].msgCount;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["ETA_Duration"] = ETA_DURATION_SECOND;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
+        for (unsigned int i = 0; i < availableMapList.size(); i++)
+        {
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_active"] = availableMapList[i].activeMapStatus;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_age"] = availableMapList[i].mapAge;
+        }
     }
+
+    if (ActiveRequestTable.empty())
+    {
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"];
+    }
+    
+    else
+    {
+        for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
+        {
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["vehicleID"] = ActiveRequestTable[i].vehicleID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["requestID"] = ActiveRequestTable[i].requestID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["msgCount"] = ActiveRequestTable[i].msgCount;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["ETA_Duration"] = ETA_DURATION_SECOND;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
+        }
+    }
+
     Json::StyledStreamWriter styledStreamWriter;
     std::ofstream outputter("output.json");
     styledStreamWriter.write(outputter, jsonObject);
