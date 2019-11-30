@@ -26,7 +26,7 @@ from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 
-controllerIP = '127.0.0.1'
+controllerIP = '10.12.6.57'
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
