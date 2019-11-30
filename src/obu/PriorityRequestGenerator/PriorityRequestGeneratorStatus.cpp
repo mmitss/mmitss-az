@@ -56,17 +56,28 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getVehicleCurrentSignalGroup();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"] = priorityRequestGenerator.getVehicleMapStatus();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
-    for (unsigned int i = 0; i < availableMapList.size(); i++)
+
+    if (availableMapList.empty())
     {
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_active"] = availableMapList[i].activeMapStatus;
-        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_age"] = availableMapList[i].mapAge;
+        jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"];
     }
+    
+    else
+    {
+        for (unsigned int i = 0; i < availableMapList.size(); i++)
+        {
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_intersectionID"] = availableMapList[i].mapIntersectionID;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_descriptiveName"] = availableMapList[i].availableMapFileName;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_active"] = availableMapList[i].activeMapStatus;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"][i]["map_age"] = availableMapList[i].mapAge;
+        }
+    }
+
     if (ActiveRequestTable.empty())
     {
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"];
     }
+    
     else
     {
         for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
