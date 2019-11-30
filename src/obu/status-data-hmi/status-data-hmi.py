@@ -185,6 +185,7 @@ def set_display_fonts_and_colors():
     gui.mediumFont=("Helvetica", 15)
     gui.largeFont=("Helvetica", 20)
     gui.hugeFont=("Helvetica", 25)
+    gui.treeviewFont=("Helvetica", 11)
 
 
 ##############################################
@@ -286,14 +287,14 @@ def build_phase_tree():
     gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none', height=2)
     gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
     gui.phase_tree.column("#0", width=100, anchor='center')
-    gui.phase_tree.column("1", width=30, anchor='center')
-    gui.phase_tree.column("2", width=30, anchor='center')
-    gui.phase_tree.column("3", width=30, anchor='center') 
-    gui.phase_tree.column("4", width=30, anchor='center')
-    gui.phase_tree.column("5", width=30, anchor='center')
-    gui.phase_tree.column("6", width=30, anchor='center') 
-    gui.phase_tree.column("7", width=30, anchor='center')
-    gui.phase_tree.column("8", width=30, anchor='center')
+    gui.phase_tree.column("1", width=40, anchor='center')
+    gui.phase_tree.column("2", width=40, anchor='center')
+    gui.phase_tree.column("3", width=40, anchor='center') 
+    gui.phase_tree.column("4", width=40, anchor='center')
+    gui.phase_tree.column("5", width=40, anchor='center')
+    gui.phase_tree.column("6", width=40, anchor='center') 
+    gui.phase_tree.column("7", width=40, anchor='center')
+    gui.phase_tree.column("8", width=40, anchor='center')
     gui.phase_tree.heading('#0', text='Phases', anchor='center') 
     gui.phase_tree.heading('1', text='1', anchor='center') 
     gui.phase_tree.heading("2", text="2", anchor='center') 
@@ -308,7 +309,6 @@ def build_phase_tree():
     gui.phase_tree.style = ttk.Style()
     gui.phase_tree.style.configure("gui.phase_tree", background=gui.statusPanelBackground, foreground=gui.textForeground) # Modify the font of the body
     gui.phase_tree.style.configure("gui.phase_tree.Heading", background=gui.statusPanelBackground, foreground=gui.textForeground) # Modify the font of the headings
-    #style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
     # placement
     gui.phase_tree.grid(row=1, column=0, rowspan=1, sticky=E+W)
@@ -348,22 +348,16 @@ def build_ART_tree():
     gui.ART_tree.column("InBoundLane", width=100, anchor='center', stretch=True) 
     gui.ART_tree.column("VehicleETA", width=100, anchor='center', stretch=True)
     gui.ART_tree.column("VehicleDuration", width=100, anchor='center', stretch=True)
-    gui.ART_tree.heading('RequestID', text='Request ID', anchor='center') 
-    gui.ART_tree.heading("VehicleID", text="Vehicle ID", anchor='center') 
-    gui.ART_tree.heading("BasicVehicleRole", text="Basic Vehicle Role", anchor='center') 
-    gui.ART_tree.heading("PriorityRequestStatus", text="PriorityRequestStatus", anchor='center') 
-    gui.ART_tree.heading("MessageCount", text="MessageCount", anchor='center') 
-    gui.ART_tree.heading("InBoundLane", text="In Bound Lane", anchor='center') 
-    gui.ART_tree.heading("VehicleETA", text="Vehicle ETA", anchor='center') 
-    gui.ART_tree.heading("VehicleDuration", text="Vehicle Duration", anchor='center') 
+    gui.ART_tree.heading('RequestID', text='Request', anchor='center') 
+    gui.ART_tree.heading("VehicleID", text="Vehicle", anchor='center') 
+    gui.ART_tree.heading("BasicVehicleRole", text="Role", anchor='center') 
+    gui.ART_tree.heading("PriorityRequestStatus", text="PR Status", anchor='center') 
+    gui.ART_tree.heading("MessageCount", text="Messages", anchor='center') 
+    gui.ART_tree.heading("InBoundLane", text="In Bound", anchor='center') 
+    gui.ART_tree.heading("VehicleETA", text="ETA", anchor='center') 
+    gui.ART_tree.heading("VehicleDuration", text="Duration", anchor='center') 
     #gui.ART_tree.heading("Vehicle Type", text="Vehicle Type") 
 
-    # set style
-    style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont) # Modify the font of the body
-    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
-    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
-    
 def populate_ART_tree(activeRequestTable):
 
     gui.ART_tree.delete(*gui.ART_tree.get_children())
@@ -387,29 +381,23 @@ def build_BSM_tree():
     gui.bsm_tree = ttk.Treeview(gui.BSM, selectmode='none', height=2)
     gui.bsm_tree["columns"]=("Temp ID", "Time","Vehicle Type", "Latitude", "Longitude", "Elevation", "Heading", "Speed")
     gui.bsm_tree.column("#0", width=1)
-    gui.bsm_tree.column("Temp ID", width=100)
-    gui.bsm_tree.column("Time", width=100)
-    gui.bsm_tree.column("Vehicle Type", width=100) 
-    gui.bsm_tree.column("Latitude", width=100)
-    gui.bsm_tree.column("Longitude", width=100)
-    gui.bsm_tree.column("Elevation", width=100) 
-    gui.bsm_tree.column("Heading", width=100)
-    gui.bsm_tree.column("Speed", width=100)
+    gui.bsm_tree.column("Temp ID", width=100, anchor='center')
+    gui.bsm_tree.column("Time", width=100, anchor='center')
+    gui.bsm_tree.column("Vehicle Type", width=100, anchor='center') 
+    gui.bsm_tree.column("Latitude", width=100, anchor='center')
+    gui.bsm_tree.column("Longitude", width=100, anchor='center')
+    gui.bsm_tree.column("Elevation", width=100, anchor='center') 
+    gui.bsm_tree.column("Heading", width=100, anchor='center')
+    gui.bsm_tree.column("Speed", width=100, anchor='center')
     gui.bsm_tree.heading('Time', text='Time') 
-    gui.bsm_tree.heading("Temp ID", text="Temp ID") 
-    gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
+    gui.bsm_tree.heading("Temp ID", text="Vehicle") 
+    gui.bsm_tree.heading("Vehicle Type", text="Type") 
     gui.bsm_tree.heading("Latitude", text="Latitude") 
     gui.bsm_tree.heading("Longitude", text="Longitude") 
     gui.bsm_tree.heading("Elevation", text="Elevation") 
     gui.bsm_tree.heading("Heading", text="Heading") 
     gui.bsm_tree.heading("Speed", text="Speed") 
     #gui.bsm_tree.heading("Vehicle Type", text="Vehicle Type") 
-
-    # set style
-    style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, foreground="green", background="black") # Modify the font of the body
-    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
-    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
 def populate_BSM_tree(remoteVehicles):
 
@@ -436,12 +424,12 @@ def build_MAP_tree():
     gui.MAP_tree["columns"]=("IntersectionID", "DescriptiveName", "Active", "Age")
     gui.MAP_tree.column("#0", width=1, anchor='center')
     gui.MAP_tree.column("IntersectionID", width=100, anchor='center')
-    gui.MAP_tree.column("DescriptiveName", width=200, anchor='center')
-    gui.MAP_tree.column("Active", width=100, anchor='center') 
-    gui.MAP_tree.column("Age", width=100, anchor='center')
+    gui.MAP_tree.column("DescriptiveName", width=300, anchor='center')
+    gui.MAP_tree.column("Active", width=70, anchor='center') 
+    gui.MAP_tree.column("Age", width=70, anchor='center')
     gui.MAP_tree.heading('#0', text='', anchor='center') 
-    gui.MAP_tree.heading('IntersectionID', text='Intersection ID', anchor='center') 
-    gui.MAP_tree.heading("DescriptiveName", text="DescriptiveName", anchor='center') 
+    gui.MAP_tree.heading('IntersectionID', text='Intersection', anchor='center') 
+    gui.MAP_tree.heading("DescriptiveName", text="Descriptive Name", anchor='center') 
     gui.MAP_tree.heading("Active", text="Active", anchor='center') 
     gui.MAP_tree.heading("Age", text="Age", anchor='center') 
 
@@ -450,9 +438,9 @@ def build_MAP_tree():
 
     # set style
     style = ttk.Style()
-    style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=gui.smallFont, rowheight=30, background=gui.statusPanelBackground) # Modify the font of the body
-    style.configure("mystyle.Treeview.Heading", font=gui.smallFont) # Modify the font of the headings
-    style.layout("mystyle.Treeview", [('mystyle.Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
+    style.configure("Treeview", highlightthickness=0, bd=0, font=gui.treeviewFont, background=gui.statusPanelBackground, foreground=gui.textForeground)
+    style.configure("Treeview.Heading", font=gui.treeviewFont) # Modify the font of the headings
+    style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
 def populate_MAP_tree(availableMaps):
 
@@ -468,7 +456,7 @@ def populate_MAP_tree(availableMaps):
         gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
 
     # tag styles
-    gui.MAP_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
+    #gui.MAP_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
 
 ##############################################
 #  STATUS WIDGET INITIAL DISPLAY
