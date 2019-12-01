@@ -136,33 +136,38 @@ def get_data():
     # populate the treeview containing the Phase Table
     populate_phase_tree(phaseTable)
 
-    # ART Active Requests
-    # get list of Priority Requests
-    activeRequestTable = []
-    activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
-    #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
+    # tables only to be updated once every second
+    if gui.tableUpdate >= 10:
+        # ART Active Requests
+        # get list of Priority Requests
+        activeRequestTable = []
+        activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
+        #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
 
-    # populate the treeview containing ART
-    populate_ART_tree(activeRequestTable)
+        # populate the treeview containing ART
+        populate_ART_tree(activeRequestTable)
 
-    # Remote BSMs
-    # get list of Remote BSMs
-    remoteVehicles = []
-    remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
-    #print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
+        # Remote BSMs
+        # get list of Remote BSMs
+        remoteVehicles = []
+        remoteVehicles = interfaceJson["mmitss_hmi_interface"]["remoteVehicles"]
+        #print("Remote Vehicles", len(remoteVehicles), remoteVehicles)
 
-    # populate the treeview containing ART
-    populate_BSM_tree(remoteVehicles)
+        # populate the treeview containing ART
+        populate_BSM_tree(remoteVehicles)
 
-   
-    # MAP messages
-    # get list of available maps
-    availableMaps = []
-    availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
-    #print("Available Maps", len(availableMaps), availableMaps)
+    
+        # MAP messages
+        # get list of available maps
+        availableMaps = []
+        availableMaps = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["availableMaps"]
+        #print("Available Maps", len(availableMaps), availableMaps)
 
-    # populate the treeview containing MAPs
-    populate_MAP_tree(availableMaps)
+        # populate the treeview containing MAPs
+        populate_MAP_tree(availableMaps)
+
+        #reset timer
+        gui.tableUpdate = 0
 
     # performance test time that HMI receives message
     if args.perf:
@@ -173,6 +178,9 @@ def get_data():
 ##############################################
 
 def set_display_fonts_and_colors():
+    # update timers
+    gui.tableUpdate = 0
+    
     # background colors
     gui.appBackground = 'black'
     gui.statusDisplayBackground = 'black'
@@ -187,10 +195,10 @@ def set_display_fonts_and_colors():
 
     # fonts
     gui.smallFont=("Helvetica", 15)
-    gui.mediumFont=("Helvetica", 20)
+    gui.mediumFont=("Helvetica", 19)
     gui.largeFont=("Helvetica", 20)
     gui.hugeFont=("Helvetica", 25)
-    gui.treeviewFont=("Helvetica", 20)
+    gui.treeviewFont=("Helvetica", 19)
 
 
 ##############################################
@@ -582,11 +590,14 @@ def update_display():
 
     # read JSON
     get_data()
-	
+
     # refresh dynamic data labels that were set to type class StringVar
     # class StringVar updates dynamically with root.update_idletasks()
     gui.update_idletasks()
-    
+
+    # update timer
+    gui.tableUpdate = gui.tableUpdate + 1
+
     # Performance Testing
     if args.perf:
         perfTest.time_refreshed = time.time()
