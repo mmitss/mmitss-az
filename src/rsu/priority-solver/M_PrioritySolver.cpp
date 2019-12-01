@@ -270,7 +270,15 @@ int main(int argc, char *argv[])
 					PrintFile2Log(prioritydatafile);																					   // Log the .dat file for glpk solver
 
 					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is in List" << ctime(&timenow) << endl;
+					outputfile << "EV is in List at time: " << ctime(&timenow) << endl;
+					outputfile << "Current Mod File is : " << endl;
+					infile.open("/nojournal/bin/NewModel_EV.mod");
+					for (std::string line; getline(infile, line);)
+					{
+						outputfile << line << endl;
+					}
+					infile.close();
+					outputfile << "Current Dat File is : " << endl;
 					infile.open("/nojournal/bin/NewModelData.dat");
 					for (std::string line; getline(infile, line);)
 					{
@@ -287,7 +295,15 @@ int main(int argc, char *argv[])
 					PrintFile2Log(prioritydatafile); // Log the .dat file for glpk solver
 
 					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is not in List" << ctime(&timenow) << endl;
+					outputfile << "EV is not in List at time: " << ctime(&timenow) << endl;
+					outputfile << "Current Mod File is : " << endl;
+					infile.open("/nojournal/bin/NewModel.mod");
+					for (std::string line; getline(infile, line);)
+					{
+						outputfile << line << endl;
+					}
+					infile.close();
+					outputfile << "Current Dat File is : " << endl;
 					infile.open("/nojournal/bin/NewModelData.dat");
 					for (std::string line; getline(infile, line);)
 					{
