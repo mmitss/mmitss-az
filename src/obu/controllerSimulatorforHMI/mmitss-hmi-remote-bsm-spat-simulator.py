@@ -131,7 +131,7 @@ while (f.readline()):
     index_phase_spat = 73
     for spat in range(0, numSPaT):
         spat_phase = int(data_array[index_phase_spat + spat*6])
-        spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
+        spat_currState = int(data_array[index_phase_spat + 1 + spat*6])
         spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
         spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
         spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
@@ -144,7 +144,7 @@ while (f.readline()):
     index_ped_spat = 121
     for spat in range(0, numSPaT):
         spat_phase = int(data_array[index_ped_spat + spat*6])
-        spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
+        spat_currState = int(data_array[index_ped_spat + 1 + spat*6])
         spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
         spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
         spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second

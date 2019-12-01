@@ -117,8 +117,8 @@ while (f.readline()):
     #acquire priority status data
     index_priority = 169 # index is the column in the csv file
     activeRequestTable = []
-    onMAP = bool_map[data_array[index_priority]]
-    requestSent = bool_map[data_array[index_priority + 1]]
+    onMAP = data_array[index_priority]
+    requestSent = data_array[index_priority + 1]
     numActiveRequests = int(data_array[index_priority + 2])
     if numActiveRequests == 0 :
         activeRequestTable = None
