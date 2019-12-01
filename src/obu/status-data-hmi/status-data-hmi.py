@@ -186,11 +186,11 @@ def set_display_fonts_and_colors():
     gui.requestSentForeground = 'light yellow'
 
     # fonts
-    gui.smallFont=("Helvetica", 10)
-    gui.mediumFont=("Helvetica", 15)
+    gui.smallFont=("Helvetica", 15)
+    gui.mediumFont=("Helvetica", 20)
     gui.largeFont=("Helvetica", 20)
     gui.hugeFont=("Helvetica", 25)
-    gui.treeviewFont=("Helvetica", 11)
+    gui.treeviewFont=("Helvetica", 20)
 
 
 ##############################################
@@ -292,14 +292,14 @@ def build_phase_tree():
     gui.phase_tree = ttk.Treeview(gui.Phase, selectmode='none', height=2)
     gui.phase_tree["columns"]=("1", "2", "3", "4", "5", "6", "7", "8")
     gui.phase_tree.column("#0", width=100, anchor='center')
-    gui.phase_tree.column("1", width=40, anchor='center')
-    gui.phase_tree.column("2", width=40, anchor='center')
-    gui.phase_tree.column("3", width=40, anchor='center') 
-    gui.phase_tree.column("4", width=40, anchor='center')
-    gui.phase_tree.column("5", width=40, anchor='center')
-    gui.phase_tree.column("6", width=40, anchor='center') 
-    gui.phase_tree.column("7", width=40, anchor='center')
-    gui.phase_tree.column("8", width=40, anchor='center')
+    gui.phase_tree.column("1", width=60, anchor='center')
+    gui.phase_tree.column("2", width=60, anchor='center')
+    gui.phase_tree.column("3", width=60, anchor='center') 
+    gui.phase_tree.column("4", width=60, anchor='center')
+    gui.phase_tree.column("5", width=60, anchor='center')
+    gui.phase_tree.column("6", width=60, anchor='center') 
+    gui.phase_tree.column("7", width=60, anchor='center')
+    gui.phase_tree.column("8", width=60, anchor='center')
     gui.phase_tree.heading('#0', text='Phases', anchor='center') 
     gui.phase_tree.heading('1', text='1', anchor='center') 
     gui.phase_tree.heading("2", text="2", anchor='center') 
@@ -443,7 +443,7 @@ def build_MAP_tree():
 
     # set style
     style = ttk.Style()
-    style.configure("Treeview", highlightthickness=0, bd=0, font=gui.treeviewFont, background=gui.statusPanelBackground, foreground=gui.textForeground)
+    style.configure("Treeview", rowheight=30, highlightthickness=0, bd=0, font=gui.treeviewFont, background=gui.statusPanelBackground, fieldbackground=gui.statusPanelBackground,foreground=gui.textForeground)
     style.configure("Treeview.Heading", font=gui.treeviewFont) # Modify the font of the headings
     style.layout("Treeview", [('Treeview.treearea', {'sticky': 'nswe'})]) # Remove the borders
 
@@ -483,14 +483,16 @@ def create_status_widgets():
     gui.SPaT.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Signal Data
-    gui.Signal = Label(gui.SPaT, image=gui.signal_dark, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
-    gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+    gui.SignalFrame = LabelFrame(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, font=gui.mediumFont, fg=gui.tableTitleForeground)
+    gui.SignalFrame.grid(row=0, column=0, columnspan=2, rowspan=2, padx=10, pady=10)
+    gui.Signal = Label(gui.SignalFrame, image=gui.signal_dark, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
+    gui.Signal.grid(row=0, column=0, columnspan=1, rowspan=2, padx=10, pady=10)
 
     # Min / Max Data
-    gui.min = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.min_value, font=gui.mediumFont, fg=gui.textForeground)
-    gui.min.grid(row=1, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
-    gui.max = Label(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.max_value, font=gui.mediumFont, fg=gui.textForeground)
-    gui.max.grid(row=2, column=0, columnspan=1, rowspan=1, padx=10, pady=10)
+    gui.min = Label(gui.SignalFrame, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.min_value, font=gui.mediumFont, fg=gui.textForeground)
+    gui.min.grid(row=0, column=1, columnspan=1, rowspan=1, padx=10, pady=10, sticky=E+W)
+    gui.max = Label(gui.SignalFrame, relief=FLAT, bd=1, bg=gui.statusPanelBackground, textvariable=gui.max_value, font=gui.mediumFont, fg=gui.textForeground)
+    gui.max.grid(row=1, column=1, columnspan=1, rowspan=1, padx=10, pady=10, sticky=E+W)
 
     # Phase Data
     gui.Phase = Frame(gui.SPaT, relief=FLAT, bd=1, bg=gui.statusPanelBackground)
