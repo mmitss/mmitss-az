@@ -39,6 +39,7 @@ int main()
     //Socket Communication
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
     char receiveBuffer[5120];
@@ -64,7 +65,7 @@ int main()
             mapManager.deleteMap();
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle, mapManager);
             //std::cout << prgStatusJsonString << std::endl;
-            priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
+            priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
             //std::cout << "Message sent to HMI Conrtoller" << std::endl;
             // PRG.printART();
         }

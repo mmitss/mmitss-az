@@ -17,9 +17,10 @@ int main()
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt()));
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
 
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
+    // const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
@@ -40,7 +41,7 @@ int main()
         else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
             std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
+            decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
             std::cout << "Decoded BSM" << std::endl;
         }
         
@@ -54,7 +55,7 @@ int main()
         else if (msgType == MsgEnum::DSRCmsgID_spat)
         {
             std::string spatJsonString = decoder.spatDecoder(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
+            decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
             std::cout << "Decoded SPAT" << std::endl;
         }
         
