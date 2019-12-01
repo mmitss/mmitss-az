@@ -19,7 +19,7 @@
 		},
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
-        "HostBsmDecoderOBUBSMReceiver": 10007,
+        "HostBsmDecoder": 10007,
 		"TrajectoryAware": 20001,
 		"PriorityRequestServer": 20002,
 		"PrioritySOlver": 20003,
