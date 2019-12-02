@@ -199,6 +199,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     long lintersectionID{};
     char temp_log[256]{};
     int iRequestType{};
+    int ibasicVehicleRole{};
 
     std::string receivedSrmJsonString = rxMsgBuffer;
 
@@ -238,20 +239,22 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
 
         iMsgCnt = currentSRM.getMsgCount();
 
+        ibasicVehicleRole = currentSRM.getBasicVehicleRole();
+
         //KLH - concerned about this being a bug
         //if (iVehicleState == 3) // vehicle is in queue
         //    dMinGrn = (double)(fETA);
 
         //All of the following are unused in PRS and in Solver
         //dMinGrn iInLane, iOutLane, iStartMinute iStartSecond iStartHour iEndMinute iEndSecond iEndHour iVehicleState
-        sprintf(tempMsg, "%d %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f %ld",
+        sprintf(tempMsg, "%d %s %ld %d %.2f %d %.2f %.2f %d %d %d %d %d %d %d %d %d %d %f %ld %d",
                 iRequestType,
                 Rsu_id.c_str(),
                 lvehicleID,
                 iPriorityLevel, fETA, iRequestedPhase, dMinGrn, dTime,
                 iInLane, iOutLane, iStartHour, iStartMinute, iStartSecond,
                 iEndHour, iEndMinute, iEndSecond,
-                iVehicleState, iMsgCnt, 0.0, lintersectionID);
+                iVehicleState, iMsgCnt, 0.0, lintersectionID, ibasicVehicleRole);
 
 #ifdef LOGGING
         sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
@@ -318,13 +321,13 @@ void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket M
             jsonObject["SignalStatus"]["requestorInfo"][i]["vehicleID"] = static_cast<int>(ReqList.Data().VehID);
             jsonObject["SignalStatus"]["requestorInfo"][i]["requestID"] = 0;
             jsonObject["SignalStatus"]["requestorInfo"][i]["msgCount"] = ReqList.Data().iMsgCnt;
-            jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ReqList.Data().VehClass;
+            jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ReqList.Data().ibasicVehicleRole;
             jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundLaneID"] = ReqList.Data().iInLane;
             jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundApproachID"] = 0;
             jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = ReqList.Data().ETA / 60;
             jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ReqList.Data().ETA, 60);
             jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Duration"] = 2000;
-            jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ReqList.Data().iRequestType;
+            jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ReqList.Data().ipriorityRequestStatus;
 
             ReqList.Next();
         }
@@ -1296,60 +1299,97 @@ int getPhaseInfo(SignalRequest signalRequest)
     return phaseNo;
 }
 
-// int FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass)
-// {
-// 	Req_List.Reset();
+bool FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass)
+{
+    Req_List.Reset();
 
-// 	int vehicleClassInList = false;
-// 	if (Req_List.ListEmpty() == 0)
-// 	{
-// 		while (!Req_List.EndOfList())
-// 		{
-// 			if (Req_List.Data().VehClass == VehClass)
-// 			{
-// 				vehicleClassInList = true;
-// 			}
-// 			else
-// 			{
-// 				Req_List.Next();
-// 			}
-// 		}
-// 	}
-// 	return vehicleClassInList;
-// }
-// int FindRequestInList(LinkedList<ReqEntry> ReqList, int VehClass)
-// {
-//     ReqList.Reset();
-//     int temp = -1;
+    bool vehicleClassInList = false;
 
-//     if (ReqList.ListEmpty())
-//         return temp;
-//     else
-//         while (!ReqList.EndOfList())
-//         {
-//             if (ReqList.Data().VehClass  == VehClass)
-//                 return ReqList.CurrentPosition();
+    while (!Req_List.EndOfList())
+    {
+        if (Req_List.Data().VehClass == VehClass)
+        {
+            vehicleClassInList = true;
+        }
+        else
+        {
+            Req_List.Next();
+        }
+    }
 
-//             ReqList.Next();
-//         }
+    return vehicleClassInList;
+}
 
-//     return temp;
-// }
+int FindRequestInList(LinkedList<ReqEntry> ReqList, int VehClass)
+{
+    ReqList.Reset();
+    int temp = -1;
 
-// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
-// {
-//     int pos;
-//     if(FindVehClassInList(Req_List,1) ==  true)
-//     {
-//         pos = FindRequestInList(ReqList,1);
-//         Req_List.Reset(pos);
-//         Req_List.Data().
-//     }
-// }
+    while (!ReqList.EndOfList())
+    {
+        if (ReqList.Data().VehClass == VehClass)
+            return ReqList.CurrentPosition();
+
+        ReqList.Next();
+    }
+
+    return temp;
+}
+
+int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
+{
+    int pos{};
+
+    if (FindVehClassInList(ReqList, EV))
+    {
+        pos = FindRequestInList(ReqList, EV);
+        if (pos > 0)
+        {
+            ReqList.Reset(pos);
+
+            ReqList.Data().ipriorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+        }
+
+        pos = FindRequestInList(ReqList, TRANSIT);
+        if (pos > 0)
+        {
+            ReqList.Reset(pos);
+
+            ReqList.Data().ipriorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
+        }
+
+        pos = FindRequestInList(ReqList, TRUCK);
+        if (pos > 0)
+        {
+            ReqList.Reset(pos);
+
+            ReqList.Data().ipriorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::rejected);
+        }
+    }
+
+    else
+    {
+        pos = FindRequestInList(ReqList, TRANSIT);
+        if (pos > 0)
+        {
+            ReqList.Reset(pos);
+
+            ReqList.Data().ipriorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+        }
+
+        pos = FindRequestInList(ReqList, TRUCK);
+        if (pos > 0)
+        {
+            ReqList.Reset(pos);
+
+            ReqList.Data().ipriorityRequestStatus = static_cast<int>(MsgEnum::requestStatus::granted);
+        }
+    }
+}
 // int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
 // {
 //     int priorityRequestStatus{};
-    
+
 //     std::list<ReqEntry>::iterator FindEV_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 2; });
 //     std::list<ReqEntry>::iterator FindTransit_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 1; });
 //     std::list<ReqEntry>::iterator FindTruck_VehClassInList = std::find_if(std::begin(ReqList), std::end(ReqList), [&](ReqEntry const &p) { return p.VehClass == 3; });
@@ -1384,7 +1424,7 @@ int getPhaseInfo(SignalRequest signalRequest)
 //             }
 //         }
 //     }
-	
+
 //     return priorityRequestStatus;
 // }
 
