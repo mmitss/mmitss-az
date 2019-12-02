@@ -23,9 +23,9 @@ PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
 }
 
-std::vector<Map::AvailableMap> PriorityRequestGeneratorStatus::getAavailableMapList(MapManager mapManager)
+std::vector<Map::AvailableMap> PriorityRequestGeneratorStatus::getAvailableMapList(PriorityRequestGenerator PRG)
 {
-    availableMapList = mapManager.getAavailableMapList();
+    availableMapList = PRG.availableMapList;
     return availableMapList;
 }
 
@@ -35,13 +35,13 @@ std::vector<ActiveRequest> PriorityRequestGeneratorStatus::getActiveRequestTable
     return ActiveRequestTable;
 }
 
-std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle, MapManager mapManager)
+std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     std::string jsonString;
 
-    getAavailableMapList(mapManager);
+    getAvailableMapList(priorityRequestGenerator);
     getActiveRequestTable(priorityRequestGenerator);
 
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["secMark_Second"] = basicVehicle.getSecMark_Second();
