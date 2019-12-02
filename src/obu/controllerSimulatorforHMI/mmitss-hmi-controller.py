@@ -26,8 +26,8 @@ from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 
-#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-controllerIP = '127.0.0.1' #use for simulation testing
+controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -48,7 +48,8 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
-    "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown"}
+    "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",
+    "pre-Movement" : "unknown", "caution-Conflicting-Traffic" : "yellow"}
 phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G", "unknown" : "-"}
 ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W", "unknown" : "-"}
 
@@ -282,10 +283,21 @@ while True:
         if activeRequestTable == None :
             activeRequestTable = []
         for request in activeRequestTable :
-            responseStatus = request["priorityRequestStatus"]
-            request["priorityRequestStatus"] = priority_responseStatus[responseStatus]
-            vehicleRole = request["basicVehicleRole"]
-            request["basicVehicleRole"] = basicVehicleRoles[vehicleRole]
+            responseStatusEnum = request["priorityRequestStatus"]
+            #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
+            responseStatus = priority_responseStatus.get(responseStatusEnum)
+            if responseStatus :
+                request["priorityRequestStatus"] = responseStatus
+            else :
+                request["priorityRequestStatus"] = responseStatusEnum
+
+            vehicleRoleEnum = request["basicVehicleRole"]
+            #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
+            vehicleRole = basicVehicleRoles.get(vehicleRoleEnum)
+            if vehicleRole : 
+                request["basicVehicleRole"] = vehicleRole
+            else :
+                request['BasicVehicleRole'] = vehicleRoleEnum 
             
 
 
@@ -333,7 +345,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        print('update hmi: ', interfaceJsonString)
+        #print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')
