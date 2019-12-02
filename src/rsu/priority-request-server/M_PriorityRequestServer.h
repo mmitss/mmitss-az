@@ -102,13 +102,11 @@ void creatLogFile();
 
 void setupConfigurationAndConnection();
 
-int FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass);
-
 void startUpdateETAofRequestsInList(const string &, LinkedList<ReqEntry> &, int &, bool &);
 
 void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, const int IntersectionID);
 
-void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket);
+void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket);
 
 double getSystemTime();
 
@@ -123,4 +121,10 @@ int getPhaseInfo(SignalRequest signalRequest);
 
 void writeMAPPayloadInFile();
 void deleteMapPayloadFile();
-// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList);
+
+bool FindVehClassInList(LinkedList<ReqEntry> &Req_List, int VehClass);
+
+int FindRequestInList(LinkedList<ReqEntry> &ReqList, int VehClass);
+
+int getPriorityRequestStatus(LinkedList<ReqEntry> &ReqList);
+

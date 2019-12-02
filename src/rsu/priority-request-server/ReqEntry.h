@@ -21,12 +21,16 @@ public:
 	double dTimeInCycle;// only used for coordination requests. 
 	long lIntersectionId;
 	int iRequestType;
+    int ibasicVehicleRole;
+    int ipriorityRequestStatus;
+
 
 public:
 	ReqEntry();
 	ReqEntry(long vehID, int VehClass, float eta, int phase,float mgreen, double dSetRequestTime, int split_phase,int iInLane,
 	int iOutLane,int iStrHour,int iStrMinute,int iStrSecond,int iEndHour,int iEndMinute,int iEndSecond,int iVehState, int iMsgCnt,
-	double dUpdateTimeOfETA, int iLeavingCounter, double dTimeInCycle, long IntersectionId, int iRequestType);
+	double dUpdateTimeOfETA, int iLeavingCounter, double dTimeInCycle, long IntersectionId, int iRequestType, int basicVehicleRole,
+    int priorityRequestStatus);
 
 	ReqEntry(ReqEntry& Req);
 	ReqEntry& operator=(ReqEntry& Req);
