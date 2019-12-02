@@ -128,10 +128,10 @@ while (f.readline()):
             requestID = int(data_array[index_priority + 4 + request*8])
             msgCount = int(data_array[index_priority + 5 + request*8])
             inBoundLaneID = int(data_array[index_priority + 6 + request*8])
-            basicVehicleRole = basicVehicleRoles[int(data_array[index_priority + 7 + request*8])]
+            basicVehicleRole = int(data_array[index_priority + 7 + request*8])
             vehicleETA = round(float(data_array[index_priority + 8 + request*8]), 1)
             duration = round(float(data_array[index_priority + 9 + request*8]), 1)
-            priorityRequestStatus = priority_responseStatus[int(data_array[index_priority + 10 + request*8])]
+            priorityRequestStatus = int(data_array[index_priority + 10 + request*8])
             activeRequestTable.append({"vehicleID" : vehicleID, 
                                         "requestID" : requestID,
                                         "msgCount" : msgCount,

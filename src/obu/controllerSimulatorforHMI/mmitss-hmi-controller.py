@@ -26,8 +26,8 @@ from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 
-controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-#controllerIP = '127.0.0.1' #use for simulation testing
+#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -68,6 +68,22 @@ def signal_head(currentPhase, phase_status):
     else :
         current_phase_status[spat_signal_head[spat_state[phase_status['currState']]]] = True
     return current_phase_status
+
+# mapping of enumerated J2735 variables to meaningful text names for priority_responseStatus and basicVehicleRoles
+priority_responseStatus = {0 : "unknown", 
+                           1 : "requested",
+                           2 : "processing",
+                           3 : "watchOtherTraffic",
+                           4 : "granted",
+                           5 : "rejected",
+                           6 : "maxPresence",
+                           7 : "reserviceLocked"}
+
+basicVehicleRoles = {0 : "basicVehicle",
+                    9 : "truck",
+                    13 : "ev-fire",
+                    16 : "transit"}
+
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     # get the id of the new BSM data
@@ -265,6 +281,13 @@ while True:
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
         if activeRequestTable == None :
             activeRequestTable = []
+        for request in activeRequestTable :
+            responseStatus = request["priorityRequestStatus"]
+            request["priorityRequestStatus"] = priority_responseStatus[responseStatus]
+            vehicleRole = request["basicVehicleRole"]
+            request["basicVehicleRole"] = basicVehicleRoles[vehicleRole]
+            
+
 
         # prepare the list of remote vehicles for display
         remoteVehicleList = removeOldRemoteVehicles(remoteVehicleList)
