@@ -288,9 +288,17 @@ int PriorityRequestGenerator::getMessageType(std::string jsonString)
 std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManager mapManager)
 {
 	activeMapList = mapManager.getActiveMapList();
+
 	return activeMapList;
 }
 
+// std::vector<Map::AvailableMap> PriorityRequestGenerator::getAvailableMapList(MapManager mapManager)
+// {
+// 	mapManager.changeMapStatusInAvailableMapList();
+// 	availableMapList = mapManager.getAavailableMapList();
+
+// 	return availableMapList;
+// }
 /*
 	-If there is active map, based on the bsm data this function will locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
 */
@@ -305,7 +313,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	{
 		mapManager.createActiveMapList(basicVehicle);
 		getActiveMapList(mapManager);
-		mapManager.changeMapStatusInAvailableMapList();
+		// getAvailableMapList(mapManager);
 	}
 
 	//If active map List is not empty, locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
@@ -504,7 +512,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		setIntersectionID(0);
 		bgetActiveMap = false; //Required for HMI json
 		bRequestSendStatus = false;
-		mapManager.changeMapStatusInAvailableMapList();
+		// mapManager.changeMapStatusInAvailableMapList();
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= VEHICLE_SPEED_DEVIATION_LIMIT)
@@ -611,9 +619,9 @@ std::string PriorityRequestGenerator::getVehicleMapStatus()
 {
 	std::string vehicleMapStatus{};
 
-	if(bgetActiveMap == true)
+	if (bgetActiveMap == true)
 		vehicleMapStatus = "True";
-	
+
 	else
 		vehicleMapStatus = "False";
 
@@ -627,20 +635,43 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 {
 	std::string vehicleSRMStatus{"False"};
 
-	if(bRequestSendStatus == true)
-		vehicleSRMStatus == "True";
+	if (bRequestSendStatus == true)
+		vehicleSRMStatus = "True";
 	else
-		vehicleSRMStatus == "False";
-	
+		vehicleSRMStatus = "False";
+
 	return vehicleSRMStatus;
+}
+
+std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapListFORHMI()
+{
+	return activeMapList;
 }
 
 /*
 	- Getters for ART table
 */
-std::vector<ActiveRequest>PriorityRequestGenerator::getActiveRequestTable()
+std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
 {
 	return ActiveRequestTable;
+}
+
+std::vector<Map::AvailableMap> PriorityRequestGenerator::changeMapStatusInAvailableMapList(MapManager mapManager)
+{
+       
+    if(!activeMapList.empty())
+    {
+        std::vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
+                                                                                [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
+
+        if (findActiveMap != availableMapList.end())
+			findActiveMap->activeMapStatus = "True";
+			
+		availableMapList = mapManager.availableMapList;
+    }
+
+
+	return availableMapList;                                                                          
 }
 
 /*

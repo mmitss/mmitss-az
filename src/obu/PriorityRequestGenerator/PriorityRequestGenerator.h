@@ -29,6 +29,7 @@ class PriorityRequestGenerator
 private:
     std::vector<ActiveRequest>ActiveRequestTable;
     std::vector<Map::ActiveMap> activeMapList;
+    
     bool bgetActiveMap{false}; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
     bool bRequestSendStatus{false};  //Required for HMI json
     std::string mapFileDirectory; 
@@ -53,7 +54,7 @@ private:
 public:
     PriorityRequestGenerator();
     ~PriorityRequestGenerator();
-
+    std::vector<Map::AvailableMap> availableMapList;
     std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
     std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
 
@@ -68,6 +69,7 @@ public:
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
     int getMessageType(std::string jsonString);
     std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
+    // std::vector<Map::AvailableMap> getAvailableMapList(MapManager mapManager);
     void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);    
     int getIntersectionID();
     int getRegionalID();
@@ -86,7 +88,8 @@ public:
     std::string getVehicleMapStatus();
     std::string getVehicleRequestSentStatus();
     std::vector<ActiveRequest>getActiveRequestTable();
+    std::vector<Map::ActiveMap> getActiveMapListFORHMI();
     void printART();
-    
+    std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
 
 };

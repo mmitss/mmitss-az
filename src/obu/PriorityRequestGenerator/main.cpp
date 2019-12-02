@@ -63,8 +63,11 @@ int main()
             }
             mapManager.updateMapAge();
             mapManager.deleteMap();
-            prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle, mapManager);
-            //std::cout << prgStatusJsonString << std::endl;
+            PRG.changeMapStatusInAvailableMapList(mapManager);
+            mapManager.printAvailableMapList();
+            
+            prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
+            std::cout << prgStatusJsonString << std::endl;
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
             //std::cout << "Message sent to HMI Conrtoller" << std::endl;
             // PRG.printART();
@@ -74,7 +77,6 @@ int main()
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
-            // mapManager.printAvailableMapList();
             std::cout << "Map is received" << std::endl;
         }
 
