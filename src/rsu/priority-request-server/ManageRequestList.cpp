@@ -42,12 +42,12 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     ReqEntry NewReq; // default NewReq.Split_Phase=-10;
     char RSU_ID[16]{};
 
-    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf %ld", &NewReq.iRequestType, RSU_ID,
+    sscanf(RcvMsg, "%d %s %ld %d %f %d %f %lf %d %d %d %d %d %d %d %d %d %d %lf %ld %d", &NewReq.iRequestType, RSU_ID,
            &NewReq.VehID, &NewReq.VehClass,
            &NewReq.ETA, &NewReq.Phase, &NewReq.MinGreen, &NewReq.dSetRequestTime,
            &NewReq.iInLane, &NewReq.iOutLane, &NewReq.iStrHour, &NewReq.iStrMinute, &NewReq.iStrSecond,
            &NewReq.iEndHour, &NewReq.iEndMinute, &NewReq.iEndSecond, &NewReq.iVehState, &NewReq.iMsgCnt,
-           &NewReq.dTimeInCycle, &NewReq.lIntersectionId);
+           &NewReq.dTimeInCycle, &NewReq.lIntersectionId, &NewReq.ibasicVehicleRole);
 
     // DC - We never put anything from the SRM into MinGreen and solver does not use it...........
     //if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver

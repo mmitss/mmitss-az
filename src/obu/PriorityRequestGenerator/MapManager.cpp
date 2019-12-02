@@ -32,6 +32,7 @@
 #include "geoUtils.h"
 #include "msgEnum.h"
 
+
 using namespace GeoUtils;
 using namespace MsgEnum;
 
@@ -274,9 +275,10 @@ void MapManager::printAvailableMapList()
 {
     for (size_t i = 0; i < availableMapList.size(); i++)
     {
-        std::cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].minuteOfYear << std::endl;
+        std::cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].activeMapStatus << std::endl;
     }
 }
+
 
 /*
 	- This function is for maintaining activemaplist based on the availableMapList.
@@ -336,28 +338,6 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 }
 
 /*
-	-If vehicle is on map then active map status in the availableMapList will be set to true for corresponding Map.
-*/
-void MapManager::changeMapStatusInAvailableMapList()
-{
-    if(!activeMapList.empty())
-    {
-        std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
-                                                                                [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
-
-        findMapPayLoad->activeMapStatus = "True";
-    }
-
-    else
-    {
-        for (size_t i = 0; i < availableMapList.size(); i++)
-        {
-            availableMapList[i].activeMapStatus = "False";
-        }
-    }                                                                           
-}
-
-/*
 	-If vehicle is out of the intersection, activeMapList has to cleared.
 */
 void MapManager::deleteActiveMapfromList()
@@ -397,7 +377,7 @@ std::vector<Map::ActiveMap> MapManager::getActiveMapList()
 /*
 	- Getters for Available map List
 */
-std::vector<Map::AvailableMap> MapManager::getAavailableMapList()
+std::vector<Map::AvailableMap> MapManager::getAvailableMapList()
 {
     return availableMapList;
 }

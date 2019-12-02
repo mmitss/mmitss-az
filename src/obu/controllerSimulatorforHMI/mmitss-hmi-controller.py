@@ -48,7 +48,8 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
-    "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown"}
+    "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",
+    "pre-Movement" : "unknown", "caution-Conflicting-Traffic" : "yellow"}
 phase_status_map = { "dark" : '-', "red" : "R", "red_flash" : "F", "yellow" : "Y", "green" : "G", "unknown" : "-"}
 ped_status_map = { "dark" : "-", "red_flash" : '-', "red" : "DW", "yellow": "PC", "green" : "W", "unknown" : "-"}
 
@@ -68,6 +69,22 @@ def signal_head(currentPhase, phase_status):
     else :
         current_phase_status[spat_signal_head[spat_state[phase_status['currState']]]] = True
     return current_phase_status
+
+# mapping of enumerated J2735 variables to meaningful text names for priority_responseStatus and basicVehicleRoles
+priority_responseStatus = {0 : "unknown", 
+                           1 : "requested",
+                           2 : "processing",
+                           3 : "watchOtherTraffic",
+                           4 : "granted",
+                           5 : "rejected",
+                           6 : "maxPresence",
+                           7 : "reserviceLocked"}
+
+basicVehicleRoles = {0 : "basicVehicle",
+                    9 : "truck",
+                    13 : "ev-fire",
+                    16 : "transit"}
+
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     # get the id of the new BSM data
@@ -265,6 +282,24 @@ while True:
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
         if activeRequestTable == None :
             activeRequestTable = []
+        for request in activeRequestTable :
+            responseStatusEnum = request["priorityRequestStatus"]
+            #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
+            responseStatus = priority_responseStatus.get(responseStatusEnum)
+            if responseStatus :
+                request["priorityRequestStatus"] = responseStatus
+            else :
+                request["priorityRequestStatus"] = responseStatusEnum
+
+            vehicleRoleEnum = request["basicVehicleRole"]
+            #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
+            vehicleRole = basicVehicleRoles.get(vehicleRoleEnum)
+            if vehicleRole : 
+                request["basicVehicleRole"] = vehicleRole
+            else :
+                request['BasicVehicleRole'] = vehicleRoleEnum 
+            
+
 
         # prepare the list of remote vehicles for display
         remoteVehicleList = removeOldRemoteVehicles(remoteVehicleList)
@@ -310,7 +345,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        print('update hmi: ', interfaceJsonString)
+        #print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')
