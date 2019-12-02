@@ -24,11 +24,11 @@
 int main()
 {
     Json::Value jsonObject_config;
-	Json::Reader reader;
-	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    Json::Reader reader;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject_config);
-    
+    reader.parse(configJsonString.c_str(), jsonObject_config);
+
     PriorityRequestGenerator PRG;
     MapManager mapManager;
     PriorityRequestGeneratorStatus prgStatus;
@@ -64,13 +64,11 @@ int main()
             mapManager.updateMapAge();
             mapManager.deleteMap();
             PRG.changeMapStatusInAvailableMapList(mapManager);
-            mapManager.printAvailableMapList();
-            
+
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
-            std::cout << prgStatusJsonString << std::endl;
+            // std::cout << prgStatusJsonString << std::endl;
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
             //std::cout << "Message sent to HMI Conrtoller" << std::endl;
-            // PRG.printART();
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_map)

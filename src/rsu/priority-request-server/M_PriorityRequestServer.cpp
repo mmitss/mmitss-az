@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
             // Update the Req List data structure considering received message
             UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, clearSignalControllerCommands);
-
+            getPriorityRequestStatus(req_List);
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
 
@@ -287,18 +287,19 @@ void startUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &
 #endif
 }
 
-void sendSSM(LinkedList<ReqEntry> ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket)
+void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket MsgReceiverSocket)
 {
     Json::Value jsonObject;
     Json::Reader reader;
     Json::FastWriter fastWriter;
     std::string jsonString;
 
+    Json::Value jsonObject_config;
     std::ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);
-    std::string ssmReceiverIP = (jsonObject["HostIp"]).asString();
-    int ssmReceiverPort = (jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
+    reader.parse(configJsonString.c_str(), jsonObject_config);
+    std::string ssmReceiverIP = (jsonObject_config["HostIp"]).asString();
+    int ssmReceiverPort = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
 
     int listSize = ReqList.ListSize();
 
@@ -1299,7 +1300,7 @@ int getPhaseInfo(SignalRequest signalRequest)
     return phaseNo;
 }
 
-bool FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass)
+bool FindVehClassInList(LinkedList<ReqEntry> &Req_List, int VehClass)
 {
     Req_List.Reset();
 
@@ -1320,7 +1321,7 @@ bool FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass)
     return vehicleClassInList;
 }
 
-int FindRequestInList(LinkedList<ReqEntry> ReqList, int VehClass)
+int FindRequestInList(LinkedList<ReqEntry> &ReqList, int VehClass)
 {
     ReqList.Reset();
     int temp = -1;
@@ -1336,14 +1337,14 @@ int FindRequestInList(LinkedList<ReqEntry> ReqList, int VehClass)
     return temp;
 }
 
-int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
+int getPriorityRequestStatus(LinkedList<ReqEntry> &ReqList)
 {
     int pos{};
 
     if (FindVehClassInList(ReqList, EV))
     {
         pos = FindRequestInList(ReqList, EV);
-        if (pos > 0)
+        if (pos >= 0)
         {
             ReqList.Reset(pos);
 
@@ -1351,7 +1352,7 @@ int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
         }
 
         pos = FindRequestInList(ReqList, TRANSIT);
-        if (pos > 0)
+        if (pos >= 0)
         {
             ReqList.Reset(pos);
 
@@ -1359,7 +1360,7 @@ int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
         }
 
         pos = FindRequestInList(ReqList, TRUCK);
-        if (pos > 0)
+        if (pos >= 0)
         {
             ReqList.Reset(pos);
 
@@ -1370,7 +1371,7 @@ int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
     else
     {
         pos = FindRequestInList(ReqList, TRANSIT);
-        if (pos > 0)
+        if (pos >= 0)
         {
             ReqList.Reset(pos);
 
@@ -1378,7 +1379,7 @@ int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
         }
 
         pos = FindRequestInList(ReqList, TRUCK);
-        if (pos > 0)
+        if (pos >= 0)
         {
             ReqList.Reset(pos);
 

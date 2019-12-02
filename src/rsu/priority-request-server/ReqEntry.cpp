@@ -87,7 +87,7 @@ ReqEntry::ReqEntry(ReqEntry &Req) {
     lIntersectionId = Req.lIntersectionId;
     iRequestType = Req.iRequestType;
     ibasicVehicleRole = Req.ibasicVehicleRole;
-    ipriorityRequestStatus = Req.ibasicVehicleRole;
+    ipriorityRequestStatus = Req.ipriorityRequestStatus;
 }
 
 ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
@@ -114,7 +114,7 @@ ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
     lIntersectionId = Req.lIntersectionId;
     iRequestType = Req.iRequestType;
     ibasicVehicleRole = Req.ibasicVehicleRole;
-    ipriorityRequestStatus = Req.ibasicVehicleRole;
+    ipriorityRequestStatus = Req.ipriorityRequestStatus;
     return *this;
 }
 
