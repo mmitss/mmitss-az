@@ -26,7 +26,8 @@ from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 
-controllerIP = '10.12.6.56'
+controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -57,8 +58,9 @@ def phase_status_state(phase_status):
             return key
 
 def signal_head(currentPhase, phase_status):
-    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, "minEndTime" : phase_status["minEndTime"],
-                            "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
+    current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, 
+                            "minEndTime" : str(round(float(phase_status["minEndTime"])/10., 1)),
+                            "maxEndTime" : str(round(float(phase_status["maxEndTime"])/10., 1)), "dark" : False}
     if currentPhase == 0 : #there is no SPaT data
         current_phase_status["dark"] = True
         current_phase_status["minEndTime"] = '--'

@@ -64,7 +64,7 @@ def signal_head(currentPhase, phase_status):
         current_phase_status["minEndTime"] = '--'
         current_phase_status["maxEndTime"] = '--'
     else :
-        current_phase_status[spat_signal_head[phase_status['currState']]] = True
+        current_phase_status[spat_signal_head[spat_state[phase_status['currState']]]] = True
     return current_phase_status
 
 priority_responseStatus = {0 : "unknown", 
@@ -170,7 +170,7 @@ while (f.readline()):
     for spat in range(0, numSPaT):
        
         spat_phase = data_array[index_phase_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_phase_spat + 1 + spat*6])]
+        spat_currState = int(data_array[index_phase_spat + 1 + spat*6])
         spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
         if hv_currentLaneSignalGroup == 0 :
             spat_startTime = '--'
@@ -199,7 +199,7 @@ while (f.readline()):
     index_ped_spat = 121
     for spat in range(0, numSPaT):
         spat_phase = data_array[index_ped_spat + spat*6]
-        spat_currState = spat_state[int(data_array[index_ped_spat + 1 + spat*6])]
+        spat_currState = int(data_array[index_ped_spat + 1 + spat*6])
         spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
         if hv_currentLaneSignalGroup == 0 :
             spat_startTime = '--'
