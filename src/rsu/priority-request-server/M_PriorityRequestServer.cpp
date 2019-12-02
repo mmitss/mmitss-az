@@ -1296,6 +1296,56 @@ int getPhaseInfo(SignalRequest signalRequest)
     return phaseNo;
 }
 
+// int FindVehClassInList(LinkedList<ReqEntry> Req_List, int VehClass)
+// {
+// 	Req_List.Reset();
+
+// 	int vehicleClassInList = false;
+// 	if (Req_List.ListEmpty() == 0)
+// 	{
+// 		while (!Req_List.EndOfList())
+// 		{
+// 			if (Req_List.Data().VehClass == VehClass)
+// 			{
+// 				vehicleClassInList = true;
+// 			}
+// 			else
+// 			{
+// 				Req_List.Next();
+// 			}
+// 		}
+// 	}
+// 	return vehicleClassInList;
+// }
+// int FindRequestInList(LinkedList<ReqEntry> ReqList, int VehClass)
+// {
+//     ReqList.Reset();
+//     int temp = -1;
+
+//     if (ReqList.ListEmpty())
+//         return temp;
+//     else
+//         while (!ReqList.EndOfList())
+//         {
+//             if (ReqList.Data().VehClass  == VehClass)
+//                 return ReqList.CurrentPosition();
+
+//             ReqList.Next();
+//         }
+
+//     return temp;
+// }
+
+// int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
+// {
+//     int pos;
+//     if(FindVehClassInList(Req_List,1) ==  true)
+//     {
+//         pos = FindRequestInList(ReqList,1);
+//         Req_List.Reset(pos);
+//         Req_List.Data().
+//     }
+// }
 // int getPriorityRequestStatus(LinkedList<ReqEntry> ReqList)
 // {
 //     int priorityRequestStatus{};
