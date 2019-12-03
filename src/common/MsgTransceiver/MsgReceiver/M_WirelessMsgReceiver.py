@@ -22,7 +22,7 @@ import socket
 import json
 
 def getMsgPayload(rawMsg:str, psidDict:dict, msgIdDict:dict):
-    extractedPayload = rawMsg[rawMsg.find('00'):]
+    extractedPayload = rawMsg[rawMsg.find('001'):]
     return extractedPayload   
 
 

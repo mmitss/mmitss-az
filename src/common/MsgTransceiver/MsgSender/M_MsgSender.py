@@ -58,7 +58,7 @@ DeliveryStart={}
 DeliveryStop={}
 Signature={}
 Encryption={}
-Payload={}'''
+Payload={}\n'''
 
     if msgType == 'MAP':
         broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000017', 7, 'CONT', 172, '', '', '', False, False, msgPayload)
@@ -103,16 +103,15 @@ def main():
     sourceDsrcDevicePort_SSM = 1516
     sourceDsrcDevice = (sourceDsrcDeviceIP, sourceDsrcDevicePort)
     sourceDsrcDevice_SSM = (sourceDsrcDeviceIP, sourceDsrcDevicePort_SSM)
-
-
     while True:
-        receivedMsg, addr = outerSocket.recvfrom(4096)
+        receivedMsg, addr = outerSocket.recvfrom(5120)
         msgType = identifyMsg(receivedMsg.decode())
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
-        if msgType == "SSM":
+        if msgType == "SSM": 
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice_SSM)
         else:
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice)
+        #print(msgPacket)
         print("Sent " + msgType)
 
 if __name__ == '__main__':
