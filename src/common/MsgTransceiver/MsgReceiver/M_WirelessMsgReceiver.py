@@ -22,19 +22,7 @@ import socket
 import json
 
 def getMsgPayload(rawMsg:str, psidDict:dict, msgIdDict:dict):
-    psidBegin = rawMsg[52:]
-    if psidBegin[:2] == psidDict["bsm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["bsm"]):][:-66]
-    elif psidBegin[:8] == psidDict["map"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["map"]):][:-66]
-    elif psidBegin[:4] == psidDict["spat"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["spat"]):][:-66]
-    elif psidBegin[:8] == psidDict["ssm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["ssm"]):][:-66]
-    elif psidBegin[:8] == psidDict["srm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["srm"]):][:-66]
-    elif psidBegin[:4] == psidDict["rsm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["rsm"]):][:-66]
+    extractedPayload = rawMsg[rawMsg.find('00'):]
     return extractedPayload   
 
 

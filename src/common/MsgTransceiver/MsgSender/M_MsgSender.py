@@ -100,7 +100,7 @@ def main():
 
     sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = 1516
-    sourceDsrcDevicePort_SSM = 1520
+    sourceDsrcDevicePort_SSM = 1516
     sourceDsrcDevice = (sourceDsrcDeviceIP, sourceDsrcDevicePort)
     sourceDsrcDevice_SSM = (sourceDsrcDeviceIP, sourceDsrcDevicePort_SSM)
 
