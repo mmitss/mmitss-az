@@ -23,6 +23,7 @@
     -> Send the mapPayload as it is to msgSender.
     -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be required to created which could be used in similar manner like NTCIP1202v2Blob class.
 '''
+
 import socket
 import time
 import json
@@ -66,7 +67,7 @@ def main():
     controllerIp = config["ControllerIp"]
 
     msgCnt = 0
-    spatMapMsgCount = 0
+    #spatMapMsgCount = 0
     while True:
         try:
             spatBlob, addr = outerSocket.recvfrom(1024)            
@@ -81,11 +82,11 @@ def main():
                 
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 print("Sent SPAT to MsgSender")
-                spatMapMsgCount = spatMapMsgCount + 1
-                if spatMapMsgCount > 9:
-                    outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
-                    spatMapMsgCount = 0
-                    print("Sent MAP to MsgSender")
+                #spatMapMsgCount = spatMapMsgCount + 1
+                #if spatMapMsgCount > 9:
+                    #outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
+                    #spatMapMsgCount = 0
+                    #print("Sent MAP to MsgSender")
                 #print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")
