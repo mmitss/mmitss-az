@@ -88,7 +88,7 @@ public:
     std::string getVehicleMapStatus();
     std::string getVehicleRequestSentStatus();
     std::vector<ActiveRequest>getActiveRequestTable();
-    std::vector<Map::ActiveMap> getActiveMapListFORHMI();
+    // std::vector<Map::ActiveMap> getActiveMapListFORHMI();
     void printART();
     std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
 

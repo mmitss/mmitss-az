@@ -313,7 +313,6 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	{
 		mapManager.createActiveMapList(basicVehicle);
 		getActiveMapList(mapManager);
-		// getAvailableMapList(mapManager);
 	}
 
 	//If active map List is not empty, locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
@@ -330,7 +329,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		uint32_t referenceId = plocAwareLib->getIntersectionIdByName(intersectionName);
 		uint16_t regionalId = static_cast<uint16_t>((referenceId >> 16) & 0xFFFF);
 		uint16_t intersectionId = static_cast<uint16_t>(referenceId & 0xFFFF);
-		double distance2go;
+		double distance2go{};
 		//get the vehicle data from bsm
 		double vehicle_Latitude = basicVehicle.getLatitude_DecimalDegree();
 		double vehicle_Longitude = basicVehicle.getLongitude_DecimalDegree();
@@ -355,7 +354,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
 		struct connectedVehicle_t connectedVehicle_t_1 = {0, 0, 0, geoPoint_t_1, motion_t_1, vehicleTracking_t_1, locationAware_t_1, signalAware_t_1};
 
-		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane
+		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane(stopped in the parking lot)
 		if (counter_VehicleInMap > 10)
 		{
 			if (plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1) == true && unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus) == static_cast<int>(MsgEnum::mapLocType::onInbound))
@@ -378,6 +377,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				ActiveRequestTable.clear();
 				setIntersectionID(0);
 				bgetActiveMap = false;
+				bRequestSendStatus = false;
 			}
 			counter_VehicleInMap = 0;
 		}
@@ -643,10 +643,10 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 	return vehicleSRMStatus;
 }
 
-std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapListFORHMI()
-{
-	return activeMapList;
-}
+// std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapListFORHMI()
+// {
+// 	return activeMapList;
+// }
 
 /*
 	- Getters for ART table
@@ -656,22 +656,34 @@ std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
 	return ActiveRequestTable;
 }
 
+/*
+	-Methods for updating map status for HMI
+	-If vehicle in on Map then for the active map, activeMapStatus will be true for the active map
+	-If vehicle is leaving the map (either leaving the intersection or going to parking lot) then activeMapStatus will be false for all available map
+*/
 std::vector<Map::AvailableMap> PriorityRequestGenerator::changeMapStatusInAvailableMapList(MapManager mapManager)
 {
-       
-    if(!activeMapList.empty())
-    {
-        std::vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
-                                                                                [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
 
-        if (findActiveMap != availableMapList.end())
+	if (!activeMapList.empty())
+	{
+		std::vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
+																			  [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
+
+		if (findActiveMap != availableMapList.end())
 			findActiveMap->activeMapStatus = "True";
-			
+
 		availableMapList = mapManager.availableMapList;
-    }
+	}
 
+	else
+	{
+		for (size_t i = 0; i < availableMapList.size(); i++)
+			availableMapList[i].activeMapStatus = "False";
 
-	return availableMapList;                                                                          
+		availableMapList = mapManager.availableMapList;
+	}
+
+	return availableMapList;
 }
 
 /*
