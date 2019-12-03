@@ -57,6 +57,12 @@ def main():
     #setup logging to a file for test output
     import datetime
 
+    # Create a timestamp which will be appended at the end of name of a file storing received data.
+    timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+    # Create complete file name: example: msgLog_<timestamp>
+    fileName = "WirelessReceiverLog_" + timestamp + ".txt"
+    dataLog = open(fileName, 'w')    
+
     if DEBUGGING:
         firstIteration = True
 
@@ -69,6 +75,7 @@ def main():
         # Receive a binary message packet and convert it to hex packet.
         receivedMsg, addr = s.recvfrom(5120)
         receivedMsg = receivedMsg.hex()
+        if DEBUGGING: dataLog.write(receivedMsg + '\n')
         msgPayload = getMsgPayload(receivedMsg, psidDict, msgIdDict)
         if msgPayload[:4]=="0021": 
             s.sendto(msgPayload.encode(), rsmDecoderComm)
@@ -83,6 +90,7 @@ def main():
                 elif msgPayload[:4]=="001e": print("Received SSM from OBU")
                 else: print ("Received invalid message.")
         
+    dataLog.close()
     s.close()
 if __name__ == "__main__":
     main()
