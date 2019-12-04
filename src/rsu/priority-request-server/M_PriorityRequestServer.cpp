@@ -1306,15 +1306,19 @@ bool FindVehClassInList(LinkedList<ReqEntry> &Req_List, int VehClass)
 
     bool vehicleClassInList = false;
 
-    while (!Req_List.EndOfList())
+    if (Req_List.ListEmpty() == 0)
     {
-        if (Req_List.Data().VehClass == VehClass)
+        while (!Req_List.EndOfList())
         {
-            vehicleClassInList = true;
-        }
-        else
-        {
-            Req_List.Next();
+            if (Req_List.Data().VehClass == VehClass)
+            {
+                vehicleClassInList = true;
+                return vehicleClassInList;
+            }
+            else
+            {
+                Req_List.Next();
+            }
         }
     }
 
