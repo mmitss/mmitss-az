@@ -368,6 +368,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 				setTime2Go(distance2go, vehicle_Speed);
 				getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
+				bRequestSendStatus = true;
 			}
 
 			else
