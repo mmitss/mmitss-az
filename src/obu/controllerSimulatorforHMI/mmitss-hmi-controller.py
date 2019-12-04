@@ -25,6 +25,7 @@ import os
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
+DEBUG = False
 
 controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
 #controllerIP = '127.0.0.1' #use for simulation testing
@@ -182,6 +183,21 @@ for phase in range(0,8) :
 
 reset_SPaT() 
 
+# setup timing variables for debugging
+if DEBUG == True :
+    import csv
+    import datetime 
+    tick_bsm = time.time()
+    tick_SPaT = time.time()
+    tick_priorityUpdate = time.time()
+    # Create a timestamp which will be appended at the end of name of a file storing received data.
+    timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+    # Create complete file name: example: msgLog_<timestamp>
+    fileName = "controllerLog_" + timestamp + ".csv"
+    # Open a file with created timestamp to store the received data. (Message log file).
+    dataLog = open(fileName,'a+')
+    dataLog.close()
+
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Bind the created socket to the server information.
@@ -203,14 +219,28 @@ while True:
         remoteInterfacejson = json.loads(line)
 
         if remoteInterfacejson["MsgType"] =='BSM' :
+            # if debugging, output the time since the last message
+            if DEBUG == True :
+                newremoteBSM = time.time()
+                dataLog = open(fileName,'a+')
+                dataLog.write('remoteBSM,' + str(newremoteBSM - tick_bsm) + '\n')
+                dataLog.close()
+                tick_bsm = newremoteBSM
+
             #translate remote basic vehicle data
-            #print(' BSM data received')
             manageRemoteVehicleList(remoteInterfacejson, remoteVehicleList)
             #remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
 
         elif remoteInterfacejson["MsgType"] == 'SPaT' :
             #check to make sure it is spat
-            #print('SPaT data received')
+            # if debugging, output the time since the last message
+            if DEBUG == True :
+                newSPaT = time.time()
+                dataLog = open(fileName,'a+')
+                dataLog.write('SPaT,' + str(newSPaT - tick_SPaT) + '\n')
+                dataLog.close()
+                tick_SPaT = newSPaT
+
             markSPaTtime = time.time()
             SPaT_data = remoteInterfacejson
             SPaT = []
@@ -253,6 +283,14 @@ while True:
         
         # load the json
         hostAndInfrastructureData = json.loads(line)
+        if DEBUG == True :
+            newPriorityUpdate = time.time()
+            dataLog = open(fileName,'a+')
+            dataLog.write('priorityUpdate,' + str(newPriorityUpdate - tick_priorityUpdate) + '\n')
+            dataLog.close()
+            tick_priorityUpdate = newPriorityUpdate
+            
+        
 
         # process the host vehicle and infrastructure data
         hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
