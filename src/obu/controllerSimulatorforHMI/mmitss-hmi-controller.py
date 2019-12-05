@@ -294,6 +294,7 @@ while True:
         
 
         # process the host vehicle and infrastructure data
+        msgTime = time.time()
         hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
         hv_vehicleType = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
         hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
@@ -355,6 +356,7 @@ while True:
         interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
         {
+            "MsgTime": msgTime,
             "hostVehicle" :
             {
                 "secMark_Second" : secMark,
@@ -384,6 +386,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
+        print('Send json to HMI : ', 'Speed:', hv_speed_mph, 'ART: ', activeRequestTable)
         #print('update hmi: ', interfaceJsonString)
 
     else :
