@@ -289,6 +289,7 @@ while True:
             dataLog.write('priorityUpdate,' + str(newPriorityUpdate - tick_priorityUpdate) + '\n')
             dataLog.close()
             tick_priorityUpdate = newPriorityUpdate
+            #print((newPriorityUpdate - tick_priorityUpdate))
             
         
 

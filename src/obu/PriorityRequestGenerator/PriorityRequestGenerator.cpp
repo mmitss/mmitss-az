@@ -519,16 +519,19 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= VEHICLE_SPEED_DEVIATION_LIMIT)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 	return priorityRequestType;
 }
