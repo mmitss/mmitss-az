@@ -7,12 +7,10 @@
   Created by: Sherilyn Keaton
   University of Arizona   
   College of Engineering
-
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department
   
   Operational Description:
-
   This application does the following tasks:
   1. Receives and parses a JSON object from the status-data-controller
   2. Displays the current speed and location of the vehicle
@@ -46,7 +44,6 @@ import os
 # for the data comm
 import socket
 import json
-import time
 
 ##############################################
 #   RECEIVE DATA
@@ -56,16 +53,8 @@ def get_data():
     # set local data to be refreshed
     # set dyanamic text variables for labels
     receivedData, addr = s.recvfrom(4096)
-    
     interfaceJson = json.loads(receivedData.decode())
-    
-    tick = time.time()
-    #lasttime = 0
-    #timedif= tick-lasttime
-    #print(interfaceJson)
-    rcvTime = float(interfaceJson["mmitss_hmi_interface"]["MsgTime"])
-    timedif= tick-rcvTime
-    print('TimeGap:', timedif)
+    print(interfaceJson)
     secMark = int(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["secMark_Second"])
     latitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["latitude_DecimalDegree"])
     longitude_DecimalDegree= float(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["position"]["longitude_DecimalDegree"])
@@ -78,7 +67,7 @@ def get_data():
     onMap= bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["OnMAP"])
     requestSent = bool(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["priority"]["requestSent"])
     #signalGroup= (interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["lane"])
-    
+
     # Host Vehicle BSM vehicle current speed and position
     gui.latString = "{:.7f}".format(latitude_DecimalDegree) # want 7 digits showing to right of decimal
     gui.lat_value.set(gui.latString)
@@ -152,10 +141,9 @@ def get_data():
         activeRequestTable = []
         activeRequestTable = interfaceJson["mmitss_hmi_interface"]["infrastructure"]["activeRequestTable"]
         #print("activeRequestTable", len(activeRequestTable), activeRequestTable)
-        print('Speed: ',speed_mph ,'ART: ',activeRequestTable)
+
         # populate the treeview containing ART
         populate_ART_tree(activeRequestTable)
-
 
         # Remote BSMs
         # get list of Remote BSMs
@@ -178,10 +166,8 @@ def get_data():
 
         #reset timer
         gui.tableUpdate = 0
-    
 
     # performance test time that HMI receives message
-    #lasttime = time.time()
     if args.perf:
         perfTest.time_received = time.time()
 
@@ -703,4 +689,3 @@ if __name__ == "__main__":
 	
     # fire up the Monitor GUI
     gui.mainloop()
-

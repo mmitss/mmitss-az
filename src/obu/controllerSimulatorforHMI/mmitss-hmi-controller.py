@@ -7,10 +7,8 @@
   Created by: Larry Head
   University of Arizona   
   College of Engineering
-
   
   Operational Description:
-
   This application does the following tasks:
   1. Listents to port 20009 to receive updated from message transiever (remote bsm and spat data) and host vehicle (bsm, map, and priority status)
   2. Builds json representing the HMI states to send to the HMI
@@ -289,12 +287,10 @@ while True:
             dataLog.write('priorityUpdate,' + str(newPriorityUpdate - tick_priorityUpdate) + '\n')
             dataLog.close()
             tick_priorityUpdate = newPriorityUpdate
-            #print((newPriorityUpdate - tick_priorityUpdate))
             
         
 
         # process the host vehicle and infrastructure data
-        msgTime = time.time()
         hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
         hv_vehicleType = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
         hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
@@ -356,7 +352,6 @@ while True:
         interfaceJsonString = json.dumps({
         "mmitss_hmi_interface":
         {
-            "MsgTime": msgTime,
             "hostVehicle" :
             {
                 "secMark_Second" : secMark,
@@ -386,7 +381,6 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        print('Send json to HMI : ', 'Speed:', hv_speed_mph, 'ART: ', activeRequestTable)
         #print('update hmi: ', interfaceJsonString)
 
     else :
