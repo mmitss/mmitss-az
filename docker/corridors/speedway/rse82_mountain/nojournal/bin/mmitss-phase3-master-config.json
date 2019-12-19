@@ -28,7 +28,8 @@
 		"ISIG": 20008,
 		"MapSPaTBroadcaster": 6053,
 		"RSUOBUImageForwarder": 1516,
-        "PriorityRequestServer_SendSSM": 50003
+        "PriorityRequestServer_SendSSM": 50003,
+        "DataCollector": 30001
 	},
     "psid":
         {

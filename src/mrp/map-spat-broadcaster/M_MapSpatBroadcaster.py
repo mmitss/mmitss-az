@@ -51,6 +51,9 @@ def main():
     msgEncoderPort = config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]
     msgEncoderAddress = (mrpIp, msgEncoderPort)
 
+    dataCollectorPort = 30001
+    dataCollectorAddress = (mrpIp, dataCollectorPort)
+
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
@@ -80,6 +83,7 @@ def main():
                 spatJsonString = spatObject.Spat2Json()
                 
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
+                outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
                 print("Sent SPAT to MsgSender")
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
