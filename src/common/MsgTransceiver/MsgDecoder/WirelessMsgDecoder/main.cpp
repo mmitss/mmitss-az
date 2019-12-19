@@ -20,6 +20,7 @@ int main()
 
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
+    const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
@@ -41,6 +42,8 @@ int main()
         {
             std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
+            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+
             std::cout << "Decoded BSM" << std::endl;
         }
         
