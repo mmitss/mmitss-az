@@ -115,7 +115,7 @@ while (f.readline()):
 
  
     #acquire priority status data
-    index_priority = 169 # index is the column in the csv file
+    index_priority = 137 # index is the column in the csv file
     activeRequestTable = []
     onMAP = data_array[index_priority]
     requestSent = data_array[index_priority + 1]

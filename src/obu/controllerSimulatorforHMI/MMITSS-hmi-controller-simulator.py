@@ -26,7 +26,8 @@ from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 
-controllerIP = '10.12.6.56'
+#controllerIP = '10.12.6.56'
+controllerIP = '127.0.0.1'
 controllerPort = 5001
 controller = (controllerIP, controllerPort)
 
@@ -158,35 +159,28 @@ while (f.readline()):
     index_spat = 67
     SPaT = []
 
-    spat_regionalID = int(data_array[index_spat])
-    spat_intersectionID = int(data_array[index_spat + 1])
-    spat_msgCnt = int(data_array[index_spat + 2])
-    spat_minutesOfYear = int(data_array[index_spat + 3])
-    spat_msOfMinute = int(data_array[index_spat + 4])
-    spat_status = int(data_array[index_spat + 5])
-    #spat_currentPhase = int(data_array[index_spat]) - 1 # phases are stored 0 to 7 (instead of 1 to 8)
+    spat_regionalID = int(data_array[index_spat + 1])
+    spat_intersectionID = int(data_array[index_spat + 2])
+    spat_msgCnt = int(data_array[index_spat + 3])
+    spat_minutesOfYear = int(data_array[index_spat + 4])
+    spat_msOfMinute = int(data_array[index_spat + 5])
 
     index_phase_spat = 73
     for spat in range(0, numSPaT):
        
-        spat_phase = data_array[index_phase_spat + spat*6]
-        spat_currState = int(data_array[index_phase_spat + 1 + spat*6])
-        spat_startTime = round(float(data_array[index_phase_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        if hv_currentLaneSignalGroup == 0 :
-            spat_startTime = '--'
-        else :
-            spat_startTime = str(spat_startTime)
-        spat_minEndTime = round(float(data_array[index_phase_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_phase = spat
+        spat_currState = int(data_array[index_phase_spat + spat*4])
+        spat_minEndTime = round(float(data_array[index_phase_spat + 1 + spat*4])/10., 1) # minEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_minEndTime = '--'
         else :
             spat_minEndTime = str(spat_maxEndTime)
-        spat_maxEndTime = round(float(data_array[index_phase_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_phase_spat + 2 + spat*4])/10., 1) # maxEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_maxEndTime = '--'
         else :
             spat_maxEndTime = str(spat_maxEndTime)
-        spat_elapsedTime = round(float(data_array[index_phase_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        spat_elapsedTime = round(float(data_array[index_phase_spat + 3 + spat*4])/10., 1) # elapsedTime is in 10ths of a second 
         if hv_currentLaneSignalGroup == 0 :
             spat_elapsedTime = '--'
         else :
@@ -196,26 +190,21 @@ while (f.readline()):
     #ped phase status
     numSPaTPed = 8 # currently we have one ped for each phase, but only 2, 4, 6, and 8 are real peds
     pedSPaT = []
-    index_ped_spat = 121
+    index_ped_spat = 105
     for spat in range(0, numSPaT):
-        spat_phase = data_array[index_ped_spat + spat*6]
-        spat_currState = int(data_array[index_ped_spat + 1 + spat*6])
-        spat_startTime = round(float(data_array[index_ped_spat + 2 + spat*6])/10., 1) # starttime is in 10ths of a second - show only one decimal point
-        if hv_currentLaneSignalGroup == 0 :
-            spat_startTime = '--'
-        else :
-            spat_startTime = str(spat_startTime)
-        spat_minEndTime = round(float(data_array[index_ped_spat + 3 + spat*6])/10., 1) # minEndTime is in 10ths of a second
+        spat_phase = spat
+        spat_currState = int(data_array[index_ped_spat + spat*4])
+        spat_minEndTime = round(float(data_array[index_ped_spat + 1 + spat*4])/10., 1) # minEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_minEndTime = '--'
         else :
             spat_minEndTime = str(spat_maxEndTime)
-        spat_maxEndTime = round(float(data_array[index_ped_spat + 4 + spat*6])/10., 1) # maxEndTime is in 10ths of a second
+        spat_maxEndTime = round(float(data_array[index_ped_spat + 2 + spat*4])/10., 1) # maxEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_maxEndTime = '--'
         else :
             spat_maxEndTime = str(spat_maxEndTime)
-        spat_elapsedTime = round(float(data_array[index_ped_spat + 5 + spat*6])/10., 1) # elapsedTime is in 10ths of a second 
+        spat_elapsedTime = round(float(data_array[index_ped_spat + 3 + spat*4])/10., 1) # elapsedTime is in 10ths of a second 
         if hv_currentLaneSignalGroup == 0 :
             spat_elapsedTime = '--'
         else :
@@ -233,13 +222,13 @@ while (f.readline()):
     for phase in range(0,8):
         phase_state = signal_head(hv_currentLaneSignalGroup, SPaT[phase])
         ped_state = signal_head(hv_currentLaneSignalGroup, pedSPaT[phase])
-        phase_table.append({"phase" : phase, 
+        phase_table.append({"phase" : phase+1, 
                             "phase_status" : phase_status_map[phase_status_state(phase_state)], 
                             "ped_status" : ped_status_map[phase_status_state(ped_state)]})
 
 
     #acquire priority status data
-    index_priority = 169 # index is the column in the csv file
+    index_priority = 137 # index is the column in the csv file
     activeRequestTable = []
     onMAP = bool_map[data_array[index_priority]]
     requestSent = bool_map[data_array[index_priority + 1]]
@@ -262,10 +251,20 @@ while (f.readline()):
                                     "duration" : duration,
                                     "priorityRequestStatus" : priorityRequestStatus})
     for request in activeRequestTable :
-        responseStatus = request["priorityRequestStatus"]
-        request["priorityRequestStatus"] = priority_responseStatus[responseStatus]
-        vehicleRole = request["basicVehicleRole"]
-        request["basicVehicleRole"] = basicVehicleRoles[vehicleRole]
+        responseStatusEnum = request["priorityRequestStatus"]
+        #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
+        responseStatus = priority_responseStatus.get(responseStatusEnum)
+        if responseStatus :
+            request["priorityRequestStatus"] = responseStatus
+        else :
+            request["priorityRequestStatus"] = responseStatusEnum
+
+        vehicleRoleEnum = request["basicVehicleRole"]
+        vehicleRole = basicVehicleRoles.get(vehicleRoleEnum)
+        if vehicleRole : 
+            request["basicVehicleRole"] = vehicleRole
+        else :
+            request['BasicVehicleRole'] = vehicleRoleEnum 
 
 
 

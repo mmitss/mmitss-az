@@ -25,8 +25,8 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = False
 
-controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-#controllerIP = '127.0.0.1' #use for simulation testing
+#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -117,10 +117,10 @@ def removeOldRemoteVehicles(remoteVehicleList) :
 def changeSPaTTimes2Strings(SPaT) :
     newSPaT = SPaT
     for phase in range(0,8) :
-        newSPaT[phase]['maxEndTime'] = str(SPaT[phase]['maxEndTime'])
-        newSPaT[phase]['minEndTime'] = str(SPaT[phase]['minEndTime'])
-        newSPaT[phase]['startTime'] = str(SPaT[phase]['startTime'])
-        #newSPaT[phase]['elapsedTime'] = str(SPaT[phase]['elapsedTime'])
+        newSPaT[phase]['maxEndTime'] = str(round(float(SPaT[phase]['maxEndTime'])/10., 1))
+        newSPaT[phase]['minEndTime'] = str(round(float(SPaT[phase]['minEndTime'])/10., 1))
+        #newSPaT[phase]['startTime'] = str(SPaT[phase]['startTime'])
+        newSPaT[phase]['elapsedTime'] = str(round(float(SPaT[phase]['elapsedTime'])/10., 1))
     return newSPaT
     
 # initialize all the data
@@ -248,7 +248,7 @@ while True:
             spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
             spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
             spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
-            spat_status = int(SPaT_data["Spat"]["status"])
+            #spat_status = int(SPaT_data["Spat"]["status"])
             SPaT = SPaT_data["Spat"]["phaseState"]
             SPaT = changeSPaTTimes2Strings(SPaT)
             pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
