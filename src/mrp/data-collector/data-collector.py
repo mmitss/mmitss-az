@@ -36,14 +36,12 @@ def main():
                 hostBsmLogCounter = hostBsmLogCounter+1
                 if hostBsmLogCounter > flushLogFileEvery: # flush every 10 minutes
                     hostBsmLogFile.flush()
-                    os.fsync()
                     hostBsmLogCounter = 1
             elif address[1] == config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]: # then the BSM is from the remote vehicle
                 surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
                 surroundingBsmLogCounter = surroundingBsmLogCounter+1
                 if surroundingBsmLogCounter > flushLogFileEvery: # flush every 10 minutes
                     surroundingBsmLogFile.flush()
-                    os.fsync()
                     surroundingBsmLogCounter = 1
         s.close()
         hostBsmLogFile.close()
@@ -84,14 +82,12 @@ def main():
                 spatLogCounter = spatLogCounter+1
                 if spatLogCounter > flushLogFileEvery: # flush every 1 minutes
                     spatLogFile.flush()
-                    os.fsync()
                     spatLogCounter = 1
             elif address[1] == config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]: # then this message is a bsm message from 
                 surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
                 surroundingBsmLogCounter = surroundingBsmLogCounter+1
                 if surroundingBsmLogCounter > flushLogFileEvery: # flush every 1 minutes
                     surroundingBsmLogFile.flush()
-                    os.fsync()
                     surroundingBsmLogCounter = 1
         s.close()
         spatLogFile.close()
