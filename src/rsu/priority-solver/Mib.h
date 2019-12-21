@@ -74,13 +74,7 @@ using namespace std;
 #define PHASE_RED_CLR_ASC 	"1.3.6.1.4.1.1206.3.5.2.1.2.1.19."
 #define PHASE_YLW_XGE_ASC 	"1.3.6.1.4.1.1206.3.5.2.1.2.1.18."
 
-//**********asc3PhaseStatusTiming
-//T (1):       Phase Timing
-//N (2):       Phase Next
-//- (3):       Phase Not Enabled
-//(space) (4): Phase Not Timing or Next
-#define PHASE_STA_TIME_ASC  "1.3.6.1.4.1.1206.3.5.2.1.18.1.1."  //NEED last "p"  for the phase
-//**********asc3PhaseStatusTiming2
+//**********asc3PhaseStatusTimingPHASE_GROUP_STATUS_GREEN
 // (1) X: XPED timing
 // (2) N: Phase Next
 // (3) -: Phase Not enabled

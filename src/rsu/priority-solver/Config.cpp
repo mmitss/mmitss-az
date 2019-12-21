@@ -443,23 +443,26 @@ void ReadInConfig(char *filename, char* filename2)
     FileRead.close();
     
     double dCoordinationWeight=0.0;
-    int iCoordinatedPhase[2];
+    int iCoordinatedPhase[2]= {};
     int iPhases[8];
     double dTransitWeight=0.0;
     double dTruckWeight=0.0;
     double dCoordOffset=0.0;
     double dCoordCycle=0.0;
-    double dCoordPhaseSplit[8];
+    double dCoordPhaseSplit[8] ={};
     int iNumber_of_Phases=0;
-    fstream FileRead2;
-    FileRead2.open(filename2,ios::in);
+    /* Following section is Commnted on December 18, 2019 by Debashis since they were changing the phase sequence value */
+
+
+    // fstream FileRead2;
+    // FileRead2.open(filename2,ios::in);
   
-    if(!FileRead2)
-    {
-        cerr<<"Unable to open priorityConfiguration.txt file!"<<endl;
-        exit(1);
-    }
-    getline(FileRead2,lineread);
+    // if(!FileRead2)
+    // {
+    //     cerr<<"Unable to open priorityConfiguration.txt file!"<<endl;
+    //     exit(1);
+    // }
+    // getline(FileRead2,lineread);
       
     // priorityConfiguration.txt 
     // # this file is to set the priority configuration and coorination setup, an example will be :
@@ -479,35 +482,38 @@ void ReadInConfig(char *filename, char* filename2)
     // 8 30
     // transit_weight 3
     // truck_weight 1
+    dCoordinationWeight = 0;
+    dTransitWeight = 1;
+    dTruckWeight = 1;
     
-	getline(FileRead2,lineread);
-	if (lineread.size()!=0)
-	{
-		//sscanf(lineread.c_str(),"%*s %lf ",&dCoordinationWeight);
-		sscanf(lineread.c_str(),"%*s %lf ",&dCoordinationWeight);
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %lf ",&dCoordCycle );
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %lf ",&dCoordOffset );
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %ld ",&iCoordinatedPhase[0]);
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %ld ",&iCoordinatedPhase[1]);
+	// getline(FileRead2,lineread);
+	// if (lineread.size()!=0)
+	// {
+	// 	//sscanf(lineread.c_str(),"%*s %lf ",&dCoordinationWeight);
+	// 	sscanf(lineread.c_str(),"%*s %lf ",&dCoordinationWeight);
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %lf ",&dCoordCycle );
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %lf ",&dCoordOffset );
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %ld ",&iCoordinatedPhase[0]);
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %ld ",&iCoordinatedPhase[1]);
 		
-		getline(FileRead2,lineread);
-		for (int cnt=0;cnt<8;cnt++)
-		{
-			getline(FileRead2,lineread);
-			sscanf(lineread.c_str(),"%d %lf", &iPhases[cnt] , &dCoordPhaseSplit[cnt] );				
-		}
+	// 	getline(FileRead2,lineread);
+	// 	for (int cnt=0;cnt<8;cnt++)
+	// 	{
+	// 		getline(FileRead2,lineread);
+	// 		sscanf(lineread.c_str(),"%d %lf", &iPhases[cnt] , &dCoordPhaseSplit[cnt] );				
+	// 	}
 		
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %lf ",&dTransitWeight);
-		getline(FileRead2,lineread);
-		sscanf(lineread.c_str(),"%*s %lf ", &dTruckWeight);                
-	}
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %lf ",&dTransitWeight);
+	// 	getline(FileRead2,lineread);
+	// 	sscanf(lineread.c_str(),"%*s %lf ", &dTruckWeight);                
+	// }
    
-    FileRead2.close();
+    // FileRead2.close();
  //DD: Check with Dr. Head
 	
     ConfigIS.dCoordinationWeight=dCoordinationWeight;
