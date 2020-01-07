@@ -36,15 +36,13 @@ def main():
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
 
-
-
     # Establish a socket and bind it to IP and port
     outerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
     port = 6053
     MapSpatBroadcastAddress = (mrpIp, port)
     outerSocket.bind(MapSpatBroadcastAddress)
-    outerSocket.settimeout(3)
+    outerSocket.settimeout(1)
 
     msgSenderPort = config["PortNumber"]["MessageTransceiver"]["MessageSender"]
     msgSenderAddress = (mrpIp, msgSenderPort)
@@ -96,6 +94,10 @@ def main():
                 #print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")
+            print("Sent MAP to MsgSender")
+            outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
+            spatMapMsgCount = 0
+
 
 if __name__ == "__main__":
     main()
