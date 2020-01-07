@@ -6,6 +6,7 @@
     "IntersectionID" : 26379,
     "RegionalID" : 0,
     "ControllerIp": "10.12.6.107",
+    "DataCollectorIP": "10.12.6.109",
     "PortNumber":
 	{
 		"MessageTransceiver":

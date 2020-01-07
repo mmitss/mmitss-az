@@ -26,6 +26,7 @@
 from Ntcip1202v2Blob import Ntcip1202v2Blob
 import json
 from Phase import Phase
+import datetime
 
 class Spat:
     def __init__(self):
@@ -80,6 +81,7 @@ class Spat:
         spatDict = dict({"MsgType": "SPAT",
                     "Spat" :
                     {
+                        "Timestamp": str(datetime.datetime.now()),
                         "IntersectionState" :
                         {
                             "regionalID" : self.regionalID,
