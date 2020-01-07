@@ -23,6 +23,7 @@
     -> Send the mapPayload as it is to msgSender.
     -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be required to created which could be used in similar manner like NTCIP1202v2Blob class.
 '''
+
 import socket
 import time
 import json

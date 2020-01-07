@@ -63,6 +63,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     std::string fmap{};
     std::string intersectionName{};
     std::string mapName{};
+    int intersectionID{};
     bool singleFrame = false;
     std::string deleteFileName = "Map.map.payload";
     Json::Value jsonObject;
@@ -83,13 +84,16 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
 
     fmap = "Map.map.payload";
     intersectionName = "Map";
+
     /// instance class LocAware (Map Engine)
     LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
-    mapName = "Map" + std::to_string(plocAwareLib->getIntersectionIdByName(intersectionName));
+    intersectionID = plocAwareLib->getIntersectionIdByName(intersectionName);
+    mapName = "Map" + std::to_string(intersectionID);
 
     jsonObject["MsgType"] = "MAP";
     jsonObject["IntersectionName"] = mapName;
     jsonObject["MapPayload"] = mapPayload;
+    jsonObject["IntersectionID"] = intersectionID;
     jsonString = fastWriter.write(jsonObject);
 
     remove(deleteFileName.c_str());
@@ -100,7 +104,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
 std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
 {
     BasicVehicle basicVehicle;
-    std::string jsonString;
+    std::string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -147,7 +151,7 @@ std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
 {
     SignalRequest signalRequest;
 
-    std::string jsonString;
+    std::string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -207,7 +211,7 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
     SignalStatus signalStatus;
     std::vector<ActiveRequest> ActiveRequestTable;
     ActiveRequest activeRequest;
-    std::string jsonString;
+    std::string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -310,9 +314,8 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
 
         Json::Value jsonObject;
         Json::FastWriter fastWriter;
-        std::string jsonString;
 
-        jsonObject["MsgType"] = "SPAT";
+        jsonObject["MsgType"] = "SPaT";
         jsonObject["Spat"]["IntersectionState"]["regionalID"] = spatOut.regionalId;
         jsonObject["Spat"]["IntersectionState"]["intersectionID"] = spatOut.id;
         jsonObject["Spat"]["msgCnt"] = static_cast<unsigned int>(spatOut.msgCnt);

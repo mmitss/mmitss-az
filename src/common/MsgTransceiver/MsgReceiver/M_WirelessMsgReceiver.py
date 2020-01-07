@@ -22,19 +22,7 @@ import socket
 import json
 
 def getMsgPayload(rawMsg:str, psidDict:dict, msgIdDict:dict):
-    psidBegin = rawMsg[52:]
-    if psidBegin[:2] == psidDict["bsm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["bsm"]):][:-66]
-    elif psidBegin[:8] == psidDict["map"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["map"]):][:-66]
-    elif psidBegin[:4] == psidDict["spat"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["spat"]):][:-66]
-    elif psidBegin[:8] == psidDict["ssm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["ssm"]):][:-66]
-    elif psidBegin[:8] == psidDict["srm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["srm"]):][:-66]
-    elif psidBegin[:4] == psidDict["rsm"]:
-        extractedPayload = psidBegin[psidBegin.find(msgIdDict["rsm"]):][:-66]
+    extractedPayload = rawMsg[rawMsg.find('001'):]
     return extractedPayload   
 
 
@@ -69,6 +57,12 @@ def main():
     #setup logging to a file for test output
     import datetime
 
+    # Create a timestamp which will be appended at the end of name of a file storing received data.
+    timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+    # Create complete file name: example: msgLog_<timestamp>
+    fileName = "WirelessReceiverLog_" + timestamp + ".txt"
+    dataLog = open(fileName, 'w')    
+
     if DEBUGGING:
         firstIteration = True
 
@@ -81,6 +75,7 @@ def main():
         # Receive a binary message packet and convert it to hex packet.
         receivedMsg, addr = s.recvfrom(5120)
         receivedMsg = receivedMsg.hex()
+        if DEBUGGING: dataLog.write(receivedMsg + '\n')
         msgPayload = getMsgPayload(receivedMsg, psidDict, msgIdDict)
         if msgPayload[:4]=="0021": 
             s.sendto(msgPayload.encode(), rsmDecoderComm)
@@ -95,6 +90,7 @@ def main():
                 elif msgPayload[:4]=="001e": print("Received SSM from OBU")
                 else: print ("Received invalid message.")
         
+    dataLog.close()
     s.close()
 if __name__ == "__main__":
     main()

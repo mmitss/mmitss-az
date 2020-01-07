@@ -139,7 +139,6 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	return srmJsonString;
 }
 
-
 /*
 	- Check whether vehicle should accept the ssm and populate active request table or not.
 		-- If current intersectionID and regionalID of the vehicle and intersectionID and regionalID of ssm match accept the ssm 
@@ -164,7 +163,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
-	if (bgetActiveMap == true && abs(tempSRMTimeStamp-getMsOfMinute()/SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
+	if (bgetActiveMap == true && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
 	{
 		if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
 		{
@@ -199,12 +198,12 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since msgID doesn't match" << std::endl;
+			std::cout << "SRM is sent since msgCount doesn't match" << std::endl;
 		}
 	}
 
 	if (bSendRequest == true)
-		tempSRMTimeStamp = getMsOfMinute()/SECONDTOMILISECOND;
+		tempSRMTimeStamp = getMsOfMinute() / SECONDTOMILISECOND;
 
 	return bSendRequest;
 }
@@ -289,9 +288,17 @@ int PriorityRequestGenerator::getMessageType(std::string jsonString)
 std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManager mapManager)
 {
 	activeMapList = mapManager.getActiveMapList();
+
 	return activeMapList;
 }
 
+// std::vector<Map::AvailableMap> PriorityRequestGenerator::getAvailableMapList(MapManager mapManager)
+// {
+// 	mapManager.changeMapStatusInAvailableMapList();
+// 	availableMapList = mapManager.getAavailableMapList();
+
+// 	return availableMapList;
+// }
 /*
 	-If there is active map, based on the bsm data this function will locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
 */
@@ -313,16 +320,16 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	{
 		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
 		// std::cout << "Active Map List is not Empty" << std::endl;
-		fmap = activeMapList.front().activeMapFileDirectory;		
-		intersectionName = activeMapList.front().activeMapFileName; 
-		bool singleFrame = false;									/// TRUE to encode speed limit in lane, FALSE to encode in approach
+		fmap = activeMapList.front().activeMapFileDirectory;
+		intersectionName = activeMapList.front().activeMapFileName;
+		bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 		//initialize mapengine library
 		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
 
 		uint32_t referenceId = plocAwareLib->getIntersectionIdByName(intersectionName);
 		uint16_t regionalId = static_cast<uint16_t>((referenceId >> 16) & 0xFFFF);
 		uint16_t intersectionId = static_cast<uint16_t>(referenceId & 0xFFFF);
-		double distance2go;
+		double distance2go{};
 		//get the vehicle data from bsm
 		double vehicle_Latitude = basicVehicle.getLatitude_DecimalDegree();
 		double vehicle_Longitude = basicVehicle.getLongitude_DecimalDegree();
@@ -347,8 +354,8 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
 		struct connectedVehicle_t connectedVehicle_t_1 = {0, 0, 0, geoPoint_t_1, motion_t_1, vehicleTracking_t_1, locationAware_t_1, signalAware_t_1};
 
-		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane
-		if (counter_VehicleInMap >10 )
+		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane(stopped in the parking lot)
+		if (counter_VehicleInMap > 10)
 		{
 			if (plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1) == true && unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus) == static_cast<int>(MsgEnum::mapLocType::onInbound))
 			{
@@ -361,6 +368,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 				setTime2Go(distance2go, vehicle_Speed);
 				getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
+				bRequestSendStatus = true;
 			}
 
 			else
@@ -370,9 +378,9 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				ActiveRequestTable.clear();
 				setIntersectionID(0);
 				bgetActiveMap = false;
+				bRequestSendStatus = false;
 			}
 			counter_VehicleInMap = 0;
-
 		}
 
 		else
@@ -387,7 +395,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 			setTime2Go(distance2go, vehicle_Speed);
 			getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
-			counter_VehicleInMap ++;
+			counter_VehicleInMap++;
 		}
 
 		delete plocAwareLib;
@@ -488,11 +496,12 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 {
 	double vehicleSpeed = basicVehicle.getSpeed_MeterPerSecond();
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																			  [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
+																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
 	if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable == ActiveRequestTable.end())
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityRequest);
+		bRequestSendStatus = true; //Required for HMI json
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable != ActiveRequestTable.end())
@@ -502,22 +511,27 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
-		bgetActiveMap = false;
+		bgetActiveMap = false; //Required for HMI json
+		bRequestSendStatus = false;
+		// mapManager.changeMapStatusInAvailableMapList();
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= VEHICLE_SPEED_DEVIATION_LIMIT)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 	return priorityRequestType;
 }
@@ -573,6 +587,107 @@ int PriorityRequestGenerator::getMsgCount()
 	}
 
 	return msgCount;
+}
+
+/*
+	- Get current signalgroup info of vehicle from MAP based on LaneID and AprroachID for HMI Controller
+*/
+int PriorityRequestGenerator::getVehicleCurrentSignalGroup()
+{
+	int signalGroup{};
+	int approachID{};
+	std::string fmap{};
+	std::string intersectionName{};
+	bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
+
+	if (!activeMapList.empty())
+	{
+		fmap = activeMapList.front().activeMapFileDirectory;
+		intersectionName = activeMapList.front().activeMapFileName;
+
+		//initialize mapengine library
+		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
+		approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(getRegionalID()), static_cast<uint8_t>(getIntersectionID()), static_cast<uint8_t>(getLaneID()));
+		signalGroup = plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(getRegionalID()), static_cast<uint16_t>(getIntersectionID()), approachID, static_cast<uint8_t>(getLaneID()));
+
+		delete plocAwareLib;
+	}
+
+	return signalGroup;
+}
+
+/*
+	- Get vehicle status on current map (Whether on map or not) for HMI Controller
+*/
+std::string PriorityRequestGenerator::getVehicleMapStatus()
+{
+	std::string vehicleMapStatus{};
+
+	if (bgetActiveMap == true)
+		vehicleMapStatus = "True";
+
+	else
+		vehicleMapStatus = "False";
+
+	return vehicleMapStatus;
+}
+
+/*
+	- Get information whether SRM is sent or not for HMI Controller
+*/
+std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
+{
+	std::string vehicleSRMStatus{"False"};
+
+	if (bRequestSendStatus == true)
+		vehicleSRMStatus = "True";
+	else
+		vehicleSRMStatus = "False";
+
+	return vehicleSRMStatus;
+}
+
+// std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapListFORHMI()
+// {
+// 	return activeMapList;
+// }
+
+/*
+	- Getters for ART table
+*/
+std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
+{
+	return ActiveRequestTable;
+}
+
+/*
+	-Methods for updating map status for HMI
+	-If vehicle in on Map then for the active map, activeMapStatus will be true for the active map
+	-If vehicle is leaving the map (either leaving the intersection or going to parking lot) then activeMapStatus will be false for all available map
+*/
+std::vector<Map::AvailableMap> PriorityRequestGenerator::changeMapStatusInAvailableMapList(MapManager mapManager)
+{
+
+	if (!activeMapList.empty())
+	{
+		std::vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
+																			  [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
+
+		if (findActiveMap != availableMapList.end())
+			findActiveMap->activeMapStatus = "True";
+
+		availableMapList = mapManager.availableMapList;
+	}
+
+	else
+	{
+		for (size_t i = 0; i < availableMapList.size(); i++)
+			availableMapList[i].activeMapStatus = "False";
+
+		availableMapList = mapManager.availableMapList;
+	}
+
+	return availableMapList;
 }
 
 /*
