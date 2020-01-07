@@ -85,7 +85,7 @@ def main():
                 
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
-                #print(spatJsonString)
+                print(spatJsonString)
                 print("Sent SPAT to MsgEncoder")
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:

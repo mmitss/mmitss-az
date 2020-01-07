@@ -17,6 +17,7 @@ int main()
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt()));
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    const string DataCollectorIP = jsonObject_config["DataCollectorIp"].asString();
 
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["VehicleHMI"]).asInt();
@@ -42,7 +43,7 @@ int main()
         {
             std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+            decoderSocket.sendData(DataCollectorIP, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
 
             std::cout << "Decoded BSM" << std::endl;
         }

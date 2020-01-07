@@ -79,9 +79,9 @@ class Spat:
             self.vehPhasesDict[i] = self.vehPhases[i].asDict()
             self.pedPhasesDict[i] = self.pedPhases[i].asDict()
         spatDict = dict({"MsgType": "SPAT",
+                    "Timestamp": str(datetime.datetime.now()),
                     "Spat" :
                     {
-                        "Timestamp": str(datetime.datetime.now()),
                         "IntersectionState" :
                         {
                             "regionalID" : self.regionalID,
