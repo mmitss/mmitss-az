@@ -11,7 +11,7 @@ def main():
     config = (json.load(configFile))
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    hostIp = config["HostIp"]
+    hostIp = config["DataCollectorIp"]
     port = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (hostIp, port)
     s.bind(dataCollectorAddress)
@@ -107,7 +107,7 @@ def bsmJsonToCsv(jsonData:json):
     return csv
 
 def spatJsonToCsv(jsonData:json):
-    timestamp = str(datetime.datetime.now())
+    timestamp = str(jsonData["Timestamp"])
     regionalId = str(jsonData["Spat"]["IntersectionState"]["regionalID"])
     intersectionId = str(jsonData["Spat"]["IntersectionState"]["intersectionID"])
     msgCnt = str(jsonData["Spat"]["msgCnt"])
