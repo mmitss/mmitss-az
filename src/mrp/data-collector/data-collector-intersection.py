@@ -2,12 +2,17 @@ import socket
 import json
 import datetime
 import os
-import DataCollectorMethods as DCM 
+import DataCollectorMethods as DCM
+import glob
+import sys
 
 appLocation = 1 # 0 = vehicle; 1 = infrastructure
 flushLogFileEvery = 6001 # Seconds
 
 def main():
+
+    intersectionConfig = open(sys.argv[1], 'r')
+    
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
     # Establish a socket and bind it to IP and port
@@ -45,17 +50,20 @@ def main():
                     surroundingBsmLogFile.flush()
                     surroundingBsmLogCounter = 1
         else:
-            print("MinuteHasChanged")
             logFileCreationDay = currentDay
             spatLogFile.close()
 
+
+
+            spatLogFile = open(("spatLog_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"), 'w')
+            DCM.initializeSpatLogFile(spatLogFile)
             os.system('icd /iplant/home/nvaltekar/')
             os.system('iput ./spatLog*')
             os.system('rm ./spatLog*')
 
             surroundingBsmLogFile.close()
-            spatLogFile = open(("spatLog_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"), 'w')
             surroundingBsmLogFile = open(("surroundingBsmLog_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"), 'w')
+            DCM.initializeBsmLogFile(surroundingBsmLogFile)
             data, address = s.recvfrom(4096)
             jsonData = json.loads(data.decode())
             if address[1] == config["PortNumber"]["MapSPaTBroadcaster"]: # then this message is a SPAT message

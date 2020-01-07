@@ -67,7 +67,7 @@ class Ntcip1202v2Blob:
         self.pedPhaseStatusPedClears = [0]*numPedPhases
         self.pedPhaseStatusWalks = [0]*numPedPhases
         # Phase status
-        self.pedCurrState = [0]*numPedPhases
+        self.pedCurrState = [0]*numPedPhases 
         self.pedPrevState = [0]*numPedPhases
         # Values required in J2735 SPaT Message
         self.pedStartTime = [0]*numPedPhases
@@ -132,11 +132,17 @@ class Ntcip1202v2Blob:
         
         # Minimum time to change from current state:
         for i in range(0,self.numVehPhases):
-            self.vehMinEndTime[i] = int(receivedBlob[self.vehMinEndTimeByteMap[i][1]])
+            firstByte = str(f'{receivedBlob[self.vehMinEndTimeByteMap[i][0]]:08b}')
+            secondByte = str(f'{receivedBlob[self.vehMinEndTimeByteMap[i][1]]:08b}')
+            completeByte = firstByte+secondByte            
+            self.vehMinEndTime[i] = int(completeByte, 2)
 
         # Maximum time to change from current state:
         for i in range(0,self.numVehPhases):
-            self.vehMaxEndTime[i] = int(receivedBlob[self.vehMaxEndTimeByteMap[i][1]])
+            firstByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][0]]:08b}')
+            secondByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][1]]:08b}')
+            completeByte = firstByte+secondByte
+            self.vehMaxEndTime[i] = int(completeByte, 2)
 ##################################### PED INFORMATION ####################################################################
         DONTWALK = 3
         PEDCLEAR = 8
@@ -176,11 +182,17 @@ class Ntcip1202v2Blob:
         
         # Minimum time to change from current state:
         for i in range(0,self.numPedPhases):
-            self.pedMinEndTime[i] = int(receivedBlob[self.pedMinEndTimeByteMap[i][1]])
+            firstByte = str(f'{receivedBlob[self.pedMinEndTimeByteMap[i][0]]:08b}')
+            secondByte = str(f'{receivedBlob[self.pedMinEndTimeByteMap[i][1]]:08b}')
+            completeByte = firstByte+secondByte
+            self.pedMinEndTime[i] = int(completeByte, 2)
 
         # Maximum time to change from current state:
         for i in range(0,self.numPedPhases):
-            self.pedMaxEndTime[i] = int(receivedBlob[self.pedMaxEndTimeByteMap[i][1]])
+            firstByte = str(f'{receivedBlob[self.pedMinEndTimeByteMap[i][0]]:08b}')
+            secondByte = str(f'{receivedBlob[self.pedMinEndTimeByteMap[i][1]]:08b}')
+            completeByte = firstByte+secondByte
+            self.pedMaxEndTime[i] = int(completeByte, 2)
 ##################################### INTERSECTION STATUS ####################################################################
 
         self.intersectionStatus = '00000000' + str(f'{receivedBlob[232]:08b}')        

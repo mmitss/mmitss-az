@@ -1,0 +1,9 @@
+{
+    "IntersectionName": "DaisyMountain_GavilanPeak",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_GavilanPeak/spat",
+        "Surrounding_Vehicle_Data": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_GavilanPeak/surrounding_vehicle_data"
+    },
+    "DataCollectorPort": 30001
+}
