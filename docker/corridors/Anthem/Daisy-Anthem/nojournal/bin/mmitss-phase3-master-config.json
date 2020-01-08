@@ -6,7 +6,8 @@
     "IntersectionID" : 22391,
     "RegionalID" : 0,
     "ControllerIp": "10.12.6.17",
-   "HMIControllerIP": "10.12.6.56",
+    "HMIControllerIP": "10.12.6.56",
+    "DataCollectorIP": "10.12.6.18",
     "VehicleType" : 6,
     "PortNumber":
 	{
@@ -31,7 +32,8 @@
         "HMIController": 20009,
 		"MapSPaTBroadcaster": 6053,
 		"RSUOBUImageForwarder": 1516,
-        "PriorityRequestServer_SendSSM": 50003
+        "PriorityRequestServer_SendSSM": 50003,
+        "DataCollector": 30001
 	},
     "psid":
         {
