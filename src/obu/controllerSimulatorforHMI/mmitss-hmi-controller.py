@@ -120,7 +120,7 @@ def changeSPaTTimes2Strings(SPaT) :
         newSPaT[phase]['maxEndTime'] = str(round(float(SPaT[phase]['maxEndTime'])/10., 1))
         newSPaT[phase]['minEndTime'] = str(round(float(SPaT[phase]['minEndTime'])/10., 1))
         #newSPaT[phase]['startTime'] = str(SPaT[phase]['startTime'])
-        newSPaT[phase]['elapsedTime'] = str(round(float(SPaT[phase]['elapsedTime'])/10., 1))
+        #newSPaT[phase]['elapsedTime'] = str(round(float(SPaT[phase]['elapsedTime'])/10., 1))
     return newSPaT
     
 # initialize all the data
