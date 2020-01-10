@@ -3,8 +3,8 @@
     "DataCollectorEmailServer":
     {
         "Port": 30000,
-        "EmailAccount": "someone@gmail.com",
-        "Password": "some-password"
+        "EmailAccount": "iam.cyverse@gmail.com",
+        "Password": "mmitss123"
     },
     "EmailRecipients":[
     "nvaltekar@email.arizona.edu"
