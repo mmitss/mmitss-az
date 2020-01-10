@@ -4,8 +4,9 @@ import datetime
 import DataCollectorMethods as DCM
 import sys
 import sh
+import time
 
-flushLogFileEvery = 6001 # Seconds
+DEBUGGING = False
 
 def main():
 
@@ -19,7 +20,6 @@ def main():
     ################## CyVerse Directory Paths ##################
     CyVerse_DirectoryPath_Spat = intersectionConfig["CyVerse_DirectoryPath"]["Spat"]
     CyVerse_DirectoryPath_SurroundingBsms = intersectionConfig["CyVerse_DirectoryPath"]["SurroundingBsms"]
-    CyVerse_DirectoryPath_PseudoSurroundingBsms = intersectionConfig["CyVerse_DirectoryPath"]["PseudoSurroundingBsms"]
 
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -28,16 +28,18 @@ def main():
     dataCollectorAddress = (hostIp, port)
     s.bind(dataCollectorAddress)
 
-    logFileCreationDay = datetime.datetime.now().minute
+    emailServerPort = dataCollectorConfig["DataCollectorEmailServer"]["Port"]
+    emailServerAddress = (hostIp, emailServerPort)
+
+    if DEBUGGING: logFileCreationDay = datetime.datetime.now().minute
+    else: logFileCreationDay = datetime.datetime.now().day
 
     spatLogFile, currentSpatFilename = DCM.initializeSpatLogFile(IntersectionName)
-    spatLogCounter = 1
-
     surroundingBsmLogFile, currentSurroundingBsmFilename = DCM.initializeBsmLogFile(IntersectionName)
-    surroundingBsmLogCounter = 1
 
     while True:
-        currentDay = datetime.datetime.now().minute
+        if DEBUGGING: currentDay = datetime.datetime.now().minute
+        else: currentDay = datetime.datetime.now().day
         if currentDay == logFileCreationDay:
             DCM.receiveProcessAndStoreDataLocally(s, spatLogFile, surroundingBsmLogFile)
         else:
@@ -47,11 +49,16 @@ def main():
             spatLogFile.close()
             surroundingBsmLogFile.close()
 
-            # Interaction with CyVerse:
-            DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
-            DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)      
-
-            # Open a new log file with new timestamp and initialize it.
+            # Interaction with CyVerse
+            spatLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
+            bsmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)  
+            totalTransferSizeBytes = spatLogSizeBytes + bsmLogSizeBytes
+            notification = str(totalTransferSizeBytes)
+            
+            # Send notification to email server
+            s.sendto(notification.encode(),emailServerAddress)
+            
+            # Open a new log file with new timestamp and initialize it
             spatLogFile, currentSpatFilename = DCM.initializeSpatLogFile(IntersectionName)
             surroundingBsmLogFile, currentSurroundingBsmFilename = DCM.initializeBsmLogFile(IntersectionName)
 

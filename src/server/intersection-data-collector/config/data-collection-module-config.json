@@ -1,4 +1,14 @@
 {
-    "DataCollectorIp" : "10.12.6.101"
+    "DataCollectorIp" : "10.12.6.101",
+    "DataCollectorEmailServer":
+    {
+        "Port": 30000,
+        "EmailAccount": "someone@gmail.com",
+        "Password": "some-password"
+    },
+    "EmailRecipients":[
+    "nvaltekar@email.arizona.edu"
+    ]
+
 }
 

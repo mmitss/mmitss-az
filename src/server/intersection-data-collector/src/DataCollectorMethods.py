@@ -44,11 +44,38 @@ def receiveProcessAndStoreDataLocally(socket, spatLogFile, surroundingBsmLogFile
 
 def transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath, currentLocalFilename):
     (sh.icd(CyVerse_DirectoryPath)) # Go to correct CyVerse directory for storing SPAT data
-    print(sh.ipwd())
     sh.iput(currentLocalFilename) # Upload all files of this intersection to current directory of CyVerse
-    print(sh.ils())
+    fileSize = os.path.getsize(currentLocalFilename)
     sh.rm(currentLocalFilename) # Remove the files of this intersection from local storage
-    pass
+    return fileSize
+
+def convertSizeBytesToAppropriateUnits(sizeBytes):
+    if sizeBytes < 1000:
+        unit = "bytes"
+        size = sizeBytes
+    elif sizeBytes < 1000000:
+        unit = "KB"
+        size = sizeBytes/1000
+    elif sizeBytes < 1000000000:
+        unit = "MB"
+        size = sizeBytes/1000000
+    else:
+        unit = "GB"
+        size = sizeBytes/1000000000
+    return size, unit
+
+def generateEmail(transferSize, unit):
+    message = """\
+Subject: IAM Data Transfer
+
+Hello,
+
+{} {} of data was transferred from MCDOT-IAM-Server to CyVerse at {}.
+
+This is an auto-generated email. Please do not reply.
+
+Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
+    return message
 
 def bsmJsonToCsv(jsonData:json):
     timestamp = str(datetime.datetime.now())
@@ -172,4 +199,4 @@ def spatJsonToCsv(jsonData:json):
     return csv
 
 if __name__ == "__main__":
-    main()
+    pass
