@@ -77,7 +77,7 @@ def main():
             surroundingBsmLogFile.close()
 
             # Interaction with CyVerse:
-            sh.icd(CyVerse_DirectoryPath_Spat) # Go to correct directory for storing SPAT data
+            sh.icd(CyVerse_DirectoryPath_SurroundingBsms) # Go to correct directory for storing SPAT data
             sh.iput(currentSurroundingBsmFilename) # Upload all files matching to current directory
             sh.rm(currentSurroundingBsmFilename) # Remove the file from local storage            
 
