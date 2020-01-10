@@ -28,20 +28,20 @@ def main():
     dataCollectorAddress = (hostIp, port)
     s.bind(dataCollectorAddress)
 
-    logFileCreationDay = datetime.datetime.now().minute
+    logFileCreationDay = datetime.datetime.now().day
 
-    currentSpatFilename = "spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
-    spatLogFile = open(("spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"), 'w')
+    currentSpatFilename = "./../datalogs/spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    spatLogFile = open(currentSpatFilename + ".csv", 'w')
     DCM.initializeSpatLogFile(spatLogFile)
     spatLogCounter = 1
 
-    currentSurroundingBsmFilename = "surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    currentSurroundingBsmFilename = "./../datalogs/surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     surroundingBsmLogFile = open((currentSurroundingBsmFilename), 'w')
     DCM.initializeBsmLogFile(surroundingBsmLogFile)
     surroundingBsmLogCounter = 1
 
     while True:
-        currentDay = datetime.datetime.now().minute
+        currentDay = datetime.datetime.now().day
         if currentDay == logFileCreationDay:
             data, address = s.recvfrom(4096)
             jsonData = json.loads(data.decode())
@@ -69,7 +69,7 @@ def main():
             sh.rm(currentSpatFilename) # Remove the files of this intersection from local storage
 
             # Open a new log file with new timestamp and initialize it.
-            currentSpatFilename = "spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+            currentSpatFilename = "./../datalogs/spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
             spatLogFile = open(currentSpatFilename, 'w')
             DCM.initializeSpatLogFile(spatLogFile)
 
@@ -82,7 +82,7 @@ def main():
             sh.rm(currentSurroundingBsmFilename) # Remove the file from local storage            
 
             # Open a new log file with new timestamp and initialize it.
-            currentSurroundingBsmFilename = "surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+            currentSurroundingBsmFilename = "./../datalogs/surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
             surroundingBsmLogFile = open((currentSurroundingBsmFilename), 'w')
             DCM.initializeBsmLogFile(surroundingBsmLogFile)
             

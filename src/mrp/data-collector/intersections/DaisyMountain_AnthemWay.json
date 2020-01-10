@@ -1,0 +1,11 @@
+{
+    "IntersectionName": "DaisyMountain_AnthemWay",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/spat",
+        "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/surrounding_vehicle_data",
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/pseudo_surrounding_vehicle_data"
+    },
+    "DataCollectorPort": 30006,
+    "DataCollectorIp": "10.12.6.101"
+}
