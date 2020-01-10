@@ -6,6 +6,5 @@
         "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_DedicationTrail/surrounding_vehicle_data",
         "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_DedicationTrail/pseudo_surrounding_vehicle_data"
     },
-    "DataCollectorPort": 30002,
-    "DataCollectorIp": "10.12.6.101"
+    "DataCollectorPort": 30002
 }

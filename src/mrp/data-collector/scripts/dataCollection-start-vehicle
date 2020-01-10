@@ -1,8 +1,0 @@
-#!/bin/bash
-
-cd .. # Go to root directory of Data Collection Module
-
-cd src # Go to src for running the python scripts locally
-echo "Starting data collection for the ego vehicle"
-python3 data-collector-vehicle.py > /dev/null 2>&1 &
-sleep 0.5s

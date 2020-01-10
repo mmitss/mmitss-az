@@ -6,6 +6,5 @@
         "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_GavilanPeak/surrounding_vehicle_data",
         "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_GavilanPeak/pseudo_surrounding_vehicle_data"
     },
-    "DataCollectorPort": 30001,
-    "DataCollectorIp": "10.12.6.101"
+    "DataCollectorPort": 30001
 }
