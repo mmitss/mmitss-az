@@ -1,0 +1,10 @@
+{
+    "IntersectionName": "DaisyMountain_MemorialDrive",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MemorialDrive/spat",
+        "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MemorialDrive/surrounding_vehicle_data",
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MemorialDrive/pseudo_surrounding_vehicle_data"
+    },
+    "DataCollectorPort": 30005
+}

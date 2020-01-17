@@ -2,11 +2,17 @@ import socket
 import json
 import datetime
 import os
+import sh
 
-def initializeBsmLogFile(bsmLogFile):
+def initializeBsmLogFile(IntersectionName):
+    currentSurroundingBsmFilename = "./../datalogs/surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    bsmLogFile = open(currentSurroundingBsmFilename, 'w')
     bsmLogFile.write("timestamp,temporaryId,secMark,latitude,longitude,elevation,speed,heading\n")
+    return bsmLogFile, currentSurroundingBsmFilename
 
-def initializeSpatLogFile(spatLogFile):
+def initializeSpatLogFile(IntersectionName):
+    currentSpatFilename = "./../datalogs/spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    spatLogFile = open(currentSpatFilename, 'w')
     spatLogFile.write("timestamp,regionalId,intersectionId,msgCount,moy,msom," + 
                         "v1_currState,v1_minEndTime,v1_maxEndTime,v1_elapsedTime," +
                         "v2_currState,v2_minEndTime,v2_maxEndTime,v2_elapsedTime," +
@@ -25,6 +31,51 @@ def initializeSpatLogFile(spatLogFile):
                         "p6_currState,p6_minEndTime,p6_maxEndTime,p6_elapsedTime," +
                         "p7_currState,p7_minEndTime,p7_maxEndTime,p7_elapsedTime," +
                         "p8_currState,p8_minEndTime,p8_maxEndTime,p8_elapsedTime" + "\n")
+    return spatLogFile, currentSpatFilename
+
+
+def receiveProcessAndStoreDataLocally(socket, spatLogFile, surroundingBsmLogFile):
+    data, address = socket.recvfrom(4096)
+    jsonData = json.loads(data.decode())
+    if jsonData["MsgType"]=="SPAT": # then this message is a SPAT message
+        spatLogFile.write(spatJsonToCsv(jsonData))
+    elif jsonData["MsgType"]=="BSM": # then this message is a bsm message from 
+        surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
+
+def transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath, currentLocalFilename):
+    (sh.icd(CyVerse_DirectoryPath)) # Go to correct CyVerse directory for storing SPAT data
+    sh.iput(currentLocalFilename) # Upload all files of this intersection to current directory of CyVerse
+    fileSize = os.path.getsize(currentLocalFilename)
+    sh.rm(currentLocalFilename) # Remove the files of this intersection from local storage
+    return fileSize
+
+def convertSizeBytesToAppropriateUnits(sizeBytes):
+    if sizeBytes < 1000:
+        unit = "bytes"
+        size = sizeBytes
+    elif sizeBytes < 1000000:
+        unit = "KB"
+        size = sizeBytes/1000
+    elif sizeBytes < 1000000000:
+        unit = "MB"
+        size = sizeBytes/1000000
+    else:
+        unit = "GB"
+        size = sizeBytes/1000000000
+    return size, unit
+
+def generateEmail(transferSize, unit):
+    message = """\
+Subject: IAM Data Transfer
+
+Hello,
+
+{} {} of data was transferred from MCDOT-IAM-Server to CyVerse at {}.
+
+This is an auto-generated email. Please do not reply.
+
+Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
+    return message
 
 def bsmJsonToCsv(jsonData:json):
     timestamp = str(datetime.datetime.now())
@@ -148,4 +199,4 @@ def spatJsonToCsv(jsonData:json):
     return csv
 
 if __name__ == "__main__":
-    main()
+    pass
