@@ -58,7 +58,7 @@ DeliveryStart={}
 DeliveryStop={}
 Signature={}
 Encryption={}
-Payload={}'''
+Payload={}\n'''
 
     if msgType == 'MAP':
         broadcastMsgPacket = broadcastMsgPacket.format(0.7, msgType, '0xE0000017', 7, 'CONT', 172, '', '', '', False, False, msgPayload)
@@ -97,23 +97,34 @@ def main():
     outerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # Bind the created socket to the server information.
     outerSocket.bind(hostComm)
+    
+    #setup logging to a file for test output
+    import datetime
+
+    # Create a timestamp which will be appended at the end of name of a file storing received data.
+    timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+    # Create complete file name: example: msgLog_<timestamp>
+    fileName = "MsgSenderLogLog_" + timestamp + ".txt"
+    dataLog = open(fileName, 'w')   
 
     sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = 1516
-    sourceDsrcDevicePort_SSM = 1520
+    sourceDsrcDevicePort_SSM = 1516
     sourceDsrcDevice = (sourceDsrcDeviceIP, sourceDsrcDevicePort)
     sourceDsrcDevice_SSM = (sourceDsrcDeviceIP, sourceDsrcDevicePort_SSM)
-
-
     while True:
-        receivedMsg, addr = outerSocket.recvfrom(4096)
+        receivedMsg, addr = outerSocket.recvfrom(5120)
         msgType = identifyMsg(receivedMsg.decode())
+        dataLog.write(receivedMsg.decode() + '\n')
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
-        if msgType == "SSM":
+        if msgType == "SSM": 
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice_SSM)
         else:
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice)
+        #print(msgPacket)
         print("Sent " + msgType)
+    dataLog.close()
+    outerSocket.close()
 
 if __name__ == '__main__':
     main()

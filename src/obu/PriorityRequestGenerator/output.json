@@ -1,0 +1,45 @@
+{
+	"PriorityRequestGeneratorStatus" : 
+	{
+		"hostVehicle" : 
+		{
+			"heading_Degree" : 359.0,
+			"laneID" : 9,
+			"position" : 
+			{
+				"elevation_Meter" : 717.5,
+				"latitude_DecimalDegree" : 32.234726600000002,
+				"longitude_DecimalDegree" : -110.95231130000001
+			},
+			"priorityStatus" : 
+			{
+				"OnMAP" : "True",
+				"requestSent" : "True"
+			},
+			"secMark_Second" : 38.700000000000003,
+			"signalGroup" : 8,
+			"speed_MeterPerSecond" : 9.0,
+			"vehicleID" : 1136114231,
+			"vehicleType" : 6
+		},
+		"infrastructure" : 
+		{
+			"activeRequestTable" : null,
+			"availableMaps" : 
+			[
+				{
+					"DescriptiveName" : "Map26379",
+					"IntersectionID" : 26379,
+					"active" : "True",
+					"age" : 5.0
+				},
+				{
+					"DescriptiveName" : "Map44383",
+					"IntersectionID" : 44383,
+					"active" : "False",
+					"age" : 5.0
+				}
+			]
+		}
+	}
+}

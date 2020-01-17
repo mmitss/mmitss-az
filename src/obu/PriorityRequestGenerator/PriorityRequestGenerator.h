@@ -29,14 +29,15 @@ class PriorityRequestGenerator
 private:
     std::vector<ActiveRequest>ActiveRequestTable;
     std::vector<Map::ActiveMap> activeMapList;
-    bool bgetActiveMap {false}; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
-    int messageType{};
-    int temporaryVehicleID{};
+    
+    bool bgetActiveMap{false}; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
+    bool bRequestSendStatus{false};  //Required for HMI json
     std::string mapFileDirectory; 
     std::string mapFileName;
+    int messageType{};
+    int temporaryVehicleID{};
     int vehicleLaneID{};
     int vehicleAprroachID{};
-	double time2go{};
     int intersectionID{};
     int regionalID{};
     int vehicleIntersectionStatus{};
@@ -44,14 +45,16 @@ private:
     int vehicleType{};
     int basicVehicleRole{};
     int priorityRequestType{};
+    int counter_VehicleInMap{};
+    double time2go{};
     double tempVehicleSpeed{}; //tempVehicleSpeed store the vehicle speed of last send out srm. use it to check the speed change. will be set vehicle minimum speed when out of the intersection
     double tempSRMTimeStamp{}; //temporary store the time when last SRM has been sent
-    int counter_VehicleInMap{};
+    
     
 public:
     PriorityRequestGenerator();
     ~PriorityRequestGenerator();
-
+    std::vector<Map::AvailableMap> availableMapList;
     std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
     std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
 
@@ -66,6 +69,7 @@ public:
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
     int getMessageType(std::string jsonString);
     std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
+    // std::vector<Map::AvailableMap> getAvailableMapList(MapManager mapManager);
     void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);    
     int getIntersectionID();
     int getRegionalID();
@@ -80,8 +84,12 @@ public:
     int getMinuteOfYear();
     int getMsOfMinute();
     int getMsgCount();
-    
+    int getVehicleCurrentSignalGroup();
+    std::string getVehicleMapStatus();
+    std::string getVehicleRequestSentStatus();
+    std::vector<ActiveRequest>getActiveRequestTable();
+    // std::vector<Map::ActiveMap> getActiveMapListFORHMI();
     void printART();
-    
+    std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
 
 };

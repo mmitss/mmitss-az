@@ -20,6 +20,7 @@ int main()
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
+    const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
     BasicVehicle basicVehicle;
     double latitude{};
     double longitude{};
@@ -27,8 +28,6 @@ int main()
     double elevation{};
     double heading{};
     double speed{};
-    std::ofstream locationLog("locationLog.csv");
-    locationLog << "secMark,latitude,longitude,elevation,heading,speed" << std::endl;
 
     while(true)
     {
@@ -42,10 +41,9 @@ int main()
         elevation = basicVehicle.getElevation_Meter();
         heading = basicVehicle.getHeading_Degree();
         speed = basicVehicle.getSpeed_MeterPerSecond();
-        locationLog << secMark*1000 << "," << std::setprecision(10) << latitude << "," << longitude << "," << std::setprecision(5) << elevation << "," << std::setprecision(2) << heading << "," << std::setprecision(2) << speed << std::endl;
-        std::cout << secMark*1000 << "," << std::setprecision(10) << latitude << "," << longitude << "," << std::setprecision(5) << elevation << "," << heading << "," << speed << std::endl;
         decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
+        decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+        
     }
-    locationLog.close();
     return 0;
 }
