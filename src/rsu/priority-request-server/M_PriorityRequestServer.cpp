@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     long lTimeOut = 300000;            // Time out of waiting for a new socket 0.3 sec!
     string Rsu_ID;                     // will get intersection name from "rsuid.txt"
     int ReqListUpdateFlag = NO_UPDATE; // When this flag is positive, it will identify the ReqList is updated. Therefore, the Solver needs to resolve the problem IMPORTANT
+    int ReqListNoUpdate = NO_UPDATE;
     char ConfigFile[256];
     int CombinedPhase[8] = {0};
     char rxMsgBuffer[1024]{};
@@ -146,7 +147,7 @@ int main(int argc, char *argv[])
 
             dLastETAUpdateTime = dTime;
 
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
+            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListNoUpdate, clearSignalControllerCommands);
 
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
@@ -171,9 +172,10 @@ int main(int argc, char *argv[])
 
             startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
+            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
+
             sendClearCommandsToInterface();
 
-            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
     }
 
