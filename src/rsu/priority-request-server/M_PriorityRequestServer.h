@@ -128,3 +128,4 @@ int FindRequestInList(LinkedList<ReqEntry> &ReqList, int VehClass);
 
 int getPriorityRequestStatus(LinkedList<ReqEntry> &ReqList);
 
+void doUpdateETAofRequestsInList(const string &, LinkedList<ReqEntry> &, int &, bool &);
