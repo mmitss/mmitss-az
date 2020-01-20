@@ -135,6 +135,30 @@ int main(int argc, char *argv[])
             UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, clearSignalControllerCommands);
             getPriorityRequestStatus(req_List);
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
+            // We need to solve
+            if ((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() > 0))
+            {
+                startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
+
+#ifdef LOGGING
+                sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
+                outputlog(temp_log);
+#endif
+            }
+
+            // If the request list is empty and the last vehicle just passed the intersection
+            if (((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() == 0)) || (clearSignalControllerCommands == true))
+            {
+                ReqListUpdateFlag = NO_UPDATE;
+
+                clearSignalControllerCommands = false;
+
+                startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
+
+                sendSSM(req_List, IntersectionID, MsgReceiverSocket);
+
+                sendClearCommandsToInterface();
+            }
         }
 
         // There are updated ETA's in the request list
@@ -147,35 +171,9 @@ int main(int argc, char *argv[])
 
             dLastETAUpdateTime = dTime;
 
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListNoUpdate, clearSignalControllerCommands);
+            doUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListNoUpdate, clearSignalControllerCommands);
 
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
-        }
-
-        // We need to solve
-        if ((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() > 0))
-        {
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
-
-#ifdef LOGGING
-            sprintf(temp_log, "At time: %.2f. ******** Need to solve ******** \n ", dTime);
-            outputlog(temp_log);
-#endif
-        }
-
-        // If the request list is empty and the last vehicle just passed the intersection
-        if (((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() == 0)) || (clearSignalControllerCommands == true))
-        {
-            ReqListUpdateFlag = NO_UPDATE;
-
-            clearSignalControllerCommands = false;
-
-            startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
-
-            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
-
-            sendClearCommandsToInterface();
-
         }
     }
 
@@ -1475,4 +1473,26 @@ void deleteMapPayloadFile()
 
     std::string deleteFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
     remove(deleteFileName.c_str());
+}
+
+void doUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req_list, int &ReqListUpdateFlag, bool &clearSignalControllerCommands)
+{
+    bool isCombinedFile{};
+
+    updateETAofRequestsInList(req_list, ReqListUpdateFlag);
+
+    deleteThePassedVehicle(req_list, ReqListUpdateFlag, clearSignalControllerCommands);
+
+    // Write the requests list into requests.txt,
+    //isCombinedFile = false;
+    // PrintList2File(REQUESTFILENAME, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile = false);
+
+    //Write the requests list into  requests_combined.txt;
+    //This file will be different than requests.txt when we have EV
+    // isCombinedFile = true;
+    // PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile = true);
+
+#ifdef LOGGING
+    printReqestFile2Log(REQUESTFILENAME_COMBINED);
+#endif
 }
