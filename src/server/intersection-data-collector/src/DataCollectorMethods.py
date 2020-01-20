@@ -4,11 +4,11 @@ import datetime
 import os
 import sh
 
-def initializeBsmLogFile(IntersectionName):
-    currentSurroundingBsmFilename = "./../datalogs/surroundingBsmLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
-    bsmLogFile = open(currentSurroundingBsmFilename, 'w')
+def initializeBsmLogFile(FileName):
+    bsmFilename = "./../datalogs/BsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    bsmLogFile = open(bsmFilename, 'w')
     bsmLogFile.write("timestamp,temporaryId,secMark,latitude,longitude,elevation,speed,heading\n")
-    return bsmLogFile, currentSurroundingBsmFilename
+    return bsmLogFile, bsmFilename
 
 def initializeSpatLogFile(IntersectionName):
     currentSpatFilename = "./../datalogs/spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
@@ -40,6 +40,14 @@ def receiveProcessAndStoreDataLocally(socket, spatLogFile, surroundingBsmLogFile
     if jsonData["MsgType"]=="SPAT": # then this message is a SPAT message
         spatLogFile.write(spatJsonToCsv(jsonData))
     elif jsonData["MsgType"]=="BSM": # then this message is a bsm message from 
+        surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
+
+def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmLogFile, surroundingBsmLogFile):
+    data, address = socket.recvfrom(4096)
+    jsonData = json.loads(data.decode())
+    if address[1]==10007: # then this message is a BSM from the host vehicle
+        hostBsmLogFile.write(bsmJsonToCsv(jsonData))
+    elif address[1]==10004: # then this message is a BSM from surrounding connected vehicle
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
 
 def transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath, currentLocalFilename):
@@ -79,13 +87,13 @@ Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
 
 def bsmJsonToCsv(jsonData:json):
     timestamp = str(datetime.datetime.now())
-    temporaryId = jsonData["BasicVehicle"]["temporaryID"]
-    secMark = jsonData["BasicVehicle"]["secMark_Second"]
-    latitude = jsonData["BasicVehicle"]["position"]["latitude_DecimalDegree"]
-    longitude = jsonData["BasicVehicle"]["position"]["longitude_DecimalDegree"]
-    elevation = jsonData["BasicVehicle"]["position"]["elevation_Meter"]
-    speed = jsonData["BasicVehicle"]["speed_MeterPerSecond"]
-    heading = jsonData["BasicVehicle"]["heading_Degree"]
+    temporaryId = str(jsonData["BasicVehicle"]["temporaryID"])
+    secMark = str(jsonData["BasicVehicle"]["secMark_Second"])
+    latitude = str(jsonData["BasicVehicle"]["position"]["latitude_DecimalDegree"])
+    longitude = str(jsonData["BasicVehicle"]["position"]["longitude_DecimalDegree"])
+    elevation = str(jsonData["BasicVehicle"]["position"]["elevation_Meter"])
+    speed = str(jsonData["BasicVehicle"]["speed_MeterPerSecond"])
+    heading = str(jsonData["BasicVehicle"]["heading_Degree"])
     
     csv = timestamp + "," + temporaryId + "," + secMark + "," + latitude + "," + longitude + "," + elevation + "," + speed + "," + heading + "\n"
     return csv
