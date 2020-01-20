@@ -73,9 +73,9 @@ directory_path = os.getcwd()
 f = open('HMIControllerSimulatorData.1.csv', 'r')
 
 f.readline() 
+f.readline() 
 f.readline() # there are three informational lines at the top of the data file (top is category, second is data_array cound, third is data lable)
-while (f.readline()):
-    line = f.readline()
+for line in f :
     line = line.replace('\n','')
     data_array = line.split(',')
     secMark = int(data_array[0])
