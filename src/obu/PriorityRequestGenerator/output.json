@@ -3,24 +3,24 @@
 	{
 		"hostVehicle" : 
 		{
-			"heading_Degree" : 359.0,
-			"laneID" : 9,
+			"heading_Degree" : 120.02766139635581,
+			"laneID" : 18,
 			"position" : 
 			{
-				"elevation_Meter" : 717.5,
-				"latitude_DecimalDegree" : 32.234726600000002,
-				"longitude_DecimalDegree" : -110.95231130000001
+				"elevation_Meter" : 540.67825251165777,
+				"latitude_DecimalDegree" : 33.858347830638387,
+				"longitude_DecimalDegree" : -112.10892406089813
 			},
 			"priorityStatus" : 
 			{
-				"OnMAP" : "True",
-				"requestSent" : "True"
+				"OnMAP" : "False",
+				"requestSent" : "False"
 			},
-			"secMark_Second" : 38.700000000000003,
-			"signalGroup" : 8,
-			"speed_MeterPerSecond" : 9.0,
-			"vehicleID" : 1136114231,
-			"vehicleType" : 6
+			"secMark_Second" : 55500.0,
+			"signalGroup" : 0,
+			"speed_MeterPerSecond" : 16.828600302695353,
+			"vehicleID" : 12,
+			"vehicleType" : 2
 		},
 		"infrastructure" : 
 		{
@@ -28,16 +28,10 @@
 			"availableMaps" : 
 			[
 				{
-					"DescriptiveName" : "Map26379",
-					"IntersectionID" : 26379,
-					"active" : "True",
-					"age" : 5.0
-				},
-				{
-					"DescriptiveName" : "Map44383",
-					"IntersectionID" : 44383,
+					"DescriptiveName" : "Map22391",
+					"IntersectionID" : 22391,
 					"active" : "False",
-					"age" : 5.0
+					"age" : 1.0
 				}
 			]
 		}
