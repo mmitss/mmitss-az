@@ -131,6 +131,9 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
         {
             Req_List.Reset(pos);
 
+            if ((Req_List.Data().VehClass == EV) && (Req_List.Data().Split_Phase > 0))
+                NewReq.Split_Phase = Req_List.Data().Split_Phase;
+                
             Req_List.Data() = NewReq;
 
             // We resolve the problem for the new updated request if the new updated request is EV, or there is not an EV in the list.
