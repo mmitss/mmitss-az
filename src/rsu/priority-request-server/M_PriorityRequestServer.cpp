@@ -1492,7 +1492,7 @@ void doUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req
     // isCombinedFile = true;
     // PrintList2File(REQUESTFILENAME_COMBINED, rsu_id, req_list, ReqListUpdateFlag, isCombinedFile = true);
 
-// #ifdef LOGGING
-//     printReqestFile2Log(REQUESTFILENAME_COMBINED);
-// #endif
+#ifdef LOGGING
+    printReqestFile2Log(REQUESTFILENAME_COMBINED);
+#endif
 }

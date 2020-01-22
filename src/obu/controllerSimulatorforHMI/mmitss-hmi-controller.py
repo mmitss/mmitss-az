@@ -59,8 +59,8 @@ def phase_status_state(phase_status):
 
 def signal_head(currentPhase, phase_status):
     current_phase_status = {"red" : False, "red_flash" : False, "yellow" : False, "green" : False, "green_arrow" : False, 
-                            "minEndTime" : str(round(float(phase_status["minEndTime"])/10., 1)),
-                            "maxEndTime" : str(round(float(phase_status["maxEndTime"])/10., 1)), "dark" : False}
+                            "minEndTime" : phase_status["minEndTime"],
+                            "maxEndTime" : phase_status["maxEndTime"], "dark" : False}
     if currentPhase == 0 : #there is no SPaT data
         current_phase_status["dark"] = True
         current_phase_status["minEndTime"] = '--'
