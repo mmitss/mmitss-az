@@ -357,8 +357,8 @@ void bubbleSort(int arr[], int n)
 
 void selectionSort(int a[], int size)
     {
-    int m;
-    double hold;
+    int m{};
+    double hold{};
 
     for (int k=0; k<=size-2; k++)
         {

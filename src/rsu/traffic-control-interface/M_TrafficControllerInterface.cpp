@@ -4,9 +4,7 @@
  * by U.S. and Foreign Patents, and patents in process.  Dissemination of this information
  * or reproduction of this material is strictly forbidden unless prior written permission
  * is obtained from Arizona Board of Regents or University of Arizona.
- */   
-
-
+ */
 
 /* MMITSS_MRP_TrafficControllerInterface.cpp
 *  Created by :Yiheng Feng
@@ -24,11 +22,9 @@
 
 */
 
-  
-
 //MMITSS MRP Traffic Controller Interface
-//This component is reponsible to receive signal timing schedule from 
-//MRP_TrafficControl and MRP_PriorityRequestServer and send control 
+//This component is reponsible to receive signal timing schedule from
+//MRP_TrafficControl and MRP_PriorityRequestServer and send control
 //commands (NTCIP: FORCE_OFF, VEH_CALL, PHASE_OMIT, PHASE_HOLD) to
 //Econolite ASC3/Cobalt controller
 
@@ -36,8 +32,6 @@
 
 //Department of Systems and Industrial Engineering
 //University of Arizona
-           
-        
 
 #include <sys/types.h>
 #include <sys/socket.h>
