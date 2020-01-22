@@ -1,0 +1,10 @@
+{
+    "IntersectionName": "DaisyMountain_DedicationTrail",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_DedicationTrail/spat",
+        "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_DedicationTrail/surrounding_vehicle_data",
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_DedicationTrail/pseudo_surrounding_vehicle_data"
+    },
+    "DataCollectorPort": 30002
+}

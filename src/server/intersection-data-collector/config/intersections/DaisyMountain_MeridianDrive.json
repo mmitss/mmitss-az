@@ -1,0 +1,10 @@
+{
+    "IntersectionName": "DaisyMountain_MeridianDrive",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MeridianDrive/spat",
+        "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MeridianDrive/surrounding_vehicle_data",
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_MeridianDrive/pseudo_surrounding_vehicle_data"
+    },
+    "DataCollectorPort": 30003
+}
