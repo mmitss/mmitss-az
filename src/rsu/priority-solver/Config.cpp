@@ -665,7 +665,7 @@ RSU_Config ReadInConfig(char *filename,int New)
         configIS.MP_Ring[i]=-1;
     }
 
-    int PhaseNo;
+    int PhaseNo{};
     int PhaseSeq[8];
     char TempStr[16];
     string lineread;

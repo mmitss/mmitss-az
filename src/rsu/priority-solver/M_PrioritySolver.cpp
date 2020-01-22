@@ -38,8 +38,8 @@
 #include <stdlib.h>
 #include <glpk.h>
 
-#include <chrono> 
-#include <ctime> 
+#include <chrono>
+#include <ctime>
 
 #include "math.h"
 #include "GetInfo.h"
@@ -240,8 +240,9 @@ int main(int argc, char *argv[])
 	double dEndTime = 0.0; //time stamps used to determine whether we connect to the RSE or not.
 	testConnectionToController();
 	// initializeRedStartVar(red_start_time,previous_signal_color);  			// in case of Adaptive Priority
-	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now()); 
+	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 	ofstream outputfile;
+
 	ifstream infile;
 	outputfile.open("/nojournal/bin/log/PRSolver_Mod_Dat.txt");
 	// infile.open("/nojournal/bin/NewModelData.dat");
@@ -584,7 +585,7 @@ void handleEVCase()
 	}
 	int EV_Phase_size = EV_Phase_vc.size();
 	int SamePhase = AllSameElementOfVector(EV_Phase_vc); // If only have one element, return 0
-	int ReqPhase;
+	int ReqPhase{};
 	PhaseVCMissing = 0;
 	PhaseInitMissing = 0;
 	for (int i = 0; i < EV_Phase_size; i++)
@@ -616,21 +617,21 @@ void handleEVCase()
 	for (int i = 0; i < EV_Phase_size; i++)
 	{
 		Phase_Infom[i] = EV_Phase_vc[i]; //Debashis::Append requested phase info of EV into Phase_Infom list.
-		cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] << endl;
+		// cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] << endl;
 	}
 	for (int i = 0; i < size_init; i++)
 	{
 		Phase_Infom[EV_Phase_size + i] = InitPhase[i];
-		cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
+		// cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
 	}
 
 	selectionSort(Phase_Infom, TotalSize); // Sort all the involved phases for removing duplicated phases
 	int NoRepeatSize = removeDuplicates(Phase_Infom, TotalSize);
 	/***************Debashis: For Debug purpose*************************/
-	for (int i = 0; i < NoRepeatSize; i++)
-	{
-		cout << "Phase_Infom FInally: " << Phase_Infom[i] << endl;
-	}
+	// for (int i = 0; i < NoRepeatSize; i++)
+	// {
+	// 	cout << "Phase_Infom Finally: " << Phase_Infom[i] << endl;
+	// }
 	/******************************************************************/
 	RSUConfig2ConfigFile("/nojournal/bin/ConfigInfo_EV.txt", Phase_Infom, NoRepeatSize, ConfigIS);
 	PrintFile2Log("/nojournal/bin/ConfigInfo_EV.txt"); // Log the EV configInfo.
@@ -1641,6 +1642,11 @@ void packOPT(char *buffer, double cp[2][3][15], int msgCnt)
 
 void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<ReqEntry> Req_List)
 {
+	//Debashis Added this for debugging
+	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
+	ofstream outputfile;
+	outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
+
 	int tempOmitPhases[8];
 	int iNoOfOmit = 0;
 	Schedule Temp_event;
@@ -1756,42 +1762,82 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 
 	Eventlist_R1.Reset();
 	Eventlist_R2.Reset();
+	outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
 	cout << "RING1 Event List!" << endl;
 	while (!Eventlist_R1.EndOfList())
 	{
+		outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		cout << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		if (Eventlist_R1.Data().action == PHASE_FORCEOFF)
+		{
 			cout << " Force-Off at " << endl;
+			outputfile << " Force-Off at " << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_OMIT)
+		{
 			cout << " Omit until" << endl;
+			outputfile << " Omit until" << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_VEH_CALL)
+		{
 			cout << " Call at" << endl;
+			outputfile << " Call at" << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_HOLD)
+		{
 			cout << " Hold until" << endl;
+			outputfile << " Hold until" << endl;		
+		}
 		Eventlist_R1.Next();
 	}
+	outputfile << "" << endl;
+	
+	outputfile << "RING2 Event List!" << endl;
 	cout << "RING2 Event List!" << endl;
 	while (!Eventlist_R2.EndOfList())
 	{
+		outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		cout << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		if (Eventlist_R2.Data().action == PHASE_FORCEOFF)
+		{
 			cout << " Force-Off at " << endl;
+			outputfile << " Force-Off at " << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_OMIT)
+		{
 			cout << " Omit until" << endl;
+			outputfile << " Omit until" << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_VEH_CALL)
+		{
 			cout << " Call at" << endl;
+			outputfile << " Call at" << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_HOLD)
+		{
 			cout << " Hold until" << endl;
+			outputfile << " Hold until" << endl;
+		}
 		Eventlist_R2.Next();
 	}
 
 	for (int ii = 0; ii < 8; ii++)
 		if (omitPhase[ii] > 0)
+		{
 			cout << "  omitPhase" << omitPhase[ii] << endl;
+			outputfile << "  omitPhase" << omitPhase[ii] << endl;
+		}
+	outputfile << "" << endl;
+	outputfile.close();
 }
 
 void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 {
+	//Debashis added this for debugging on January 10,2019
+	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
+	ofstream outputfile;
+	outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
+
 	int iNoPlannedPhaseInRing1 = 0;
 	int iNoPlannedPhaseInRing2 = 0;
 	iNoPlannedPhaseInRing1 = numberOfPlannedPhase(cp[0]);
@@ -1940,34 +1986,67 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 
 	Eventlist_R1.Reset();
 	Eventlist_R2.Reset();
+	outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
 	cout << "RING1 Event List!" << endl;
 	while (!Eventlist_R1.EndOfList())
 	{
+		outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
+
 		cout << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		if (Eventlist_R1.Data().action == PHASE_FORCEOFF)
+		{
 			cout << " Force-Off at " << endl;
+			outputfile << " Force-Off at " << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_OMIT)
+		{
 			cout << " Omit until" << endl;
+			outputfile << " Omit until" << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_VEH_CALL)
+		{
 			cout << " Call at" << endl;
+			outputfile << " Call at" << endl;
+		}
 		else if (Eventlist_R1.Data().action == PHASE_HOLD)
+		{
 			cout << " Hold until" << endl;
+			outputfile << " Hold until" << endl;
+		}
 		Eventlist_R1.Next();
 	}
+	outputfile << "" << endl;
+
+	outputfile << "RING2 Event List! " << ctime(&timenow) << endl;
 	cout << "RING2 Event List!" << endl;
 	while (!Eventlist_R2.EndOfList())
 	{
+		outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		cout << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		if (Eventlist_R2.Data().action == PHASE_FORCEOFF)
+		{
 			cout << " Force-Off at " << endl;
+			outputfile << " Force-Off at " << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_OMIT)
+		{
 			cout << " Omit unti" << endl;
+			outputfile << " Omit unti" << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_VEH_CALL)
+		{
 			cout << " Call at" << endl;
+			outputfile << " Call at" << endl;
+		}
 		else if (Eventlist_R2.Data().action == PHASE_HOLD)
+		{
 			cout << " Hold until" << endl;
+			outputfile << " Hold until" << endl;
+		}
 		Eventlist_R2.Next();
 	}
+	outputfile << "" << endl;
+	outputfile.close();
 }
 
 void Pack_Event_List(char *tmp_event_data, int &size) // This function is written by YF
