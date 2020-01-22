@@ -94,8 +94,7 @@ f = open('HMIControllerSimulatorData.1.csv', 'r')
 f.readline()
 f.readline() 
 f.readline() # there are three informational lines at the top of the data file (top is category, second is data_array cound, third is data lable)
-while (f.readline()):
-    line = f.readline()
+for line in f :
     line = line.replace('\n','')
     data_array = line.split(',')
     secMark = int(data_array[0])
@@ -168,13 +167,13 @@ while (f.readline()):
     index_phase_spat = 73
     for spat in range(0, numSPaT):
        
-        spat_phase = spat
+        spat_phase = spat + 1
         spat_currState = int(data_array[index_phase_spat + spat*4])
         spat_minEndTime = round(float(data_array[index_phase_spat + 1 + spat*4])/10., 1) # minEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_minEndTime = '--'
         else :
-            spat_minEndTime = str(spat_maxEndTime)
+            spat_minEndTime = str(spat_minEndTime)
         spat_maxEndTime = round(float(data_array[index_phase_spat + 2 + spat*4])/10., 1) # maxEndTime is in 10ths of a second
         if hv_currentLaneSignalGroup == 0 :
             spat_maxEndTime = '--'
