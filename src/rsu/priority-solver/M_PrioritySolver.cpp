@@ -1708,7 +1708,7 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 		Eventlist_R1.InsertRear(Temp_event);
 
 		// MZ commentee on 5/4/17
-		/*
+		
 		// call , the call is neccessary before force off. The controller should know where to go ( which phase will come up after force off )
 		if ( i<iNoPlannedPhaseInRing1-1)
 		{
@@ -1722,7 +1722,7 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 			Eventlist_R1.InsertRear(Temp_event);	
 			
 		}
-		*/
+		
 		// force off
 		Temp_event.time = cp[0][1][i];
 		Temp_event.action = PHASE_FORCEOFF;
@@ -1739,7 +1739,7 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 		Eventlist_R2.InsertRear(Temp_event);
 
 		// MZ commentee on 5/4/17
-		/*
+		
 		// call
 		if ( i<iNoPlannedPhaseInRing2-1)
 		{
@@ -1752,7 +1752,7 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 			Eventlist_R1.InsertRear(Temp_event);	
 			
 		}	
-		*/
+		
 		// force off
 		Temp_event.time = cp[1][1][i];
 		Temp_event.action = PHASE_FORCEOFF;
@@ -1954,7 +1954,7 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 					Temp_event.action = PHASE_VEH_CALL;
 					Temp_event.phase = i + 1;
 					Eventlist_R1.InsertRear(Temp_event);
-					ii = ii + 0.9;
+					ii = ii + 1.1; //DD change it from 0.9 
 					//  put Calls for at most next 120 seconds to avoid overwhelming the controller
 					if (ii > 120)
 						ii = dEndOfRequest[i];
@@ -1975,7 +1975,7 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 					Temp_event.action = PHASE_VEH_CALL;
 					Temp_event.phase = i + 1;
 					Eventlist_R2.InsertRear(Temp_event);
-					ii = ii + 0.9;
+					ii = ii + 1.1; //DD change it from 0.9 
 					//  put Calls at most next 120 seconds to avoid overwhelming the controller
 					if (ii > 120)
 						ii = dEndOfRequest[i];

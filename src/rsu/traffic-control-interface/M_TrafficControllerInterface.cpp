@@ -4,7 +4,9 @@
  * by U.S. and Foreign Patents, and patents in process.  Dissemination of this information
  * or reproduction of this material is strictly forbidden unless prior written permission
  * is obtained from Arizona Board of Regents or University of Arizona.
- */
+ */   
+
+
 
 /* MMITSS_MRP_TrafficControllerInterface.cpp
 *  Created by :Yiheng Feng
@@ -22,9 +24,11 @@
 
 */
 
+  
+
 //MMITSS MRP Traffic Controller Interface
-//This component is reponsible to receive signal timing schedule from
-//MRP_TrafficControl and MRP_PriorityRequestServer and send control
+//This component is reponsible to receive signal timing schedule from 
+//MRP_TrafficControl and MRP_PriorityRequestServer and send control 
 //commands (NTCIP: FORCE_OFF, VEH_CALL, PHASE_OMIT, PHASE_HOLD) to
 //Econolite ASC3/Cobalt controller
 
@@ -32,6 +36,8 @@
 
 //Department of Systems and Industrial Engineering
 //University of Arizona
+           
+        
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -266,8 +272,10 @@ int main ( int argc, char* argv[] )
 				}
 				if(Eventlist_R1.Data().action==2)  // vehicle call
 				{
-					vehcall_cmd+=(int) pow(2.0,Eventlist_R1.Data().phase-1);
-					sprintf(temp_log,"VEH_CALL Phase %d at time %.2lf\n",Eventlist_R1.Data().phase,currenttime);
+
+                    vehcall_cmd = vehcall_cmd | (int)pow(2.0, Eventlist_R1.Data().phase - 1);   
+
+					sprintf(temp_log,"VEH_CALL Phase %d- vehcall_cmd (%d) at time %.2lf\n",Eventlist_R1.Data().phase, vehcall_cmd, currenttime);
 					outputlog(temp_log); cout<<temp_log;
 				}
 				if(Eventlist_R1.Data().action==4)  // ped call
@@ -327,8 +335,9 @@ int main ( int argc, char* argv[] )
 				}
 				if(Eventlist_R2.Data().action==2)  // vehicle call
 				{
-					vehcall_cmd+=(int) pow(2.0,Eventlist_R2.Data().phase-1);
-					sprintf(temp_log,"VEH_CALL Phase %d at time %2lf\n",Eventlist_R2.Data().phase,currenttime);
+                    vehcall_cmd = vehcall_cmd | (int)pow(2.0, Eventlist_R2.Data().phase - 1);
+
+					sprintf(temp_log,"VEH_CALL Phase %d - vehcall_cmd (%d) at time %2lf\n",Eventlist_R2.Data().phase, vehcall_cmd, currenttime);
 					outputlog(temp_log); cout<<temp_log;
 				}
 				if(Eventlist_R2.Data().action==4)  // ped call
@@ -566,13 +575,8 @@ void testConnectionToController()
         Phases.Display();
         //Phases.RecordPhase(signal_plan_file);
         for (int j=0;j<2;j++)
-			CurrPhase[j]=Phases.CurPhase[j]+1;
-		cout<<"Current phase is: "<<CurrPhase[0]<<" "<<CurrPhase[1]<<endl;
-		int conflict=Checkconflict(CurrPhase);
-		if(conflict==1)   //phase confliction
 		{
-			cout<<"Phase conflict!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-			ModifyCurPhase(CurrPhase,phase_seq);
+			CurrPhase[j]=Phases.CurPhase[j]+1;
 			cout<<"Current phase is: "<<CurrPhase[0]<<" "<<CurrPhase[1]<<endl;
 		}
 		msleep(1000);
