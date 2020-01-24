@@ -120,6 +120,8 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	double vehDuration = ETA_DURATION_SECOND;
 
 	tempVehicleSpeed = basicVehicle.getSpeed_MeterPerSecond(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
+	tempVehicleSignalGroup = getSignalGroup();
+	
 	signalRequest.setMinuteOfYear(getMinuteOfYear());
 	signalRequest.setMsOfMinute(getMsOfMinute());
 	signalRequest.setMsgCount(getMsgCount());
@@ -163,7 +165,13 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
-	if (bgetActiveMap == true && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
+	if (bgetActiveMap == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) && findVehicleIDOnTable != ActiveRequestTable.end()) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	{
+		bSendRequest = true;
+		std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+	}
+
+	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
 	{
 		if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
 		{
@@ -171,25 +179,31 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			std::cout << "SRM is sent since ART is empty" << std::endl;
 		}
 
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+		// {
+		// 	bSendRequest = true;
+		// 	std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		// }
+
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+			std::cout << "SRM is sent since vehicle laneID has been changed" << std::endl;
 		}
-		
+
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= VEHICLE_SPEED_DEVIATION_LIMIT) //If vehicleID is in ART and vehicle speed changes by 5m/s, vehicle should send srm. tempVehicleSpeed store the vehicle speed of last send out srm.
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle speed has been changed" << std::endl;
 		}
 
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->vehicleLaneID != getLaneID()) //If vehicleID is in ART and vehicle laneID changes, vehicle should send srm
-		{
-			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle laneID has been changed" << std::endl;
-		}
+		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->vehicleLaneID != getLaneID()) //If vehicleID is in ART and vehicle laneID changes, vehicle should send srm
+		// {
+		// 	bSendRequest = true;
+		// 	std::cout << "SRM is sent since vehicle laneID has been changed" << std::endl;
+		// }
 
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE) //If vehicleID is in ART and vehicle ETA is changed by 1 second, vehicle should send srm
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE) //If vehicleID is in ART and vehicle ETA doesn't match the ETA of ART, vehicle should send srm
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle ETAhas been changed from" << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << std::endl;
@@ -226,6 +240,11 @@ void PriorityRequestGenerator::setLaneID(int laneId)
 void PriorityRequestGenerator::setApproachID(int approachID)
 {
 	vehicleAprroachID = approachID;
+}
+
+void PriorityRequestGenerator::setSignalGroup(int phaseNo)
+{
+	signalGroup = phaseNo;
 }
 
 /*
@@ -292,13 +311,6 @@ std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManage
 	return activeMapList;
 }
 
-// std::vector<Map::AvailableMap> PriorityRequestGenerator::getAvailableMapList(MapManager mapManager)
-// {
-// 	mapManager.changeMapStatusInAvailableMapList();
-// 	availableMapList = mapManager.getAavailableMapList();
-
-// 	return availableMapList;
-// }
 /*
 	-If there is active map, based on the bsm data this function will locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
 */
@@ -318,7 +330,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	//If active map List is not empty, locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
 	if (!activeMapList.empty())
 	{
-		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
+		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true.
 		// std::cout << "Active Map List is not Empty" << std::endl;
 		fmap = activeMapList.front().activeMapFileDirectory;
 		intersectionName = activeMapList.front().activeMapFileName;
@@ -364,6 +376,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				setRegionalID(regionalId);
 				setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
 				setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
+				setSignalGroup(plocAwareLib->getControlPhaseByIds(regionalID, intersectionID, vehicleAprroachID, vehicleLaneID)); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 				plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 				distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 				setTime2Go(distance2go, vehicle_Speed);
@@ -377,6 +390,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				activeMapList.clear();
 				ActiveRequestTable.clear();
 				setIntersectionID(0);
+				setSignalGroup(0);
 				bgetActiveMap = false;
 				bRequestSendStatus = false;
 			}
@@ -391,6 +405,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			setRegionalID(regionalId);
 			setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
 			setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
+			setSignalGroup(plocAwareLib->getControlPhaseByIds(regionalID, intersectionID, vehicleAprroachID, vehicleLaneID)); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 			plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 			distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 			setTime2Go(distance2go, vehicle_Speed);
@@ -402,7 +417,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	}
 	else
 	{
-		std::cout << "Active Map List is  Empty" << std::endl;
+		// std::cout << "Active Map List is  Empty" << std::endl;
 		bgetActiveMap = false;
 	}
 }
@@ -432,6 +447,11 @@ int PriorityRequestGenerator::getLaneID()
 int PriorityRequestGenerator::getApproachID()
 {
 	return vehicleAprroachID;
+}
+
+int PriorityRequestGenerator::getSignalGroup()
+{
+	return signalGroup;
 }
 
 double PriorityRequestGenerator::getTime2Go()
@@ -511,6 +531,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
+		//setSignalGroup(0);
 		bgetActiveMap = false; //Required for HMI json
 		bRequestSendStatus = false;
 		// mapManager.changeMapStatusInAvailableMapList();

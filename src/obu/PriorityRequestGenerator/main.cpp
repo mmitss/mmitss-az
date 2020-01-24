@@ -59,7 +59,7 @@ int main()
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                std::cout << "SRM is sent" << std::endl;
+                // std::cout << "SRM is sent" << std::endl;
             }
             mapManager.updateMapAge();
             mapManager.deleteMap();
