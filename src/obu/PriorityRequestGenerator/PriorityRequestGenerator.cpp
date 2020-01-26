@@ -61,7 +61,7 @@ const double ALLOWED_ETA_DIFFERENCE = 4;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
 const double MIN_ETA = 0.0;
-const double SRM_GAPOUT_TIME = 1.0;
+const double SRM_GAPOUT_TIME = 2.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
@@ -179,11 +179,11 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			std::cout << "SRM is sent since ART is empty" << std::endl;
 		}
 
-		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
-		// {
-		// 	bSendRequest = true;
-		// 	std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
-		// }
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+		{
+			bSendRequest = true;
+			std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
