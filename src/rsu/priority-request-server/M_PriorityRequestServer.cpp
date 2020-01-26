@@ -164,10 +164,10 @@ int main(int argc, char *argv[])
         // There are updated ETA's in the request list
         if (((dTime - dLastETAUpdateTime) > COUNT_DOWN_INTERVAL_FOR_ETA) && (req_List.ListSize() > 0))
         {
-#ifdef LOGGING
-            sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
-            outputlog(temp_log);
-#endif
+// #ifdef LOGGING
+//             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
+//             outputlog(temp_log);
+// #endif
 
             dLastETAUpdateTime = dTime;
 
@@ -257,7 +257,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
                 iVehicleState, iMsgCnt, 0.0, lintersectionID, ibasicVehicleRole);
 
 #ifdef LOGGING
-        sprintf(temp_log, "........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
+        sprintf(temp_log, "\n........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
         sprintf(temp_log, "%s\t \n", tempMsg);
         outputlog(temp_log);
@@ -956,17 +956,17 @@ string getRSUid() //Debashis: changed it to return as string
 
     if (rsu_id.size() != 0)
     {
-#ifdef LOGGING
+// #ifdef LOGGING
         sprintf(temp, " RSU ID %s\n", rsu_id.c_str());
         cout << temp << endl;
-        outputlog(temp);
-#endif
+//         outputlog(temp);
+// #endif
     }
     else
     {
         sprintf(temp, "Reading RSUID.txt file problem.\n");
         cout << temp << endl;
-        outputlog(temp);
+        // outputlog(temp);
         exit(0);
     }
 
@@ -1009,7 +1009,7 @@ void printReqestFile2Log(const char *resultsfile)
         exit(1);
     }
     string lineread;
-    sprintf(temp_log, " Content of request files  :");
+    sprintf(temp_log, "\n Content of request files  :\n");
     outputlog(temp_log);
     while (!fss.eof())
     {

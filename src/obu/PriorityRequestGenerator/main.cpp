@@ -59,7 +59,7 @@ int main()
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                std::cout << "SRM is sent" << std::endl;
+                // std::cout << "SRM is sent" << std::endl;
             }
             mapManager.updateMapAge();
             mapManager.deleteMap();
@@ -75,14 +75,14 @@ int main()
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
-            std::cout << "Map is received" << std::endl;
+            //std::cout << "Map is received" << std::endl;
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_ssm)
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            std::cout << "SSM is received" << std::endl;
+            //std::cout << "SSM is received" << std::endl;
         }
     }
 }
