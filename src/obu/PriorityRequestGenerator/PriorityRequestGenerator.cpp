@@ -51,7 +51,7 @@ using namespace MsgEnum;
 
 const double DISTANCEUNITCONVERSION = 100; //cm to meter
 const double VEHICLEMINSPEED = 4;
-const double VEHICLE_SPEED_DEVIATION_LIMIT = 3.0;
+const double VEHICLE_SPEED_DEVIATION_LIMIT = 5.0;
 const double ETA_DURATION_SECOND = 2;
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
@@ -188,7 +188,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle laneID has been changed" << std::endl;
+			std::cout << "SRM is sent since vehicle signalGroup has been changed" << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= VEHICLE_SPEED_DEVIATION_LIMIT) //If vehicleID is in ART and vehicle speed changes by 5m/s, vehicle should send srm. tempVehicleSpeed store the vehicle speed of last send out srm.
@@ -535,6 +535,12 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		bgetActiveMap = false; //Required for HMI json
 		bRequestSendStatus = false;
 		// mapManager.changeMapStatusInAvailableMapList();
+	}
+
+	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != signalGroup)
+	{
+		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
+		bRequestSendStatus = true;
 	}
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= VEHICLE_SPEED_DEVIATION_LIMIT)
