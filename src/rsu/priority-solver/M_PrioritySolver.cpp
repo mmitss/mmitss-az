@@ -53,6 +53,7 @@
 #include "ReqEntry.h"
 //#include "ConnectedVehicle.h"
 #include "EVLS.h"
+#include "json/json.h"
 
 using namespace std;
 
@@ -82,7 +83,7 @@ using namespace std;
 #define COP_AND_PRIORITY 0
 #define PRIORITY 1
 #define ADAPTIVE_PRIORITY 2
-
+#define INTERSECTION_CONFIG_FILE_JSON "/nojournal/bin/mmitss-phase3-master-config.json"
 //define log file name with time stamp.
 char logfilename[256] = "/nojournal/bin/log/MMITSS_MRP_Priority_Solver";
 char signal_plan_file[256] = "/nojournal/bin/log/signal_Plan_";
@@ -172,6 +173,7 @@ int LaneNo[8];  // this array will record the number of lanes per each phase.
 int LaneNo2[8]; // this array will record the number of lanes per each phase. But if two phases belong to one approach, the LaneNo2 value for the second phase of the approach include the Laneno2 valuse of the first phase as well. As example, if phase 4 has 3 lanes and phase 7 (same approach) has 2 lanes, then LaneNo2[4-1]=3 and LaneNo2[7-1]= 3+2. This array is used in calculateQ function.
 int TotalLanes = 0;
 int iLog = 1;
+bool logSchedule{};
 
 int outputlog(char *output); // for logging
 void PrintFile2Log(char *resultsfile);
@@ -229,6 +231,7 @@ void extractOptModInputFromTraj(double dVehDistToStpBar[130], double dVehSpd[130
 void calculateRedElapseTime(double red_start_time[], int previous_signal_color[]);
 void initializeRedStartVar(double red_start_time[], int previous_signal_color[]);
 void handleAdaptivePriorityCase();
+bool loggingSchedule();
 
 int main(int argc, char *argv[])
 {
@@ -242,11 +245,14 @@ int main(int argc, char *argv[])
 	// initializeRedStartVar(red_start_time,previous_signal_color);  			// in case of Adaptive Priority
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 	ofstream outputfile;
-
 	ifstream infile;
-	outputfile.open("/nojournal/bin/log/PRSolver_Mod_Dat.txt");
-	// infile.open("/nojournal/bin/NewModelData.dat");
-	outputfile.clear();
+	logSchedule = loggingSchedule();
+	if (logSchedule == true)
+	{
+		outputfile.open("/nojournal/bin/log/PRSolver_Mod_Dat_Results.txt");
+		// infile.open("/nojournal/bin/NewModelData.dat");
+		outputfile.clear();
+	}
 	while (true)
 	{
 		dStartTime = GetSeconds();
@@ -270,23 +276,26 @@ int main(int argc, char *argv[])
 					LinkList2DatFileForEV(Req_List_Combined, prioritydatafile, InitTime, InitPhase, GrnElapse, ConfigIS_EV, HaveEVInList); // construct .dat file for the glpk
 					PrintFile2Log(prioritydatafile);																					   // Log the .dat file for glpk solver
 
-					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is in List at time: " << ctime(&timenow) << endl;
-					outputfile << "Current Mod File is : " << endl;
-					infile.open("/nojournal/bin/NewModel_EV.mod");
-					for (std::string line; getline(infile, line);)
+					//Debashis added this for analysis before the demo.
+					if (logSchedule == true)
 					{
-						outputfile << line << endl;
-					}
-					infile.close();
-					outputfile << "Current Dat File is : " << endl;
-					infile.open("/nojournal/bin/NewModelData.dat");
-					for (std::string line; getline(infile, line);)
-					{
-						outputfile << line << endl;
-					}
-					infile.close();
+						outputfile << "EV is in List at time: " << ctime(&timenow) << endl;
+						outputfile << "Current Mod File is : " << endl;
+						infile.open("/nojournal/bin/NewModel_EV.mod");
+						for (std::string line; getline(infile, line);)
+						{
+							outputfile << line << endl;
+						}
+						infile.close();
 
+						outputfile << "\n Current Dat File is : " << endl;
+						infile.open("/nojournal/bin/NewModelData.dat");
+						for (std::string line; getline(infile, line);)
+						{
+							outputfile << line << endl;
+						}
+						infile.close();
+					}
 					deleteMissingPhaseFromList();
 				}
 				if ((HaveEVInList == 0) && (Req_List_Combined.ListSize() > 0)) // At least one priority vehicle except EV is in the list!
@@ -296,21 +305,24 @@ int main(int argc, char *argv[])
 					PrintFile2Log(prioritydatafile); // Log the .dat file for glpk solver
 
 					//Debashis added this for analysis befor the demo.
-					outputfile << "EV is not in List at time: " << ctime(&timenow) << endl;
-					outputfile << "Current Mod File is : " << endl;
-					infile.open("/nojournal/bin/NewModel.mod");
-					for (std::string line; getline(infile, line);)
+					if (logSchedule == true)
 					{
-						outputfile << line << endl;
+						outputfile << "EV is not in List at time: " << ctime(&timenow) << endl;
+						outputfile << "Current Mod File is : " << endl;
+						infile.open("/nojournal/bin/NewModel.mod");
+						for (std::string line; getline(infile, line);)
+						{
+							outputfile << line << endl;
+						}
+						infile.close();
+						outputfile << "\n Current Dat File is : " << endl;
+						infile.open("/nojournal/bin/NewModelData.dat");
+						for (std::string line; getline(infile, line);)
+						{
+							outputfile << line << endl;
+						}
+						infile.close();
 					}
-					infile.close();
-					outputfile << "Current Dat File is : " << endl;
-					infile.open("/nojournal/bin/NewModelData.dat");
-					for (std::string line; getline(infile, line);)
-					{
-						outputfile << line << endl;
-					}
-					infile.close();
 				}
 				// Rewright the request list into the file and SET the ReqListUpdateFlag in requests.txt to:"0"   ***IMPORTANT***
 				ReqListUpdateFlag = 0;
@@ -319,6 +331,16 @@ int main(int argc, char *argv[])
 				// Solve the problem, write to "Results.txt"
 				dStartTimeOfGLPKcall = GetSeconds();
 				GLPKSolver();
+				if (logSchedule == true)
+					{
+						outputfile << "\n Current Results File is : " << endl;
+						infile.open("/nojournal/bin/Results.txt");
+						for (std::string line; getline(infile, line);)
+						{
+							outputfile << line << endl;
+						}
+						infile.close();
+					}
 				dEndTimeOfGLPKcall = GetSeconds();
 				sprintf(tmp_log, "Time for solving the problem is about: {%.3f}.\n", dEndTimeOfGLPKcall - dStartTimeOfGLPKcall);
 				outputlog(tmp_log);
@@ -331,9 +353,11 @@ int main(int argc, char *argv[])
 					outputlog(tmp_log);
 					PrintFile2Log(resultsfile);
 
-					outputfile << "...............New optimal signal schedule is being set..............:\t At time: " << ctime(&timenow) << endl;
-					outputfile << endl;
-
+					if (logSchedule == true)
+					{
+						outputfile << "...............New optimal signal schedule is being set..............:\t At time: " << ctime(&timenow) << endl;
+						outputfile << endl;
+					}
 					if (HaveEVInList == 1)
 						readOptPlanFromFileForEV(resultsfile, adCriticalPoints, omitPhase);
 					else
@@ -359,8 +383,11 @@ int main(int argc, char *argv[])
 				{
 					sprintf(temp_log, " No feasible solution found !!!!!!!! At time: %.2f.......... \n", GetSeconds());
 					outputlog("No feasible solution!\n");
-					outputfile << "No feasible solution found !!!!!!!! At time: " << ctime(&timenow) << endl;
-					outputfile << endl;
+					if (logSchedule == true)
+					{
+						outputfile << "No feasible solution found !!!!!!!! At time: " << ctime(&timenow) << endl;
+						outputfile << endl;
+					}
 				}
 			}
 			/* if (codeUsage==ADAPTIVE_PRIORITY) 		// Integrated Priority Alg and Adaptive Control				
@@ -384,7 +411,8 @@ int main(int argc, char *argv[])
 			continue;
 		} //
 	}	 // end of While(true)
-	outputfile.close();
+	if (logSchedule == true)
+		outputfile.close();
 	// infile.close();
 	fs_log.close();
 	fs_signal_plan.close();
@@ -516,6 +544,7 @@ void captureRequiredSignalStatus()
 	for (int ii = 0; ii < 2; ii++)
 	{
 		InitPhase[ii] = Phases.InitPhase[ii] + 1; //{1-8}
+		cout << "Initial phase: " << InitPhase[ii] << endl;
 		InitTime[ii] = Phases.InitTime[ii];		  // ALSO is the (Yellow+Red) Left for the counting down time ***Important***
 		GrnElapse[ii] = Phases.GrnElapse[ii];	 // If in Green
 	}
@@ -611,17 +640,28 @@ void handleEVCase()
 			}
 		}
 	}
+	//Debashis on january 26,2019 before the demo
+	int fixedPhaseSize{};
+	vector<int> fixedPhase{2,4,6,8};
+	fixedPhaseSize = fixedPhase.size();
+
 	EV_Phase_size = EV_Phase_vc.size(); //  EV_Phase_size could be changed.
-	int TotalSize = size_init + EV_Phase_size;
+	int TotalSize = size_init + EV_Phase_size + fixedPhaseSize;
 	int *Phase_Infom = new int[TotalSize];
 	for (int i = 0; i < EV_Phase_size; i++)
 	{
 		Phase_Infom[i] = EV_Phase_vc[i]; //Debashis::Append requested phase info of EV into Phase_Infom list.
-		// cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] << endl;
+										 // cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] << endl;
 	}
 	for (int i = 0; i < size_init; i++)
 	{
 		Phase_Infom[EV_Phase_size + i] = InitPhase[i];
+		// cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
+	}
+
+	for (int i = 0; i < fixedPhaseSize; i++)
+	{
+		Phase_Infom[EV_Phase_size + size_init + i] = fixedPhase[i];
 		// cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
 	}
 
@@ -640,6 +680,27 @@ void handleEVCase()
 	ConfigIS_EV = ReadInConfig("/nojournal/bin/ConfigInfo_EV.txt", 1);
 	PrintRSUConfig2File(ConfigIS_EV, tmp_log);
 	PrintRSUConfig(ConfigIS_EV);
+}
+
+bool loggingSchedule()
+{
+	bool blogging = false;
+	string logging{};
+	Json::Value jsonObject;
+	Json::Reader reader;
+	ifstream jsonconfigfile(INTERSECTION_CONFIG_FILE_JSON);
+
+	string configJsonString((istreambuf_iterator<char>(jsonconfigfile)), istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+	logging = (jsonObject["Logging"]).asString();
+
+	if (logging == "True")
+		blogging = true;
+
+	else
+		blogging = false;
+
+	return blogging;
 }
 
 void deleteMissingPhaseFromList()
@@ -807,13 +868,13 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 		exit(1);
 	}
 
-	string lineread;
+	string lineread{};
 
-	int PhaseNo;
+	int PhaseNo{};
 	char TempStr[16];
 	vector<int> P11, P12, P21, P22;
-	int PhaseSeq[8], Gmin[8], Gmax[8];
-	float Yellow[8], Red[8]; // If
+	int PhaseSeq[8]={0};
+	float Gmin[8]={0.0}, Gmax[8]={0.0}, Yellow[8]={0.0}, Red[8]={0.0}; // If
 
 	for (int i = 1; i < 8; i = i + 2) // Add {2,4,6,8} into the PhaseSeq: NECESSARY Phases
 	{
@@ -899,13 +960,13 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 	}
 
 	//-------READING the priority Configuratio file ---------------
-	double dCoordinationWeight;
-	int iCoordinatedPhase[2];
-	double dTransitWeight;
-	double dTruckWeight;
-	double dCoordinationOffset;
-	double dCoordinationCycle;
-	double dCoordinationSplit[2];
+	double dCoordinationWeight{};
+	int iCoordinatedPhase[2] ={0};
+	double dTransitWeight{};
+	double dTruckWeight{};
+	double dCoordinationOffset{};
+	double dCoordinationCycle{};
+	double dCoordinationSplit[2] = {0};
 	dCoordinationWeight = ConfigIS.dCoordinationWeight;
 
 	iCoordinatedPhase[0] = ConfigIS.iCoordinatedPhase[0];
@@ -940,7 +1001,7 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 		exit(1);
 	}
 
-	int PhaseSeqArray[8];
+	int PhaseSeqArray[8]={0};
 	int kk = 0;
 
 	// =================Defining the sets ======================
@@ -1645,7 +1706,8 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 	//Debashis Added this for debugging
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 	ofstream outputfile;
-	outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
+	if (logSchedule == true)
+		outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
 
 	int tempOmitPhases[8];
 	int iNoOfOmit = 0;
@@ -1708,21 +1770,20 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 		Eventlist_R1.InsertRear(Temp_event);
 
 		// MZ commentee on 5/4/17
-		
+
 		// call , the call is neccessary before force off. The controller should know where to go ( which phase will come up after force off )
-		if ( i<iNoPlannedPhaseInRing1-1)
+		if (i < iNoPlannedPhaseInRing1 - 1)
 		{
-			
-			Temp_event.time=cp[0][1][i];
-			if ( ( ((int)(cp[0][2][i+1]))+1 ) ==5 )
-				Temp_event.phase=1;
+
+			Temp_event.time = cp[0][1][i];
+			if ((((int)(cp[0][2][i + 1])) + 1) == 5)
+				Temp_event.phase = 1;
 			else
-				Temp_event.phase=((int)(cp[0][2][i+1]))+1;// converting phase number from 0-3 to  1-4
-			Temp_event.action=PHASE_VEH_CALL;
-			Eventlist_R1.InsertRear(Temp_event);	
-			
+				Temp_event.phase = ((int)(cp[0][2][i + 1])) + 1; // converting phase number from 0-3 to  1-4
+			Temp_event.action = PHASE_VEH_CALL;
+			Eventlist_R1.InsertRear(Temp_event);
 		}
-		
+
 		// force off
 		Temp_event.time = cp[0][1][i];
 		Temp_event.action = PHASE_FORCEOFF;
@@ -1739,20 +1800,19 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 		Eventlist_R2.InsertRear(Temp_event);
 
 		// MZ commentee on 5/4/17
-		
+
 		// call
-		if ( i<iNoPlannedPhaseInRing2-1)
+		if (i < iNoPlannedPhaseInRing2 - 1)
 		{
-			Temp_event.time=cp[1][1][i];
-			Temp_event.action=PHASE_VEH_CALL;
-			if ( ((int)(cp[1][2][i+1]))+5 == 9 )
-				Temp_event.phase=5;
+			Temp_event.time = cp[1][1][i];
+			Temp_event.action = PHASE_VEH_CALL;
+			if (((int)(cp[1][2][i + 1])) + 5 == 9)
+				Temp_event.phase = 5;
 			else
-				Temp_event.phase=((int)(cp[1][2][i+1]))+5;// converting phase number from 0-3 to  5-8
-			Eventlist_R1.InsertRear(Temp_event);	
-			
-		}	
-		
+				Temp_event.phase = ((int)(cp[1][2][i + 1])) + 5; // converting phase number from 0-3 to  5-8
+			Eventlist_R1.InsertRear(Temp_event);
+		}
+
 		// force off
 		Temp_event.time = cp[1][1][i];
 		Temp_event.action = PHASE_FORCEOFF;
@@ -1762,61 +1822,75 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 
 	Eventlist_R1.Reset();
 	Eventlist_R2.Reset();
-	outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
+	if (logSchedule == true)
+		outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
 	cout << "RING1 Event List!" << endl;
 	while (!Eventlist_R1.EndOfList())
 	{
-		outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
+		if (logSchedule == true)
+			outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		cout << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		if (Eventlist_R1.Data().action == PHASE_FORCEOFF)
 		{
 			cout << " Force-Off at " << endl;
-			outputfile << " Force-Off at " << endl;
+			if (logSchedule == true)
+				outputfile << " Force-Off at " << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_OMIT)
 		{
 			cout << " Omit until" << endl;
-			outputfile << " Omit until" << endl;
+			if (logSchedule == true)
+				outputfile << " Omit until" << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_VEH_CALL)
 		{
 			cout << " Call at" << endl;
-			outputfile << " Call at" << endl;
+			if (logSchedule == true)
+				outputfile << " Call at" << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_HOLD)
 		{
 			cout << " Hold until" << endl;
-			outputfile << " Hold until" << endl;		
+			if (logSchedule == true)
+				outputfile << " Hold until" << endl;
 		}
 		Eventlist_R1.Next();
 	}
-	outputfile << "" << endl;
-	
-	outputfile << "RING2 Event List!" << endl;
+	if (logSchedule == true)
+	{
+		outputfile << "" << endl;
+
+		outputfile << "RING2 Event List!" << endl;
+	}
 	cout << "RING2 Event List!" << endl;
 	while (!Eventlist_R2.EndOfList())
 	{
-		outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
+		if (logSchedule == true)
+			outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		cout << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		if (Eventlist_R2.Data().action == PHASE_FORCEOFF)
 		{
 			cout << " Force-Off at " << endl;
-			outputfile << " Force-Off at " << endl;
+			if (logSchedule == true)
+				outputfile << " Force-Off at " << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_OMIT)
 		{
 			cout << " Omit until" << endl;
-			outputfile << " Omit until" << endl;
+			if (logSchedule == true)
+				outputfile << " Omit until" << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_VEH_CALL)
 		{
 			cout << " Call at" << endl;
-			outputfile << " Call at" << endl;
+			if (logSchedule == true)
+				outputfile << " Call at" << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_HOLD)
 		{
 			cout << " Hold until" << endl;
-			outputfile << " Hold until" << endl;
+			if (logSchedule == true)
+				outputfile << " Hold until" << endl;
 		}
 		Eventlist_R2.Next();
 	}
@@ -1825,18 +1899,24 @@ void Construct_eventlist_EV(double cp[2][3][15], int omitphase[8], LinkedList<Re
 		if (omitPhase[ii] > 0)
 		{
 			cout << "  omitPhase" << omitPhase[ii] << endl;
-			outputfile << "  omitPhase" << omitPhase[ii] << endl;
+			if (logSchedule == true)
+				outputfile << "  omitPhase" << omitPhase[ii] << endl;
 		}
-	outputfile << "" << endl;
-	outputfile.close();
+	if (logSchedule == true)
+	{
+		outputfile << "" << endl;
+		outputfile.close();
+	}
 }
 
 void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 {
 	//Debashis added this for debugging on January 10,2019
+
 	auto timenow = chrono::system_clock::to_time_t(chrono::system_clock::now());
 	ofstream outputfile;
-	outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
+	if (logSchedule == true)
+		outputfile.open("/nojournal/bin/log/PRSolverEvent.txt", std::ios_base::app);
 
 	int iNoPlannedPhaseInRing1 = 0;
 	int iNoPlannedPhaseInRing2 = 0;
@@ -1954,7 +2034,7 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 					Temp_event.action = PHASE_VEH_CALL;
 					Temp_event.phase = i + 1;
 					Eventlist_R1.InsertRear(Temp_event);
-					ii = ii + 1.1; //DD change it from 0.9 
+					ii = ii + 1.1; //DD change it from 0.9
 					//  put Calls for at most next 120 seconds to avoid overwhelming the controller
 					if (ii > 120)
 						ii = dEndOfRequest[i];
@@ -1975,7 +2055,7 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 					Temp_event.action = PHASE_VEH_CALL;
 					Temp_event.phase = i + 1;
 					Eventlist_R2.InsertRear(Temp_event);
-					ii = ii + 1.1; //DD change it from 0.9 
+					ii = ii + 1.1; //DD change it from 0.9
 					//  put Calls at most next 120 seconds to avoid overwhelming the controller
 					if (ii > 120)
 						ii = dEndOfRequest[i];
@@ -1986,75 +2066,92 @@ void Construct_eventlist(double cp[2][3][15], LinkedList<ReqEntry> Req_List)
 
 	Eventlist_R1.Reset();
 	Eventlist_R2.Reset();
-	outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
+	if (logSchedule == true)
+		outputfile << "RING1 Event List! " << ctime(&timenow) << endl;
 	cout << "RING1 Event List!" << endl;
 	while (!Eventlist_R1.EndOfList())
 	{
-		outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
+		if (logSchedule == true)
+			outputfile << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 
 		cout << "time " << Eventlist_R1.Data().time << " phase " << Eventlist_R1.Data().phase;
 		if (Eventlist_R1.Data().action == PHASE_FORCEOFF)
 		{
 			cout << " Force-Off at " << endl;
-			outputfile << " Force-Off at " << endl;
+			if (logSchedule == true)
+				outputfile << " Force-Off at " << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_OMIT)
 		{
 			cout << " Omit until" << endl;
-			outputfile << " Omit until" << endl;
+			if (logSchedule == true)
+				outputfile << " Omit until" << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_VEH_CALL)
 		{
 			cout << " Call at" << endl;
-			outputfile << " Call at" << endl;
+			if (logSchedule == true)
+				outputfile << " Call at" << endl;
 		}
 		else if (Eventlist_R1.Data().action == PHASE_HOLD)
 		{
 			cout << " Hold until" << endl;
-			outputfile << " Hold until" << endl;
+			if (logSchedule == true)
+				outputfile << " Hold until" << endl;
 		}
 		Eventlist_R1.Next();
 	}
-	outputfile << "" << endl;
+	if (logSchedule == true)
+	{
+		outputfile << "" << endl;
 
-	outputfile << "RING2 Event List! " << ctime(&timenow) << endl;
+		outputfile << "RING2 Event List! " << ctime(&timenow) << endl;
+	}
 	cout << "RING2 Event List!" << endl;
 	while (!Eventlist_R2.EndOfList())
 	{
-		outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
+		if (logSchedule == true)
+			outputfile << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		cout << "time " << Eventlist_R2.Data().time << " phase " << Eventlist_R2.Data().phase;
 		if (Eventlist_R2.Data().action == PHASE_FORCEOFF)
 		{
 			cout << " Force-Off at " << endl;
-			outputfile << " Force-Off at " << endl;
+			if (logSchedule == true)
+				outputfile << " Force-Off at " << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_OMIT)
 		{
 			cout << " Omit unti" << endl;
-			outputfile << " Omit unti" << endl;
+			if (logSchedule == true)
+				outputfile << " Omit unti" << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_VEH_CALL)
 		{
 			cout << " Call at" << endl;
-			outputfile << " Call at" << endl;
+			if (logSchedule == true)
+				outputfile << " Call at" << endl;
 		}
 		else if (Eventlist_R2.Data().action == PHASE_HOLD)
 		{
 			cout << " Hold until" << endl;
-			outputfile << " Hold until" << endl;
+			if (logSchedule == true)
+				outputfile << " Hold until" << endl;
 		}
 		Eventlist_R2.Next();
 	}
-	outputfile << "" << endl;
-	outputfile.close();
+	if (logSchedule == true)
+	{
+		outputfile << "" << endl;
+		outputfile.close();
+	}
 }
 
 void Pack_Event_List(char *tmp_event_data, int &size) // This function is written by YF
 {
 	int offset = 0;
 	byte *pByte; // pointer used (by cast)to get at each byte
-				 // of the shorts, longs, and blobs
-				 //    byte    tempByte;   // values to hold data once converted to final format
+		// of the shorts, longs, and blobs
+		//    byte    tempByte;   // values to hold data once converted to final format
 	unsigned short tempUShort;
 	long tempLong;
 	//header 2 bytes
@@ -3496,7 +3593,9 @@ void LinkList2DatFileForEV(LinkedList<ReqEntry> Req_List, char *filename, double
 
 	fs << "data;\n";
 	fs << "param SP1:=" << InitPhase[0] << ";\n"; // This is the real phase [1-4]
+	cout << " In LinkList to Dat File for EV SP1: " << InitPhase[0] << endl;
 	fs << "param SP2:=" << InitPhase[1] << ";\n"; // This is the real phase [5-8]
+	cout << " In LinkList to Dat File for EV SP2: " << InitPhase[1] << endl;
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -3511,9 +3610,9 @@ void LinkList2DatFileForEV(LinkedList<ReqEntry> Req_List, char *filename, double
 	fs << "param Grn1 :=" << GrnElapse[0] << ";\n";
 	fs << "param Grn2 :=" << GrnElapse[1] << ";\n";
 
-	int MP[2];			   //=ConfigIS.MissPhase[i];// Missing phase
+	int MP[2]={0};			   //=ConfigIS.MissPhase[i];// Missing phase
 	int RlP[2] = {-1, -1}; //=ConfigIS.MP_Relate[i];// Missing Phase related
-	int Found;
+	int Found{};
 
 	MP[0] = ConfigIS.MissPhase[0];
 	if (MP[0] >= 0)
@@ -3887,12 +3986,13 @@ void deductSolvingTimeFromCPs(double aCriticalPoints[2][3][15], double tt2, doub
 }
 void GLPKSolver()
 {
-	double dAfterSolvingTime;
+	double dAfterSolvingTime{};
 	double dBeforeSolvingTime = GetSeconds();
 	// The argument should be the real phase 1-8.
 	struct timeval start;
 	gettimeofday(&start, NULL);
-
+	// ofstream outputfile;
+	// outputfile.open("/nojournal/bin/log/modelError.txt");
 	char modFile[128] = "/nojournal/bin/NewModel.mod";
 
 	if (HaveEVInList == 1)
@@ -3904,7 +4004,7 @@ void GLPKSolver()
 
 	glp_prob *mip;
 	glp_tran *tran;
-	int ret;
+	int ret{};
 	mip = glp_create_prob();
 	tran = glp_mpl_alloc_wksp();
 
@@ -3936,7 +4036,7 @@ void GLPKSolver()
 		outputlog(tmp_log);
 		goto skip;
 	}
-
+	// outputfile.close();
 	dAfterSolvingTime = GetSeconds();
 	cout << "TIME TO GENERATE THE OPTIMIZATION MODEL   " << dAfterSolvingTime - dBeforeSolvingTime << endl;
 
