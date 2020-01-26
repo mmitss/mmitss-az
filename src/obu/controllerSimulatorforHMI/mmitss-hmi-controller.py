@@ -35,6 +35,9 @@ hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
+spat_map_active = False
+spat_map_ID = -1 # map ID's are positive integers, so if no map is active set this to -1 to avoid any positive intergre number map
+
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
               1 : "dark", 
               2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
@@ -230,6 +233,7 @@ while True:
             #remoteVehicles.append(remoteInterfacejson["BSM"]) #how do I want to deal with a collection of remote vehicle data???? Currently, they get reported when host vehicle gets updated
 
         elif remoteInterfacejson["MsgType"] == 'SPaT' :
+            
             #check to make sure it is spat
             # if debugging, output the time since the last message
             if DEBUG == True :
@@ -238,36 +242,37 @@ while True:
                 dataLog.write('SPaT,' + str(newSPaT - tick_SPaT) + '\n')
                 dataLog.close()
                 tick_SPaT = newSPaT
+            if spat_map_active :
+                markSPaTtime = time.time()
+                SPaT_data = remoteInterfacejson
+                SPaT = []
+                pedSPaT = []
+                if SPaT_data["Spat"]["IntersectionState"]["intersectionID"] == spat_map_ID :
+                    spat_regionalID = int(SPaT_data["Spat"]["IntersectionState"]["regionalID"])
+                    spat_intersectionID = int(SPaT_data["Spat"]["IntersectionState"]["intersectionID"])
+                    spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
+                    spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
+                    spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
+                    #spat_status = int(SPaT_data["Spat"]["status"])
+                    SPaT = SPaT_data["Spat"]["phaseState"]
+                    SPaT = changeSPaTTimes2Strings(SPaT)
+                    pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
+                    pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
-            markSPaTtime = time.time()
-            SPaT_data = remoteInterfacejson
-            SPaT = []
-            pedSPaT = []
-            spat_regionalID = int(SPaT_data["Spat"]["IntersectionState"]["regionalID"])
-            spat_intersectionID = int(SPaT_data["Spat"]["IntersectionState"]["intersectionID"])
-            spat_msgCnt = int(SPaT_data["Spat"]["msgCnt"])
-            spat_minutesOfYear = int(SPaT_data["Spat"]["minuteOfYear"])
-            spat_msOfMinute = int(SPaT_data["Spat"]["msOfMinute"])
-            #spat_status = int(SPaT_data["Spat"]["status"])
-            SPaT = SPaT_data["Spat"]["phaseState"]
-            SPaT = changeSPaTTimes2Strings(SPaT)
-            pedSPaT = SPaT_data["Spat"]["pedPhaseState"]
-            pedSPaT = changeSPaTTimes2Strings(pedSPaT)
+                    # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
+                    if hv_currentLaneSignalGroup == 0 :
+                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+                    else :
+                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
 
-            # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-            if hv_currentLaneSignalGroup == 0 :
-                current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-            else :
-                current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
-
-            # add the 8-phase signal and ped status data
-            phase_table = []
-            for phase in range(0,8):
-                phase_state = signal_head(hv_currentLaneSignalGroup, SPaT[phase])
-                ped_state = signal_head(hv_currentLaneSignalGroup, pedSPaT[phase])
-                phase_table.append({"phase" : phase, 
-                                    "phase_status" : phase_status_map[phase_status_state(phase_state)], 
-                                    "ped_status" : ped_status_map[phase_status_state(ped_state)]})
+                    # add the 8-phase signal and ped status data
+                    phase_table = []
+                    for phase in range(0,8):
+                        phase_state = signal_head(hv_currentLaneSignalGroup, SPaT[phase])
+                        ped_state = signal_head(hv_currentLaneSignalGroup, pedSPaT[phase])
+                        phase_table.append({"phase" : phase, 
+                                            "phase_status" : phase_status_map[phase_status_state(phase_state)], 
+                                            "ped_status" : ped_status_map[phase_status_state(ped_state)]})
 
         else : 
             print('ERROR: remote vehicle or SPaT data expected')
@@ -312,8 +317,19 @@ while True:
         requestSent = bool_map[hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"]]
 
         availableMaps = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]
+
+        # determine the active map so that only meaningful SPaT data will be displayed 
+        spat_map_active = False
+        spat_map_ID = -1 
         if availableMaps == None :
             availableMaps = []
+            spat_map_active = False
+            spat_map_ID - -1
+        else :
+            for map in availableMaps :
+                if map["active"] == True :
+                    spat_map_ID = map["IntersectionID"]
+                    spat_map_active = True
         
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
         if activeRequestTable == None :

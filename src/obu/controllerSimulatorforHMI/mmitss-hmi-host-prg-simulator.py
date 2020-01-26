@@ -70,7 +70,7 @@ s.bind((prg_sim))
 
 directory_path = os.getcwd()
 #f = open(directory_path + '/src/obu/controllerSimulatorforHMI/prg-simulator-data.csv', 'r')
-f = open('HMIControllerSimulatorData.1.csv', 'r')
+f = open('HMIControllerSimulatorData.2.csv', 'r')
 
 f.readline() 
 f.readline() 
