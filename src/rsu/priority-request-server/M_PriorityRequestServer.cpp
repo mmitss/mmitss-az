@@ -257,9 +257,9 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
                 iVehicleState, iMsgCnt, 0.0, lintersectionID, ibasicVehicleRole);
 
 #ifdef LOGGING
-        sprintf(temp_log, "\n........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
+        sprintf(temp_log, "\n\n........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
-        sprintf(temp_log, "%s\t \n", tempMsg);
+        sprintf(temp_log, "%s\t \n\n", tempMsg);
         outputlog(temp_log);
 #endif
     }
@@ -1009,7 +1009,7 @@ void printReqestFile2Log(const char *resultsfile)
         exit(1);
     }
     string lineread;
-    sprintf(temp_log, "\n Content of request files  :\n");
+    sprintf(temp_log, "\nContent of request files:\n");
     outputlog(temp_log);
     while (!fss.eof())
     {

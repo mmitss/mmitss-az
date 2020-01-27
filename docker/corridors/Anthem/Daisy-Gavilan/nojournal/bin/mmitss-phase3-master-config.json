@@ -9,6 +9,7 @@
    "HMIControllerIP": "10.12.6.56",
     "DataCollectorIP": "10.12.6.101",
     "VehicleType" : 6,
+    "Logging" : "False",
     "PortNumber":
 	{
 		"MessageTransceiver":
