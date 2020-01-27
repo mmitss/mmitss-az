@@ -332,15 +332,15 @@ int main(int argc, char *argv[])
 				dStartTimeOfGLPKcall = GetSeconds();
 				GLPKSolver();
 				if (logSchedule == true)
+				{
+					outputfile << "\n Current Results File is : " << endl;
+					infile.open("/nojournal/bin/Results.txt");
+					for (std::string line; getline(infile, line);)
 					{
-						outputfile << "\n Current Results File is : " << endl;
-						infile.open("/nojournal/bin/Results.txt");
-						for (std::string line; getline(infile, line);)
-						{
-							outputfile << line << endl;
-						}
-						infile.close();
+						outputfile << line << endl;
 					}
+					infile.close();
+				}
 				dEndTimeOfGLPKcall = GetSeconds();
 				sprintf(tmp_log, "Time for solving the problem is about: {%.3f}.\n", dEndTimeOfGLPKcall - dStartTimeOfGLPKcall);
 				outputlog(tmp_log);
@@ -545,8 +545,8 @@ void captureRequiredSignalStatus()
 	{
 		InitPhase[ii] = Phases.InitPhase[ii] + 1; //{1-8}
 		cout << "Initial phase: " << InitPhase[ii] << endl;
-		InitTime[ii] = Phases.InitTime[ii];		  // ALSO is the (Yellow+Red) Left for the counting down time ***Important***
-		GrnElapse[ii] = Phases.GrnElapse[ii];	 // If in Green
+		InitTime[ii] = Phases.InitTime[ii];   // ALSO is the (Yellow+Red) Left for the counting down time ***Important***
+		GrnElapse[ii] = Phases.GrnElapse[ii]; // If in Green
 	}
 
 	//IF we can get signal information, then we connect to the ASC controller
@@ -640,9 +640,9 @@ void handleEVCase()
 			}
 		}
 	}
-	//Debashis on january 26,2019 before the demo
+	/* Debashis on January 26,2019 before the demo on January 29,2019 */
 	int fixedPhaseSize{};
-	vector<int> fixedPhase{2,4,6,8};
+	vector<int> fixedPhase{2, 4, 6, 8};
 	fixedPhaseSize = fixedPhase.size();
 
 	EV_Phase_size = EV_Phase_vc.size(); //  EV_Phase_size could be changed.
@@ -651,18 +651,16 @@ void handleEVCase()
 	for (int i = 0; i < EV_Phase_size; i++)
 	{
 		Phase_Infom[i] = EV_Phase_vc[i]; //Debashis::Append requested phase info of EV into Phase_Infom list.
-										 // cout << "Debashis::Phase_Infom in EV_Phase: " << Phase_Infom[i] << endl;
 	}
 	for (int i = 0; i < size_init; i++)
 	{
 		Phase_Infom[EV_Phase_size + i] = InitPhase[i];
-		// cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
 	}
 
+	/* Debashis on January 26,2019 before the demo on January 29,2019 */
 	for (int i = 0; i < fixedPhaseSize; i++)
 	{
 		Phase_Infom[EV_Phase_size + size_init + i] = fixedPhase[i];
-		// cout << "Debashis::Phase_Infom EV and InitPhase: " << Phase_Infom[i] << endl;
 	}
 
 	selectionSort(Phase_Infom, TotalSize); // Sort all the involved phases for removing duplicated phases
@@ -873,8 +871,8 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 	int PhaseNo{};
 	char TempStr[16];
 	vector<int> P11, P12, P21, P22;
-	int PhaseSeq[8]={0};
-	float Gmin[8]={0.0}, Gmax[8]={0.0}, Yellow[8]={0.0}, Red[8]={0.0}; // If
+	int PhaseSeq[8] = {0};
+	float Gmin[8] = {0.0}, Gmax[8] = {0.0}, Yellow[8] = {0.0}, Red[8] = {0.0}; // If
 
 	for (int i = 1; i < 8; i = i + 2) // Add {2,4,6,8} into the PhaseSeq: NECESSARY Phases
 	{
@@ -961,7 +959,7 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 
 	//-------READING the priority Configuratio file ---------------
 	double dCoordinationWeight{};
-	int iCoordinatedPhase[2] ={0};
+	int iCoordinatedPhase[2] = {0};
 	double dTransitWeight{};
 	double dTruckWeight{};
 	double dCoordinationOffset{};
@@ -1001,7 +999,7 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 		exit(1);
 	}
 
-	int PhaseSeqArray[8]={0};
+	int PhaseSeqArray[8] = {0};
 	int kk = 0;
 
 	// =================Defining the sets ======================
@@ -2150,8 +2148,8 @@ void Pack_Event_List(char *tmp_event_data, int &size) // This function is writte
 {
 	int offset = 0;
 	byte *pByte; // pointer used (by cast)to get at each byte
-		// of the shorts, longs, and blobs
-		//    byte    tempByte;   // values to hold data once converted to final format
+				 // of the shorts, longs, and blobs
+				 //    byte    tempByte;   // values to hold data once converted to final format
 	unsigned short tempUShort;
 	long tempLong;
 	//header 2 bytes
@@ -3610,7 +3608,7 @@ void LinkList2DatFileForEV(LinkedList<ReqEntry> Req_List, char *filename, double
 	fs << "param Grn1 :=" << GrnElapse[0] << ";\n";
 	fs << "param Grn2 :=" << GrnElapse[1] << ";\n";
 
-	int MP[2]={0};			   //=ConfigIS.MissPhase[i];// Missing phase
+	int MP[2] = {0};	   //=ConfigIS.MissPhase[i];// Missing phase
 	int RlP[2] = {-1, -1}; //=ConfigIS.MP_Relate[i];// Missing Phase related
 	int Found{};
 
