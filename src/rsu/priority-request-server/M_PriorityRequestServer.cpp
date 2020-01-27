@@ -133,7 +133,9 @@ int main(int argc, char *argv[])
 
             // Update the Req List data structure considering received message
             UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, clearSignalControllerCommands);
+
             getPriorityRequestStatus(req_List);
+            
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
             // We need to solve
             if ((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() > 0))
@@ -153,9 +155,9 @@ int main(int argc, char *argv[])
 
                 clearSignalControllerCommands = false;
 
-                startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
-
                 sendSSM(req_List, IntersectionID, MsgReceiverSocket);
+
+                startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
                 sendClearCommandsToInterface();
             }
@@ -171,9 +173,10 @@ int main(int argc, char *argv[])
 
             dLastETAUpdateTime = dTime;
 
+            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
+
             doUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListNoUpdate, clearSignalControllerCommands);
 
-            sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
     }
 
