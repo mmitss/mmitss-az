@@ -108,17 +108,18 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
-    std::vector<uint8_t> buf(bufSize, 0);
+    //std::vector<uint8_t> buf(bufSize, 0);
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output{};
+/*
+    std::string output;
     size_t cnt = bsmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss{};
+        std::stringstream ss;
         ss << std::hex << bsmPayload.substr(i * 2, 2);
         ss >> s;
         output.push_back(static_cast<unsigned char>(s));
@@ -131,18 +132,23 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
         index++;
     }
     size_t payload_size = output.size();
-    if (payload_size > 0 && (AsnJ2735Lib::decode_msgFrame(&buf[0], payload_size, dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
-    {
-        BSM_element_t &bsmOut = dsrcFrameOut.bsm;
-        basicVehicle.setTemporaryID(bsmOut.id);
-        basicVehicle.setSecMark_Second((bsmOut.timeStampSec) / 1000.0);
-        basicVehicle.setPosition(DsrcConstants::damega2unit<int32_t>(bsmOut.latitude), DsrcConstants::damega2unit<int32_t>(bsmOut.longitude), DsrcConstants::deca2unit<int32_t>(bsmOut.elevation));
-        basicVehicle.setSpeed_MeterPerSecond(round(DsrcConstants::unit2kph<uint16_t>(bsmOut.speed) * KPH_TO_MPS_CONVERSION));
-        basicVehicle.setHeading_Degree(round(DsrcConstants::unit2heading<uint16_t>(bsmOut.heading)));
-        basicVehicle.setType(0);
 
-        jsonString = basicVehicle.basicVehicle2Json();
-    }
+
+    if (payload_size > 0 && (AsnJ2735Lib::decode_msgFrame(&buf[0], payload_size, dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
+*/
+    if (bsmPayload.length() > 0) 
+        if ((AsnJ2735Lib::decode_msgFrame(bsmPayload.c_str, bsmPayload.length(), dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
+        {
+            BSM_element_t &bsmOut = dsrcFrameOut.bsm;
+            basicVehicle.setTemporaryID(bsmOut.id);
+            basicVehicle.setSecMark_Second((bsmOut.timeStampSec) / 1000.0);
+            basicVehicle.setPosition(DsrcConstants::damega2unit<int32_t>(bsmOut.latitude), DsrcConstants::damega2unit<int32_t>(bsmOut.longitude), DsrcConstants::deca2unit<int32_t>(bsmOut.elevation));
+            basicVehicle.setSpeed_MeterPerSecond(round(DsrcConstants::unit2kph<uint16_t>(bsmOut.speed) * KPH_TO_MPS_CONVERSION));
+            basicVehicle.setHeading_Degree(round(DsrcConstants::unit2heading<uint16_t>(bsmOut.heading)));
+            basicVehicle.setType(0);
+
+            jsonString = basicVehicle.basicVehicle2Json();
+        }
 
     return jsonString;
 }
