@@ -121,7 +121,7 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 
 	tempVehicleSpeed = basicVehicle.getSpeed_MeterPerSecond(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
 	tempVehicleSignalGroup = getSignalGroup();
-	
+
 	signalRequest.setMinuteOfYear(getMinuteOfYear());
 	signalRequest.setMsOfMinute(getMsOfMinute());
 	signalRequest.setMsgCount(getMsgCount());
@@ -168,24 +168,23 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	if (bgetActiveMap == true && getVehicleIntersectionStatus() != static_cast<int>(MsgEnum::mapLocType::onInbound)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 		bSendRequest = true;
+		std::cout << "SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
+	}
+
+	else if (bgetActiveMap == true && indVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	{
+		bSendRequest = true;
 		std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
 	}
 
 	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
 	{
-		if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
-		{
-			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
-		}
 
-		else if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
+		if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since ART is empty" << std::endl;
 		}
-
-		
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
