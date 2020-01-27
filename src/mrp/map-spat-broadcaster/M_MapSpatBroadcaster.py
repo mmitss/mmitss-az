@@ -54,6 +54,10 @@ def main():
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
 
+    pedAppIp = '10.12.6.59'
+    pedAppPort = 6060
+    pedAppAddress = (pedAppIp, pedAppPort)
+
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
@@ -72,7 +76,9 @@ def main():
     spatMapMsgCount = 0
     while True:
         try:
-            spatBlob, addr = outerSocket.recvfrom(1024)            
+            spatBlob, addr = outerSocket.recvfrom(1024)     
+            outerSocket.sendto(spatBlob, pedAppAddress)
+                   
             if addr[0] == controllerIp:
                 currentBlob.processNewData(spatBlob)
                 if(msgCnt < 127):
