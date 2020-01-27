@@ -113,13 +113,13 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     Frame_element_t dsrcFrameOut;
 
 
-    std::string output;
+    std::string output{};
     size_t cnt = bsmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss;
+        std::stringstream ss{};
         ss << std::hex << bsmPayload.substr(i * 2, 2);
         ss >> s;
         output.push_back(static_cast<unsigned char>(s));
