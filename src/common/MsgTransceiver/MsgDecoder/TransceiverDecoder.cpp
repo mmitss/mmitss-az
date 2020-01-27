@@ -107,7 +107,10 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     std::string jsonString{};
 
     /// buffer to hold message payload
-    size_t bufSize = DsrcConstants::maxMsgSize;
+    //size_t bufSize = DsrcConstants::maxMsgSize;
+
+    char * cstr = new char [bsmPayload.length()+1];
+    std::strcpy (cstr, bsmPayload.c_str());
     //std::vector<uint8_t> buf(bufSize, 0);
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
@@ -137,7 +140,7 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     if (payload_size > 0 && (AsnJ2735Lib::decode_msgFrame(&buf[0], payload_size, dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
 */
     if (bsmPayload.length() > 0) 
-        if ((AsnJ2735Lib::decode_msgFrame(bsmPayload.c_str, bsmPayload.length(), dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
+        if ((AsnJ2735Lib::decode_msgFrame((uint8_t *)cstr, bsmPayload.length(), dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
         {
             BSM_element_t &bsmOut = dsrcFrameOut.bsm;
             basicVehicle.setTemporaryID(bsmOut.id);
