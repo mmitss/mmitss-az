@@ -85,7 +85,7 @@ public:
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();
-  int getVehicleCurrentSignalGroup();
+  // int getVehicleCurrentSignalGroup();
   std::string getVehicleMapStatus();
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();

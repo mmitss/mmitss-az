@@ -297,4 +297,14 @@ void SignalStatus::json2SignalStatus(std::string jsonString)
 
 SignalStatus::~SignalStatus()
 {
+	delete vehicleID;
+	delete requestID;
+	delete msgCount;
+	delete inBoundLaneID;
+	delete inBoundApproachID;
+	delete basicVehicleRole;
+	delete expectedTimeOfArrival_Minute;
+	delete expectedTimeOfArrival_Second;
+	delete expectedTimeOfArrival_Duration;
+	delete priorityRequestStatus;
 }
