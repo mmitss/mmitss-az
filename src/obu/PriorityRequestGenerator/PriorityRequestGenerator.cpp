@@ -171,7 +171,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		std::cout << "SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
 	}
 
-	else if (bgetActiveMap == true && indVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	else if (bgetActiveMap == true && findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox)) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 		bSendRequest = true;
 		std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
@@ -630,29 +630,29 @@ int PriorityRequestGenerator::getMsgCount()
 /*
 	- Get current signalgroup info of vehicle from MAP based on LaneID and AprroachID for HMI Controller
 */
-int PriorityRequestGenerator::getVehicleCurrentSignalGroup()
-{
-	int signalGroup{};
-	int approachID{};
-	std::string fmap{};
-	std::string intersectionName{};
-	bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
+// int PriorityRequestGenerator::getVehicleCurrentSignalGroup()
+// {
+// 	int signalGroup{};
+// 	int approachID{};
+// 	std::string fmap{};
+// 	std::string intersectionName{};
+// 	bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 
-	if (!activeMapList.empty())
-	{
-		fmap = activeMapList.front().activeMapFileDirectory;
-		intersectionName = activeMapList.front().activeMapFileName;
+// 	if (!activeMapList.empty())
+// 	{
+// 		fmap = activeMapList.front().activeMapFileDirectory;
+// 		intersectionName = activeMapList.front().activeMapFileName;
 
-		//initialize mapengine library
-		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
-		approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(getRegionalID()), static_cast<uint8_t>(getIntersectionID()), static_cast<uint8_t>(getLaneID()));
-		signalGroup = plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(getRegionalID()), static_cast<uint16_t>(getIntersectionID()), approachID, static_cast<uint8_t>(getLaneID()));
+// 		//initialize mapengine library
+// 		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
+// 		approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(getRegionalID()), static_cast<uint8_t>(getIntersectionID()), static_cast<uint8_t>(getLaneID()));
+// 		signalGroup = plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(getRegionalID()), static_cast<uint16_t>(getIntersectionID()), approachID, static_cast<uint8_t>(getLaneID()));
 
-		delete plocAwareLib;
-	}
+// 		delete plocAwareLib;
+// 	}
 
-	return signalGroup;
-}
+// 	return signalGroup;
+// }
 
 /*
 	- Get vehicle status on current map (Whether on map or not) for HMI Controller
