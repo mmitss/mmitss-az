@@ -112,6 +112,7 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
+
     std::string output{};
     size_t cnt = bsmPayload.length() / 2;
 
@@ -131,6 +132,8 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
         index++;
     }
     size_t payload_size = output.size();
+
+
     if (payload_size > 0 && (AsnJ2735Lib::decode_msgFrame(&buf[0], payload_size, dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
     {
         BSM_element_t &bsmOut = dsrcFrameOut.bsm;
