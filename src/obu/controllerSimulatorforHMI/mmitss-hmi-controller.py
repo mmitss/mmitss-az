@@ -25,8 +25,8 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = False
 
-#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-controllerIP = '127.0.0.1' #use for simulation testing
+controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -260,10 +260,13 @@ while True:
                     pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
                     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-                    if hv_currentLaneSignalGroup == 0 :
-                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+                    if spat_map_active :
+                        if hv_currentLaneSignalGroup == 0 :
+                            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+                        else :
+                            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
                     else :
-                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
+                        signal_head(0, 0)
 
                     # add the 8-phase signal and ped status data
                     phase_table = []
@@ -327,10 +330,11 @@ while True:
             spat_map_ID - -1
         else :
             for map in availableMaps :
-                if map["active"] == True :
+                if map["active"] == "True":
                     spat_map_ID = map["IntersectionID"]
-                    spat_map_active = True
-        
+                    spat_map_active = True  
+                    
+
         activeRequestTable = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"]
         if activeRequestTable == None :
             activeRequestTable = []
