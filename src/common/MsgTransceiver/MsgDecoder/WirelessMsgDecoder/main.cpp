@@ -18,6 +18,7 @@ int main()
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
+    const string dataCollectorIP = jsonObject_config["DataCollectorIP"].asString();
 
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
@@ -43,6 +44,7 @@ int main()
             std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
             decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
+            decoderSocket.sendData(dataCollectorIP, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
             std::cout << "Decoded BSM" << std::endl;
         }
         
@@ -50,6 +52,7 @@ int main()
         {
             std::string srmJsonString = decoder.srmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+            decoderSocket.sendData(dataCollectorIP, static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
             std::cout << "Decoded SRM" << std::endl;
         }
         
@@ -64,6 +67,7 @@ int main()
         {
             std::string ssmJsonString = decoder.ssmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
+            decoderSocket.sendData(dataCollectorIP, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
             std::cout << "Decoded SSM" << std::endl;
         }        
     }

@@ -105,7 +105,7 @@ def main():
     timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
     # Create complete file name: example: msgLog_<timestamp>
     fileName = "MsgSenderLogLog_" + timestamp + ".txt"
-    dataLog = open(fileName, 'w')   
+    #dataLog = open(fileName, 'w')   
 
     sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = 1516
@@ -115,7 +115,7 @@ def main():
     while True:
         receivedMsg, addr = outerSocket.recvfrom(5120)
         msgType = identifyMsg(receivedMsg.decode())
-        dataLog.write(receivedMsg.decode() + '\n')
+        #dataLog.write(receivedMsg.decode() + '\n')
         msgPacket = createBroadcastMsgPacket(msgType, receivedMsg.decode())
         if msgType == "SSM": 
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice_SSM)
@@ -123,7 +123,7 @@ def main():
             outerSocket.sendto(msgPacket.encode(), sourceDsrcDevice)
         #print(msgPacket)
         print("Sent " + msgType)
-    dataLog.close()
+    #dataLog.close()
     outerSocket.close()
 
 if __name__ == '__main__':
