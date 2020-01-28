@@ -32,11 +32,10 @@
 #include "geoUtils.h"
 #include "msgEnum.h"
 
-
 using namespace GeoUtils;
 using namespace MsgEnum;
 
-const double TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 300.0; 
+const double TIME_GAP_BETWEEN_RECEIVING_MAPPAYLOAD = 300.0;
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
@@ -55,7 +54,7 @@ void MapManager::json2MapPayload(std::string jsonString)
     reader.parse(jsonString.c_str(), jsonObject);
 
     mapPayload = (jsonObject["MapPayload"]).asString();
-    intersectionMapName =(jsonObject["IntersectionName"]).asString();
+    intersectionMapName = (jsonObject["IntersectionName"]).asString();
     intersectinID = (jsonObject["IntersectionID"]).asInt();
 }
 
@@ -84,14 +83,20 @@ bool MapManager::addToMapInList() //check_Map.h
     std::vector<Map::AvailableMap>::iterator findVehicleMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                   [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
-    if (availableMapList.empty())
-        addInList = true;
+    if (mapPayload.size() > 0)
+    {
+        if (availableMapList.empty())
+            addInList = true;
 
-    else if (findVehicleMapPayLoad != availableMapList.end())
+        else if (findVehicleMapPayLoad != availableMapList.end())
+            addInList = false;
+
+        else if (findVehicleMapPayLoad == availableMapList.end())
+            addInList = true;
+    }
+
+    else
         addInList = false;
-
-    else if (findVehicleMapPayLoad == availableMapList.end())
-        addInList = true;
 
     return addInList;
 }
@@ -136,18 +141,16 @@ bool MapManager::deleteMapPayLoadFromList()
                 setTimedOutMapPayLoad(availableMapList[i].availableMapPayload);
                 break;
             }
-
-
         }
     }
 
-    return deleteMapPayload; 
+    return deleteMapPayload;
 }
 
 /*
     - Method to write the mapPayload in a file based on structure require for map Engine Library.
 */
-void MapManager::writeMAPPayloadInFile() 
+void MapManager::writeMAPPayloadInFile()
 {
 
     const char *path = "./map";
@@ -190,13 +193,14 @@ int MapManager::getMapPayloadReceivedTime()
 */
 int MapManager::getMapPayloadReceivedSecondOfMinute()
 {
-	int secondOfMinute{};
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
+    int secondOfMinute{};
+    time_t t = time(NULL);
+    tm *timePtr = gmtime(&t);
 
-	secondOfMinute = timePtr->tm_sec;;
+    secondOfMinute = timePtr->tm_sec;
+    ;
 
-	return secondOfMinute;
+    return secondOfMinute;
 }
 
 /*
@@ -210,13 +214,13 @@ void MapManager::maintainAvailableMapList() //check Map.h
     {
         std::string mapName = intersectionMapName;
         std::string mapFileDirectory = "./map/" + mapName + ".map.payload";
-        
+
         writeMAPPayloadInFile();
         availableMap.availableMapPayload = mapPayload;
         availableMap.availableMapFileName = mapName;
         availableMap.availableMapFileDirectory = mapFileDirectory;
         availableMap.mapIntersectionID = intersectinID;
-        availableMap.mapAge =1;
+        availableMap.mapAge = 1;
         availableMap.minuteOfYear = getMapPayloadReceivedTime();
         availableMap.secondOfMinute = getMapPayloadReceivedSecondOfMinute();
         availableMap.activeMapStatus = "False";
@@ -228,11 +232,11 @@ void MapManager::maintainAvailableMapList() //check Map.h
         std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
-            findMapPayLoad->availableMapPayload = mapPayload;
-            findMapPayLoad->mapAge = 1.0;
-            findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
-            findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
-        
+        findMapPayLoad->availableMapPayload = mapPayload;
+        findMapPayLoad->mapAge = 1.0;
+        findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
+        findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
+
         // if(getMapPayloadReceivedSecondOfMinute() >= findMapPayLoad->secondOfMinute)
         // {
         //     findMapPayLoad->availableMapPayload = mapPayload;
@@ -278,7 +282,6 @@ void MapManager::printAvailableMapList()
         std::cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].activeMapStatus << std::endl;
     }
 }
-
 
 /*
 	- This function is for maintaining activemaplist based on the availableMapList.
@@ -342,29 +345,28 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 */
 void MapManager::deleteActiveMapfromList()
 {
-	activeMapList.clear();
+    activeMapList.clear();
 }
 
 void MapManager::updateMapAge()
 {
     for (size_t i = 0; i < availableMapList.size(); i++)
     {
-        if(getMapPayloadReceivedSecondOfMinute() >= availableMapList[i].secondOfMinute)
+        if (getMapPayloadReceivedSecondOfMinute() >= availableMapList[i].secondOfMinute)
         {
-            
+
             availableMapList[i].mapAge = availableMapList[i].mapAge + (getMapPayloadReceivedSecondOfMinute() - availableMapList[i].secondOfMinute);
             availableMapList[i].minuteOfYear = getMapPayloadReceivedTime();
             availableMapList[i].secondOfMinute = getMapPayloadReceivedSecondOfMinute();
         }
 
-        else if(getMapPayloadReceivedSecondOfMinute() < availableMapList[i].secondOfMinute)
+        else if (getMapPayloadReceivedSecondOfMinute() < availableMapList[i].secondOfMinute)
         {
             availableMapList[i].mapAge = availableMapList[i].mapAge + (getMapPayloadReceivedSecondOfMinute() + SECONDSINAMINUTE - availableMapList[i].secondOfMinute);
             availableMapList[i].minuteOfYear = getMapPayloadReceivedTime();
             availableMapList[i].secondOfMinute = getMapPayloadReceivedSecondOfMinute();
         }
     }
-       
 }
 /*
 	- Getters for Active map List

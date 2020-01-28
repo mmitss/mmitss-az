@@ -108,7 +108,7 @@ for line in f :
         for receivedMap in range(0, 5): # assuming up to 5 maps have been received 
             map_intersectionID = int(data_array[index_maps + 1 + receivedMap*4])
             map_DescriptiveName = data_array[index_maps + 2 + receivedMap*4]
-            map_active = bool_map[data_array[index_maps + 3 + receivedMap*4]]
+            map_active = str(bool_map[data_array[index_maps + 3 + receivedMap*4]])
             map_age = int(data_array[index_maps + 4 + receivedMap*4])
             if receivedMap < numReceivedMaps:
                 availableMaps.append({"IntersectionID": map_intersectionID, "DescriptiveName": map_DescriptiveName, "active": map_active, "age" : map_age})                        

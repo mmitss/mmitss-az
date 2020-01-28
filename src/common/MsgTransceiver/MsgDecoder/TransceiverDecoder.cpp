@@ -97,7 +97,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     jsonString = fastWriter.write(jsonObject);
 
     remove(deleteFileName.c_str());
-
+    delete plocAwareLib;
     return jsonString;
 }
 
@@ -112,13 +112,14 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+
+    std::string output{};
     size_t cnt = bsmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss;
+        std::stringstream ss{};
         ss << std::hex << bsmPayload.substr(i * 2, 2);
         ss >> s;
         output.push_back(static_cast<unsigned char>(s));
@@ -131,6 +132,8 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
         index++;
     }
     size_t payload_size = output.size();
+
+
     if (payload_size > 0 && (AsnJ2735Lib::decode_msgFrame(&buf[0], payload_size, dsrcFrameOut) > 0) && (dsrcFrameOut.dsrcMsgId == MsgEnum::DSRCmsgID_bsm))
     {
         BSM_element_t &bsmOut = dsrcFrameOut.bsm;
@@ -159,13 +162,13 @@ std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    std::string output{};
     size_t cnt = srmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss;
+        std::stringstream ss{};
         ss << std::hex << srmPayload.substr(i * 2, 2);
         ss >> s;
 
@@ -219,13 +222,13 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    std::string output{};
     size_t cnt = ssmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss;
+        std::stringstream ss{};
         ss << std::hex << ssmPayload.substr(i * 2, 2);
         ss >> s;
 
@@ -279,7 +282,7 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
 
 std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
 {
-    std::string jsonString;
+    std::string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -287,13 +290,13 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    std::string output{};
     size_t cnt = spatPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
     {
         uint32_t s = 0;
-        std::stringstream ss;
+        std::stringstream ss{};
         ss << std::hex << spatPayload.substr(i * 2, 2);
         ss >> s;
 

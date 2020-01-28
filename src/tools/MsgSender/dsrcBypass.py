@@ -43,10 +43,20 @@ def main():
     sourceDsrcDeviceIP = config["SourceDsrcDeviceIp"]
     sourceDsrcDevicePort = config["PortNumber"]["MessageTransceiver"]['MessageDecoder']
     sourceDsrcDevice = (sourceDsrcDeviceIP, sourceDsrcDevicePort)
+    #For sending to second Laptop 
+    sourceDsrcDeviceIP2 = "10.12.6.57"
+    sourceDsrcDevicePort2 = 10004
+    sourceDsrcDevice2 = (sourceDsrcDeviceIP2, sourceDsrcDevicePort2)
+    #For sending to second Laptop 
+    sourceDsrcDeviceIP3 = "10.12.6.109"
+    sourceDsrcDevicePort3 = 10004
+    sourceDsrcDevice3 = (sourceDsrcDeviceIP3, sourceDsrcDevicePort3)
 
     while True:
         receivedMsg, addr = outerSocket.recvfrom(4096)
         outerSocket.sendto(receivedMsg, sourceDsrcDevice)
+        outerSocket.sendto(receivedMsg, sourceDsrcDevice2)
+        outerSocket.sendto(receivedMsg, sourceDsrcDevice3)
         print("Sent")
 
 if __name__ == '__main__':
