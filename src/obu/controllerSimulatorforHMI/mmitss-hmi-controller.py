@@ -182,7 +182,7 @@ for phase in range(0,8) :
                             "phase_status" : '--', 
                             "ped_status" : '--'})
 
-reset_SPaT() 
+current_phase_status, phase_table = reset_SPaT() 
 
 # setup timing variables for debugging
 if DEBUG == True :
@@ -260,13 +260,12 @@ while True:
                     pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
                     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-                    if spat_map_active :
-                        if hv_currentLaneSignalGroup == 0 :
-                            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-                        else :
-                            current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
+                    
+                    if hv_currentLaneSignalGroup == 0 :
+                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
                     else :
-                        signal_head(0, 0)
+                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
+                   
 
                     # add the 8-phase signal and ped status data
                     phase_table = []
@@ -276,7 +275,8 @@ while True:
                         phase_table.append({"phase" : phase, 
                                             "phase_status" : phase_status_map[phase_status_state(phase_state)], 
                                             "ped_status" : ped_status_map[phase_status_state(ped_state)]})
-
+            else : # no active map for displaying spat data
+                current_phase_status, phase_table = reset_SPaT()
         else : 
             print('ERROR: remote vehicle or SPaT data expected')
 
@@ -324,13 +324,12 @@ while True:
         # determine the active map so that only meaningful SPaT data will be displayed 
         spat_map_active = False
         spat_map_ID = -1 
-        if availableMaps == None :
-            availableMaps = []
+        if len(availableMaps) == 0 :
             spat_map_active = False
             spat_map_ID - -1
         else :
             for map in availableMaps :
-                if map["active"] == "True":
+                if map["active"] ==  "True" : # the value is sent as a string = True (but excel makes str TRUE in the simulator for test)
                     spat_map_ID = map["IntersectionID"]
                     spat_map_active = True  
                     
