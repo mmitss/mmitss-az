@@ -86,7 +86,7 @@ Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
     return message
 
 def bsmJsonToCsv(jsonData:json):
-    timestamp = str(datetime.datetime.now())
+    timestamp = str(jsonData["Timestamp"])
     temporaryId = str(jsonData["BasicVehicle"]["temporaryID"])
     secMark = str(jsonData["BasicVehicle"]["secMark_Second"])
     latitude = str(jsonData["BasicVehicle"]["position"]["latitude_DecimalDegree"])

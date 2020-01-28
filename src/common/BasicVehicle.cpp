@@ -22,6 +22,7 @@
 #include <iostream>
 #include <BasicVehicle.h>
 #include <json/json.h>
+#include "Timestamp.h"
 
 using std::cout;
 using std::endl;
@@ -116,7 +117,9 @@ int BasicVehicle::getType()
 
 string BasicVehicle::basicVehicle2Json()
 {
+
     Json::Value jsonObject;
+    jsonObject["Timestamp"] = getTimestamp();
     jsonObject["MsgType"] = "BSM";
     jsonObject["BasicVehicle"]["temporaryID"] = temporaryID;
     jsonObject["BasicVehicle"]["secMark_Second"] = secMark_Second;
