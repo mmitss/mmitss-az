@@ -58,8 +58,8 @@ int TransceiverEncoder::getMessageType(std::string jsonString)
 std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonString)
 {
     BasicVehicle basicVehicle;
-    std::stringstream payloadstream{};
-    std::string bsmMessagePayload{};
+    std::stringstream payloadstream;
+    std::string bsmMessagePayload;
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
     std::vector<uint8_t> buf(bufSize, 0);
@@ -101,8 +101,8 @@ std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonS
 std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonString)
 {
     SignalRequest signalRequest;
-    std::stringstream payloadstream{};
-    std::string srmMessagePayload{};
+    std::stringstream payloadstream;
+    std::string srmMessagePayload;
     size_t bufSize = DsrcConstants::maxMsgSize;
     std::vector<uint8_t> buf(bufSize, 0);
     signalRequest.json2SignalRequest(jsonString);
@@ -203,8 +203,8 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
 {
     SignalStatus signalStatus;
-    std::stringstream payloadstream{};
-    std::string ssmMessagePayload{};
+    std::stringstream payloadstream;
+    std::string ssmMessagePayload;
     size_t bufSize = DsrcConstants::maxMsgSize;
     std::vector<uint8_t> buf(bufSize, 0);
     signalStatus.json2SignalStatus(jsonString);

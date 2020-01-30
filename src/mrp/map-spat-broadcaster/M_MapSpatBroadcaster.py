@@ -76,10 +76,9 @@ def main():
     spatMapMsgCount = 0
     while True:
         try:
-            spatBlob, addr = outerSocket.recvfrom(1024)     
-            outerSocket.sendto(spatBlob, pedAppAddress)
-                   
+            spatBlob, addr = outerSocket.recvfrom(1024)            
             if addr[0] == controllerIp:
+                outerSocket.sendto(spatBlob, pedAppAddress)
                 currentBlob.processNewData(spatBlob)
                 if(msgCnt < 127):
                     msgCnt = msgCnt + 1

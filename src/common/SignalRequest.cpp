@@ -18,7 +18,6 @@
 #include <fstream>
 #include "SignalRequest.h"
 #include "json/json.h"
-#include "Timestamp.h"
 
 const int SEQUENCE_NUMBER_MINLIMIT = 0;
 const int SEQUENCE_NUMBER_MAXLIMIT = 127;
@@ -256,12 +255,10 @@ int SignalRequest::getVehicleType()
 //Following method is for creating json string from the mmitss signal request object
 std::string SignalRequest::signalRequest2Json()
 {
-
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
 
     jsonObject["MsgType"] = "SRM";
-    jsonObject["Timestamp"] = getTimestamp();
     jsonObject["SignalRequest"]["msgCount"] = msgCount;
     jsonObject["SignalRequest"]["minuteOfYear"] = minuteOfYear;
     jsonObject["SignalRequest"]["msOfMinute"] = msOfMinute;

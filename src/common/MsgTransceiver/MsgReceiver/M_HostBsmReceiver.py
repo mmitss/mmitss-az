@@ -53,7 +53,7 @@ def main():
     timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
     # Create complete file name: example: msgLog_<timestamp>
     fileName = "HostBsmLog_" + timestamp + ".txt"
-    #dataLog = open(fileName, 'w')
+    dataLog = open(fileName, 'w')
 
     if DEBUGGING:
         firstIteration = True
@@ -67,13 +67,13 @@ def main():
         # Receive a binary message packet and convert it to hex packet.
         receivedMsg, addr = s.recvfrom(4096)
         receivedMsg = receivedMsg.hex()
-        #if DEBUGGING: dataLog.write(receivedMsg + '\n')
+        if DEBUGGING: dataLog.write(receivedMsg + '\n')
         bsmPayload = receivedMsg[receivedMsg.find("0014"):]
         s.sendto(bsmPayload.encode(), transceiverDecoderComm)
         s.sendto(bsmPayload.encode(), cvwz_bsmDecoderComm)
         
         if DEBUGGING: print("Received BSM from OBU")
     s.close()
-    #dataLog.close()
+    dataLog.close()
 if __name__ == "__main__":
     main()

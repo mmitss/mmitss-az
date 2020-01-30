@@ -133,9 +133,7 @@ int main(int argc, char *argv[])
 
             // Update the Req List data structure considering received message
             UpdateList(req_List, tempMsg, PhaseStatus, ReqListUpdateFlag, CombinedPhase, clearSignalControllerCommands);
-
             getPriorityRequestStatus(req_List);
-            
             sendSSM(req_List, IntersectionID, MsgReceiverSocket);
             // We need to solve
             if ((ReqListUpdateFlag > NO_UPDATE) && (req_List.ListSize() > 0))
@@ -156,8 +154,10 @@ int main(int argc, char *argv[])
                 clearSignalControllerCommands = false;
 
                 sendSSM(req_List, IntersectionID, MsgReceiverSocket);
-
+                
                 startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
+
+                // sendSSM(req_List, IntersectionID, MsgReceiverSocket);
 
                 sendClearCommandsToInterface();
             }
@@ -177,6 +177,7 @@ int main(int argc, char *argv[])
 
             doUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListNoUpdate, clearSignalControllerCommands);
 
+            // sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
     }
 
@@ -260,9 +261,9 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
                 iVehicleState, iMsgCnt, 0.0, lintersectionID, ibasicVehicleRole);
 
 #ifdef LOGGING
-        sprintf(temp_log, "\n\n........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
+        sprintf(temp_log, "\n........... The Received SRM matches the Intersection ID  ,  at time %.2f. \n", dTime);
         outputlog(temp_log);
-        sprintf(temp_log, "%s\t \n\n", tempMsg);
+        sprintf(temp_log, "%s\t \n", tempMsg);
         outputlog(temp_log);
 #endif
     }
@@ -1012,7 +1013,7 @@ void printReqestFile2Log(const char *resultsfile)
         exit(1);
     }
     string lineread;
-    sprintf(temp_log, "\nContent of request files:\n");
+    sprintf(temp_log, "\n Content of request files  :\n");
     outputlog(temp_log);
     while (!fss.eof())
     {
