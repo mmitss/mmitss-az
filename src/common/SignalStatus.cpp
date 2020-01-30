@@ -19,7 +19,6 @@
 #include "dsrcConsts.h"
 #include "json/json.h"
 #include "SignalStatus.h"
-#include "Timestamp.h"
 
 const int ETA_CONVERTION = 60;
 const int ETA_DURATION = 2000;
@@ -215,13 +214,11 @@ int *SignalStatus::getPriorityRequestStatus()
 
 std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveRequestTable)
 {
-
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     std::string jsonString;
 
     jsonObject["MsgType"] = "SSM";
-    jsonObject["Timestamp"] = getTimestamp();
     jsonObject["noOfRequest"] = ActiveRequestTable.size();
     jsonObject["SignalStatus"]["minuteOfYear"] = minuteOfYear;
     jsonObject["SignalStatus"]["msOfMinute"] = msOfMinute;
@@ -300,14 +297,4 @@ void SignalStatus::json2SignalStatus(std::string jsonString)
 
 SignalStatus::~SignalStatus()
 {
-	delete vehicleID;
-	delete requestID;
-	delete msgCount;
-	delete inBoundLaneID;
-	delete inBoundApproachID;
-	delete basicVehicleRole;
-	delete expectedTimeOfArrival_Minute;
-	delete expectedTimeOfArrival_Second;
-	delete expectedTimeOfArrival_Duration;
-	delete priorityRequestStatus;
 }
