@@ -69,7 +69,7 @@ void SignalStatus::setIntersectionID(int vehIntersectionID)
 
 void SignalStatus::setTemporaryVechileID(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         vehicleID.push_back(ActiveRequestTable[i].vehicleID);
     }
@@ -77,7 +77,7 @@ void SignalStatus::setTemporaryVechileID(std::vector<ActiveRequest> ActiveReques
 
 void SignalStatus::setRequestID(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         requestID.push_back(ActiveRequestTable[i].requestID);
     }
@@ -85,7 +85,7 @@ void SignalStatus::setRequestID(std::vector<ActiveRequest> ActiveRequestTable)
 
 void SignalStatus::setMsgCount(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         msgCount.push_back(ActiveRequestTable[i].msgCount);
     }
@@ -93,7 +93,7 @@ void SignalStatus::setMsgCount(std::vector<ActiveRequest> ActiveRequestTable)
 
 void SignalStatus::setBasicVehicleRole(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         basicVehicleRole.push_back(ActiveRequestTable[i].basicVehicleRole);
     }
@@ -101,7 +101,7 @@ void SignalStatus::setBasicVehicleRole(std::vector<ActiveRequest> ActiveRequestT
 
 void SignalStatus::setInBoundLaneIntersectionAccessPoint(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         inBoundLaneID.push_back(ActiveRequestTable[i].vehicleLaneID);
         inBoundApproachID.push_back(ActiveRequestTable[i].vehicleApproachID);
@@ -110,7 +110,7 @@ void SignalStatus::setInBoundLaneIntersectionAccessPoint(std::vector<ActiveReque
 
 void SignalStatus::setETA(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         expectedTimeOfArrival_Minute.push_back(static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION));
         expectedTimeOfArrival_Second.push_back(fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION));
@@ -120,7 +120,7 @@ void SignalStatus::setETA(std::vector<ActiveRequest> ActiveRequestTable)
 
 void SignalStatus::setPriorityRequestStatus(std::vector<ActiveRequest> ActiveRequestTable)
 {
-    for (int i = 0; i < getNoOfRequest(); i++)
+    for (int i = 0; i < ActiveRequestTable.size(); i++)
     {
         priorityRequestStatus.push_back(ActiveRequestTable[i].prsStatus);
     }
@@ -212,6 +212,27 @@ std::vector<int> SignalStatus::getPriorityRequestStatus()
     return priorityRequestStatus;
 }
 
+void reset()
+{
+    noOfRequest = 0;
+    minuteOfYear = 0;
+    msOfMinute = 0;
+    sequenceNumber = 0;
+    updateCount = 0;
+    regionalID = 0;
+    intersectionID = 0;
+    vehicleID.clear();
+    requestID.clear();
+    msgCount.clear();
+    inBoundLaneID.clear();
+    inBoundApproachID.clear();
+    basicVehicleRole.clear();
+    expectedTimeOfArrival_Minute.clear();
+    expectedTimeOfArrival_Second.clear();
+    expectedTimeOfArrival_Duration.clear();
+    priorityRequestStatus.clear();
+}
+
 std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveRequestTable)
 {
     Json::Value jsonObject;
@@ -294,6 +315,8 @@ void SignalStatus::json2SignalStatus(std::string jsonString)
         }
     }
 }
+
+
 
 SignalStatus::~SignalStatus()
 {
