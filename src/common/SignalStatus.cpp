@@ -285,33 +285,33 @@ void SignalStatus::json2SignalStatus(std::string jsonString)
         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
         {
             if (values[i].getMemberNames()[j] == "vehicleID")
-                vehicleID[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                vehicleID.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "requestID")
-                requestID[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                requestID.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "msgCount")
-                msgCount[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                msgCount.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "basicVehicleRole")
-                basicVehicleRole[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                basicVehicleRole.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "inBoundLaneID")
-                inBoundLaneID[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                inBoundLaneID.push_back(values[i][values[i].getMemberNames()[j]].asInt());
             
             if (values[i].getMemberNames()[j] == "inBoundApproachID")
-                inBoundApproachID[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                inBoundApproachID.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "ETA_Minute")
-                expectedTimeOfArrival_Minute[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                expectedTimeOfArrival_Minute.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "ETA_Second")
-                expectedTimeOfArrival_Second[i] = values[i][values[i].getMemberNames()[j]].asDouble();
+                expectedTimeOfArrival_Second.push_back(values[i][values[i].getMemberNames()[j]].asDouble());
             if (values[i].getMemberNames()[j] == "ETA_Duration")
-                expectedTimeOfArrival_Duration[i] = values[i][values[i].getMemberNames()[j]].asDouble();
+                expectedTimeOfArrival_Duration.push_back(values[i][values[i].getMemberNames()[j]].asDouble());
 
             if (values[i].getMemberNames()[j] == "priorityRequestStatus")
-                priorityRequestStatus[i] = values[i][values[i].getMemberNames()[j]].asInt();
+                priorityRequestStatus.push_back(values[i][values[i].getMemberNames()[j]].asInt());
         }
     }
 }
