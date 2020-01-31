@@ -212,7 +212,7 @@ std::vector<int> SignalStatus::getPriorityRequestStatus()
     return priorityRequestStatus;
 }
 
-void reset()
+void SignalStatus::reset()
 {
     noOfRequest = 0;
     minuteOfYear = 0;
