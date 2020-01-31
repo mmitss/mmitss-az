@@ -18,6 +18,7 @@ int main()
     TransceiverDecoder decoder;
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HostBsmDecoder"].asInt()));
     char receiveBuffer[5120];
+    
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();

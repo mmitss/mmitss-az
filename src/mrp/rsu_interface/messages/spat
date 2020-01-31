@@ -1,6 +1,6 @@
 Version=0.7
 Type=SPAT
-PSID=0x8003
+PSID=0x8002
 Priority=0
 TxMode=CONT
 TxChannel=172
