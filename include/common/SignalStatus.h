@@ -71,20 +71,23 @@ public:
 	int getPRSUpdateCount();
 	int getRegionalID();
 	int getIntersectionID();
-	std::vector<int>getTemporaryVehicleID();
-	std::vector<int>getRequestID();
-	std::vector<int>getMsgCount();
-	std::vector<int>getBasicVehicleRole();
-	std::vector<int>getInBoundLaneID();
-	std::vector<int>getInBoundApproachID();
-	std::vector<int>getETA_Minute();
-	std::vector<double>getETA_Second();
-	std::vector<double>getETA_Duration();
-	std::vector<int>getPriorityRequestStatus();
+	std::vector<int> getTemporaryVehicleID();
+	std::vector<int> getRequestID();
+	std::vector<int> getMsgCount();
+	std::vector<int> getBasicVehicleRole();
+	std::vector<int> getInBoundLaneID();
+	std::vector<int> getInBoundApproachID();
+	std::vector<int> getETA_Minute();
+	std::vector<double> getETA_Second();
+	std::vector<double> getETA_Duration();
+	std::vector<int> getPriorityRequestStatus();
 
+	void reset(void);
 
 	//JSON
 	std::string signalStatus2Json(std::vector<ActiveRequest> ActiveRequestTable);
 	void json2SignalStatus(std::string jsonString);
-	
+
+
+
 };
