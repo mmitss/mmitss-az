@@ -74,14 +74,14 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
 {
 	//storing the information of ssm
-	int *vehicleID = signalStatus.getTemporaryVehicleID();
-	int *requestID = signalStatus.getRequestID();
-	int *msgCount_ssm = signalStatus.getMsgCount(); //insted of msgCount, msgCount_ssm since it shadowed the declaration
-	int *inBoundLaneID = signalStatus.getInBoundLaneID();
-	int *basicVehicleRole_ssm = signalStatus.getBasicVehicleRole(); //insted of basicVehicleRole, basicVehicleRole_ssm since it shadowed the declaration
-	int *expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-	double *expectedTimeOfArrival_Second = signalStatus.getETA_Second();
-	int *priorityRequestStatus = signalStatus.getPriorityRequestStatus();
+	std::vector<int>vehicleID = signalStatus.getTemporaryVehicleID();
+	std::vector<int>requestID = signalStatus.getRequestID();
+	std::vector<int>msgCount_ssm = signalStatus.getMsgCount(); //insted of msgCount, msgCount_ssm since it shadowed the declaration
+	std::vector<int>inBoundLaneID = signalStatus.getInBoundLaneID();
+	std::vector<int>basicVehicleRole_ssm = signalStatus.getBasicVehicleRole(); //insted of basicVehicleRole, basicVehicleRole_ssm since it shadowed the declaration
+	std::vector<int>expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
+	std::vector<double>expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+	std::vector<int>priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 	ActiveRequest activeRequest;
 
 	//creating the active request table based on the stored information
@@ -377,7 +377,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				setRegionalID(regionalId);
 				setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
 				setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
-				setSignalGroup(plocAwareLib->getControlPhaseByIds(regionalID, intersectionID, vehicleAprroachID, vehicleLaneID)); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
+				setSignalGroup(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(vehicleAprroachID), static_cast<uint8_t>(vehicleLaneID))); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 				plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 				distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 				setTime2Go(distance2go, vehicle_Speed);
@@ -406,7 +406,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			setRegionalID(regionalId);
 			setLaneID(plocAwareLib->getLaneIdByIndexes(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.approachIndex), unsigned(vehicleTracking_t_1.intsectionTrackingState.laneIndex)));
 			setApproachID(plocAwareLib->getApproachIdByLaneId(regionalId, intersectionId, (unsigned char)((unsigned)getLaneID())));
-			setSignalGroup(plocAwareLib->getControlPhaseByIds(regionalID, intersectionID, vehicleAprroachID, vehicleLaneID)); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
+			setSignalGroup(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(vehicleAprroachID), static_cast<uint8_t>(vehicleLaneID))); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 			plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 			distance2go = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 			setTime2Go(distance2go, vehicle_Speed);
