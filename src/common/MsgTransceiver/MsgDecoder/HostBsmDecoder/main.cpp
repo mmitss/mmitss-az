@@ -32,8 +32,7 @@ int main()
 
     while(true)
     {
-        decoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedPayload(receiveBuffer);
+        std::string receivedPayload = decoderSocket.receivePayloadHexString();
         std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
         basicVehicle.json2BasicVehicle(bsmJsonString);
         secMark = basicVehicle.getSecMark_Second();
