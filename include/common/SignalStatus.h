@@ -31,16 +31,16 @@ private:
 	int updateCount{};
 	int regionalID{};
 	int intersectionID{};
-	int *vehicleID = new int[noOfRequest];
-	int *requestID = new int[noOfRequest];
-	int *msgCount = new int[noOfRequest];
-	int *inBoundLaneID = new int[noOfRequest];
-	int *inBoundApproachID = new int[noOfRequest];
-	int *basicVehicleRole = new int[noOfRequest];
-	int *expectedTimeOfArrival_Minute = new int[noOfRequest];
-	double *expectedTimeOfArrival_Second = new double[noOfRequest];
-	double *expectedTimeOfArrival_Duration = new double[noOfRequest];
-	int *priorityRequestStatus = new int[noOfRequest];
+	std::vector<int>vehicleID{};
+	std::vector<int>requestID{};
+	std::vector<int>msgCount{};
+	std::vector<int>inBoundLaneID{};
+	std::vector<int>inBoundApproachID{};
+	std::vector<int>basicVehicleRole{};
+	std::vector<int>expectedTimeOfArrival_Minute{};
+	std::vector<double>expectedTimeOfArrival_Second{};
+	std::vector<double>expectedTimeOfArrival_Duration{};
+	std::vector<int>priorityRequestStatus{};
 
 public:
 	//Constructor & Destructor
@@ -71,16 +71,16 @@ public:
 	int getPRSUpdateCount();
 	int getRegionalID();
 	int getIntersectionID();
-	int * getTemporaryVehicleID();
-	int * getRequestID();
-	int * getMsgCount();
-	int * getBasicVehicleRole();
-	int * getInBoundLaneID();
-	int * getInBoundApproachID();
-	int * getETA_Minute();
-	double * getETA_Second();
-	double * getETA_Duration();
-	int * getPriorityRequestStatus();
+	std::vector<int>getTemporaryVehicleID();
+	std::vector<int>getRequestID();
+	std::vector<int>getMsgCount();
+	std::vector<int>getBasicVehicleRole();
+	std::vector<int>getInBoundLaneID();
+	std::vector<int>getInBoundApproachID();
+	std::vector<int>getETA_Minute();
+	std::vector<double>getETA_Second();
+	std::vector<double>getETA_Duration();
+	std::vector<int>getPriorityRequestStatus();
 
 
 	//JSON

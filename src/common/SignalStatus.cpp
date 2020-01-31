@@ -71,7 +71,7 @@ void SignalStatus::setTemporaryVechileID(std::vector<ActiveRequest> ActiveReques
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        vehicleID[i] = ActiveRequestTable[i].vehicleID;
+        vehicleID.push_back(ActiveRequestTable[i].vehicleID);
     }
 }
 
@@ -79,7 +79,7 @@ void SignalStatus::setRequestID(std::vector<ActiveRequest> ActiveRequestTable)
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        requestID[i] = ActiveRequestTable[i].requestID;
+        requestID.push_back(ActiveRequestTable[i].requestID);
     }
 }
 
@@ -87,7 +87,7 @@ void SignalStatus::setMsgCount(std::vector<ActiveRequest> ActiveRequestTable)
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        msgCount[i] = ActiveRequestTable[i].msgCount;
+        msgCount.push_back(ActiveRequestTable[i].msgCount);
     }
 }
 
@@ -95,7 +95,7 @@ void SignalStatus::setBasicVehicleRole(std::vector<ActiveRequest> ActiveRequestT
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        basicVehicleRole[i] = ActiveRequestTable[i].basicVehicleRole;
+        basicVehicleRole.push_back(ActiveRequestTable[i].basicVehicleRole);
     }
 }
 
@@ -103,8 +103,8 @@ void SignalStatus::setInBoundLaneIntersectionAccessPoint(std::vector<ActiveReque
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        inBoundLaneID[i] = ActiveRequestTable[i].vehicleLaneID;
-        inBoundApproachID[i] = ActiveRequestTable[i].vehicleApproachID;
+        inBoundLaneID.push_back(ActiveRequestTable[i].vehicleLaneID);
+        inBoundApproachID.push_back(ActiveRequestTable[i].vehicleApproachID);
     }
 }
 
@@ -112,9 +112,9 @@ void SignalStatus::setETA(std::vector<ActiveRequest> ActiveRequestTable)
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        expectedTimeOfArrival_Minute[i] = int(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
-        expectedTimeOfArrival_Second[i] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
-        expectedTimeOfArrival_Duration[i] = ETA_DURATION;
+        expectedTimeOfArrival_Minute.push_back(static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION));
+        expectedTimeOfArrival_Second.push_back(fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION));
+        expectedTimeOfArrival_Duration.push_back(ETA_DURATION);
     }
 }
 
@@ -122,7 +122,7 @@ void SignalStatus::setPriorityRequestStatus(std::vector<ActiveRequest> ActiveReq
 {
     for (int i = 0; i < getNoOfRequest(); i++)
     {
-        priorityRequestStatus[i] = ActiveRequestTable[i].prsStatus;
+        priorityRequestStatus.push_back(ActiveRequestTable[i].prsStatus);
     }
 }
 
@@ -162,52 +162,52 @@ int SignalStatus::getIntersectionID()
     return intersectionID;
 }
 
-int *SignalStatus::getTemporaryVehicleID()
+std::vector<int> SignalStatus::getTemporaryVehicleID()
 {
     return vehicleID;
 }
 
-int *SignalStatus::getRequestID()
+std::vector<int> SignalStatus::getRequestID()
 {
     return requestID;
 }
 
-int *SignalStatus::getMsgCount()
+std::vector<int> SignalStatus::getMsgCount()
 {
     return msgCount;
 }
 
-int *SignalStatus::getBasicVehicleRole()
+std::vector<int> SignalStatus::getBasicVehicleRole()
 {
     return basicVehicleRole;
 }
 
-int *SignalStatus::getInBoundLaneID()
+std::vector<int> SignalStatus::getInBoundLaneID()
 {
     return inBoundLaneID;
 }
 
-int *SignalStatus::getInBoundApproachID()
+std::vector<int> SignalStatus::getInBoundApproachID()
 {
     return inBoundApproachID;
 }
 
-int *SignalStatus::getETA_Minute()
+std::vector<int> SignalStatus::getETA_Minute()
 {
     return expectedTimeOfArrival_Minute;
 }
 
-double *SignalStatus::getETA_Second()
+std::vector<double> SignalStatus::getETA_Second()
 {
     return expectedTimeOfArrival_Second;
 }
 
-double *SignalStatus::getETA_Duration()
+std::vector<double> SignalStatus::getETA_Duration()
 {
     return expectedTimeOfArrival_Duration;
 }
 
-int *SignalStatus::getPriorityRequestStatus()
+std::vector<int> SignalStatus::getPriorityRequestStatus()
 {
     return priorityRequestStatus;
 }
@@ -234,7 +234,7 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
         jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
         jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
         jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
-        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = int(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
+        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
         jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
         jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Duration"] = ETA_DURATION;
         jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
