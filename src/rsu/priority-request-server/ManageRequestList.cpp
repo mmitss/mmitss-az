@@ -97,7 +97,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
             #endif
 
             #ifdef LOGGING
-                sprintf(temp_log, "\n*** Add New Request **** { %s }\t \t FLAG  %d at time (%.2f).\n", RcvMsg,
+                sprintf(temp_log, "*** Add New Request **** { %s }\t \t FLAG  %d at time (%.2f).\n", RcvMsg,
                         ReqListUpdateFlag, dTime);
                 outputlog(temp_log);
             #endif
