@@ -209,16 +209,16 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
     std::vector<uint8_t> buf(bufSize, 0);
     signalStatus.json2SignalStatus(jsonString);
 
-    int *vehicleID = signalStatus.getTemporaryVehicleID();
-    int *requestID = signalStatus.getRequestID();
-    int *msgCount = signalStatus.getMsgCount();
-    int *inBoundLaneID = signalStatus.getInBoundLaneID();
-    int *inBoundApproachID = signalStatus.getInBoundApproachID();
-    int *basicVehicleRole = signalStatus.getBasicVehicleRole();
-    int *expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-    double *expectedTimeOfArrival_Second = signalStatus.getETA_Second();
-    double *expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
-    int *priorityRequestStatus = signalStatus.getPriorityRequestStatus();
+    std::vector<int>  vehicleID = signalStatus.getTemporaryVehicleID();
+    std::vector<int> requestID = signalStatus.getRequestID();
+    std::vector<int> msgCount = signalStatus.getMsgCount();
+    std::vector<int> inBoundLaneID = signalStatus.getInBoundLaneID();
+    std::vector<int> inBoundApproachID = signalStatus.getInBoundApproachID();
+    std::vector<int> basicVehicleRole = signalStatus.getBasicVehicleRole();
+    std::vector<int> expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
+    std::vector<double> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+    std::vector<double> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
+    std::vector<int> priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
     /// dsrcFrameIn to store input to UPER encoding function
     Frame_element_t dsrcFrameIn;

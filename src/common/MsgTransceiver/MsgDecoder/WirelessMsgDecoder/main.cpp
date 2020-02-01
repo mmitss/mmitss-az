@@ -66,7 +66,7 @@ int main()
         {
             std::string ssmJsonString = decoder.ssmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
-            std::cout << "Decoded SSM" << std::endl;
+            std::cout << "Decoded SSM" << ssmJsonString << std::endl;
         }        
     }
     
