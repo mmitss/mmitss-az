@@ -58,7 +58,7 @@ public:
   std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
 
   bool addToActiveRequestTable(SignalStatus signalStatus);
-  bool shouldSendOutRequest(BasicVehicle basicVehicle, MapManager mapManager);
+  bool shouldSendOutRequest(BasicVehicle basicVehicle);
 
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
@@ -81,7 +81,7 @@ public:
   int getVehicleIntersectionStatus();
   int getVehicleType();
   int getBasicVehicleRole();
-  int getPriorityRequestType();
+  int getPriorityRequestType(BasicVehicle basicVehicle, MapManager mapManager);
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();

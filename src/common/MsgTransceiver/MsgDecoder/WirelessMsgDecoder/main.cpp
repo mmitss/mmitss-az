@@ -52,7 +52,7 @@ int main()
         {
             std::string srmJsonString = decoder.srmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-            std::cout << "Decoded SRM" << std::endl;
+            std::cout << "Decoded SRM" << srmJsonString << std::endl;
         }
         
         else if (msgType == MsgEnum::DSRCmsgID_spat)

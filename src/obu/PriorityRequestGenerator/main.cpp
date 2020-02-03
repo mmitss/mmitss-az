@@ -55,7 +55,7 @@ int main()
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            if (PRG.shouldSendOutRequest(basicVehicle, mapManager) == true)
+            if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
