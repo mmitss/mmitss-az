@@ -19,6 +19,7 @@
 #include "dsrcConsts.h"
 #include "json/json.h"
 #include "SignalStatus.h"
+#include "Timestamp.h"
 
 const int ETA_CONVERTION = 60;
 const int ETA_DURATION = 2000;
@@ -217,7 +218,7 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     std::string jsonString;
-
+    jsonObject["Timestamp"] = getTimestamp();
     jsonObject["MsgType"] = "SSM";
     jsonObject["noOfRequest"] = ActiveRequestTable.size();
     jsonObject["SignalStatus"]["minuteOfYear"] = minuteOfYear;

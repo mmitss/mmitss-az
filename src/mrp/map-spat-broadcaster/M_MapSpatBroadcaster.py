@@ -20,7 +20,7 @@
     -> Receive SPAT data from the ctraffic controller (currently NTCIP1202v2 Blob: defined in separate class)
     -> Calculate the data required for trafficControllerObserver and J2735 SPAT message.
     -> Formulate a json string and send it to trafficControllerObserver and msgEncoder.
-    -> Send the mapPayload as it is to msgSender.
+    -> Send the mapPayload as it is to msgEncoder.
     -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be required to created which could be used in similar manner like NTCIP1202v2Blob class.
 '''
 
@@ -43,9 +43,6 @@ def main():
     MapSpatBroadcastAddress = (mrpIp, port)
     outerSocket.bind(MapSpatBroadcastAddress)
     outerSocket.settimeout(1)
-
-    msgSenderPort = config["PortNumber"]["MessageTransceiver"]["MessageSender"]
-    msgSenderAddress = (mrpIp, msgSenderPort)
 
     msgEncoderPort = config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]
     msgEncoderAddress = (mrpIp, msgEncoderPort)
@@ -93,14 +90,13 @@ def main():
                 print("Sent SPAT to MsgEncoder")
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
-                    outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
+                    outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
                     spatMapMsgCount = 0
-                    print("Sent MAP to MsgSender")
-                #print("Sent SPaT JSON to msgEncoder and trafficControllerObserver, and MAP payload to msgSender.")
+                    print("Sent MAP to MsgEncoder")
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
-            print("Sent MAP to MsgSender")
-            outerSocket.sendto(mapPayload.encode(), msgSenderAddress)
+            print("Sent MAP to MsgEncoder")
+            outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
             spatMapMsgCount = 0
 
 

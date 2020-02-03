@@ -16,12 +16,28 @@ class RsuMsgPacket
         std::string signature = "False";
         std::string encryption = "False";
         std::string payload{};
+
+        std::string bsmMsgId{};
+        std::string srmMsgId_lower{};
+        std::string srmMsgId_upper{};
+        std::string spatMsgId{};
+        std::string mapMsgId{};
+        std::string ssmMsgId_lower{};
+        std::string ssmMsgId_upper{};
+
+        std::string bsmPsid{};
+        std::string srmPsid{};
+        std::string spatPsid{};
+        std::string mapPsid{};
+        std::string ssmPsid{};
+
         void setMsgType(std::string msgPayload);
         void setPsid(std::string msgType);
         void setTxMode(std::string msgType);
         void setTxChannel(std::string msgType);
                 
     public:
+        RsuMsgPacket();
         std::string getMsgPacket(std::string msgPayload);
 };
 

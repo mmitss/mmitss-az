@@ -27,8 +27,6 @@ int main()
     const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
     const int sourceDsrcDevicePort = 1516;
 
-
-
     while (true)
     {
         encoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));

@@ -1,33 +1,59 @@
 #include <string>
 #include <sstream>
+#include <fstream>
 #include "RsuMsgPacket.h"
+#include "json/json.h"
+
+
+RsuMsgPacket::RsuMsgPacket()
+{
+    Json::Value jsonObject_config;
+    Json::Reader reader;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject_config);
+
+    bsmMsgId = jsonObject_config["msgId"]["bsm"].asString();
+    srmMsgId_lower = jsonObject_config["msgId"]["srm_lower"].asString();
+    srmMsgId_upper = jsonObject_config["msgId"]["srm_upper"].asString();
+    spatMsgId = jsonObject_config["msgId"]["spat"].asString();
+    mapMsgId = jsonObject_config["msgId"]["map"].asString();
+    ssmMsgId_lower = jsonObject_config["msgId"]["ssm_lower"].asString();
+    ssmMsgId_upper = jsonObject_config["msgId"]["ssm_upper"].asString();
+
+    bsmPsid = jsonObject_config["psid"]["bsm"].asString();
+    srmPsid = jsonObject_config["psid"]["srm"].asString();
+    spatPsid = jsonObject_config["psid"]["spat"].asString();
+    mapPsid = jsonObject_config["psid"]["map"].asString();
+    ssmPsid = jsonObject_config["psid"]["ssm"].asString();
+}
 
 void RsuMsgPacket::setMsgType(std::string msgId)
 {
-    if(msgId == "0012")
+    if(msgId == mapMsgId)
         type = "MAP";
-    if(msgId == "0014")
+    if(msgId == bsmMsgId)
         type = "BSM";
-    if(msgId == "001D" || msgId == "001d")
+    if(msgId == srmMsgId_lower || msgId == srmMsgId_upper)
         type = "SRM";
-    if(msgId == "0013")
+    if(msgId == spatMsgId)
         type = "SPAT";
-    if(msgId == "001E" || msgId == "001e")
+    if(msgId == ssmMsgId_lower || msgId == ssmMsgId_upper)
         type = "SSM";
 }
 
 void RsuMsgPacket::setPsid(std::string msgType)
 {
     if(msgType == "MAP")
-        psid = "0xE0000017";
+        psid = "0x" + mapPsid;
     if(msgType == "SPAT")
-        psid = "0x8002";
+        psid = "0x" + spatPsid;
     if(msgType == "SSM")
-        psid = "0xE0000020";
+        psid = "0x" + ssmPsid;
     if(msgType == "BSM")
-        psid = "0x20";
+        psid ="0x" + bsmPsid;
     if(msgType == "SRM")
-        psid = "0xE0000019";
+        psid = "0x" + srmPsid;
 }
 
 void RsuMsgPacket::setTxMode(std::string msgType)

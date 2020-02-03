@@ -12,7 +12,7 @@ LIBS        := -L$(J2735_LIB) -ldsrc -lasn #tell the linker where to find the li
 
 
 #cpp's go here
-SRC += AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp SignalRequest.cpp SignalStatus.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp jsoncpp.cpp
+SRC += AccelerationSet4Way.cpp Brakes.cpp GeoCoord.cpp Motion.cpp PriorityRequest.cpp BasicVehicle.cpp Position3D.cpp UdpSocket.cpp SignalRequest.cpp SignalStatus.cpp IntersectionAccessPoint.cpp ExpectedTimeOfArrival.cpp jsoncpp.cpp Timestamp.cpp
 
 #the name of the executable goes here
 TARGET = $(MMITSS_COMMON_LIB)/libmmitss-common.so
