@@ -252,15 +252,27 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
         signalStatus.setIntersectionID(ssmOut.id);
         signalStatus.setNoOfRequest(unsigned(ssmOut.mpSignalRequetStatus.size()));
 
-        for (const auto &RequetStatus : ssmOut.mpSignalRequetStatus)
+        // for (const auto &RequetStatus : ssmOut.mpSignalRequetStatus)
+        // {
+        //     activeRequest.vehicleID = RequetStatus.vehId;
+        //     activeRequest.requestID = static_cast<unsigned int>(RequetStatus.reqId);
+        //     activeRequest.msgCount = static_cast<unsigned int>(RequetStatus.sequenceNumber);
+        //     activeRequest.basicVehicleRole = static_cast<unsigned int>(RequetStatus.vehRole);
+        //     activeRequest.vehicleLaneID = static_cast<unsigned int>(RequetStatus.inLaneId);
+        //     activeRequest.vehicleETA = RequetStatus.ETAminute * 60.0 + RequetStatus.ETAsec;
+        //     activeRequest.prsStatus = static_cast<unsigned int>(RequetStatus.status);
+        //     ActiveRequestTable.push_back(activeRequest);
+        //     activeRequest.reset();
+        // }
+        for (int i=0; i < ssmOut.mpSignalRequetStatus.size(); i++)
         {
-            activeRequest.vehicleID = RequetStatus.vehId;
-            activeRequest.requestID = static_cast<unsigned int>(RequetStatus.reqId);
-            activeRequest.msgCount = static_cast<unsigned int>(RequetStatus.sequenceNumber);
-            activeRequest.basicVehicleRole = static_cast<unsigned int>(RequetStatus.vehRole);
-            activeRequest.vehicleLaneID = static_cast<unsigned int>(RequetStatus.inLaneId);
-            activeRequest.vehicleETA = RequetStatus.ETAminute * 60.0 + RequetStatus.ETAsec;
-            activeRequest.prsStatus = static_cast<unsigned int>(RequetStatus.status);
+            activeRequest.vehicleID = ssmOut.mpSignalRequetStatus[i].vehId;
+            activeRequest.requestID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].reqId);
+            activeRequest.msgCount = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].sequenceNumber);
+            activeRequest.basicVehicleRole = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].vehRole);
+            activeRequest.vehicleLaneID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].inLaneId);
+            activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
+            activeRequest.prsStatus = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].status);
             ActiveRequestTable.push_back(activeRequest);
         }
 
