@@ -268,7 +268,7 @@ void MapManager::deleteMap()
         std::string deleteFileName = findMapPayLoad->availableMapFileDirectory;
         remove(deleteFileName.c_str());
         availableMapList.erase(findMapPayLoad);
-        printAvailableMapList();
+        // printAvailableMapList();
     }
 }
 
