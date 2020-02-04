@@ -1,6 +1,6 @@
 Version=0.7
 Type=SRM
-PSID=0xE0000019
+PSID=0x8002
 Priority=7
 TxMode=CONT
 TxChannel=182

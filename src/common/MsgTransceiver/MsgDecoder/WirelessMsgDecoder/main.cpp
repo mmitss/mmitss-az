@@ -28,8 +28,8 @@ int main()
 
     while(true)
     {
-        decoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedPayload(receiveBuffer);
+
+        std::string receivedPayload = decoderSocket.receivePayloadHexString();
         int msgType = decoder.getMessageType(receivedPayload);
 
         if (msgType == MsgEnum::DSRCmsgID_map)

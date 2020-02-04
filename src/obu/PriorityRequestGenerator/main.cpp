@@ -83,6 +83,7 @@ int main()
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
             std::cout << "SSM is received" << std::endl;
+            signalStatus.reset();
         }
     }
 }

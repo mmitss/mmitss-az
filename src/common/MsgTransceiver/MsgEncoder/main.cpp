@@ -4,6 +4,7 @@
 #include <UdpSocket.h>
 #include "msgEnum.h"
 #include "json/json.h"
+#include "RsuMsgPacket.h"
 
 int main()
 {
@@ -18,40 +19,65 @@ int main()
     std::string messagePayload{};
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    const int messageSenderPortNo = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageSender"]).asInt();
+    bool isMap = false;
+
+    RsuMsgPacket rsuMsgPacket;
+    std::string msgToRsu{};
+
+    const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
+    const int sourceDsrcDevicePort = 1516;
 
     while (true)
     {
         encoderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string jsonString(receiveBuffer);
-        int msgType = encoder.getMessageType(jsonString);
+        
+        if(jsonString.substr(0,4) == "0012")
+            isMap = true;
+        else
+            isMap = false;
 
-        if (msgType == MsgEnum::DSRCmsgID_bsm)
+        if(isMap == false)
         {
-            messagePayload = encoder.BSMEncoder(jsonString);
-            encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(messageSenderPortNo), messagePayload);
-            std::cout << "Encoded BSM" << std::endl;
+            int msgType = encoder.getMessageType(jsonString);
+            if (msgType == MsgEnum::DSRCmsgID_bsm)
+            {
+                messagePayload = encoder.BSMEncoder(jsonString);
+                msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
+                encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                std::cout << "Encoded BSM and sent to RSU" << std::endl;
+            }
+
+            else if (msgType == MsgEnum::DSRCmsgID_srm)
+            {
+                messagePayload = encoder.SRMEncoder(jsonString);
+                msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
+                encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                std::cout << "Encoded SRM and sent to RSU" << std::endl;
+            }
+
+            else if (msgType == MsgEnum::DSRCmsgID_spat)
+            {
+                messagePayload = encoder.SPaTEncoder(jsonString);
+                msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
+                encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                std::cout << "Encoded SPAT and sent to RSU" << std::endl;
+            }
+
+            else if (msgType == MsgEnum::DSRCmsgID_ssm)
+            {
+                messagePayload = encoder.SSMEncoder(jsonString);
+                msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
+                encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                std::cout << "Encoded SSM and sent to RSU" << std::endl;
+            }
+
         }
-
-        else if (msgType == MsgEnum::DSRCmsgID_srm)
+        else
         {
-            messagePayload = encoder.SRMEncoder(jsonString);
-            encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(messageSenderPortNo), messagePayload);
-            std::cout << "Encoded SRM" << std::endl;
-        }
-
-        else if (msgType == MsgEnum::DSRCmsgID_spat)
-        {
-            messagePayload = encoder.SPaTEncoder(jsonString);
-            encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(messageSenderPortNo), messagePayload);
-            std::cout << "Encoded SPAT" << std::endl;
-        }
-
-        else if (msgType == MsgEnum::DSRCmsgID_ssm)
-        {
-            messagePayload = encoder.SSMEncoder(jsonString);
-            encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(messageSenderPortNo), messagePayload);
-            std::cout << "Encoded SSM" << std::endl;
+            msgToRsu = rsuMsgPacket.getMsgPacket(jsonString);
+            encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+            std::cout << "Sent MAP to RSU" << std::endl;
         }
     }
     return 0;

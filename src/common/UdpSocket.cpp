@@ -25,7 +25,12 @@
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
-#include <UdpSocket.h>
+#include <sstream>
+#include <iomanip>
+#include <algorithm>
+#include <vector>
+#include "../../include/common/UdpSocket.h"
+
 
 using std::string;
 using std::cout;
@@ -109,6 +114,36 @@ bool UdpSocket::receiveData(char *receiveBuffer, size_t sizeofReceiveBuffer)
         senderPort =  ntohs(senderIdentifier.sin_port);
         senderIP = inet_ntoa(senderIdentifier.sin_addr);
         return 0;        
+    }
+}
+
+std::string UdpSocket::receivePayloadHexString()
+{
+    unsigned char receiveBuffer[2048]{};
+    sockaddr_in senderIdentifier{};
+    socklen_t senderAddrLen = sizeof(senderIdentifier);
+    std::stringstream ss{};
+    std::string payload{};
+
+    long int n = recvfrom(selfName, receiveBuffer, sizeof(receiveBuffer), 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
+    if (n < 0)
+        {return "1";}
+    else
+    {
+        unsigned char receivedData[n]{};
+        memcpy(receivedData, receiveBuffer, n+1);
+        senderPort =  ntohs(senderIdentifier.sin_port);
+        senderIP = inet_ntoa(senderIdentifier.sin_addr);
+        
+        ss << std::hex;
+	    for (size_t i = 0; i < sizeof(receivedData); i++)
+		    ss << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(receivedData[i]);
+
+        payload = ss.str();
+        size_t pos = payload.find("001"); //find location of word
+        payload.erase(0,pos);       
+        
+        return payload;        
     }
 }
 
