@@ -1,0 +1,38 @@
+Payload size 51
+001E3061D4C1C35108000C00000FAC2F9000000964141200200F0EA61271083E823E40000025D0506480B0343A986EA640FA02
+
+SSM UPER (Unaligned Packed Encoding Rules) decoding result:
+
+minuteOfYear: 120001
+msOfMinute: 50001
+sequenceNumber: 4
+SignalStatusList: 1
+	updateCnt: 1
+	id
+		regionalId: 0
+		intersectionId: 1003
+	SignalRequest: 2
+		request #: 1
+			requester
+				VehicleID: 601
+				RequestID: 5
+				sequenceNumber: 2
+				role: 16
+			inBoundLane(lane): 8
+			outBoundLane(lane): 30
+			ETAminute: 120002
+			ETAsec: 20001
+			duration: 2000
+			PRS status: 4
+		request #: 2
+			requester
+				VehicleID: 605
+				RequestID: 5
+				sequenceNumber: 3
+				role: 9
+			inBoundLane(lane): 11
+			outBoundLane(lane): 26
+			ETAminute: 120003
+			ETAsec: 30002
+			duration: 2000
+			PRS status: 1

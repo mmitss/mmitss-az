@@ -1,0 +1,15 @@
+{
+    "Archive Manager" : 
+    {
+        "categories" : "GTK;GNOME;Utility;Archiving;Compression;",
+        "icon" : "/usr/share/icons/Mint-X/apps/scalable/file-roller.svg",
+        "name" : 11
+    },
+    "Calculator" : 
+    {
+        "categories" : "GNOME;GTK;Utility;Calculator;",
+        "icon" : "/usr/share/icons/Mint-X/apps/scalable/accessories-calculator.svg",
+        "name" : 12
+    }
+        
+}
