@@ -232,7 +232,7 @@ def main():
     cum_Right_Ring1_Phase_Times = []
     cum_phaseInRing1 = [0]
     ETA = []
-    req_phase = [2,7]
+    req_phase = [2,8]
 
     SP1, SP2 = getStartingPhases().split()
     print("SP1 =", SP1)

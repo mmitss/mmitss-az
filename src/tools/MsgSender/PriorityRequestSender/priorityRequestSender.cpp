@@ -27,7 +27,7 @@ int main()
     vector<int>vehicleType{6,9};
     vector<int>basicVehicleRole{16,9};
     vector<int>laneID{2,9};
-    vector<double>ETA{20.0, 40.0};
+    vector<double>ETA{40.0, 20.0};
     vector<double>ETADuration{5.0, 5.0};
     vector<int>requestedPhase{2,8};
     vector<int>requestStatus{4,4};

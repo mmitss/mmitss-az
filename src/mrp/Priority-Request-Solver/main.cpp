@@ -33,6 +33,7 @@ int main()
 
   priorityRequestSolver.readCurrentSignalTimingPlan();
   priorityRequestSolver.printSignalPlan();
+  priorityRequestSolver.GenerateModFile();
   while (true)
   {
     priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -44,7 +45,7 @@ int main()
     priorityRequestSolver.removeDuplicateSignalGroup();
     //priorityRequestSolver.printvector();
     priorityRequestSolver.addAssociatedSignalGroup();
-    priorityRequestSolver.printvector();
+    // priorityRequestSolver.printvector();
     priorityRequestSolver.modifyGreenMax();
     priorityRequestSolver.generateDatFile();
 

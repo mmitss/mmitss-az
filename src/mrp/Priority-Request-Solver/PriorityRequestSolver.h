@@ -25,6 +25,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 using std::string;
+// using std::fstream;
 using std::ifstream;
 using std::ofstream;
 using std::ios;
@@ -45,6 +46,10 @@ private:
     vector<double> RedClear;
     vector<int> PhaseRing;
     vector<int>requestedSignalGroup;
+    vector<int>P11;
+    vector<int>P12;
+    vector<int>P21;
+    vector<int>P22;
     int noOfPhase{};
     int numberOfTransitInList{};
     int numberOfTruckInList{};
@@ -66,7 +71,7 @@ public:
     void GLPKSolver();
     // vector<TrafficSignalPlan>readCurrentSignalTimingPlan();
     void readCurrentSignalTimingPlan();
-    // void GenerateModFile();
+    void GenerateModFile();
     void printSignalPlan();
     void printvector();
     

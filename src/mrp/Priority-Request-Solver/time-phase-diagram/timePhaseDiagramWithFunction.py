@@ -167,7 +167,7 @@ def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cu
     ax1.set_ylabel('Ring 1', color=color)
     ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
     # print("cum_Right_Ring1_Phase_Times", cum_Right_Ring1_Phase_Times[-1])
-    plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10),color='g') 
+    plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10)) 
 
     # ax1.set_xticks(ticks=np.arange(
     #     cum_phaseInRing1[0], cum_phaseInRing1[-1], 10)) 
@@ -205,14 +205,14 @@ def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cu
             pos = phasesInRing1.index(i)
             pos = cum_phaseInRing1[pos]
             requestedPhasePosition.append(pos)
-    from matplotlib.collections import PatchCollection
-    import matplotlib
+    # requestedPhasePosition.extend(requestedPhasePosition*1)
+    # ETA.extend(ETA*1)
     patches =[]
     req_phase_length = len(req_phase)
     for i in range(0,req_phase_length):
         x = ETA[i]
         y = requestedPhasePosition[i]
-        patches.append(matplotlib.patches.Rectangle((x, y),5,10))
+        patches.append(matplotlib.patches.Rectangle((x, y),5,10,angle=0.0,color='r'))
     ax1.add_collection(PatchCollection(patches))
     #Plotting the priority request
     # rect = plt.Rectangle((ETA[0], pos), ETA[1]-ETA[0],
@@ -232,7 +232,7 @@ def main():
     cum_Right_Ring1_Phase_Times = []
     cum_phaseInRing1 = [0]
     ETA = []
-    req_phase = [2,7]
+    req_phase = [2,8]
 
     SP1, SP2 = getStartingPhases().split()
     print("SP1 =", SP1)
