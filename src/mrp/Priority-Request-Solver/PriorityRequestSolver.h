@@ -19,12 +19,13 @@
 #include <vector>
 #include "TrafficSignalPlan.h"
 #include "RequestList.h"
-
+#include <sstream>
 
 using std::cout;
 using std::endl;
 using std::vector;
 using std::string;
+using std::stringstream;
 // using std::fstream;
 using std::ifstream;
 using std::ofstream;
@@ -53,6 +54,7 @@ private:
     int noOfPhase{};
     int numberOfTransitInList{};
     int numberOfTruckInList{};
+    vector<int> a;
 
 
 public:
@@ -69,6 +71,9 @@ public:
     void generateDatFile();
     double GetSeconds();
     void GLPKSolver();
+    bool GLPKSolutionValidation();
+    void readOptimalPlan();
+    void split(string strToSplit);
     // vector<TrafficSignalPlan>readCurrentSignalTimingPlan();
     void readCurrentSignalTimingPlan();
     void GenerateModFile();

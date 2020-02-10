@@ -352,6 +352,81 @@ skip:
     glp_delete_prob(mip);
 }
 
+void PriorityRequestSolver::readOptimalPlan()
+{
+    ifstream infile;
+    string lineread{};
+    int tempLine{};
+    vector<int> SP;
+    vector<int> init;
+    vector<int> elapsedGrn;
+
+    infile.open("Results.txt");
+    // getline(infile, lineread);
+
+    if (infile.fail())
+        std::cout << "Fail to open file" << std::endl;
+
+    else
+    {
+        for (std::string line; getline(infile, line);)
+        {
+            stringstream strToSplit(line.c_str());
+            while (strToSplit >> tempLine)
+                SP.push_back(tempLine);
+        }
+        // getline(infile, lineread);
+        // stringstream strToSplit(lineread.c_str());
+        // while(strToSplit >> tempLine)
+        //     SP.push_back(tempLine);
+        // split(lineread.c_str());
+    }
+}
+
+void PriorityRequestSolver::split(string strToSplit)
+{
+    std::stringstream in(strToSplit);
+    // vector<int> a;
+    int temp;
+    while (in >> temp)
+    {
+        a.push_back(temp);
+    }
+}
+
+bool PriorityRequestSolver::GLPKSolutionValidation()
+{
+    bool bValid{false};
+    ifstream infile;
+
+    infile.open("Results.txt");
+
+    if (infile.fail())
+        std::cout << "Fail to open file" << std::endl;
+
+    else
+    {
+    }
+
+    // void Menu::readFile() {
+    // string line;
+    // vector <string> lines;
+    // ifstream myfile ("file.txt");
+
+    // if (myfile.is_open()) {
+    //     while (getline (myfile, line)) {
+    //       cout << line << "\n";
+    //       lines.push_back(line);
+    //     }
+
+    //     myfile.close();
+    // } else {
+    //    cout << "Unable to open file";
+    // }
+
+    return bValid;
+}
+
 void PriorityRequestSolver::readCurrentSignalTimingPlan()
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
@@ -481,10 +556,10 @@ void PriorityRequestSolver::GenerateModFile()
     FileMod << "set P:={";
     for (int i = 0; i < noOfPhase; i++)
     {
-    	if (i != noOfPhase - 1)
-    		FileMod << " " << PhaseNumber[i] << ",";
-    	else
-    		FileMod << " " << PhaseNumber[i];
+        if (i != noOfPhase - 1)
+            FileMod << " " << PhaseNumber[i] << ",";
+        else
+            FileMod << " " << PhaseNumber[i];
     }
     FileMod << "};\n";
 
@@ -497,7 +572,7 @@ void PriorityRequestSolver::GenerateModFile()
     // then CP={2,6} and CP1={2} and CP2={6}. The values of Cl1 and Cu1 show the lower and upper bound of the arrival time of coordination request for phase p in CP1
     // The values of Cl2 and Cu2 show the lower and upper bound of the arrival time of coordination request for phase p in CP2
     FileMod << "set E:={1,2};\n";
-    FileMod <<"\n";
+    FileMod << "\n";
     // //========================Parameters=========================
 
     FileMod << "param y    {p in P}, >=0,default 0;\n";
@@ -537,7 +612,7 @@ void PriorityRequestSolver::GenerateModFile()
     FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
 
-    FileMod <<"\n";
+    FileMod << "\n";
     // // ==================== VARIABLES =======================
     FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
@@ -548,7 +623,7 @@ void PriorityRequestSolver::GenerateModFile()
     FileMod << "var PriorityDelay;\n";
     FileMod << "var Flex;\n";
 
-    FileMod <<"\n";
+    FileMod << "\n";
 
     // // ===================Constraints==============================
 
@@ -598,7 +673,7 @@ void PriorityRequestSolver::GenerateModFile()
     FileMod << "s.t. PrioDelay7{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-theta[p,j])>=ttheta[p,j];\n";
     FileMod << "s.t. PrioDelay8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
     FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
-    
+
     FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
@@ -654,9 +729,7 @@ void PriorityRequestSolver::GenerateModFile()
     FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
-
     FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"Results.txt\"; \n";
-
 
     FileMod << "printf \"%5.2f \\n \", Flex >>\"Results.txt\"; \n";
     FileMod << "printf \" \\n \">>\"Results.txt\";\n";

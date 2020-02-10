@@ -34,6 +34,7 @@ int main()
   priorityRequestSolver.readCurrentSignalTimingPlan();
   priorityRequestSolver.printSignalPlan();
   priorityRequestSolver.GenerateModFile();
+  priorityRequestSolver.readOptimalPlan();
   while (true)
   {
     priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
