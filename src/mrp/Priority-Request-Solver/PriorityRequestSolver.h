@@ -19,6 +19,7 @@
 #include <vector>
 #include "TrafficSignalPlan.h"
 #include "RequestList.h"
+#include "Schedule.h"
 #include <sstream>
 
 using std::cout;
@@ -35,6 +36,7 @@ class PriorityRequestSolver
 {
 private:
     vector<RequestList> priorityRequestList;
+    vector<Schedule::GLPKSchedule> glpkSchedule;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
     vector<int>PhaseNumber;
@@ -54,6 +56,10 @@ private:
     int noOfPhase{};
     int numberOfTransitInList{};
     int numberOfTruckInList{};
+    vector<double> leftCriticalPoints;
+    vector<double> rightCriticalPoints;
+    vector<double> leftCriticalPoints_GreenTime;
+    vector<double> rightCriticalPoints_GreenTime;
     vector<int> a;
 
 

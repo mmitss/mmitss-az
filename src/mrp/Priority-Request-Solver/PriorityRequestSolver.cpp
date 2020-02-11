@@ -24,6 +24,10 @@
 
 const int transitWeight = 1;
 const int truckWeight = 1;
+#define PHASE_FORCEOFF 0
+#define PHASE_OMIT 1
+#define PHASE_VEH_CALL 2
+#define PHASE_HOLD 3
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
@@ -357,9 +361,16 @@ void PriorityRequestSolver::readOptimalPlan()
     ifstream infile;
     string lineread{};
     int tempLine{};
+    double temporaryLine{};
     vector<int> SP;
-    vector<int> init;
-    vector<int> elapsedGrn;
+    vector<double> init;
+    vector<double> elapsedGrn;
+    // vector<double> leftCriticalPoints;
+    // vector<double> rightCriticalPoints;
+    // vector<double> leftCriticalPoints_GreenTime;
+    // vector<double> rightCriticalPoints_GreenTime;
+    Schedule::GLPKSchedule tempSchedule;
+    glpkSchedule.clear();
 
     infile.open("Results.txt");
     // getline(infile, lineread);
@@ -369,18 +380,105 @@ void PriorityRequestSolver::readOptimalPlan()
 
     else
     {
-        for (std::string line; getline(infile, line);)
+        for (int lineNo = 0; getline(infile, lineread) && lineNo < 20; lineNo++)
         {
-            stringstream strToSplit(line.c_str());
-            while (strToSplit >> tempLine)
-                SP.push_back(tempLine);
+            if (lineNo == 0)
+            {
+                stringstream strToSplit(lineread.c_str());
+                while (strToSplit >> tempLine)
+                    SP.push_back(tempLine);
+            }
+            else if (lineNo == 1)
+            {
+                stringstream strToSplit(lineread.c_str());
+                double init1{}, init2{}, grn1{}, grn2{};
+                strToSplit >> init1 >> init2 >> grn1 >> grn2;
+                init.push_back(init1);
+                init.push_back(init2);
+                elapsedGrn.push_back(grn1);
+                elapsedGrn.push_back(grn2);
+            }
+
+            else if (lineNo > 1 && lineNo < 5)
+            {
+                stringstream strToSplit(lineread.c_str());
+                while (strToSplit >> temporaryLine)
+                    leftCriticalPoints.push_back(temporaryLine);
+
+                // double lcp1{}, lcp2{}, lcp3{}, lcp4{}, lcp5{}, lcp6{}, lcp7{}, lcp8{};
+                // strToSplit>> lcp1 >> lcp2 >> lcp3 >> lcp4 >> lcp5 >> lcp6 >> lcp7 >> lcp8;
+            }
+
+            else if (lineNo > 4 && lineNo < 8)
+            {
+                stringstream strToSplit(lineread.c_str());
+                while (strToSplit >> temporaryLine)
+                    rightCriticalPoints.push_back(temporaryLine);
+            }
+
+            else if (lineNo > 7 && lineNo <= 10)
+            {
+                stringstream strToSplit(lineread.c_str());
+                while (strToSplit >> temporaryLine)
+                    leftCriticalPoints_GreenTime.push_back(temporaryLine);
+            }
+
+            else if (lineNo > 10 && lineNo < 14)
+            {
+                stringstream strToSplit(lineread.c_str());
+                while (strToSplit >> temporaryLine)
+                    rightCriticalPoints_GreenTime.push_back(temporaryLine);
+            }
         }
-        // getline(infile, lineread);
-        // stringstream strToSplit(lineread.c_str());
-        // while(strToSplit >> tempLine)
-        //     SP.push_back(tempLine);
-        // split(lineread.c_str());
     }
+    infile.close();
+    //Removing all the elements having 0 value.
+    for (auto i = leftCriticalPoints.begin(); i != leftCriticalPoints.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            leftCriticalPoints.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = rightCriticalPoints.begin(); i != rightCriticalPoints.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            rightCriticalPoints.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = leftCriticalPoints_GreenTime.begin(); i != leftCriticalPoints_GreenTime.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            leftCriticalPoints_GreenTime.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = rightCriticalPoints_GreenTime.begin(); i != rightCriticalPoints_GreenTime.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            rightCriticalPoints_GreenTime.erase(i);
+            i--;
+        }
+    }
+    // for (int lineNo = 1; getline(infile, lineread) && lineNo < 2; lineNo++)
+    // {
+    //     stringstream strToSplit(lineread.c_str());
+    //     while (strToSplit >> tempLine)
+    //         init.push_back(tempLine);
+    // }
+    // getline(infile, lineread);
+    // stringstream strToSplit(lineread.c_str());
+    // while(strToSplit >> tempLine)
+    //     SP.push_back(tempLine);
+    // split(lineread.c_str());
 }
 
 void PriorityRequestSolver::split(string strToSplit)
