@@ -1,3 +1,4 @@
 #include <string>
 
-std::string getTimestamp();
+std::string getVerboseTimestamp();
+double getPosixTimestamp();

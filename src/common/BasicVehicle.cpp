@@ -137,7 +137,8 @@ int BasicVehicle::getWidth_cm()
 string BasicVehicle::basicVehicle2Json()
 {
     Json::Value jsonObject;
-    jsonObject["Timestamp"] = getTimestamp();
+    jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+    jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "BSM";
     jsonObject["BasicVehicle"]["temporaryID"] = temporaryID;
     jsonObject["BasicVehicle"]["secMark_Second"] = secMark_Second;
