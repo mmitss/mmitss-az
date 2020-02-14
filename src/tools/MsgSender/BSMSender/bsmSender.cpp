@@ -11,8 +11,8 @@ int main()
 {
     //Socket Communication
     UdpSocket bsmSenderSocket(20010);
-    const string LOCALHOST = "10.12.6.56";
-    const int receiverPortNo = 10007;
+    const string LOCALHOST = "10.12.6.101";
+    const int receiverPortNo = 10005;
     std::string sendingJsonString;
 
     std::ifstream infile;

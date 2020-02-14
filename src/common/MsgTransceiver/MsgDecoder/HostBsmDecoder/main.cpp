@@ -35,6 +35,7 @@ int main()
         std::string receivedPayload = decoderSocket.receivePayloadHexString();
         std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
         std::cout << "Decoded HostBSM" << std::endl;
+        std::cout << bsmJsonString << std::endl;
         basicVehicle.json2BasicVehicle(bsmJsonString);
         secMark = basicVehicle.getSecMark_Second();
         latitude = basicVehicle.getLatitude_DecimalDegree();
