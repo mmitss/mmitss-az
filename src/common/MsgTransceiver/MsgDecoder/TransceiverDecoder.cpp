@@ -16,6 +16,7 @@
 #include "SignalStatus.h"
 #include "ActiveRequest.h"
 #include "TransceiverDecoder.h"
+#include "Timestamp.h"
 
 const double KPH_TO_MPS_CONVERSION = 0.277778;
 
@@ -89,7 +90,6 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
     intersectionID = plocAwareLib->getIntersectionIdByName(intersectionName);
     mapName = "Map" + std::to_string(intersectionID);
-
     jsonObject["MsgType"] = "MAP";
     jsonObject["IntersectionName"] = mapName;
     jsonObject["MapPayload"] = mapPayload;
@@ -328,6 +328,8 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
         Json::FastWriter fastWriter;
 
         jsonObject["MsgType"] = "SPaT";
+        jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+        jsonObject["Timestamp_posix"] = getVerboseTimestamp();
         jsonObject["Spat"]["IntersectionState"]["regionalID"] = spatOut.regionalId;
         jsonObject["Spat"]["IntersectionState"]["intersectionID"] = spatOut.id;
         jsonObject["Spat"]["msgCnt"] = static_cast<unsigned int>(spatOut.msgCnt);
