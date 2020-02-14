@@ -1,0 +1,204 @@
+{
+	"MsgType" : "Schedule",
+	"Schedule" : 
+	[
+		{
+			"commandEndTime" : 5.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 0.0,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 26.600000000000001,
+			"commandPhase" : 3,
+			"commandStartTime" : 10.0,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 36.600000000000001,
+			"commandPhase" : 4,
+			"commandStartTime" : 31.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 46.600000000000001,
+			"commandPhase" : 1,
+			"commandStartTime" : 41.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 56.600000000000001,
+			"commandPhase" : 2,
+			"commandStartTime" : 51.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 66.599999999999994,
+			"commandPhase" : 3,
+			"commandStartTime" : 61.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 76.599999999999994,
+			"commandPhase" : 4,
+			"commandStartTime" : 71.599999999999994,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 86.599999999999994,
+			"commandPhase" : 1,
+			"commandStartTime" : 81.599999999999994,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 15.6,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 3,
+			"commandStartTime" : 60.850000000000001,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 4,
+			"commandStartTime" : 100.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 1,
+			"commandStartTime" : 140.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 180.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 3,
+			"commandStartTime" : 226.09999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 4,
+			"commandStartTime" : 266.10000000000002,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 1,
+			"commandStartTime" : 276.10000000000002,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 24.0,
+			"commandPhase" : 3,
+			"commandStartTime" : 0.0,
+			"commandType" : 6
+		},
+		{
+			"commandEndTime" : 5.0,
+			"commandPhase" : 6,
+			"commandStartTime" : 0.0,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 15.0,
+			"commandPhase" : 7,
+			"commandStartTime" : 10.0,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 36.600000000000001,
+			"commandPhase" : 8,
+			"commandStartTime" : 20.0,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 46.600000000000001,
+			"commandPhase" : 5,
+			"commandStartTime" : 41.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 56.600000000000001,
+			"commandPhase" : 6,
+			"commandStartTime" : 51.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 66.599999999999994,
+			"commandPhase" : 7,
+			"commandStartTime" : 61.600000000000001,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 76.599999999999994,
+			"commandPhase" : 8,
+			"commandStartTime" : 71.599999999999994,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 86.599999999999994,
+			"commandPhase" : 5,
+			"commandStartTime" : 81.599999999999994,
+			"commandType" : 4
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 6,
+			"commandStartTime" : 15.6,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 7,
+			"commandStartTime" : 60.850000000000001,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 8,
+			"commandStartTime" : 100.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 140.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 6,
+			"commandStartTime" : 180.84999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 7,
+			"commandStartTime" : 226.09999999999999,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 8,
+			"commandStartTime" : 266.10000000000002,
+			"commandType" : 5
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 276.10000000000002,
+			"commandType" : 5
+		}
+	]
+}

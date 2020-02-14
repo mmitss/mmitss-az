@@ -4,23 +4,20 @@ namespace Schedule
 {
     struct TCISchedule
     {
-        int phaseNo{};
-        double phaseDuration{};
-        double phaseGreenTime{};
-        double commandTime{};
+        int commandPhase{};
+        double commandStartTime{};
+        double commandEndTime{};        
         int commandType{};
-        int commandId{};
 
         void reset()
         {
-            phaseNo = 0;
-            phaseDuration = 0.0;
-            phaseGreenTime = 0.0;
-            commandTime = 0.0;
+            commandPhase = 0;
+            commandStartTime = 0.0;
+            commandEndTime = 0.0;
             commandType = 0;
-            commandId = 0;
         }
     };
+    
     struct GLPKSchedule
     {
         int phaseNo{};

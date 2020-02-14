@@ -21,7 +21,7 @@ double endOfSolve{};
 
 int main()
 {
-    char modFile[128] = "../creatingPriorityRequestList/NewModel.mod";
+    char modFile[128] = "../creatingPriorityRequestList/NewModel_EV.mod";
     glp_prob *mip;
     glp_tran *tran;
     int ret{};

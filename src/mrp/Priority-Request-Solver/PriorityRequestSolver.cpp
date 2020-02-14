@@ -19,20 +19,27 @@
 #include <fstream>
 #include <stdio.h>
 #include <sys/time.h>
-#include <jsoncpp/json/json.h>
+#include "json/json.h"
 #include <algorithm>
+#include <cmath>
 
 const int transitWeight = 1;
 const int truckWeight = 1;
-#define PHASE_FORCEOFF 0
-#define PHASE_OMIT 1
-#define PHASE_VEH_CALL 2
-#define PHASE_HOLD 3
+
+#define OMIT_VEH_PHASES 2
+#define OMIT_PED_PHASES 3
+#define HOLD_PHASES 4
+#define FORCEOFF_PHASES 5
+#define CALL_VEH_PHASES 6
+#define CALL_PED_PHASES 7
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
 }
 
+/*
+    - This method is responsible for creating priority request list received from the PRS as Json String.
+*/
 void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 {
     int noOfRequest{};
@@ -58,13 +65,45 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
             priorityRequestList.push_back(requestList);
         }
     }
-
+    // setPhaseCallForRequestedSignalGroup();
+    //This is optional. For priniting few attributes of the priority request list in the console
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
         cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
     }
 }
 
+// void PriorityRequestSolver::setPhaseCallForRequestedSignalGroup()
+// {
+//     int vehicleSignalGroup{};
+//     double vehicleETA{};
+//     double vehicleCallTime{};
+//     int noOfVehicleCall{};
+//     requestedVehicleCall.clear();
+//     Schedule::GLPKSchedule vehicleCall;
+//     for (size_t i = 0; i < priorityRequestList.size(); i++)
+//     {
+//         vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+//         vehicleETA = priorityRequestList[i].vehicleETA;
+//         vehicleCallTime = 0.0;
+//         noOfVehicleCall = unsigned(round(vehicleETA / 0.9));
+//         for (int j = 0; j <= noOfVehicleCall; j++)
+//         {
+//             if (vehicleCallTime < vehicleETA)
+//             {
+//                 vehicleCall.phaseNo = vehicleSignalGroup;
+//                 vehicleCall.time = vehicleCallTime;
+//                 vehicleCall.action = CALL_VEH_PHASES;
+//                 requestedVehicleCall.push_back(vehicleCall);
+//                 vehicleCallTime = vehicleCallTime + 0.9;
+//             }
+//         }
+//     }
+// }
+
+/*
+    - If new priority request  is received this method will obtain the current traffic signal Status.
+*/
 void PriorityRequestSolver::getCurrentSignalStatus()
 {
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
@@ -83,12 +122,16 @@ void PriorityRequestSolver::getCurrentSignalStatus()
     tcStatus.elapsedGreen2 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["Grn2"].asDouble();
     trafficControllerStatus.push_back(tcStatus);
 
+    //This is optional. For priniting few attributes of the TCStatus in the console.
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
         cout << trafficControllerStatus[i].startingPhase1 << " " << trafficControllerStatus[i].initPhase1 << " " << trafficControllerStatus[i].elapsedGreen2 << endl;
     }
 }
 
+/*
+    - This method will obtain requested signal group information from the priority request list and store them in requestedSignalGroup list.
+*/
 void PriorityRequestSolver::getRequestedSignalGroupFromPriorityRequestList()
 {
     //vector<int>requestedSignalGroup;
@@ -96,6 +139,10 @@ void PriorityRequestSolver::getRequestedSignalGroupFromPriorityRequestList()
         requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
 }
 
+/*
+    - This method is responsible for removing the duplicate signal group number from requestedSignalGroup list.
+        -If there is multiple priority request for signal group then there will be duplicate signal group in requestedSignalGroup list.
+*/
 void PriorityRequestSolver::removeDuplicateSignalGroup()
 {
     auto end = requestedSignalGroup.end();
@@ -143,6 +190,9 @@ void PriorityRequestSolver::addAssociatedSignalGroup()
     removeDuplicateSignalGroup();
 }
 
+/*
+    - This function will increase the  value of green max by 15% if there is Transit or Truck in the priority request list.
+*/
 void PriorityRequestSolver::modifyGreenMax()
 {
     for (auto i = requestedSignalGroup.begin(); i != requestedSignalGroup.end(); ++i)
@@ -154,6 +204,9 @@ void PriorityRequestSolver::modifyGreenMax()
     }
 }
 
+/*
+    - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
+*/
 void PriorityRequestSolver::generateDatFile()
 {
     int vehicleClass{}; //to match the old PRSolver
@@ -306,6 +359,10 @@ double PriorityRequestSolver::GetSeconds()
     return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
 }
 
+/*
+    - Method of solving the request in the priority request list  based on mod and dat files
+    - Solution will be written in the Results.txt file
+*/
 void PriorityRequestSolver::GLPKSolver()
 {
     double startOfSolve{};
@@ -356,7 +413,7 @@ skip:
     glp_delete_prob(mip);
 }
 
-void PriorityRequestSolver::readOptimalPlan()
+void PriorityRequestSolver::readOptimalSignalPlan()
 {
     ifstream infile;
     string lineread{};
@@ -365,12 +422,10 @@ void PriorityRequestSolver::readOptimalPlan()
     vector<int> SP;
     vector<double> init;
     vector<double> elapsedGrn;
-    // vector<double> leftCriticalPoints;
-    // vector<double> rightCriticalPoints;
-    // vector<double> leftCriticalPoints_GreenTime;
-    // vector<double> rightCriticalPoints_GreenTime;
-    Schedule::GLPKSchedule tempSchedule;
-    glpkSchedule.clear();
+    vector<double> leftCriticalPoints;
+    vector<double> rightCriticalPoints;
+    vector<double> leftCriticalPoints_GreenTime;
+    vector<double> rightCriticalPoints_GreenTime;
 
     infile.open("Results.txt");
     // getline(infile, lineread);
@@ -432,39 +487,166 @@ void PriorityRequestSolver::readOptimalPlan()
         }
     }
     infile.close();
+
+    /*
+    - Holding the total phase duration for ring wise each phase. 
+    - We have 24 phase duration (3cycles). 
+    - To store the data ring wise we have skip the phases of opposite ring.
+    */
+    for (size_t i = 0; i < leftCriticalPoints.size(); i++)
+    {
+        leftCriticalPoints_PhaseDuration_Ring1.push_back(leftCriticalPoints.at(i));
+        if (i == 3)
+            i = 7;
+        else if (i == 11)
+            i = 15;
+        else if (i == 19)
+            break;
+    }
+
+    for (size_t i = 0; i < rightCriticalPoints.size(); i++)
+    {
+        rightCriticalPoints_PhaseDuration_Ring1.push_back(rightCriticalPoints.at(i));
+        if (i == 3)
+            i = 7;
+        else if (i == 11)
+            i = 15;
+        else if (i == 19)
+            break;
+    }
+
+    for (size_t i = 4; i < leftCriticalPoints.size(); i++)
+    {
+        leftCriticalPoints_PhaseDuration_Ring2.push_back(leftCriticalPoints.at(i));
+        if (i == 7)
+            i = 11;
+        else if (i == 15)
+            i = 19;
+    }
+
+    for (size_t i = 4; i < rightCriticalPoints.size(); i++)
+    {
+        rightCriticalPoints_PhaseDuration_Ring2.push_back(rightCriticalPoints.at(i));
+        if (i == 7)
+            i = 11;
+        else if (i == 15)
+            i = 19;
+    }
+
+    /*
+    - Holding the total greeen time for ring wise each phase. 
+    - We have 24 phase duration (3cycles). 
+    - To store the data ring wise we have skip the phases of opposite ring.
+    */
+    for (size_t i = 0; i < leftCriticalPoints_GreenTime.size(); i++)
+    {
+        leftCriticalPoints_GreenTime_Ring1.push_back(leftCriticalPoints_GreenTime.at(i));
+        if (i == 3)
+            i = 7;
+        else if (i == 11)
+            i = 15;
+        else if (i == 19)
+            break;
+    }
+
+    for (size_t i = 0; i < rightCriticalPoints_GreenTime.size(); i++)
+    {
+        rightCriticalPoints_GreenTime_Ring1.push_back(rightCriticalPoints_GreenTime.at(i));
+        if (i == 3)
+            i = 7;
+        else if (i == 11)
+            i = 15;
+        else if (i == 19)
+            break;
+    }
+
+    for (size_t i = 4; i < leftCriticalPoints_GreenTime.size(); i++)
+    {
+        leftCriticalPoints_GreenTime_Ring2.push_back(leftCriticalPoints_GreenTime.at(i));
+        if (i == 7)
+            i = 11;
+        else if (i == 15)
+            i = 19;
+    }
+
+    for (size_t i = 4; i < rightCriticalPoints_GreenTime.size(); i++)
+    {
+        rightCriticalPoints_GreenTime_Ring2.push_back(rightCriticalPoints_GreenTime.at(i));
+        if (i == 7)
+            i = 11;
+        else if (i == 15)
+            i = 19;
+    }
+
     //Removing all the elements having 0 value.
-    for (auto i = leftCriticalPoints.begin(); i != leftCriticalPoints.end(); ++i)
+    for (auto i = leftCriticalPoints_PhaseDuration_Ring1.begin(); i != leftCriticalPoints_PhaseDuration_Ring1.end(); ++i)
     {
         if (*i == 0)
         {
-            leftCriticalPoints.erase(i);
+            leftCriticalPoints_PhaseDuration_Ring1.erase(i);
             i--;
         }
     }
 
-    for (auto i = rightCriticalPoints.begin(); i != rightCriticalPoints.end(); ++i)
+    for (auto i = rightCriticalPoints_PhaseDuration_Ring1.begin(); i != rightCriticalPoints_PhaseDuration_Ring1.end(); ++i)
     {
         if (*i == 0)
         {
-            rightCriticalPoints.erase(i);
+            rightCriticalPoints_PhaseDuration_Ring1.erase(i);
             i--;
         }
     }
 
-    for (auto i = leftCriticalPoints_GreenTime.begin(); i != leftCriticalPoints_GreenTime.end(); ++i)
+    for (auto i = leftCriticalPoints_PhaseDuration_Ring2.begin(); i != leftCriticalPoints_PhaseDuration_Ring2.end(); ++i)
     {
         if (*i == 0)
         {
-            leftCriticalPoints_GreenTime.erase(i);
+            leftCriticalPoints_PhaseDuration_Ring2.erase(i);
             i--;
         }
     }
 
-    for (auto i = rightCriticalPoints_GreenTime.begin(); i != rightCriticalPoints_GreenTime.end(); ++i)
+    for (auto i = rightCriticalPoints_PhaseDuration_Ring2.begin(); i != rightCriticalPoints_PhaseDuration_Ring2.end(); ++i)
     {
         if (*i == 0)
         {
-            rightCriticalPoints_GreenTime.erase(i);
+            rightCriticalPoints_PhaseDuration_Ring2.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = leftCriticalPoints_GreenTime_Ring1.begin(); i != leftCriticalPoints_GreenTime_Ring1.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            leftCriticalPoints_GreenTime_Ring1.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = rightCriticalPoints_GreenTime_Ring1.begin(); i != rightCriticalPoints_GreenTime_Ring1.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            rightCriticalPoints_GreenTime_Ring1.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = leftCriticalPoints_GreenTime_Ring2.begin(); i != leftCriticalPoints_GreenTime_Ring2.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            leftCriticalPoints_GreenTime_Ring2.erase(i);
+            i--;
+        }
+    }
+
+    for (auto i = rightCriticalPoints_GreenTime_Ring2.begin(); i != rightCriticalPoints_GreenTime_Ring2.end(); ++i)
+    {
+        if (*i == 0)
+        {
+            rightCriticalPoints_GreenTime_Ring2.erase(i);
             i--;
         }
     }
@@ -481,17 +663,344 @@ void PriorityRequestSolver::readOptimalPlan()
     // split(lineread.c_str());
 }
 
-void PriorityRequestSolver::split(string strToSplit)
+void PriorityRequestSolver::createEventList()
 {
-    std::stringstream in(strToSplit);
-    // vector<int> a;
-    int temp;
-    while (in >> temp)
+    Schedule::TCISchedule ring1Schedule;
+    Schedule::TCISchedule ring2Schedule;
+    int vehicleSignalGroup{};
+    int vehicleSignalGroupRing{};
+
+    //Computing ring wise cummilative sum for phase duration of left and right cricital points
+    for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
     {
-        a.push_back(temp);
+        leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_PhaseDuration_Ring1[i];
+    }
+
+    for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring1.size(); i++)
+    {
+        rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_PhaseDuration_Ring1[i];
+    }
+
+    for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
+    {
+        leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_PhaseDuration_Ring2[i];
+    }
+
+    for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring2.size(); i++)
+    {
+        rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_PhaseDuration_Ring2[i];
+    }
+
+    //Computing ring wise cummilative sum for grren time of left and right cricital points
+    // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring1.size(); i++)
+    // {
+    //     leftCriticalPoints_GreenTime_Ring1[i] = leftCriticalPoints_GreenTime_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
+    // }
+
+    // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
+    // {
+    //     rightCriticalPoints_GreenTime_Ring1[i] = rightCriticalPoints_GreenTime_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
+    // }
+
+    // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring2.size(); i++)
+    // {
+    //     leftCriticalPoints_GreenTime_Ring2[i] = leftCriticalPoints_GreenTime_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
+    // }
+
+    // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
+    // {
+    //     rightCriticalPoints_GreenTime_Ring2[i] = rightCriticalPoints_GreenTime_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
+    // }
+
+    ring1_TCISchedule.clear();
+    ring2_TCISchedule.clear();
+
+    /*Hold Ring1 */
+    for (int i = 0; i < 8; i++)
+    {
+
+        ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
+        ring1Schedule.commandType = HOLD_PHASES;
+
+        /*
+            -Hold upto green time for starting phase(first phase having green time greater than zero)
+        */
+        if (i == 0)
+        {
+            ring1Schedule.commandStartTime = 0.0;
+            ring1Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring1[i];
+        }
+        /*
+            - For rest of the phase hold will start at the end of previous phase
+            - For rest of the phase hold will continue upto the end the green time
+            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+        */
+        else
+        {
+            ring1Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1];
+            ring1Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
+        }
+
+        ring1_TCISchedule.push_back(ring1Schedule);
+    }
+
+    /*Hold Ring2 */
+    for (int i = 0; i < 8; i++)
+    {
+        ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
+        ring2Schedule.commandType = HOLD_PHASES;
+
+        /*
+            -Hold upto green time for starting phase(first phase having green time greater than zero)
+        */
+        if (i == 0)
+        {
+            ring2Schedule.commandStartTime = 0.0;
+            ring2Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring2[i];
+        }
+
+        /*
+            - For rest of the phase hold will start at the end of previous phase
+            - For rest of the phase hold will continue upto the end the green time
+            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+        */
+        else
+        {
+            ring2Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1];
+            ring2Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
+        }
+
+        ring2_TCISchedule.push_back(ring2Schedule);
+    }
+
+    /*ForceOff Ring1 */
+    for (int i = 0; i < 8; i++)
+    {
+        ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
+        ring1Schedule.commandType = FORCEOFF_PHASES;
+
+        /*
+            -Force off for starting phase (first phase having green time greater than zero) at the end of green time
+            -End time for force off will be zero
+        */
+        if (i == 0)
+            ring1Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring1[i];
+
+        /*
+            - For rest of the phase force off at the end of green time of corresponding phase
+            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+            - End time for force off will be zero
+        */
+        else
+            ring1Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
+
+        ring1Schedule.commandEndTime = 0.0;
+
+        ring1_TCISchedule.push_back(ring1Schedule);
+    }
+
+    /*ForceOff Ring2 */
+    for (int i = 0; i < 8; i++)
+    {
+        ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
+        ring2Schedule.commandType = FORCEOFF_PHASES;
+
+        if (i == 0)
+            ring2Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring2[i];
+
+        else
+            ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
+
+        ring2Schedule.commandEndTime = 0.0;
+
+        ring2_TCISchedule.push_back(ring2Schedule);
+    }
+
+    /*vehicle Call */
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+
+        for (int k = 0; k < noOfPhase; k++)
+        {
+            if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+                vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+        }
+
+        if (vehicleSignalGroupRing == 1)
+        {
+            ring1Schedule.commandPhase = vehicleSignalGroup;
+            ring1Schedule.commandType = CALL_VEH_PHASES;
+            ring1Schedule.commandStartTime = 0.0;
+            ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA;
+
+            ring1_TCISchedule.push_back(ring1Schedule);
+        }
+
+        if (vehicleSignalGroupRing == 2)
+        {
+            ring2Schedule.commandPhase = vehicleSignalGroup;
+            ring2Schedule.commandType = CALL_VEH_PHASES;
+            ring2Schedule.commandStartTime = 0.0;
+            ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA;
+
+            ring2_TCISchedule.push_back(ring2Schedule);
+        }
+    }
+    // int vehicleSignalGroup{};
+    // int vehicleSignalGroupRing{};
+    // double vehicleETA{};
+    // double vehicleCallTime{};
+    // int noOfVehicleCall{};
+
+    // for (size_t i = 0; i < priorityRequestList.size(); i++)
+    // {
+    //     vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+
+    //     for (int k = 0; k < noOfPhase; k++)
+    //     {
+    //         if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+    //             vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+    //     }
+
+    //     vehicleETA = priorityRequestList[i].vehicleETA;
+    //     vehicleCallTime = 0.0;
+    //     noOfVehicleCall = unsigned(round(vehicleETA / 0.9));
+    //     if (vehicleSignalGroupRing == 1)
+    //     {
+    //         for (int j = 0; j <= noOfVehicleCall; j++)
+    //         {
+    //             if (vehicleCallTime < vehicleETA)
+    //             {
+    //                 ring1Schedule.commandPhase = vehicleSignalGroup;
+    //                 ring1Schedule.commandStartTime = vehicleCallTime;
+    //                 ring1Schedule.commandType = CALL_VEH_PHASES;
+    //                 ring1_TCISchedule.push_back(ring1Schedule);
+    //                 vehicleCallTime = vehicleCallTime + 0.9;
+    //             }
+    //         }
+    //     }
+
+    //     else if (vehicleSignalGroupRing == 2)
+    //     {
+    //         for (int j = 0; j <= noOfVehicleCall; j++)
+    //         {
+    //             if (vehicleCallTime < vehicleETA)
+    //             {
+    //                 ring2Schedule.commandPhase = vehicleSignalGroup;
+    //                 ring2Schedule.commandStartTime = vehicleCallTime;
+    //                 ring2Schedule.commandType = CALL_VEH_PHASES;
+    //                 ring2_TCISchedule.push_back(ring2Schedule);
+    //                 vehicleCallTime = vehicleCallTime + 0.9;
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+/*
+    -
+*/
+string PriorityRequestSolver::createScheduleJsonString()
+{
+    vector<Schedule::TCISchedule> completeSchedule;
+    // ring1_TCISchedule.insert(ring1_TCISchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
+    completeSchedule.insert(completeSchedule.end(), ring1_TCISchedule.begin(), ring1_TCISchedule.end());
+    completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
+
+    Json::Value jsonObject;
+    Json::FastWriter fastWriter;
+    Json::StyledStreamWriter styledStreamWriter;
+    ofstream outputter("output.json");
+    jsonObject["MsgType"] = "Schedule";
+    // jsonObject["Schedule"]["Type"] = "clear";
+    // jsonObject["Schedule"]["CommandType"] = "Event";
+    
+    if (completeSchedule.empty())
+    {
+        jsonObject["Schedule"] = "Clear";
+    }
+    
+    else
+    {
+        for (unsigned int i = 0; i < completeSchedule.size(); i++)
+        {
+            jsonObject["Schedule"][i]["commandPhase"] = completeSchedule[i].commandPhase;
+            jsonObject["Schedule"][i]["commandStartTime"] = completeSchedule[i].commandStartTime;
+            jsonObject["Schedule"][i]["commandEndTime"] = completeSchedule[i].commandEndTime;
+            jsonObject["Schedule"][i]["commandType"] = completeSchedule[i].commandType;
+        }
+    }
+
+    scheduleJsonString = fastWriter.write(jsonObject);
+    styledStreamWriter.write(outputter, jsonObject);
+
+    return scheduleJsonString;
+}
+
+/*
+    -
+*/
+void PriorityRequestSolver::obtainRequiredSignalGroup()
+{
+
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        plannedSignalGroupInRing1.push_back(trafficControllerStatus[i].startingPhase1); //Storing the SP1
+        plannedSignalGroupInRing2.push_back(trafficControllerStatus[i].startingPhase2); //Storing the SP2
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle1, ring1
+    {
+        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing1.front() && trafficSignalPlan[i].phaseRing == 1)
+            plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle2, ring1
+    {
+        if (trafficSignalPlan[i].phaseNumber < 5 && trafficSignalPlan[i].phaseRing == 1)
+            plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle3, ring1
+    {
+        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing1.front() && trafficSignalPlan[i].phaseRing == 1)
+            plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle1, ring2
+    {
+        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing2.front() && trafficSignalPlan[i].phaseRing == 2)
+            plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle2, ring2
+    {
+        if (trafficSignalPlan[i].phaseNumber < 9 && trafficSignalPlan[i].phaseRing == 2)
+            plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+
+    for (int i = 0; i < noOfPhase; i++) //Obtaining all the required phases for cycle3, ring2
+    {
+        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing2.front() && trafficSignalPlan[i].phaseRing == 2)
+            plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
     }
 }
 
+// void PriorityRequestSolver::split(string strToSplit)
+// {
+//     std::stringstream in(strToSplit);
+//     // vector<int> a;
+//     int temp;
+//     while (in >> temp)
+//     {
+//         a.push_back(temp);
+//     }
+// }
+
+/*
+    -
+*/
 bool PriorityRequestSolver::GLPKSolutionValidation()
 {
     bool bValid{false};
@@ -525,6 +1034,9 @@ bool PriorityRequestSolver::GLPKSolutionValidation()
     return bValid;
 }
 
+/*
+    -
+*/
 void PriorityRequestSolver::readCurrentSignalTimingPlan()
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
@@ -597,7 +1109,7 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan()
         signalPlan.phaseRing = PhaseRing[i];
         trafficSignalPlan.push_back(signalPlan);
     }
-
+    //Obtain the phases in P11, P12, P21, P22
     for (int i = 0; i < noOfPhase; i++)
     {
         if (trafficSignalPlan[i].phaseNumber < 3 && trafficSignalPlan[i].phaseRing == 1)
@@ -612,7 +1124,14 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan()
         else if (trafficSignalPlan[i].phaseNumber > 6 && trafficSignalPlan[i].phaseRing == 2)
             P22.push_back(trafficSignalPlan[i].phaseNumber);
     }
+
+    noOfPhasesInRing1 = unsigned(P11.size() + P12.size());
+    noOfPhasesInRing2 = unsigned(P21.size() + P22.size());
 }
+
+/*
+    -
+*/
 void PriorityRequestSolver::printSignalPlan()
 {
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
@@ -621,6 +1140,9 @@ void PriorityRequestSolver::printSignalPlan()
     }
 }
 
+/*
+    -
+*/
 void PriorityRequestSolver::GenerateModFile()
 {
     ofstream FileMod;

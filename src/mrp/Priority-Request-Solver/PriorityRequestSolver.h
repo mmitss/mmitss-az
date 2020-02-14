@@ -36,7 +36,10 @@ class PriorityRequestSolver
 {
 private:
     vector<RequestList> priorityRequestList;
-    vector<Schedule::GLPKSchedule> glpkSchedule;
+    // vector<Schedule::GLPKSchedule> glpkSchedule;
+    // vector<Schedule::GLPKSchedule>requestedVehicleCall;
+    vector<Schedule::TCISchedule> ring1_TCISchedule;
+    vector<Schedule::TCISchedule> ring2_TCISchedule;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
     vector<int>PhaseNumber;
@@ -53,14 +56,25 @@ private:
     vector<int>P12;
     vector<int>P21;
     vector<int>P22;
+    
     int noOfPhase{};
     int numberOfTransitInList{};
     int numberOfTruckInList{};
-    vector<double> leftCriticalPoints;
-    vector<double> rightCriticalPoints;
-    vector<double> leftCriticalPoints_GreenTime;
-    vector<double> rightCriticalPoints_GreenTime;
-    vector<int> a;
+    int noOfPhasesInRing1{};
+    int noOfPhasesInRing2{};
+    string scheduleJsonString{};
+    
+    vector<double> leftCriticalPoints_PhaseDuration_Ring1;
+    vector<double> leftCriticalPoints_PhaseDuration_Ring2;
+    vector<double> rightCriticalPoints_PhaseDuration_Ring1;
+    vector<double> rightCriticalPoints_PhaseDuration_Ring2;
+    vector<double> leftCriticalPoints_GreenTime_Ring1;
+    vector<double> leftCriticalPoints_GreenTime_Ring2;
+    vector<double> rightCriticalPoints_GreenTime_Ring1;
+    vector<double> rightCriticalPoints_GreenTime_Ring2;
+    vector<int>plannedSignalGroupInRing1;
+    vector<int>plannedSignalGroupInRing2;
+    // vector<int> a;
 
 
 public:
@@ -69,6 +83,7 @@ public:
 
 
     void createPriorityRequestList(string jsonString);
+    // void setPhaseCallForRequestedSignalGroup();
     void getCurrentSignalStatus();
     void getRequestedSignalGroupFromPriorityRequestList();
     void removeDuplicateSignalGroup();
@@ -78,9 +93,11 @@ public:
     double GetSeconds();
     void GLPKSolver();
     bool GLPKSolutionValidation();
-    void readOptimalPlan();
-    void split(string strToSplit);
-    // vector<TrafficSignalPlan>readCurrentSignalTimingPlan();
+    void readOptimalSignalPlan();
+    void obtainRequiredSignalGroup();
+    void createEventList();
+    string createScheduleJsonString();
+    // void split(string strToSplit);
     void readCurrentSignalTimingPlan();
     void GenerateModFile();
     void printSignalPlan();

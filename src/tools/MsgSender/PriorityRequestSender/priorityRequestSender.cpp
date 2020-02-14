@@ -20,17 +20,17 @@ int main()
     const string LOCALHOST = "127.0.0.1";
     const int receiverPortNo = 20003;
     std::string sendingJsonString;
-    int noOfRequest=2;
+    int noOfRequest=1;
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    vector<int>vehicleID{1201,1202};
-    vector<int>vehicleType{6,9};
-    vector<int>basicVehicleRole{16,9};
-    vector<int>laneID{2,9};
-    vector<double>ETA{40.0, 20.0};
-    vector<double>ETADuration{5.0, 5.0};
-    vector<int>requestedPhase{2,8};
-    vector<int>requestStatus{4,4};
+    vector<int>vehicleID{1201};
+    vector<int>vehicleType{6};
+    vector<int>basicVehicleRole{16};
+    vector<int>laneID{2};
+    vector<double>ETA{24.0};
+    vector<double>ETADuration{6.0};
+    vector<int>requestedPhase{3};
+    vector<int>requestStatus{4};
 
     jsonObject["MsgType"] = "PriorityRequest";
     jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest;        //ActiveRequestTable.size();

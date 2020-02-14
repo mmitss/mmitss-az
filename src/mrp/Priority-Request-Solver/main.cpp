@@ -32,9 +32,9 @@ int main()
   char receiveBuffer[5120];
 
   priorityRequestSolver.readCurrentSignalTimingPlan();
-  priorityRequestSolver.printSignalPlan();
+  // priorityRequestSolver.printSignalPlan();
   priorityRequestSolver.GenerateModFile();
-  priorityRequestSolver.readOptimalPlan();
+  // priorityRequestSolver.readOptimalPlan();
   while (true)
   {
     priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -51,6 +51,10 @@ int main()
     priorityRequestSolver.generateDatFile();
 
     priorityRequestSolver.GLPKSolver();
+    priorityRequestSolver.readOptimalSignalPlan();
+    priorityRequestSolver.obtainRequiredSignalGroup();
+    priorityRequestSolver.createEventList();
+    priorityRequestSolver.createScheduleJsonString();
     //cout << "current time " << priorityRequestSolver.GetSeconds() << endl;
   }
 }
