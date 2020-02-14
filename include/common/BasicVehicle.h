@@ -47,6 +47,8 @@ class BasicVehicle
         double heading_Degree{}; // Degree
         int type{}; // Enumeration
 		int lane{};
+        int length_cm{};
+        int width_cm{};
 
 
     public:
@@ -60,6 +62,8 @@ class BasicVehicle
         void setSpeed_MeterPerSecond(double vehSpeed);
         void setHeading_Degree(double vehHeading_Degree);
         void setType(int vehType);
+        void setLength_cm(int vehLength_cm);
+        void setWidth_cm(int vehWidth_cm);
         
         //Getters:
         int getTemporaryID();
@@ -71,6 +75,8 @@ class BasicVehicle
         double getSpeed_MeterPerSecond();
         double getHeading_Degree();
         int getType();
+        int getLength_cm();
+        int getWidth_cm();
 
         //JSON Handlers:
         std::string basicVehicle2Json();
