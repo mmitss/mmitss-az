@@ -58,8 +58,11 @@ def main():
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
+    permissiveEnabled = config["PermissiveEnabled"]
+    splitPhases = config["SplitPhases"]
+
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
-    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob()
+    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases)
 
     # Create an object of Spat class filled with static information:
     spatObject = Spat.Spat()
