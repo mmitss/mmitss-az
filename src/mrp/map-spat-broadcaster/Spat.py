@@ -78,8 +78,9 @@ class Spat:
         for i in range(8):
             self.vehPhasesDict[i] = self.vehPhases[i].asDict()
             self.pedPhasesDict[i] = self.pedPhases[i].asDict()
-        spatDict = dict({"MsgType": "SPAT",
-                    "Timestamp": str(datetime.datetime.now()),
+        spatDict = dict({"MsgType": "SPaT",
+                    "Timestamp_verbose": str(datetime.datetime.now()),
+                    "Timestamp_posix": datetime.datetime.now().timestamp(),
                     "Spat" :
                     {
                         "IntersectionState" :

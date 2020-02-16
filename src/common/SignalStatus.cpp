@@ -239,7 +239,8 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     std::string jsonString;
-    jsonObject["Timestamp"] = getTimestamp();
+    jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+    jsonObject["Timestamp_posix"] = getVerboseTimestamp();
     jsonObject["MsgType"] = "SSM";
     jsonObject["noOfRequest"] = ActiveRequestTable.size();
     jsonObject["SignalStatus"]["minuteOfYear"] = minuteOfYear;
