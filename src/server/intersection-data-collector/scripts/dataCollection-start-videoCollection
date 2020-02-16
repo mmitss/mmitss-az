@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd .. # Go to root directory of Data Collection Module
+
+cd src # Go to src for running the python scripts locally
+
+echo "Starting data collection for DaisyMountain_GavilanPeak"
+python3 data-collector-intersection.py ./../config/cameras/DaisyMountain_GavilanPeak/DaisyMountain_GavilanPeak_Eastbound.json > /dev/null 2>&1 &
+python3 data-collector-intersection.py ./../config/cameras/DaisyMountain_GavilanPeak/DaisyMountain_GavilanPeak_Westbound.json > /dev/null 2>&1 &
+python3 data-collector-intersection.py ./../config/cameras/DaisyMountain_GavilanPeak/DaisyMountain_GavilanPeak_Northbound.json > /dev/null 2>&1 &
+python3 data-collector-intersection.py ./../config/cameras/DaisyMountain_GavilanPeak/DaisyMountain_GavilanPeak_Southbound.json > /dev/null 2>&1 &
+sleep 0.5s
+
