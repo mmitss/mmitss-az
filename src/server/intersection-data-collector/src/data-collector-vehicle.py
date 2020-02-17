@@ -20,12 +20,13 @@ def main():
     dataCollectorAddress = (hostIp, port)
     s.bind(dataCollectorAddress)
 
+    hostDecoderPort = mmitssConfig["HostBsmDecoder"]
 
     hostBsmLogFile, currentHostBsmLogFilename = DCM.initializeBsmLogFile('Host')
     surroundingBsmLogFile, currentSurroundingBsmFilename = DCM.initializeBsmLogFile('Surrounding')
 
     while True:
-            DCM.receiveProcessAndStoreVehicleDataLocally(s, hostBsmLogFile, surroundingBsmLogFile)
+            DCM.receiveProcessAndStoreVehicleDataLocally(s, hostDecoderPort, hostBsmLogFile, surroundingBsmLogFile)
     s.close()
     hostBsmLogFile.close()
     surroundingBsmLogFile.close()
