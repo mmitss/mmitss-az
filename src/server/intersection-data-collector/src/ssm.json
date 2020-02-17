@@ -1,0 +1,28 @@
+{
+    "MsgType": "SSM",
+    "SignalStatus": {
+        "intersectionID": 22391,
+        "minuteOfYear": 0,
+        "msOfMinute": 0,
+        "regionalID": 0,
+        "requestorInfo": [
+            {
+                "ETA_Duration": 2000,
+                "ETA_Minute": 0.26803457736968994,
+                "ETA_Second": 16.082075119018555,
+                "basicVehicleRole": 9,
+                "inBoundApproachID": 0,
+                "inBoundLaneID": 18,
+                "msgCount": 1,
+                "priorityRequestStatus": 4,
+                "requestID": 0,
+                "vehicleID": 1
+            }
+        ],
+        "sequenceNumber": 0,
+        "updateCount": 0
+    },
+    "Timestamp_posix": "2020-02-17 20:44:09.604",
+    "Timestamp_verbose": "2020-02-17 20:44:09.604",
+    "noOfRequest": 1
+}

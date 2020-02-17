@@ -8,7 +8,7 @@ import sh
 def initializeBsmLogFile(FileName):
     bsmFilename = "./../datalogs/BsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     bsmLogFile = open(bsmFilename, 'w')
-    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading\n")
+    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,length,width\n")
     return bsmLogFile, bsmFilename
 
 def initializeSrmLogFile(FileName):
@@ -21,11 +21,9 @@ def initializeSrmLogFile(FileName):
             + "msgCount" + "," 
             + "regionalID" + "," 
             + "intersectionID" + "," 
-            + "requestID" + "," 
             + "priorityRequestType" + "," 
             + "basicVehicleRole" + "," 
             + "laneID" + "," 
-            + "approachID" + "," 
             + "eTA_Minute" + "," 
             + "eTA_Second" + "," 
             + "eTA_Duration" + "," 
@@ -54,11 +52,11 @@ def initializeSsmLogFile(FileName):
                     + "regionalID" + "," 
                     + "noOfRequest" + "," 
                     + "intersectionID" + 
-                    "," + "r1_vehicleID,r1_requestID,r1_msgCount,r1_basicVehicleRole,r1_inBoundLaneID,r1_inBoundApproachID,r1_ETA_Minute,r1_ETA_Second,r1_ETA_Duration,r1_priorityRequestStatus" + 
-                    "," + "r2_vehicleID,r2_requestID,r2_msgCount,r2_basicVehicleRole,r2_inBoundLaneID,r2_inBoundApproachID,r2_ETA_Minute,r2_ETA_Second,r2_ETA_Duration,r2_priorityRequestStatus" + 
-                    "," + "r3_vehicleID,r3_requestID,r3_msgCount,r3_basicVehicleRole,r3_inBoundLaneID,r3_inBoundApproachID,r3_ETA_Minute,r3_ETA_Second,r3_ETA_Duration,r3_priorityRequestStatus" + 
-                    "," + "r4_vehicleID,r4_requestID,r4_msgCount,r4_basicVehicleRole,r4_inBoundLaneID,r4_inBoundApproachID,r4_ETA_Minute,r4_ETA_Second,r4_ETA_Duration,r4_priorityRequestStatus" + 
-                    "," + "r5_vehicleID,r5_requestID,r5_msgCount,r5_basicVehicleRole,r5_inBoundLaneID,r5_inBoundApproachID,r5_ETA_Minute,r5_ETA_Second,r5_ETA_Duration,r5_priorityRequestStatus")
+                    "," + "r1_vehicleID,r1_msgCount,r1_basicVehicleRole,r1_inBoundLaneID,r1_ETA_Minute,r1_ETA_Second,r1_ETA_Duration,r1_priorityRequestStatus" + 
+                    "," + "r2_vehicleID,r2_msgCount,r2_basicVehicleRole,r2_inBoundLaneID,r2_ETA_Minute,r2_ETA_Second,r2_ETA_Duration,r2_priorityRequestStatus" + 
+                    "," + "r3_vehicleID,r3_msgCount,r3_basicVehicleRole,r3_inBoundLaneID,r3_ETA_Minute,r3_ETA_Second,r3_ETA_Duration,r3_priorityRequestStatus" + 
+                    "," + "r4_vehicleID,r4_msgCount,r4_basicVehicleRole,r4_inBoundLaneID,r4_ETA_Minute,r4_ETA_Second,r4_ETA_Duration,r4_priorityRequestStatus" + 
+                    "," + "r5_vehicleID,r5_msgCount,r5_basicVehicleRole,r5_inBoundLaneID,r5_ETA_Minute,r5_ETA_Second,r5_ETA_Duration,r5_priorityRequestStatus\n")
                                                 
     return ssmLogFile, ssmFilename
 
@@ -89,7 +87,7 @@ def initializeSpatLogFile(FileName):
 def receiveProcessAndStoreIntersectionDataLocally(socket, spatLogFile, surroundingBsmLogFile, srmLogFile, ssmLogFile):
     data, address = socket.recvfrom(4096)
     jsonData = json.loads(data.decode())
-    if jsonData["MsgType"]=="SPAT": # then this message is a SPAT message
+    if jsonData["MsgType"]=="SPaT": # then this message is a SPAT message
         spatLogFile.write(spatJsonToCsv(jsonData))
     elif jsonData["MsgType"]=="BSM": # then this message is a BSM message
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
@@ -113,7 +111,7 @@ def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmDecoderPort, hostBsm
     elif jsonData["MsgType"]=="SSM":
         ssmLogFile.write(ssmJsonToCsv(jsonData))
         
-    elif jsonData["msgType"]=="SRM":
+    elif jsonData["MsgType"]=="SRM":
         srmLogFile.write(srmJsonToCsv(jsonData))
 
 
@@ -164,6 +162,8 @@ def bsmJsonToCsv(jsonData:json):
     elevation = str(jsonData["BasicVehicle"]["position"]["elevation_Meter"])
     speed = str(jsonData["BasicVehicle"]["speed_MeterPerSecond"])
     heading = str(jsonData["BasicVehicle"]["heading_Degree"])
+    length = str(jsonData["BasicVehicle"]["size"]["length_cm"])
+    width = str(jsonData["BasicVehicle"]["size"]["width_cm"])
     
     csv = (log_timestamp_verbose + "," 
             + log_timestamp_posix + "," 
@@ -175,7 +175,9 @@ def bsmJsonToCsv(jsonData:json):
             + longitude + "," 
             + elevation + "," 
             + speed + "," 
-            + heading + "\n")
+            + heading + "," 
+            + length + "," 
+            + width + "\n")
     return csv
 
 def srmJsonToCsv(jsonData:json):
@@ -188,11 +190,9 @@ def srmJsonToCsv(jsonData:json):
     msgCount = str(jsonData["SignalRequest"]["msgCount"])
     regionalID = str(jsonData["SignalRequest"]["regionalID"])
     intersectionID = str(jsonData["SignalRequest"]["intersectionID"])
-    requestID = str(jsonData["SignalRequest"]["requestID"])
     priorityRequestType = str(jsonData["SignalRequest"]["priorityRequestType"])
     basicVehicleRole = str(jsonData["SignalRequest"]["basicVehicleRole"])
     laneID = str(jsonData["SignalRequest"]["inBoundLane"]["LaneID"])
-    approachID = str(jsonData["SignalRequest"]["inBoundLane"]["ApproachID"])
     eTA_Minute = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"])
     eTA_Second = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"])
     eTA_Duration = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"])
@@ -213,11 +213,9 @@ def srmJsonToCsv(jsonData:json):
             + msgCount + "," 
             + regionalID + "," 
             + intersectionID + "," 
-            + requestID + "," 
             + priorityRequestType + "," 
             + basicVehicleRole + "," 
             + laneID + "," 
-            + approachID + "," 
             + eTA_Minute + "," 
             + eTA_Second + "," 
             + eTA_Duration + "," 
@@ -244,7 +242,7 @@ def ssmJsonToCsv(jsonData:json):
     regionalID = str(jsonData["SignalStatus"]["regionalID"])
     intersectionID = str(jsonData["SignalStatus"]["intersectionID"])
 
-    csv = (log_timestamp_verbose + "," 
+    static_csv = (log_timestamp_verbose + "," 
                     + log_timestamp_posix + "," 
                     + timestamp_verbose + "," 
                     + timestamp_posix + "," 
@@ -256,31 +254,29 @@ def ssmJsonToCsv(jsonData:json):
                     + str(noOfRequest) + "," 
                     + intersectionID)
 
+    dynamic_csv = ""
+
     for request in range(0,noOfRequest):
-        vehicleID = jsonData["SignalStatus"]["requestorInfo"][request]["vehicleID"]
-        requestID = jsonData["SignalStatus"]["requestorInfo"][request]["requestID"]
-        msgCount = jsonData["SignalStatus"]["requestorInfo"][request]["msgCount"]
-        basicVehicleRole = jsonData["SignalStatus"]["requestorInfo"][request]["basicVehicleRole"]
-        inBoundLaneID = jsonData["SignalStatus"]["requestorInfo"][request]["inBoundLaneID"]
-        inBoundApproachID = jsonData["SignalStatus"]["requestorInfo"][request]["inBoundApproachID"]
-        ETA_Minute = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Minute"]
-        ETA_Second = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Second"]
-        ETA_Duration = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Duration"]
-        priorityRequestStatus = jsonData["SignalStatus"]["requestorInfo"][request]["priorityRequestStatus"]
+        vehicleID = str(jsonData["SignalStatus"]["requestorInfo"][request]["vehicleID"])
+        msgCount = str(jsonData["SignalStatus"]["requestorInfo"][request]["msgCount"])
+        basicVehicleRole = str(jsonData["SignalStatus"]["requestorInfo"][request]["basicVehicleRole"])
+        inBoundLaneID = str(jsonData["SignalStatus"]["requestorInfo"][request]["inBoundLaneID"])
+        ETA_Minute = str(jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Minute"])
+        ETA_Second = str(jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Second"])
+        ETA_Duration = str(jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Duration"])
+        priorityRequestStatus = str(jsonData["SignalStatus"]["requestorInfo"][request]["priorityRequestStatus"])
 
         request_csv = ("," + vehicleID +
-                        "," + requestID +
                         "," + msgCount +
                         "," + basicVehicleRole +
                         "," + inBoundLaneID +
-                        "," + inBoundApproachID +
                         "," + ETA_Minute +
                         "," + ETA_Second +
                         "," + ETA_Duration +
-                        "," + priorityRequestStatus)
+                        "," + priorityRequestStatus )
+        dynamic_csv = dynamic_csv + request_csv
 
-        csv = csv + request_csv
-
+    csv = static_csv + dynamic_csv + "\n"
     return csv
 
 def spatJsonToCsv(jsonData:json):
