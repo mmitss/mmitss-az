@@ -52,6 +52,7 @@ int main()
         {
             std::string srmJsonString = decoder.srmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
             std::cout << "Decoded SRM" << std::endl;
         }
         
@@ -59,6 +60,7 @@ int main()
         {
             std::string spatJsonString = decoder.spatDecoder(receivedPayload);
             decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
+            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
             std::cout << "Decoded SPAT" << std::endl;
         }
         
@@ -66,6 +68,7 @@ int main()
         {
             std::string ssmJsonString = decoder.ssmDecoder(receivedPayload);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
+            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
             std::cout << "Decoded SSM" << std::endl;
         }        
     }
