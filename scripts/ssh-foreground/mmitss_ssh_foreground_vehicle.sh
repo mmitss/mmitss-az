@@ -7,10 +7,6 @@ export targetIp
 export username
 
 mate-terminal -e ./app_scripts/HostBsmDecoder.sh
-mate-terminal -e ./app_scripts/HostBsmReceiver.sh
 mate-terminal -e ./app_scripts/MsgEncoder.sh
-mate-terminal -e ./app_scripts/MsgSender.sh
 mate-terminal -e ./app_scripts/PriorityRequestGenerator.sh
 mate-terminal -e ./app_scripts/WirelessMsgDecoder.sh
-mate-terminal -e ./app_scripts/WirelessMsgReceiver.sh
-
