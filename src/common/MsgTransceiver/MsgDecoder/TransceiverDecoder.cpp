@@ -348,6 +348,7 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
                 jsonObject["Spat"]["phaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["phaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["phaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
+                jsonObject["Spat"]["phaseState"][i]["elapsedTime"] = 0;
             }
         }
 
@@ -361,6 +362,7 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
                 jsonObject["Spat"]["pedPhaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
+                jsonObject["Spat"]["phaseState"][i]["elapsedTime"] = 0;
             }
         }
 

@@ -111,7 +111,7 @@ def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmDecoderPort, hostBsm
     elif jsonData["MsgType"]=="SSM":
         ssmLogFile.write(ssmJsonToCsv(jsonData))
         
-    elif jsonData["msgType"]=="SRM":
+    elif jsonData["MsgType"]=="SRM":
         srmLogFile.write(srmJsonToCsv(jsonData))
 
 
