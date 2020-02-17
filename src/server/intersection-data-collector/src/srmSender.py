@@ -6,7 +6,7 @@ addr = (hostIp, port)
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(addr)
 
-f = open("ssm.json", 'r')
+f = open("srm.json", 'r')
 msg = f.read()
 
 s.sendto(msg.encode(), ("10.12.6.108", 30001))

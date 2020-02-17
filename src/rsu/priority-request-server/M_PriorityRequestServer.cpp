@@ -315,7 +315,7 @@ void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket 
     if (!ReqList.ListEmpty())
     {
         jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
-        jsonObject["Timestamp_posix"] = getVerboseTimestamp();
+        jsonObject["Timestamp_posix"] = getPosixTimestamp();
         jsonObject["MsgType"] = "SSM";
         jsonObject["noOfRequest"] = listSize;
         jsonObject["SignalStatus"]["minuteOfYear"] = 0;
