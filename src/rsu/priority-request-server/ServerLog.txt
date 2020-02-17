@@ -1,0 +1,363 @@
+Controller IP Address is 10.12.6.17
+Controller PORT Address is 501
+ RSU ID daisy_anthem
+
+/nojournal/bin/ConfigInfo_Anthem.txt
+/nojournal/bin/ConfigInfo_Anthem.txt
+phasecolor
+1 3 1 1 3 1 1 1 
+iColor
+0 7 0 0 7 0 0 0   
+Signal Gourp green 18  red 237 yellow 0 next 0
+Loaded MAP payload for 1 intersections
+
+........... The Received SRM matches the Intersection ID  ,  at time 1581972225.22. 
+
+1 daisy_anthem 13 2 22.00 3 0.00 1581972225.22 13 0 0 0 0 0 0 0 0 1 0.000000 22391 16	 
+
+phasecolor
+4 1 1 1 1 3 1 1 
+iColor
+6 2 0 0 0 7 0 0   
+Signal Gourp green 32  red 222 yellow 1 next 2
+*** Add New Request **** { 1 daisy_anthem 13 2 22.00 3 0.00 1581972225.22 13 0 0 0 0 0 0 0 0 1 0.000000 22391 16 }	 	 FLAG  1 at time (1581972225.22).
+
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.36666667461395264,"ETA_Second":22.0,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:45.439","Timestamp_verbose":"2020-02-17 20:43:45.439","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req 1 1 
+daisy_anthem 13 2 22.00 3 0.00 1581972225.22 13 0 0 0 0 0 0 0 0 1 0.00 
+ 
+At time: 1581972225.22. ******** Need to solve ******** 
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.36666667461395264,"ETA_Second":22.0,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:45.442","Timestamp_verbose":"2020-02-17 20:43:45.442","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req 1 1 
+daisy_anthem 13 2 22.00 3 0.00 1581972225.22 13 0 0 0 0 0 0 0 0 1 0.00 
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.36666667461395264,"ETA_Second":22.0,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:46.724","Timestamp_verbose":"2020-02-17 20:43:46.724","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.34693336486816406,"ETA_Second":20.816001892089844,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:48.4","Timestamp_verbose":"2020-02-17 20:43:48.4","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.32560020685195923,"ETA_Second":19.536012649536133,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:49.285","Timestamp_verbose":"2020-02-17 20:43:49.285","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.3042663037776947,"ETA_Second":18.255977630615234,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:50.564","Timestamp_verbose":"2020-02-17 20:43:50.564","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.28286579251289368,"ETA_Second":16.971946716308594,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:51.844","Timestamp_verbose":"2020-02-17 20:43:51.844","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.26159995794296265,"ETA_Second":15.69599723815918,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:53.123","Timestamp_verbose":"2020-02-17 20:43:53.123","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.24026647210121155,"ETA_Second":14.415987968444824,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:54.404","Timestamp_verbose":"2020-02-17 20:43:54.404","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.21893331408500671,"ETA_Second":13.135998725891113,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:55.684","Timestamp_verbose":"2020-02-17 20:43:55.684","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.19760030508041382,"ETA_Second":11.85601806640625,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:56.964","Timestamp_verbose":"2020-02-17 20:43:56.964","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.17620041966438293,"ETA_Second":10.572025299072266,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:58.244","Timestamp_verbose":"2020-02-17 20:43:58.244","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 13  2  22  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+ 
+Loaded MAP payload for 1 intersections
+
+........... The Received SRM matches the Intersection ID  ,  at time 1581972238.25. 
+
+1 daisy_anthem 1 3 26.00 2 0.00 1581972238.25 18 0 0 0 0 0 0 0 0 1 0.000000 22391 9	 
+
+phasecolor
+1 1 3 1 1 1 3 1 
+iColor
+0 0 7 0 0 0 7 0   
+Signal Gourp green 68  red 187 yellow 0 next 0
+*** Add New Request **** { 1 daisy_anthem 1 3 26.00 2 0.00 1581972238.25 18 0 0 0 0 0 0 0 0 1 0.000000 22391 9 }	 	 FLAG  1 at time (1581972238.25).
+
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.1548667848110199,"ETA_Second":9.2920074462890625,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.43333333730697632,"ETA_Second":26.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:58.561","Timestamp_verbose":"2020-02-17 20:43:58.561","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req 2 1 
+daisy_anthem 13 2 9.29 3 0.00 1581972225.22 13 0 0 0 0 0 0 0 0 1 0.00 
+daisy_anthem 1 3 26.00 2 0.00 1581972238.25 18 0 0 0 0 0 0 0 0 1 0.00 
+ 
+At time: 1581972238.25. ******** Need to solve ******** 
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.1548667848110199,"ETA_Second":9.2920074462890625,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.43333333730697632,"ETA_Second":26.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:43:59.528","Timestamp_verbose":"2020-02-17 20:43:59.528","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.13360053300857544,"ETA_Second":8.0160322189331055,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.43333333730697632,"ETA_Second":26.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:00.804","Timestamp_verbose":"2020-02-17 20:44:00.804","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.11226663738489151,"ETA_Second":6.7359981536865234,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.39603492617607117,"ETA_Second":23.762096405029297,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:02.84","Timestamp_verbose":"2020-02-17 20:44:02.84","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.090933464467525482,"ETA_Second":5.4560079574584961,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.37470179796218872,"ETA_Second":22.482107162475586,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:03.365","Timestamp_verbose":"2020-02-17 20:44:03.365","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.069599993526935577,"ETA_Second":4.175999641418457,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.35336831212043762,"ETA_Second":21.202098846435547,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:04.644","Timestamp_verbose":"2020-02-17 20:44:04.644","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.048266630619764328,"ETA_Second":2.8959977626800537,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.33203494548797607,"ETA_Second":19.922096252441406,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:05.924","Timestamp_verbose":"2020-02-17 20:44:05.924","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.026934428140521049,"ETA_Second":1.6160657405853271,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.31070274114608765,"ETA_Second":18.64216423034668,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:07.204","Timestamp_verbose":"2020-02-17 20:44:07.204","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.0055333930067718029,"ETA_Second":0.33200359344482422,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":13,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.28930172324180603,"ETA_Second":17.358102798461914,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:08.483","Timestamp_verbose":"2020-02-17 20:44:08.483","noOfRequest":2}
+
+
+ Content of request files  :
+
+Num_req  2 0 
+daisy_anthem 13  2  9.29  3 0 1.58197e+09 13 0 0 0 0 0 0 0 0 1  
+daisy_anthem 1  3  26  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+Loaded MAP payload for 1 intersections
+
+........... The Received SRM matches the Intersection ID  ,  at time 1581972248.48. 
+
+3 daisy_anthem 13 2 0.00 4 0.00 1581972248.48 2 0 0 0 0 0 0 0 0 2 0.000000 22391 16	 
+
+phasecolor
+1 1 3 1 1 1 1 3 
+iColor
+0 0 7 0 0 0 0 7   
+Signal Gourp green 132  red 123 yellow 0 next 0
+Set the clear request in the list 3 daisy_anthem 13 2 0.00 4 0.00 1581972248.48 2 0 0 0 0 0 0 0 0 2 0.000000 22391 16 at time (1581972248.48).
+
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.0,"ETA_Second":0.0,"basicVehicleRole":16,"inBoundApproachID":0,"inBoundLaneID":2,"msgCount":2,"priorityRequestStatus":4,"requestID":0,"vehicleID":13},{"ETA_Duration":2000,"ETA_Minute":0.26803457736968994,"ETA_Second":16.082075119018555,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:08.641","Timestamp_verbose":"2020-02-17 20:44:08.641","noOfRequest":2}
+
+Deleted the vehicle which has passed the intersection from the list
+
+
+
+ Content of request files  :
+
+Num_req 1 4 
+daisy_anthem 1 3 16.08 2 0.00 1581972238.25 18 0 0 0 0 0 0 0 0 1 0.00 
+ 
+At time: 1581972248.48. ******** Need to solve ******** 
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.26803457736968994,"ETA_Second":16.082075119018555,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:09.604","Timestamp_verbose":"2020-02-17 20:44:09.604","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.24936844408512115,"ETA_Second":14.962106704711914,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:10.888","Timestamp_verbose":"2020-02-17 20:44:10.888","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.22803539037704468,"ETA_Second":13.682123184204102,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:12.165","Timestamp_verbose":"2020-02-17 20:44:12.164","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.20670180022716522,"ETA_Second":12.402108192443848,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:13.444","Timestamp_verbose":"2020-02-17 20:44:13.444","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.18536834418773651,"ETA_Second":11.122100830078125,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:14.724","Timestamp_verbose":"2020-02-17 20:44:14.724","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.16403503715991974,"ETA_Second":9.84210205078125,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:16.4","Timestamp_verbose":"2020-02-17 20:44:16.4","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.14270199835300446,"ETA_Second":8.5621194839477539,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:17.284","Timestamp_verbose":"2020-02-17 20:44:17.284","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.12136772274971008,"ETA_Second":7.2820634841918945,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:18.565","Timestamp_verbose":"2020-02-17 20:44:18.565","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.1000341922044754,"ETA_Second":6.0020513534545898,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":18,"msgCount":1,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:19.844","Timestamp_verbose":"2020-02-17 20:44:19.844","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  16.08  2 0 1.58197e+09 18 0 0 0 0 0 0 0 0 1  
+ 
+Loaded MAP payload for 1 intersections
+
+........... The Received SRM matches the Intersection ID  ,  at time 1581972259.85. 
+
+2 daisy_anthem 1 3 8.00 2 0.00 1581972259.85 17 0 0 0 0 0 0 0 0 2 0.000000 22391 9	 
+
+phasecolor
+1 1 1 4 1 1 1 4 
+iColor
+0 2 0 6 2 0 0 6   
+Signal Gourp green 0  red 119 yellow 136 next 18
+Updated a request in the list 2 daisy_anthem 1 3 8.00 2 0.00 1581972259.85 17 0 0 0 0 0 0 0 0 2 0.000000 22391 9 at time (1581972259.85).
+
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.13333334028720856,"ETA_Second":8.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":17,"msgCount":2,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:20.240","Timestamp_verbose":"2020-02-17 20:44:20.240","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req 1 2 
+daisy_anthem 1 3 8.00 2 0.00 1581972259.85 17 0 0 0 0 0 0 0 0 2 0.00 
+ 
+At time: 1581972259.85. ******** Need to solve ******** 
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.13333334028720856,"ETA_Second":8.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":17,"msgCount":2,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:20.868","Timestamp_verbose":"2020-02-17 20:44:20.868","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  8  2 0 1.58197e+09 17 0 0 0 0 0 0 0 0 2  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.13333334028720856,"ETA_Second":8.0,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":17,"msgCount":2,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:22.148","Timestamp_verbose":"2020-02-17 20:44:22.148","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  8  2 0 1.58197e+09 17 0 0 0 0 0 0 0 0 2  
+ 
+{"MsgType":"SSM","SignalStatus":{"intersectionID":22391,"minuteOfYear":0,"msOfMinute":0,"regionalID":0,"requestorInfo":[{"ETA_Duration":2000,"ETA_Minute":0.10030169785022736,"ETA_Second":6.018101692199707,"basicVehicleRole":9,"inBoundApproachID":0,"inBoundLaneID":17,"msgCount":2,"priorityRequestStatus":4,"requestID":0,"vehicleID":1}],"sequenceNumber":0,"updateCount":0},"Timestamp_posix":"2020-02-17 20:44:23.428","Timestamp_verbose":"2020-02-17 20:44:23.428","noOfRequest":1}
+
+
+ Content of request files  :
+
+Num_req  1 0 
+daisy_anthem 1  3  8  2 0 1.58197e+09 17 0 0 0 0 0 0 0 0 2  
+ 

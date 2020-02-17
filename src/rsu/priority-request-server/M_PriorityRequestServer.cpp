@@ -39,6 +39,7 @@
 #include "locAware.h"
 #include "geoUtils.h"
 #include "SignalRequest.h"
+#include "Timestamp.h"
 #include <algorithm>
 #include <list>
 
@@ -82,6 +83,7 @@ int main(int argc, char *argv[])
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject);
     int iPORT = (jsonObject["PortNumber"]["PriorityRequestServer"]).asInt();
+    int dataCollectorPort = (jsonObject["PortNumber"]["DataCollector"]).asInt();
 
     UdpSocket MsgReceiverSocket(jsonObject["PortNumber"]["PriorityRequestServer_SendSSM"].asInt());
     deleteMapPayloadFile();
@@ -303,13 +305,17 @@ void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket 
     std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject_config);
     std::string ssmReceiverIP = (jsonObject_config["HostIp"]).asString();
+    std::string dataCollectorIP = (jsonObject_config["DataCollectorIP"]).asString();
     int ssmReceiverPort = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
+    int dataCollectorPort = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
+
 
     int listSize = ReqList.ListSize();
 
     if (!ReqList.ListEmpty())
     {
-
+        jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+        jsonObject["Timestamp_posix"] = getVerboseTimestamp();
         jsonObject["MsgType"] = "SSM";
         jsonObject["noOfRequest"] = listSize;
         jsonObject["SignalStatus"]["minuteOfYear"] = 0;
@@ -341,6 +347,8 @@ void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket 
     }
     // cout<<"SSM Json String: "<<jsonString <<endl;
     MsgReceiverSocket.sendData(ssmReceiverIP, ssmReceiverPort, jsonString);
+    MsgReceiverSocket.sendData(dataCollectorIP, dataCollectorPort, jsonString);
+
 }
 
 void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
