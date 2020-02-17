@@ -37,7 +37,7 @@ int TransceiverEncoder::getMessageType(std::string jsonString)
         messageType = MsgEnum::DSRCmsgID_srm;
     }
 
-    else if ((jsonObject["MsgType"]).asString() == "SPAT")
+    else if ((jsonObject["MsgType"]).asString() == "SPaT")
     {
         messageType = MsgEnum::DSRCmsgID_spat;
     }

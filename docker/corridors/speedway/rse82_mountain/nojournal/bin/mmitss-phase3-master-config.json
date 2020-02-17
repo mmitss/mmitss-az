@@ -13,14 +13,14 @@
 	{
 		"MessageTransceiver":
 		{
-			"MessageSender": 10001,
+			"MessageSender": 10003,
 			"MessageReceiver": 10002,
 			"MessageEncoder": 10003,
-			"MessageDecoder": 10004
+			"MessageDecoder": 10002
 		},
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
-        "HostBsmDecoder": 10007,
+        "HostBsmDecoder": 10005,
 		"TrajectoryAware": 20001,
 		"PriorityRequestServer": 20002,
 		"PrioritySOlver": 20003,
@@ -37,11 +37,11 @@
 	},
     "psid":
         {
-			"map": "e0000017",
+			"map": "E0000017",
 			"spat": "8002",
 			"rsm": "8003",
-			"srm": "e0000019",
-			"ssm": "e0000020",
+			"srm": "E0000019",
+			"ssm": "E0000020",
 			"bsm": "20"
 		},
 	"msgId":
@@ -49,9 +49,24 @@
 			"map": "0012",
 			"spat": "0013",
 			"rsm": "0021",
-			"srm": "001d",
-			"ssm": "001e",
+			"srm_lower": "001d",
+            "srm_upper": "001D",
+			"ssm_lower": "001e",
+            "ssm_upper": "001E",
 			"bsm": "0014"
-
-		}
+		},
+    "SplitPhases":
+        {
+            "1": 6,
+            "3": 8,
+            "5": 2,
+            "7": 4       
+        },
+    "PermissiveEnabled":
+        {
+            "1": true,
+            "3": true,
+            "5": true,
+            "7": true
+        }
 }

@@ -1,0 +1,7 @@
+{
+    "IntersectionName": "DaisyMountain_GavilanPeak",
+    "CameraDirection": "Northbound",
+    "URL": "rtsp://170.93.143.139/rtplive/470011e600ef003a004ee33696235daa",
+    "LocalStorageDirectory": "/home/nvaltekar/repo/mmitss/src/server/intersection-data-collector/datalogs",
+    "CyVerse_DirectoryPath": "/iplant/shared/InstituteofAutomatedMobility/datastore/infrastructure/DaisyMountain_GavilanPeak/videos"
+}

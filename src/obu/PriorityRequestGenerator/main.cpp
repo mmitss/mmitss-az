@@ -40,6 +40,7 @@ int main()
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
+    const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
     char receiveBuffer[5120];
@@ -59,6 +60,7 @@ int main()
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
                 // std::cout << "SRM is sent" << std::endl;
             }
             mapManager.updateMapAge();

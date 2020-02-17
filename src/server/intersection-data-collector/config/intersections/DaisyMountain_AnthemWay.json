@@ -4,7 +4,9 @@
     {
         "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/spat",
         "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/surrounding_vehicle_data",
-        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/pseudo_surrounding_vehicle_data"
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/pseudo_surrounding_vehicle_data",
+        "Srm": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/srm",
+        "Ssm": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_AnthemWay/ssm"
     },
     "DataCollectorPort": 30006
 }

@@ -38,11 +38,17 @@ import datetime
 class Ntcip1202v2Blob:
 
 
-    def __init__(self):
+    def __init__(self, permissiveEnabled:dict, splitPhases:dict):
         ################################################# CONSTANTS #################################################
         numVehPhases = 8
         numPedPhases = 8
         #############################################################################################################
+
+        ########## Permissive Lefts ##########
+
+        self.permissiveEnabled = permissiveEnabled
+        self.splitPhases = splitPhases
+
         ########### Vehicle Phases ###########        
         self.numVehPhases = numVehPhases
         # Individual Colours
@@ -96,6 +102,7 @@ class Ntcip1202v2Blob:
         RED = 3
         YELLOW = 8
         GREEN = 6
+        PERMISSIVE = 7
 
         # PhaseStatusRed:
         vehPhaseStatusRedStr = str(f'{receivedBlob[211]:08b}')[::-1]
@@ -117,7 +124,14 @@ class Ntcip1202v2Blob:
             if vehPhaseStatusGreenStr[i] == '1':
                 self.vehPhaseStatusGreens[i] = True
                 self.vehCurrState[i] = GREEN
-
+        
+        # PhaseStatusPermissive:
+        leftTurns = [1,3,5,7]
+        for leftTurn in leftTurns:
+            if self.permissiveEnabled[str(leftTurn)] == True:
+                if ((self.vehCurrState[leftTurn-1] == RED) and (self.vehCurrState[self.splitPhases[str(leftTurn)]-1] == GREEN)):
+                    self.vehCurrState[leftTurn-1] = PERMISSIVE
+   
         # Time since change to current state - check inactive phases first:
         for i in range(0,self.numVehPhases):
             if self.vehMinEndTime[i] == 0 and self.vehMaxEndTime[i] == 0:

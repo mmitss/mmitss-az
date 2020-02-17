@@ -1,19 +1,72 @@
 import socket
 import json
 import datetime
+import time
 import os
 import sh
 
 def initializeBsmLogFile(FileName):
     bsmFilename = "./../datalogs/BsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     bsmLogFile = open(bsmFilename, 'w')
-    bsmLogFile.write("timestamp,temporaryId,secMark,latitude,longitude,elevation,speed,heading\n")
+    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading\n")
     return bsmLogFile, bsmFilename
 
-def initializeSpatLogFile(IntersectionName):
-    currentSpatFilename = "./../datalogs/spatLog_" + IntersectionName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+def initializeSrmLogFile(FileName):
+    srmFilename = "./../datalogs/SrmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    srmLogFile = open(srmFilename, 'w')
+    srmLogFile.write(("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose" + "," 
+            + "timestamp_posix" + ","
+            + "minuteOfYear" + "," 
+            + "msOfMinute" + "," 
+            + "msgCount" + "," 
+            + "regionalID" + "," 
+            + "intersectionID" + "," 
+            + "requestID" + "," 
+            + "priorityRequestType" + "," 
+            + "basicVehicleRole" + "," 
+            + "laneID" + "," 
+            + "approachID" + "," 
+            + "eTA_Minute" + "," 
+            + "eTA_Second" + "," 
+            + "eTA_Duration" + "," 
+            + "vehicleID" + "," 
+            + "latitude" + "," 
+            + "longitude" + "," 
+            + "elevation" + "," 
+            + "heading" + "," 
+            + "speed" + "," 
+            + "vehicleType"
+            + "\n"))
+    return srmLogFile, srmFilename
+
+# Columns will be generated only for first five requests: After that the same pattern will be followed.
+def initializeSsmLogFile(FileName): 
+    ssmFilename = "./../datalogs/SsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
+    ssmLogFile = open(ssmFilename, 'w')
+    ssmLogFile.write("log_timestamp_verbose" + "," 
+                    + "log_timestamp_posix" + "," 
+                    + "timestamp_verbose" + "," 
+                    + "timestamp_posix" + "," 
+                    + "minuteOfYear" + "," 
+                    + "msOfMinute" + "," 
+                    + "sequenceNumber" + "," 
+                    + "updateCount" + "," 
+                    + "regionalID" + "," 
+                    + "noOfRequest" + "," 
+                    + "intersectionID" + 
+                    "," + "r1_vehicleID,r1_requestID,r1_msgCount,r1_basicVehicleRole,r1_inBoundLaneID,r1_inBoundApproachID,r1_ETA_Minute,r1_ETA_Second,r1_ETA_Duration,r1_priorityRequestStatus" + 
+                    "," + "r2_vehicleID,r2_requestID,r2_msgCount,r2_basicVehicleRole,r2_inBoundLaneID,r2_inBoundApproachID,r2_ETA_Minute,r2_ETA_Second,r2_ETA_Duration,r2_priorityRequestStatus" + 
+                    "," + "r3_vehicleID,r3_requestID,r3_msgCount,r3_basicVehicleRole,r3_inBoundLaneID,r3_inBoundApproachID,r3_ETA_Minute,r3_ETA_Second,r3_ETA_Duration,r3_priorityRequestStatus" + 
+                    "," + "r4_vehicleID,r4_requestID,r4_msgCount,r4_basicVehicleRole,r4_inBoundLaneID,r4_inBoundApproachID,r4_ETA_Minute,r4_ETA_Second,r4_ETA_Duration,r4_priorityRequestStatus" + 
+                    "," + "r5_vehicleID,r5_requestID,r5_msgCount,r5_basicVehicleRole,r5_inBoundLaneID,r5_inBoundApproachID,r5_ETA_Minute,r5_ETA_Second,r5_ETA_Duration,r5_priorityRequestStatus")
+                                                
+    return ssmLogFile, ssmFilename
+
+def initializeSpatLogFile(FileName):
+    # Filename should be intersection name if running on intersection side
+    currentSpatFilename = "./../datalogs/spatLog_" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     spatLogFile = open(currentSpatFilename, 'w')
-    spatLogFile.write("timestamp,regionalId,intersectionId,msgCount,moy,msom," + 
+    spatLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,regionalId,intersectionId,msgCount,moy,msom," + 
                         "v1_currState,v1_minEndTime,v1_maxEndTime,v1_elapsedTime," +
                         "v2_currState,v2_minEndTime,v2_maxEndTime,v2_elapsedTime," +
                         "v3_currState,v3_minEndTime,v3_maxEndTime,v3_elapsedTime," +
@@ -33,22 +86,36 @@ def initializeSpatLogFile(IntersectionName):
                         "p8_currState,p8_minEndTime,p8_maxEndTime,p8_elapsedTime" + "\n")
     return spatLogFile, currentSpatFilename
 
-
-def receiveProcessAndStoreDataLocally(socket, spatLogFile, surroundingBsmLogFile):
+def receiveProcessAndStoreIntersectionDataLocally(socket, spatLogFile, surroundingBsmLogFile, srmLogFile, ssmLogFile):
     data, address = socket.recvfrom(4096)
     jsonData = json.loads(data.decode())
     if jsonData["MsgType"]=="SPAT": # then this message is a SPAT message
         spatLogFile.write(spatJsonToCsv(jsonData))
-    elif jsonData["MsgType"]=="BSM": # then this message is a bsm message from 
+    elif jsonData["MsgType"]=="BSM": # then this message is a BSM message
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
+    elif jsonData["MsgType"]=="SRM": # then this message is a SRM message
+        srmLogFile.write(srmJsonToCsv(jsonData))
+    elif jsonData["MsgType"]=="SSM": # then this message is a SSM message
+        ssmLogFile.write(ssmJsonToCsv(jsonData))
 
-def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmLogFile, surroundingBsmLogFile):
+def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmDecoderPort, hostBsmLogFile, surroundingBsmLogFile, spatLogFile, srmLogFile, ssmLogFile):
     data, address = socket.recvfrom(4096)
     jsonData = json.loads(data.decode())
-    if address[1]==10007: # then this message is a BSM from the host vehicle
+    if address[1]==hostBsmDecoderPort: # then this message is a BSM from the host vehicle
         hostBsmLogFile.write(bsmJsonToCsv(jsonData))
-    elif address[1]==10004: # then this message is a BSM from surrounding connected vehicle
+
+    elif jsonData["MsgType"]=="BSM": # then this message is a BSM from surrounding connected vehicle
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
+
+    elif jsonData["MsgType"]=="SPaT": 
+        spatLogFile.write(spatJsonToCsv(jsonData))
+
+    elif jsonData["MsgType"]=="SSM":
+        ssmLogFile.write(ssmJsonToCsv(jsonData))
+        
+    elif jsonData["msgType"]=="SRM":
+        srmLogFile.write(srmJsonToCsv(jsonData))
+
 
 def transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath, currentLocalFilename):
     (sh.icd(CyVerse_DirectoryPath)) # Go to correct CyVerse directory for storing SPAT data
@@ -86,7 +153,10 @@ Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
     return message
 
 def bsmJsonToCsv(jsonData:json):
-    timestamp = str(datetime.datetime.now())
+    log_timestamp_verbose = str(datetime.datetime.now())
+    log_timestamp_posix = str(time.time())
+    timestamp_verbose = str(jsonData["Timestamp_verbose"])
+    timestamp_posix = str(jsonData["Timestamp_posix"])
     temporaryId = str(jsonData["BasicVehicle"]["temporaryID"])
     secMark = str(jsonData["BasicVehicle"]["secMark_Second"])
     latitude = str(jsonData["BasicVehicle"]["position"]["latitude_DecimalDegree"])
@@ -95,11 +165,129 @@ def bsmJsonToCsv(jsonData:json):
     speed = str(jsonData["BasicVehicle"]["speed_MeterPerSecond"])
     heading = str(jsonData["BasicVehicle"]["heading_Degree"])
     
-    csv = timestamp + "," + temporaryId + "," + secMark + "," + latitude + "," + longitude + "," + elevation + "," + speed + "," + heading + "\n"
+    csv = (log_timestamp_verbose + "," 
+            + log_timestamp_posix + "," 
+            + timestamp_verbose + "," 
+            + timestamp_posix + "," 
+            + temporaryId + "," 
+            + secMark + "," 
+            + latitude + "," 
+            + longitude + "," 
+            + elevation + "," 
+            + speed + "," 
+            + heading + "\n")
+    return csv
+
+def srmJsonToCsv(jsonData:json):
+    log_timestamp_verbose = str(datetime.datetime.now())
+    log_timestamp_posix = str(time.time())
+    timestamp_verbose = str(jsonData["Timestamp_verbose"])
+    timestamp_posix = str(jsonData["Timestamp_posix"])
+    minuteOfYear = str(jsonData["SignalRequest"]["minuteOfYear"])
+    msOfMinute = str(jsonData["SignalRequest"]["msOfMinute"])
+    msgCount = str(jsonData["SignalRequest"]["msgCount"])
+    regionalID = str(jsonData["SignalRequest"]["regionalID"])
+    intersectionID = str(jsonData["SignalRequest"]["intersectionID"])
+    requestID = str(jsonData["SignalRequest"]["requestID"])
+    priorityRequestType = str(jsonData["SignalRequest"]["priorityRequestType"])
+    basicVehicleRole = str(jsonData["SignalRequest"]["basicVehicleRole"])
+    laneID = str(jsonData["SignalRequest"]["inBoundLane"]["LaneID"])
+    approachID = str(jsonData["SignalRequest"]["inBoundLane"]["ApproachID"])
+    eTA_Minute = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"])
+    eTA_Second = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"])
+    eTA_Duration = str(jsonData["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"])
+    vehicleID = str(jsonData["SignalRequest"]["vehicleID"])
+    latitude = str(jsonData["SignalRequest"]["position"]["latitude_DecimalDegree"])
+    longitude = str(jsonData["SignalRequest"]["position"]["longitude_DecimalDegree"])
+    elevation = str(jsonData["SignalRequest"]["position"]["elevation_Meter"])
+    heading = str(jsonData["SignalRequest"]["heading_Degree"])
+    speed = str(jsonData["SignalRequest"]["speed_MeterPerSecond"])
+    vehicleType = str(jsonData["SignalRequest"]["vehicleType"])
+    
+    csv = (log_timestamp_verbose + "," 
+            + log_timestamp_posix + "," 
+            + timestamp_verbose + "," 
+            + timestamp_posix + ","
+            + minuteOfYear + "," 
+            + msOfMinute + "," 
+            + msgCount + "," 
+            + regionalID + "," 
+            + intersectionID + "," 
+            + requestID + "," 
+            + priorityRequestType + "," 
+            + basicVehicleRole + "," 
+            + laneID + "," 
+            + approachID + "," 
+            + eTA_Minute + "," 
+            + eTA_Second + "," 
+            + eTA_Duration + "," 
+            + vehicleID + "," 
+            + latitude + "," 
+            + longitude + "," 
+            + elevation + "," 
+            + heading + "," 
+            + speed + "," 
+            + vehicleType
+            + "\n")
+    return csv
+
+def ssmJsonToCsv(jsonData:json):
+    log_timestamp_verbose = str(datetime.datetime.now())
+    log_timestamp_posix = str(time.time())
+    timestamp_verbose = str(jsonData["Timestamp_verbose"])
+    timestamp_posix = str(jsonData["Timestamp_posix"])
+    noOfRequest = (jsonData["noOfRequest"])
+    minuteOfYear = str(jsonData["SignalStatus"]["minuteOfYear"])
+    msOfMinute = str(jsonData["SignalStatus"]["msOfMinute"])
+    sequenceNumber = str(jsonData["SignalStatus"]["sequenceNumber"])
+    updateCount = str(jsonData["SignalStatus"]["updateCount"])
+    regionalID = str(jsonData["SignalStatus"]["regionalID"])
+    intersectionID = str(jsonData["SignalStatus"]["intersectionID"])
+
+    csv = (log_timestamp_verbose + "," 
+                    + log_timestamp_posix + "," 
+                    + timestamp_verbose + "," 
+                    + timestamp_posix + "," 
+                    + minuteOfYear + "," 
+                    + msOfMinute + "," 
+                    + sequenceNumber + "," 
+                    + updateCount + "," 
+                    + regionalID + "," 
+                    + str(noOfRequest) + "," 
+                    + intersectionID)
+
+    for request in range(0,noOfRequest):
+        vehicleID = jsonData["SignalStatus"]["requestorInfo"][request]["vehicleID"]
+        requestID = jsonData["SignalStatus"]["requestorInfo"][request]["requestID"]
+        msgCount = jsonData["SignalStatus"]["requestorInfo"][request]["msgCount"]
+        basicVehicleRole = jsonData["SignalStatus"]["requestorInfo"][request]["basicVehicleRole"]
+        inBoundLaneID = jsonData["SignalStatus"]["requestorInfo"][request]["inBoundLaneID"]
+        inBoundApproachID = jsonData["SignalStatus"]["requestorInfo"][request]["inBoundApproachID"]
+        ETA_Minute = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Minute"]
+        ETA_Second = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Second"]
+        ETA_Duration = jsonData["SignalStatus"]["requestorInfo"][request]["ETA_Duration"]
+        priorityRequestStatus = jsonData["SignalStatus"]["requestorInfo"][request]["priorityRequestStatus"]
+
+        request_csv = ("," + vehicleID +
+                        "," + requestID +
+                        "," + msgCount +
+                        "," + basicVehicleRole +
+                        "," + inBoundLaneID +
+                        "," + inBoundApproachID +
+                        "," + ETA_Minute +
+                        "," + ETA_Second +
+                        "," + ETA_Duration +
+                        "," + priorityRequestStatus)
+
+        csv = csv + request_csv
+
     return csv
 
 def spatJsonToCsv(jsonData:json):
-    timestamp = str(jsonData["Timestamp"])
+    log_timestamp_verbose = str(datetime.datetime.now())
+    log_timestamp_posix = str(time.time())
+    timestamp_verbose = str(jsonData["Timestamp_verbose"])
+    timestamp_posix = str(jsonData["Timestamp_posix"])
     regionalId = str(jsonData["Spat"]["IntersectionState"]["regionalID"])
     intersectionId = str(jsonData["Spat"]["IntersectionState"]["intersectionID"])
     msgCnt = str(jsonData["Spat"]["msgCnt"])
@@ -186,7 +374,9 @@ def spatJsonToCsv(jsonData:json):
     p8_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][7]["maxEndTime"])
     p8_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][7]["elapsedTime"])
 
-    csv = (timestamp + "," + regionalId + "," + intersectionId + "," + msgCnt + "," + moy + "," + msom + "," +
+    csv = (log_timestamp_verbose + "," + log_timestamp_posix + "," + timestamp_verbose + "," + timestamp_posix + "," + 
+            regionalId + "," + intersectionId + "," + msgCnt + "," + moy + "," + msom + "," +
+
             v1_currState + "," + v1_minEndTime + "," + v1_maxEndTime + "," + v1_elapsedTime + "," +
             v2_currState + "," + v2_minEndTime + "," + v2_maxEndTime + "," + v2_elapsedTime + "," +
             v3_currState + "," + v3_minEndTime + "," + v3_maxEndTime + "," + v3_elapsedTime + "," +
