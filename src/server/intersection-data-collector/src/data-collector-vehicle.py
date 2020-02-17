@@ -20,15 +20,27 @@ def main():
     dataCollectorAddress = (hostIp, port)
     s.bind(dataCollectorAddress)
 
+    hostBsmDecoderPort = mmitssConfig["HostBsmDecoder"]
 
     hostBsmLogFile, currentHostBsmLogFilename = DCM.initializeBsmLogFile('Host')
     surroundingBsmLogFile, currentSurroundingBsmFilename = DCM.initializeBsmLogFile('Surrounding')
+    spatLogFile, currentSpatLogFilename = DCM.initializeSpatLogFile('Vehicle')
+    ssmLogFile, currentSsmLogFilename = DCM.initializeSsmLogFile('Vehicle')
+    srmLogFile, currentSrmLogFilename = DCM.initializeSrmLogFile('Vehicle"')
 
     while True:
-            DCM.receiveProcessAndStoreVehicleDataLocally(s, hostBsmLogFile, surroundingBsmLogFile)
+            DCM.receiveProcessAndStoreVehicleDataLocally(s, hostBsmDecoderPort, 
+                                                            hostBsmLogFile, 
+                                                            surroundingBsmLogFile,
+                                                            spatLogFile,
+                                                            srmLogFile,
+                                                            ssmLogFile)
     s.close()
     hostBsmLogFile.close()
     surroundingBsmLogFile.close()
+    spatLogFile.close()
+    ssmLogFile.close()
+    srmLogFile.close()
 
 if __name__ == "__main__":
     main()
