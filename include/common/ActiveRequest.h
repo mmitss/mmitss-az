@@ -17,6 +17,7 @@
 
 struct ActiveRequest
 {
+    
     int vehicleID;
     int requestID;
     int msgCount;
@@ -25,7 +26,9 @@ struct ActiveRequest
     int vehicleApproachID;
     double vehicleETA;
     int prsStatus;
-    int minuteOfYear; 
+    int minuteOfYear;
+    int secondOfMinute;
+    int signalGroup; 
     void reset()
     {
         vehicleID = 0;
@@ -37,5 +40,7 @@ struct ActiveRequest
         vehicleETA = 0.0;
         prsStatus = 0;
         minuteOfYear = 0;
+        secondOfMinute = 0;
+        signalGroup = 0;
     }
 };
