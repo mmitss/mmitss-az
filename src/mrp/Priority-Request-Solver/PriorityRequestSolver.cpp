@@ -73,6 +73,25 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     }
 }
 
+bool PriorityRequestSolver::findEVInList()
+{
+    bool bEVStatus{};
+    if(priorityRequestList.empty())
+        bEVStatus = false;
+    else
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if(priorityRequestList[i].vehicleType == 2)
+            {
+                
+            }
+        }
+    }
+    
+
+}
+
 // void PriorityRequestSolver::setPhaseCallForRequestedSignalGroup()
 // {
 //     int vehicleSignalGroup{};

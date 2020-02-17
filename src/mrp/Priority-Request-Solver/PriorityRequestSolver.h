@@ -83,6 +83,7 @@ public:
 
 
     void createPriorityRequestList(string jsonString);
+    bool findEVInList();
     // void setPhaseCallForRequestedSignalGroup();
     void getCurrentSignalStatus();
     void getRequestedSignalGroupFromPriorityRequestList();
