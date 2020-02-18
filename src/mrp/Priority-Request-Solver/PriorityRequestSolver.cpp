@@ -84,41 +84,81 @@ bool PriorityRequestSolver::findEVInList()
         {
             if(priorityRequestList[i].vehicleType == 2)
             {
-                
+                bEVStatus = true;
+                break;
             }
         }
     }
     
-
+    return bEVStatus;
 }
 
-// void PriorityRequestSolver::setPhaseCallForRequestedSignalGroup()
-// {
-//     int vehicleSignalGroup{};
-//     double vehicleETA{};
-//     double vehicleCallTime{};
-//     int noOfVehicleCall{};
-//     requestedVehicleCall.clear();
-//     Schedule::GLPKSchedule vehicleCall;
-//     for (size_t i = 0; i < priorityRequestList.size(); i++)
-//     {
-//         vehicleSignalGroup = priorityRequestList[i].requestedPhase;
-//         vehicleETA = priorityRequestList[i].vehicleETA;
-//         vehicleCallTime = 0.0;
-//         noOfVehicleCall = unsigned(round(vehicleETA / 0.9));
-//         for (int j = 0; j <= noOfVehicleCall; j++)
-//         {
-//             if (vehicleCallTime < vehicleETA)
-//             {
-//                 vehicleCall.phaseNo = vehicleSignalGroup;
-//                 vehicleCall.time = vehicleCallTime;
-//                 vehicleCall.action = CALL_VEH_PHASES;
-//                 requestedVehicleCall.push_back(vehicleCall);
-//                 vehicleCallTime = vehicleCallTime + 0.9;
-//             }
-//         }
-//     }
-// }
+/*
+    -Obtain Split PHase information if EV is in List
+*/
+void PriorityRequestSolver::findSplitPhase()
+{
+    
+
+    Json::Value jsonObject_config;
+	Json::Reader reader;
+	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject_config);
+	// vehicleType = (jsonObject_config["VehicleType"]).asInt();
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        if(priorityRequestList[i].vehicleType == 2 )
+        {
+            switch (priorityRequestList[i].requestedPhase)
+            {
+            case 2:
+                priorityRequestList[i].splitPhase = jsonObject_config["SplitPhases"]["2"].asInt();
+                break;
+
+            case 4:
+                priorityRequestList[i].splitPhase = jsonObject_config["SplitPhases"]["4"].asInt();
+                break;
+            
+            case 6:
+                priorityRequestList[i].splitPhase = jsonObject_config["SplitPhases"]["6"].asInt();
+                break;
+
+            case 8:
+                priorityRequestList[i].splitPhase = jsonObject_config["SplitPhases"]["8"].asInt();
+                break;
+                        
+            default:
+                break;
+            }
+        }
+
+    }
+}
+
+/*
+    - If EV is priority request list, delete all the priority request from the list apart from EV
+*/
+void PriorityRequestSolver::modifyPriorityRequestList()
+{
+    int temporaryVehicleID{};
+
+    if(findEVInList() == true)
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if(priorityRequestList[i].vehicleType != 2)
+            {
+                temporaryVehicleID = priorityRequestList[i].vehicleID;
+                vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+																			 [&](RequestList const &p) { return p.vehicleType == temporaryVehicleID; });
+                priorityRequestList.erase(findVehicleIDOnList);
+                i--;
+            }
+        }
+    }
+
+}
 
 /*
     - If new priority request  is received this method will obtain the current traffic signal Status.
