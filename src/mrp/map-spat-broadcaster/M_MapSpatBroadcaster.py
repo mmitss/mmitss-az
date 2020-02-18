@@ -90,9 +90,7 @@ def main():
                 spatObject.setmsgCnt(msgCnt)
                 spatObject.fillSpatInformation(currentBlob)
                 spatJsonString = spatObject.Spat2Json()
-                currentPhaseDict = currentBlob.getCurrentPhasesDict()
-                currentPhasesJson = json.dumps(currentPhaseDict)
-                
+                currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
                 outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)

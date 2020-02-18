@@ -266,5 +266,19 @@ class Ntcip1202v2Blob:
         return self.msOfMinute
 
     def getCurrentPhasesDict(self):
-        currentPhasesDict = {"currentPhases":self.currentPhases}
+        currentPhasesDict = {
+                                "currentPhases":
+                                    [ 
+                                        {   
+                                            "Phase": self.currentPhases[0],
+                                            "State": self.vehCurrState[self.currentPhases[0]-1],
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1] 
+                                        },
+                                        {   
+                                            "Phase": self.currentPhases[1],
+                                            "State": self.vehCurrState[self.currentPhases[1]-1],
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1] 
+                                        }
+                                    ]
+                            }
         return currentPhasesDict
