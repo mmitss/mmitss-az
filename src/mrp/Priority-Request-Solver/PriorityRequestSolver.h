@@ -84,7 +84,8 @@ public:
 
     void createPriorityRequestList(string jsonString);
     bool findEVInList();
-    // void setPhaseCallForRequestedSignalGroup();
+    void findSplitPhase();
+    void modifyPriorityRequestList();
     void getCurrentSignalStatus();
     void getRequestedSignalGroupFromPriorityRequestList();
     void removeDuplicateSignalGroup();
