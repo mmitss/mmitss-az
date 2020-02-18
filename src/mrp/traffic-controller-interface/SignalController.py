@@ -3,6 +3,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from SnmpApi import SnmpApi
 import StandardMib
 import EconoliteMib
+import socket
+import json
 
 class SignalController:
     def __init__(self, signalControllerIP:str, signalControllerSnmpPort:int, vendorId:int):
@@ -17,6 +19,63 @@ class SignalController:
         # Import vendor specific Mib. vendorId:vendor mapping => 0:Econolite
         if self.vendorId == 0:
             self.vendorMib = EconoliteMib
+
+
+    '''##############################################
+                  Information Extraction
+    ##############################################'''
+
+    def getNextPhases(self):
+        nextPhases = int(self.snmpApi.snmpGet(StandardMib.PHASE_GROUP_STATUS_NEXT))
+        return nextPhases
+
+    def getNextPhasesDict(self):
+        nextPhasesStr = str(f'{(self.getNextPhases()):08b}')[::-1]
+        nextPhases = [0,0]
+        # Identify first next phase
+        for i in range(0,8):
+            if nextPhasesStr[i] == "1":
+                nextPhases[0] = i+1
+                break
+        # Identify first next phase
+        for i in range(0,8):
+            if nextPhasesStr[i] == "1":
+                nextPhases[1] = i+1
+
+        if nextPhases[0] == nextPhases[1]:
+            nextPhasesDict= {
+                                "nextPhases":
+                                    [
+                                        nextPhases[0]
+                                    ]
+                            }
+        else:
+            nextPhasesDict= {
+                                "nextPhases":
+                                    [
+                                        nextPhases[0], nextPhases[1]
+                                    ]
+                            }
+
+        return nextPhasesDict
+
+    def sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.bind(currPhaseListenerAddress)
+        data, addr = s.recvfrom(1024)
+        currentPhasesDict = json.loads(data.decode())
+
+        if ((currentPhasesDict["currentPhases"][0]["State"]==6) and (currentPhasesDict["currentPhases"][1]["State"]==6)):
+            nextPhasesDict= {"nextPhases":[0]}
+        else:
+            nextPhasesDict = self.getNextPhasesDict()
+
+        currentAndNextPhasesDict = currentPhasesDict
+        currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
+        currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
+        
+        s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
+        s.close()
 
     '''##############################################
                   Phase Control Methods

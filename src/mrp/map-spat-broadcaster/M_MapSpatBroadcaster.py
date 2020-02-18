@@ -93,6 +93,7 @@ def main():
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
                 outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
+                #print(currentPhasesJson)
                 print("Sent SPAT to MsgEncoder")
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
