@@ -259,7 +259,7 @@ std::string SignalRequest::signalRequest2Json()
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
-    jsonObject["Timestamp_posix"] = getVerboseTimestamp();
+    jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "SRM";
     jsonObject["SignalRequest"]["msgCount"] = msgCount;
     jsonObject["SignalRequest"]["minuteOfYear"] = minuteOfYear;
