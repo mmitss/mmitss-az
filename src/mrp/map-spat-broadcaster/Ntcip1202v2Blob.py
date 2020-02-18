@@ -135,8 +135,9 @@ class Ntcip1202v2Blob:
                 break
         
         # Identify SECOND current phase
+        for i in range(0,self.numVehPhases):
             if self.vehCurrState[i] == GREEN:
-                self.currentPhases[0] = (i+1)
+                self.currentPhases[1] = (i+1)
 
         # PhaseStatusPermissive:
         leftTurns = [1,3,5,7]

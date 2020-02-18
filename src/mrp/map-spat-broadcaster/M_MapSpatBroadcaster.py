@@ -55,7 +55,6 @@ def main():
     pedAppPort = 6060
     pedAppAddress = (pedAppIp, pedAppPort)
 
-    # _TODO_
     tci_currPhasePort = 30000
     tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
 
@@ -94,7 +93,6 @@ def main():
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
                 outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
-                #print(spatJsonString)
                 print("Sent SPAT to MsgEncoder")
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
