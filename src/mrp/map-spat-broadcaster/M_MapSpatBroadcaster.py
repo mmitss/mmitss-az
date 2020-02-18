@@ -55,6 +55,10 @@ def main():
     pedAppPort = 6060
     pedAppAddress = (pedAppIp, pedAppPort)
 
+    # _TODO_
+    tci_currPhasePort = 30000
+    tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
+
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
@@ -86,9 +90,12 @@ def main():
                 spatObject.setmsgCnt(msgCnt)
                 spatObject.fillSpatInformation(currentBlob)
                 spatJsonString = spatObject.Spat2Json()
+                currentPhaseDict = currentBlob.getCurrentPhasesDict()
+                currentPhasesJson = json.dumps(currentPhaseDict)
                 
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
+                outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
                 #print(spatJsonString)
                 print("Sent SPAT to MsgEncoder")
                 spatMapMsgCount = spatMapMsgCount + 1

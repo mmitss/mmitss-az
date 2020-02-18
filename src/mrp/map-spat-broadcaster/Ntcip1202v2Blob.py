@@ -90,6 +90,9 @@ class Ntcip1202v2Blob:
         self.minuteOfYear = 0
         self.msOfMinute = 0
 
+        ########### Current Phase Info ###########
+        self.currentPhases = [0,0]
+
     def processNewData(self, receivedBlob):
         # Derived from system time (Not controller's time)
         currentTimeMs = int(round(time.time() * 10))
@@ -125,6 +128,16 @@ class Ntcip1202v2Blob:
                 self.vehPhaseStatusGreens[i] = True
                 self.vehCurrState[i] = GREEN
         
+        # Identify FIRST current phase
+        for i in range(0,self.numVehPhases):
+            if self.vehCurrState[i] == GREEN:
+                self.currentPhases[0] = (i+1)
+                break
+        
+        # Identify SECOND current phase
+            if self.vehCurrState[i] == GREEN:
+                self.currentPhases[0] = (i+1)
+
         # PhaseStatusPermissive:
         leftTurns = [1,3,5,7]
         for leftTurn in leftTurns:
@@ -157,6 +170,8 @@ class Ntcip1202v2Blob:
             secondByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][1]]:08b}')
             completeByte = firstByte+secondByte
             self.vehMaxEndTime[i] = int(completeByte, 2)
+
+        
 ##################################### PED INFORMATION ####################################################################
         DONTWALK = 3
         PEDCLEAR = 8
@@ -249,3 +264,7 @@ class Ntcip1202v2Blob:
 
     def getMsOfMinute(self):
         return self.msOfMinute
+
+    def getCurrentPhasesDict(self):
+        currentPhasesDict = {"currentPhases":self.currentPhases}
+        return currentPhasesDict
