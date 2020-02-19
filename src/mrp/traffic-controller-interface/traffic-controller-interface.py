@@ -33,7 +33,7 @@ while True:
 s.close()
 
 
-#print(sigController.getActiveTimingPlan())
+#sigController.callVehPhases(255)
 
 # command1 = sigController.addCommandToSchedule(6,255,5)
 # print(command1)

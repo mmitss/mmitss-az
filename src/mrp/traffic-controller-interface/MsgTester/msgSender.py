@@ -12,25 +12,25 @@ f = open("msg.json", 'r')
 msg = f.read()
 print("leadTime,snmp")
 
-#while True:
-s.sendto(msg.encode(), ("10.12.6.108", 20005))
-requestTime = time.time()
+while True:
+    s.sendto(msg.encode(), ("10.12.6.108", 20005))
+    requestTime = time.time()
 
-data, addr = s.recvfrom(512)
-deliveryTime = time.time()
+    data, addr = s.recvfrom(512)
+    deliveryTime = time.time()
 
-leadTime = deliveryTime - requestTime
+    leadTime = deliveryTime - requestTime
 
-dataJson = json.loads(data.decode())
-if dataJson["nextPhases"] == [0]:
-    snmp = False
-else: snmp = True
+    dataJson = json.loads(data.decode())
+    if dataJson["nextPhases"] == [0]:
+        snmp = False
+    else: snmp = True
 
-print(str(round(leadTime,5)) + "," + str(snmp))
+    print(str(round(leadTime,5)) + "," + str(snmp))
     
 
 
 
 
-    #time.sleep(5)
+    time.sleep(2.5)
 
