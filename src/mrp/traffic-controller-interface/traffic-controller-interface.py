@@ -1,12 +1,13 @@
 import json
 from SignalController import SignalController
 import time
+from Command import Command
 import socket
 
 
 vendorId = 0 # 0:Econolite
 
-sigController = SignalController('10.12.6.17', 501, 0)
+sigController = SignalController('10.12.6.17', 501, 0, 2)
 hostIp = '10.12.6.108'
 tciPort = 20005
 tciAddress = (hostIp, tciPort)
@@ -17,20 +18,40 @@ currPhaseListenerAddress = (hostIp, currPhaseListenerPort)
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(tciAddress)
 
+commandPhase = 3
+commandStartTime = 5
+commandEndTime = 15
+commandType = 2
+
+commandObject = Command(commandPhase, commandStartTime, commandEndTime, commandType)
+sigController.addCommandToSchedule(0,commandObject)
+
+commandPhase = 5
+commandStartTime = 5
+commandEndTime = 15
+commandType = 2
+
+commandObject = Command(commandPhase, commandStartTime, commandEndTime, commandType)
+sigController.addCommandToSchedule(1,commandObject)
+
 while True:
+    print("Hey Boss!")
+    time.sleep(1)
+
+# while True:
     
-    data, requesterAddress = s.recvfrom(512)
+#     data, requesterAddress = s.recvfrom(512)
 
 
-    receivedMsg = json.loads(data.decode())
-    if(receivedMsg["MsgType"]=="RequestCurr_NextPhases"):
+#     receivedMsg = json.loads(data.decode())
+#     if(receivedMsg["MsgType"]=="RequestCurr_NextPhases"):
         
 
-        sigController.sendCurrentAndNextPhasesDict(currPhaseListenerAddress, requesterAddress)
-        #print(curr_nextPhasesJson)
+#         sigController.sendCurrentAndNextPhasesDict(currPhaseListenerAddress, requesterAddress)
+#         #print(curr_nextPhasesJson)
     
-    time.sleep(0.5)
-s.close()
+#     time.sleep(0.5)
+# s.close()
 
 
 #sigController.callVehPhases(255)

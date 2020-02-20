@@ -1,0 +1,48 @@
+{
+	"MsgType" : "Schedule",
+	"Schedule" : 
+	{
+		"Ring1" : 
+		[
+			{
+				"commandEndTime" : 0.0,
+				"commandPhase" : 4,
+				"commandStartTime" : 0.0,
+				"commandType" : 5
+			},
+			{
+				"commandEndTime" : 65.0,
+				"commandPhase" : 2,
+				"commandStartTime" : 5.0,
+				"commandType" : 4
+			},
+			{
+				"commandEndTime" : 40.0,
+				"commandPhase" : 2,
+				"commandStartTime" : 0.0,
+				"commandType" : 6
+			}
+		],
+		"Ring2" : 
+		[
+			{
+				"commandEndTime" : 65.0,
+				"commandPhase" : 2,
+				"commandStartTime" : 5.0,
+				"commandType" : 4
+			},
+			{
+				"commandEndTime" : 65.0,
+				"commandPhase" : 5,
+				"commandStartTime" : 5.0,
+				"commandType" : 4
+			},
+			{
+				"commandEndTime" : 40.0,
+				"commandPhase" : 5,
+				"commandStartTime" : 0.0,
+				"commandType" : 6
+			}
+		]
+	}
+}

@@ -5,17 +5,34 @@ import StandardMib
 import EconoliteMib
 import socket
 import json
+import Command
 
 class SignalController:
-    def __init__(self, signalControllerIP:str, signalControllerSnmpPort:int, vendorId:int):
+    def __init__(self, signalControllerIP:str, signalControllerSnmpPort:int, vendorId:int, ntcipBackupTime_Sec):
+        # Communication Parameters
         self.signalControllerCommInfo = (signalControllerIP, signalControllerSnmpPort)
         self.snmpApi = SnmpApi(self.signalControllerCommInfo)
-        self.commandScheduler = BackgroundScheduler()
-        self.commandScheduler.start()
+        
+        # NTCIP Backup Time
+        self.ntcipBackupTime_Sec = ntcipBackupTime_Sec
+        
+
+        # Scheduler global parameters
         self.commandId = 65534
+        self.commandScheduler = [0,0]
+
+        # Scheduler object for Ring 1
+        self.commandScheduler[0] = BackgroundScheduler() 
+        self.commandScheduler[0].start()
+
+        # Scheduler object for Ring 2
+        self.commandScheduler[1] = BackgroundScheduler()
+        self.commandScheduler[1].start()
+        
+        # Vendor ID and MIB
         self.vendorId = vendorId
         self.vendorMib = 0
-        
+    
         # Import vendor specific Mib. vendorId:vendor mapping => 0:Econolite
         if self.vendorId == 0:
             self.vendorMib = EconoliteMib
@@ -43,19 +60,9 @@ class SignalController:
                 nextPhases[1] = i+1
 
         if nextPhases[0] == nextPhases[1]:
-            nextPhasesDict= {
-                                "nextPhases":
-                                    [
-                                        nextPhases[0]
-                                    ]
-                            }
+            nextPhasesDict= {"nextPhases":[nextPhases[0]]}
         else:
-            nextPhasesDict= {
-                                "nextPhases":
-                                    [
-                                        nextPhases[0], nextPhases[1]
-                                    ]
-                            }
+            nextPhasesDict= {"nextPhases":[nextPhases[0], nextPhases[1]]}
 
         return nextPhasesDict
 
@@ -191,37 +198,73 @@ class SignalController:
                     Scheduler Methods
     ##############################################'''
 
-    def addCommandToSchedule(self, commandType, phasesTotal, secondsFromNow):
+    def addCommandToSchedule(self, ring, commandObject:Command):
         if self.commandId > 65534:
             self.commandId = 0
         self.commandId = self.commandId + 1
-        if (commandType <= 1 or commandType > 7):
+
+        if (commandObject.commandType <= 1 or commandObject.commandType > 7):
             return False
-        elif commandType == 2:
-            self.commandScheduler.add_job(self.omitVehPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
+        
+        # Omit vehicle phases
+        elif commandObject.commandType == 2:
+
+            self.commandScheduler[ring].add_job(self.omitVehPhases, args = [commandObject.phaseInt], 
+                    trigger = 'interval', 
+                    seconds = self.ntcipBackupTime_Sec-1,
+                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
+                    id = str(self.commandId))
             return self.commandId
-        elif commandType == 3:
-            self.commandScheduler.add_job(self.omitPedPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
-            return self.commandId
-        elif commandType == 4:
-            self.commandScheduler.add_job(self.holdPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
-            return self.commandId
-        elif commandType == 5:
-            self.commandScheduler.add_job(self.forceOffPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
-            return self.commandId
-        elif commandType == 6:
-            self.commandScheduler.add_job(self.callVehPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
-            return self.commandId
-        elif commandType == 7:
-            self.commandScheduler.add_job(self.callPedPhases, args = [phasesTotal], trigger = 'date', run_date=(datetime.datetime.now()+datetime.timedelta(seconds=secondsFromNow)), id = str(self.commandId))
+        
+        # Omit pedestrian phases
+        elif commandObject.commandType == 3:
+            self.commandScheduler[ring].add_job(self.omitPedPhases, args = [commandObject.phaseInt], 
+                    trigger = 'interval',
+                    seconds = self.ntcipBackupTime_Sec-1,
+                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
+                    id = str(self.commandId))
             return self.commandId
 
-    def removeCommandFromSchedule(self, commandId:str):
-        self.commandScheduler.remove_job(commandId)
-        
+        # Hold vehicle phases
+        elif commandObject.commandType == 4:
+            self.commandScheduler[ring].add_job(self.holdPhases, args = [commandObject.phaseInt], 
+                    trigger = 'interval', 
+                    seconds = self.ntcipBackupTime_Sec-1,
+                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Forceoff vehicle phases
+        elif commandObject.commandType == 5:
+            self.commandScheduler[ring].add_job(self.forceOffPhases, args = [commandObject.phaseInt], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Call vehicle phases
+        elif commandObject.commandType == 6:
+            self.commandScheduler[ring].add_job(self.callVehPhases, args = [commandObject.phaseInt], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Call pedestrian phases
+        elif commandObject.commandType == 7:
+            self.commandScheduler[ring].add_job(self.callPedPhases, args = [commandObject.phaseInt], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
     def stopCommandScheduler(self):
-        self.commandScheduler.remove_all_jobs()
-        self.commandScheduler.shutdown()
+        for schedulerIndex in range (0,2):
+            self.commandScheduler[schedulerIndex].remove_all_jobs()
+            self.commandScheduler[schedulerIndex].shutdown()
         return True
 
     # Add methods for:
