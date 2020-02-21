@@ -7,7 +7,6 @@ struct RequestList
     double vehicleETA{};
     double vehicleETA_Duration{};
     int requestedPhase{};
-    int splitPhase{};
     int prioritystatus{};
 
     void reset()
@@ -19,7 +18,6 @@ struct RequestList
     vehicleETA = 0.0;
     vehicleETA_Duration = 0.0;
     requestedPhase = 0;
-    splitPhase = 0;
     prioritystatus = 0;
     }
 };

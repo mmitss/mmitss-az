@@ -34,6 +34,8 @@ public:
     bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
     bool shouldDeleteTimedOutRequestfromActiveRequestTable();
     bool findEVInList();
+    // void findSplitPhase();
+    // void modifyPriorityRequestList();
     void setRequestTimedOutVehicleID(int timedOutVehicleID);
     int getRequestTimedOutVehicleID();
     std::vector<ActiveRequest> creatingSignalRequestTable(SignalRequest signalRequest);

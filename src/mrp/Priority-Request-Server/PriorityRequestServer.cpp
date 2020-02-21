@@ -243,6 +243,146 @@ bool PriorityRequestServer::findEVInList()
 	return bEVInList;
 }
 
+// /*
+//     -Obtain Split PHase information if EV is in List
+//         - If split phase is not found set it zero
+// */
+// void PriorityRequestSolver::findSplitPhase()
+// {
+//     std::vector<int>::iterator it;
+//     vector<RequestList> temporarySplitPriorityRequestList;
+//     int temporarySplitPhase{};
+//     // Json::Value jsonObject_config;
+//     // Json::Reader reader;
+//     // std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+//     // std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+//     // reader.parse(configJsonString.c_str(), jsonObject_config);
+//     // vehicleType = (jsonObject_config["VehicleType"]).asInt();
+//     for (size_t i = 0; i < priorityRequestList.size(); i++)
+//     {
+//         if (priorityRequestList[i].vehicleType == 2)
+//         {
+//             switch (priorityRequestList[i].requestedPhase)
+//             {
+//             case 1:
+//                 temporarySplitPhase = 6;
+//                 it = std::find(P21.begin(), P21.end(), temporarySplitPhase);
+//                 if (it != P21.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+                
+//                 break;
+
+//             case 2:
+//                 temporarySplitPhase = 5;
+//                 it = std::find(P21.begin(), P21.end(), temporarySplitPhase);
+//                 if (it != P21.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 // if (it != P21.end())
+//                 //     priorityRequestList[i].splitPhase = temporarySplitPhase;
+//                 // else
+//                 //     priorityRequestList[i].splitPhase = 0;
+//                 break;
+
+//             case 3:
+//                 temporarySplitPhase = 7;
+//                 it = std::find(P22.begin(), P22.end(), temporarySplitPhase);
+//                 if (it != P22.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             case 4:
+//                 temporarySplitPhase = 8;
+//                 it = std::find(P22.begin(), P22.end(), temporarySplitPhase);
+//                 if (it != P22.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             case 5:
+//                 temporarySplitPhase = 2;
+//                 it = std::find(P11.begin(), P11.end(), temporarySplitPhase);
+//                 if (it != P11.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             case 6:
+//                 temporarySplitPhase = 1;
+//                 it = std::find(P11.begin(), P11.end(), temporarySplitPhase);
+//                 if (it != P11.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             case 7:
+//                 temporarySplitPhase = 3;
+//                 it = std::find(P12.begin(), P12.end(), temporarySplitPhase);
+//                 if (it != P12.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             case 8:
+//                 temporarySplitPhase = 4;
+//                 it = std::find(P12.begin(), P12.end(), temporarySplitPhase);
+//                 if (it != P12.end())
+//                 {
+//                     temporarySplitPriorityRequestList.push_back(priorityRequestList[i]);
+//                     temporarySplitPriorityRequestList[i].requestedPhase = temporarySplitPhase;
+//                 }
+//                 break;
+
+//             default:
+//                 break;
+//             }
+//         }
+//     }
+//     priorityRequestList.insert(priorityRequestList.end(), temporarySplitPriorityRequestList.begin(), temporarySplitPriorityRequestList.end());
+// }
+
+// /*
+//     - If EV is priority request list, delete all the priority request from the list apart from EV
+// */
+// void PriorityRequestSolver::modifyPriorityRequestList()
+// {
+//     int temporaryVehicleID{};
+
+//     for (size_t i = 0; i < priorityRequestList.size(); i++)
+//     {
+//         temporaryVehicleID = priorityRequestList[i].vehicleID;
+//         if (priorityRequestList[i].vehicleType != 2)
+//         {
+//             vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+//                                                                              [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
+
+//             priorityRequestList.erase(findVehicleIDOnList);
+//             i--;
+//             // if(findVehicleIDOnList != priorityRequestList.end())
+//             // {
+//             //     priorityRequestList.erase(findVehicleIDOnList);
+//             //     i--;
+//             // }
+//         }
+//     }
+// }
+
 /*
 	Method to create, update and delete Active Request Table
 */
