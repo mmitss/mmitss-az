@@ -1,12 +1,12 @@
 Version=0.7
 Type=SRM
-PSID=0x8002
+PSID=0xE000019
 Priority=7
-TxMode=CONT
+TxMode=ALT
 TxChannel=182
 TxInterval=
 DeliveryStart=
 DeliveryStop=
-Signature=True
+Signature=False
 Encryption=False
 Payload=001D2D70EA60E1A882039400000FAC1480803C3A9849C420FA0C00000012C84819A97E66EDC44F8D89820FC4B0387980

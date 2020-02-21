@@ -1,7 +1,7 @@
 Version=0.7
 Type=SPAT
 PSID=0x8002
-Priority=0
+Priority=7
 TxMode=CONT
 TxChannel=172
 TxInterval=

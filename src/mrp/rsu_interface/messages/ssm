@@ -1,8 +1,8 @@
 Version=0.7
 Type=SSM
-PSID=0x8002
-Priority=0
-TxMode=CONT
+PSID=0xE000020
+Priority=7
+TxMode=ALT
 TxChannel=182
 TxInterval=0
 DeliveryStart=
