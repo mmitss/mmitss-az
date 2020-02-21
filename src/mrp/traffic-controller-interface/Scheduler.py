@@ -59,7 +59,6 @@ class Scheduler:
         groupCommand = currentGroup[0].commandType
         groupStartTime = currentGroup[0].startTime
         groupEndTime = min(command.endTime for command in currentGroup )
-        print(groupEndTime)
         groupPhases = []
         for command in currentGroup:
             groupPhases = groupPhases + [command.phase]
@@ -98,7 +97,7 @@ class Scheduler:
         # Omit vehicle phases
         elif commandObject.commandType == 2:
 
-            self.commandScheduler.add_job(self.snmp.omitVehPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.omitVehPhases, args = [commandObject.phase], 
                     trigger = 'interval', 
                     seconds = self.ntcipBackupTime_Sec-1,
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -108,7 +107,7 @@ class Scheduler:
         
         # Omit pedestrian phases
         elif commandObject.commandType == 3:
-            self.commandScheduler.add_job(self.snmp.omitPedPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.omitPedPhases, args = [commandObject.phase], 
                     trigger = 'interval',
                     seconds = self.ntcipBackupTime_Sec-1,
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -118,7 +117,7 @@ class Scheduler:
 
         # Hold vehicle phases
         elif commandObject.commandType == 4:
-            self.commandScheduler.add_job(self.snmp.holdPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.holdPhases, args = [commandObject.phase], 
                     trigger = 'interval', 
                     seconds = self.ntcipBackupTime_Sec-1,
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -128,7 +127,7 @@ class Scheduler:
 
         # Forceoff vehicle phases
         elif commandObject.commandType == 5:
-            self.commandScheduler.add_job(self.snmp.forceOffPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.forceOffPhases, args = [commandObject.phase], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
@@ -136,7 +135,7 @@ class Scheduler:
 
         # Call vehicle phases
         elif commandObject.commandType == 6:
-            self.commandScheduler.add_job(self.snmp.callVehPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.callVehPhases, args = [commandObject.phase], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
@@ -144,19 +143,27 @@ class Scheduler:
 
         # Call pedestrian phases
         elif commandObject.commandType == 7:
-            self.commandScheduler.add_job(self.snmp.callPedPhases, args = [commandObject.phaseInt], 
+            self.commandScheduler.add_job(self.snmp.callPedPhases, args = [commandObject.phase], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
             return self.commandId
 
     def stopCommandScheduler(self):
+        # _TODO_ Remove current holds, ommits and forceoffs
         self.commandScheduler.remove_all_jobs()
         self.commandScheduler.shutdown()
+        
+    # _TODO_
+    def clearScheduler(self):
+        pass
 
-
+'''##############################################
+                   Unit testing
+##############################################'''
 if __name__ == "__main__":
-    
+    import time
+
     # Define controller's communication Info
     controllerIp = "10.12.6.17"
     controllerPort = 501
@@ -172,3 +179,6 @@ if __name__ == "__main__":
 
     scheduler.processNewSchedule(scheduleJson)
 
+    # Schedule a vehicle call on all phases after 10 seconds
+    scheduler.addCommandToSchedule(Command(255,10,10,6))
+    time.sleep(15)

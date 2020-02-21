@@ -5,5 +5,9 @@ class Command:
         self.endTime = commandEndTime
         self.commandType = commandType
 
+        
+'''##############################################
+                   Unit testing
+##############################################'''
 if __name__ == "__main__":
     pass
