@@ -25,25 +25,25 @@ while i < len(commandsInSchedule):
         if (command != currentGroup[0] and (command.startTime == currentGroup[0].startTime) and (command.commandType == currentGroup[0].commandType)):
             currentGroup = currentGroup + [command]
             i = i+1
-    print("Current group has " + str(len(currentGroup)) + " elements")
+    
+    groupCommand = currentGroup[0].commandType
+    groupStartTime = currentGroup[0].startTime
+    groupEndTime = currentGroup[0].endTime
+    groupPhases = []
+    for command in currentGroup:
+        groupPhases = groupPhases + [command.phase]
+
+    phaseStr = list("00000000")
+    for phase in groupPhases:
+        phaseStr[phase-1]="1"
+    phaseStr = phaseStr[::-1]
+    phaseStr = "".join(phaseStr)
+    phaseInt = int(phaseStr,2)
+
+    # Formulate the binary integer representation of the commandPhase:
+    
+
+
+
     currentGroup = []
     i = i + 1
-
-
-
-# i = 0
-
-# while len(commandsInSchedule)!=0:
-#     currentGroup = [commandsInSchedule[i]]
-#     if ((commandsInSchedule[i].startTime == commandsInSchedule[i+1].startTime) and (commandsInSchedule[i].commandType == commandsInSchedule[i+1].commandType)):
-#         currentGroup = currentGroup + [commandsInSchedule[i+1]]
-#         print("Current group has " + str(len(currentGroup)) + " elements")
-#         currentGroup = []
-#         commandsInSchedule.pop(i)
-#         commandsInSchedule.pop(i)
-#         i = 0
-#     else:
-#             print("Current group has " + str(len(currentGroup)) + " elements")
-#             currentGroup = []
-#             commandsInSchedule.pop(i)
-#             i = 0
