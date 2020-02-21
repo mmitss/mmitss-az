@@ -62,7 +62,7 @@
 #define LOG_FILENAME "/nojournal/bin/log/MMITSS_MRP_PriorityRequestServer_"
 #define LANEPHASE_FILENAME "/nojournal/bin/InLane_OutLane_Phase_Mapping.txt"
 #define IPINFO_FILENAME "/nojournal/bin/IPInfo.txt" // the file to read the traffic signal controller IP and port
-const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 15.0;
+const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 10.0;
 
 double getSimulationTime(const char *); //from VISSIM
 
