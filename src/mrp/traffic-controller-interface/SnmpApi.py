@@ -133,5 +133,5 @@ if __name__ == "__main__":
     snmp = SnmpApi(controllerCommInfo)
     
     # Print the id of the currently active timing plan in the controller
-    print(snmp.getActiveTimingPlanId())
+    print(snmp.snmpGet("1.3.6.1.4.1.1206.3.5.2.1.22.0"))
     

@@ -1,4 +1,5 @@
 # Phase parameters:
+ASCPHASETIMINGPLAN              =   "1.3.6.1.4.1.1206.3.5.2.1.2.1.1"
 CUR_TIMING_PLAN                 =   "1.3.6.1.4.1.1206.3.5.2.1.22.0"     
 PHASE_PARAMETERS_MIN_GRN        =   "1.3.6.1.4.1.1206.3.5.2.1.2.1.9."   # need last "x.p" x is the timing plan number,p is the phase number: x get from CUR_TIMING_PLAN
 PHASE_PARAMETERS_MAX_GRN        =   "1.3.6.1.4.1.1206.3.5.2.1.2.1.15."
