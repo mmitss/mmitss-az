@@ -24,17 +24,26 @@
 
 using std::cout;
 using std::endl;
-using std::vector;
 using std::string;
 using std::stringstream;
+using std::vector;
 // using std::fstream;
 using std::ifstream;
-using std::ofstream;
 using std::ios;
+using std::ofstream;
 
 class PriorityRequestSolver
 {
 private:
+    int noOfPhase{};
+    int numberOfTransitInList{};
+    int numberOfTruckInList{};
+    int noOfPhasesInRing1{};
+    int noOfPhasesInRing2{};
+    int noOfEVInList{};
+    string scheduleJsonString{};
+    bool bEVStatus{};
+
     vector<RequestList> priorityRequestList;
     // vector<Schedule::GLPKSchedule> glpkSchedule;
     // vector<Schedule::GLPKSchedule>requestedVehicleCall;
@@ -42,7 +51,7 @@ private:
     vector<Schedule::TCISchedule> ring2_TCISchedule;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
-    vector<int>PhaseNumber;
+    vector<int> PhaseNumber;
     vector<double> PedWalk;
     vector<double> PedClear;
     vector<double> MinGreen;
@@ -51,19 +60,13 @@ private:
     vector<double> YellowChange;
     vector<double> RedClear;
     vector<int> PhaseRing;
-    vector<int>requestedSignalGroup;
-    vector<int>P11;
-    vector<int>P12;
-    vector<int>P21;
-    vector<int>P22;
-    
-    int noOfPhase{};
-    int numberOfTransitInList{};
-    int numberOfTruckInList{};
-    int noOfPhasesInRing1{};
-    int noOfPhasesInRing2{};
-    string scheduleJsonString{};
-    
+    vector<int> requestedSignalGroup;
+    vector<int> P11;
+    vector<int> P12;
+    vector<int> P21;
+    vector<int> P22;
+    vector<double> singleEV_PhaseDuration_Ring1;
+    vector<double> singleEV_PhaseDuration_Ring2;
     vector<double> leftCriticalPoints_PhaseDuration_Ring1;
     vector<double> leftCriticalPoints_PhaseDuration_Ring2;
     vector<double> rightCriticalPoints_PhaseDuration_Ring1;
@@ -72,20 +75,18 @@ private:
     vector<double> leftCriticalPoints_GreenTime_Ring2;
     vector<double> rightCriticalPoints_GreenTime_Ring1;
     vector<double> rightCriticalPoints_GreenTime_Ring2;
-    vector<int>plannedSignalGroupInRing1;
-    vector<int>plannedSignalGroupInRing2;
+    vector<int> plannedSignalGroupInRing1;
+    vector<int> plannedSignalGroupInRing2;
     // vector<int> a;
-
 
 public:
     PriorityRequestSolver();
     ~PriorityRequestSolver();
 
-
     void createPriorityRequestList(string jsonString);
     bool findEVInList();
-    void findSplitPhase();
     void modifyPriorityRequestList();
+    void getEVPhases();
     void getCurrentSignalStatus();
     void getRequestedSignalGroupFromPriorityRequestList();
     void removeDuplicateSignalGroup();
@@ -101,9 +102,11 @@ public:
     string createScheduleJsonString();
     // void split(string strToSplit);
     void readCurrentSignalTimingPlan();
-    void GenerateModFile();
+    void generateEVModFile();
+    void generateModFile();
     void printSignalPlan();
     void printvector();
-    
-    
+    int getNoOfEVInList();
+    int getRequestedSignalGroupSize();
+    int getEVRingBarrierGroup();
 };
