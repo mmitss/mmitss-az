@@ -7,7 +7,7 @@ import socket
 
 vendorId = 0 # 0:Econolite
 
-sigController = SignalController('10.12.6.17', 501, 0, 2)
+sigController = SignalController(('10.12.6.17', 501), 0)
 hostIp = '10.12.6.108'
 tciPort = 20005
 tciAddress = (hostIp, tciPort)
