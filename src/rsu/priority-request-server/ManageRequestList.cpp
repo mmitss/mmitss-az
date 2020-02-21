@@ -52,7 +52,7 @@ void UpdateList(LinkedList<ReqEntry> &Req_List, char *RcvMsg, int phaseStatus[8]
     // DC - We never put anything from the SRM into MinGreen and solver does not use it...........
     //if (NewReq.MinGreen > 0) // means vehicle is in the queue, we need queue clearance to be considered in Solver
     //    NewReq.ETA = 0;
-
+    NewReq.drequestReceivedTime = dTime;
     NewReq.dUpdateTimeOfETA = dTime;
 
     // Handle split phases for EVs in list

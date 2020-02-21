@@ -62,6 +62,7 @@
 #define LOG_FILENAME "/nojournal/bin/log/MMITSS_MRP_PriorityRequestServer_"
 #define LANEPHASE_FILENAME "/nojournal/bin/InLane_OutLane_Phase_Mapping.txt"
 #define IPINFO_FILENAME "/nojournal/bin/IPInfo.txt" // the file to read the traffic signal controller IP and port
+const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 15.0;
 
 double getSimulationTime(const char *); //from VISSIM
 
@@ -129,3 +130,9 @@ int FindRequestInList(LinkedList<ReqEntry> &ReqList, int VehClass);
 int getPriorityRequestStatus(LinkedList<ReqEntry> &ReqList);
 
 void doUpdateETAofRequestsInList(const string &, LinkedList<ReqEntry> &, int &, bool &);
+
+bool shouldDeleteTimedOutRequestfromList(LinkedList<ReqEntry> &Req_List);
+
+int findTimeOutRequestPosition(LinkedList<ReqEntry> &Req_List);
+
+void deleteTimedOutRequest(LinkedList<ReqEntry> &Req_List);
