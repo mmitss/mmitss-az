@@ -13,11 +13,18 @@ class Scheduler:
         self.snmp = SnmpApi(signalControllerCommInfo)
 
         # Scheduler parameters
-        #self.commandScheduler = BackgroundScheduler() 
-        #self.commandScheduler.start()
+        self.commandScheduler = BackgroundScheduler() 
+        self.commandScheduler.start()
         self.commandId = 0
+        self.currentCommandPool = []
         
     def processNewSchedule(self, scheduleJson:json):
+        # _TODO_
+        # Check if there is any previous schedule being processed
+        if len(self.currentCommandPool) == 0:
+            updatedSchedule = False
+        else: updatedSchedule = False
+        
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
@@ -27,7 +34,6 @@ class Scheduler:
 
         # Form action group
         index = 0
-        newScheduleDict = ""
         while index < len(scheduleDataStructure):
             
             currentGroup = [scheduleDataStructure[index]]
@@ -40,37 +46,34 @@ class Scheduler:
 
             groupCommand =  self.formulateGroupCommand(currentGroup)
 
-
             # Check the end times of all items in the current group and add additional commands for the phases that end later.
             for command in currentGroup:
                 if command.endTime > groupCommand.endTime:
-                    command.startTime = groupCommand.endTime
-                    scheduleDataStructure.append(command)
-                    command.endTime = groupCommand.endTime
-                    # Resort the schedule data structure based on command start time
-                    scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
+                    scheduleDataStructure.append(Command(command.phase,groupCommand.endTime,command.endTime,command.commandType))
 
-        #     # Create a JSON string of the current group:
-        #     for command in currentGroup:
-        #         commandDict =   {
-        #                             "commandEndTime": command.endTime,
-        #                             "commandPhase": command.phase,
-        #                             "commandStartTime": command.startTime,
-        #                             "commandType": command.commandType
-        #                         }
-        #         newScheduleDict = newScheduleDict + "," + (json.dumps(commandDict))
+            groupMaxEndTime = max(command.endTime for command in currentGroup)
             
-        #     currentGroup = []
-        #     index = index + 1
-        
-        # newScheduleJson =   {
-        #                         "MsgType": "Schedule",
-        #                         "Schedule": newScheduleDict
-        #                     }
-        # f = open("ModifiedSchedule.json", "w")
-        # f.write(json.dumps(newScheduleJson))
-        # f.close()
-    
+            if groupCommand.commandType == 4:
+                # Develop a command to end the HOLD or OMIT and add it in the schedule:
+                groupEndCommand = Command(0,groupMaxEndTime,groupMaxEndTime,7)
+                scheduleDataStructure.append(groupEndCommand)
+            elif groupCommand.commandType == 5:
+                # Develop a command to end the HOLD or OMIT and add it in the schedule:
+                groupEndCommand = Command(0,groupMaxEndTime,groupMaxEndTime,8)
+                scheduleDataStructure.append(groupEndCommand)
+            elif groupCommand.commandType == 6:
+                # Develop a command to end the HOLD or OMIT and add it in the schedule:
+                groupEndCommand = Command(0,groupMaxEndTime,groupMaxEndTime,9)
+                scheduleDataStructure.append(groupEndCommand)
+
+            # Resort the schedule data structure based on command start time
+            scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
+
+            currentGroup = []
+            index = index + 1
+
+            self.currentCommandPool.append(self.addCommandToSchedule(groupCommand)) 
+            print("pause here!")
 
     # Create Schedule data structure
     def createScheduleDataStructure(self, scheduleJson:json):
@@ -96,6 +99,7 @@ class Scheduler:
         groupCommand = Command(groupPhaseInt, groupStartTime, groupEndTime, groupCommand)
         return groupCommand
     
+
     # Formulate the binary integer representation of the commandPhase:
     def formulateBinaryIntegerRepresentation(self, groupPhases):
         groupPhaseStr = list("00000000")
@@ -104,28 +108,73 @@ class Scheduler:
         groupPhaseStr = groupPhaseStr[::-1]
         groupPhaseStr = "".join(groupPhaseStr)
         groupPhaseInt = int(groupPhaseStr,2)
-        print("GroupPhases="+str(groupPhases))
-        print("GroupPhasesStr="+str(groupPhaseStr))
-        print("GroupPhasesInt="+str(groupPhaseInt))
-        print("\n")
         return groupPhaseInt    
 
     
     '''##############################################
                     Scheduler Methods
     ##############################################'''
-    '''
+    
     def addCommandToSchedule(self, commandObject:Command):
+
+        # Define Command Types:
+        CALL_VEH_PHASES = 1
+        CALL_PED_PHASES = 2
+        FORCEOFF_PHASES = 3
+        HOLD_VEH_PHASES = 4
+        OMIT_VEH_PHASES = 5
+        OMIT_PED_PHASES = 6
+        CLEAR_HOLD = 7
+        CLEAR_VEH_OMIT = 8
+        CLEAR_PED_OMIT = 9
+
+        # Assign Command ID:       
         if self.commandId > 65534:
             self.commandId = 0
         self.commandId = self.commandId + 1
-
-        if (commandObject.commandType <= 1 or commandObject.commandType > 7):
-            return False
         
-        # Omit vehicle phases
-        elif commandObject.commandType == 2:
+        # Check for validity of command type:
+        if (commandObject.commandType < 1 or commandObject.commandType > 9):
+            return False
 
+        # Check if command is to clear an existing command from NTCIP backup:
+
+        # Call vehicle phases
+        elif commandObject.commandType == CALL_VEH_PHASES:
+            self.commandScheduler.add_job(self.snmp.callVehPhases, args = [commandObject.phase], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Call pedestrian phases
+        elif commandObject.commandType == CALL_PED_PHASES:
+            self.commandScheduler.add_job(self.snmp.callPedPhases, args = [commandObject.phase], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+        
+        # Forceoff vehicle phases
+        elif commandObject.commandType == FORCEOFF_PHASES:
+            self.commandScheduler.add_job(self.snmp.forceOffPhases, args = [commandObject.phase], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Hold vehicle phases
+        elif commandObject.commandType == HOLD_VEH_PHASES:
+            self.commandScheduler.add_job(self.snmp.holdPhases, args = [commandObject.phase], 
+                    trigger = 'interval', 
+                    seconds = self.ntcipBackupTime_Sec-1,
+                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+
+        # Omit vehicle phases
+        elif commandObject.commandType == OMIT_VEH_PHASES:
             self.commandScheduler.add_job(self.snmp.omitVehPhases, args = [commandObject.phase], 
                     trigger = 'interval', 
                     seconds = self.ntcipBackupTime_Sec-1,
@@ -135,7 +184,7 @@ class Scheduler:
             return self.commandId
         
         # Omit pedestrian phases
-        elif commandObject.commandType == 3:
+        elif commandObject.commandType == OMIT_PED_PHASES:
             self.commandScheduler.add_job(self.snmp.omitPedPhases, args = [commandObject.phase], 
                     trigger = 'interval',
                     seconds = self.ntcipBackupTime_Sec-1,
@@ -143,40 +192,34 @@ class Scheduler:
                     end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
                     id = str(self.commandId))
             return self.commandId
-
-        # Hold vehicle phases
-        elif commandObject.commandType == 4:
-            self.commandScheduler.add_job(self.snmp.holdPhases, args = [commandObject.phase], 
-                    trigger = 'interval', 
-                    seconds = self.ntcipBackupTime_Sec-1,
-                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
-                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)), 
-                    id = str(self.commandId))
-            return self.commandId
-
-        # Forceoff vehicle phases
-        elif commandObject.commandType == 5:
-            self.commandScheduler.add_job(self.snmp.forceOffPhases, args = [commandObject.phase], 
+        
+        # Clear Hold
+        elif commandObject.commandType == CLEAR_HOLD:
+            self.commandScheduler.add_job(self.snmp.holdPhases, args = [0], 
                     trigger = 'date', 
-                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime-0.001)), 
                     id = str(self.commandId))
             return self.commandId
 
-        # Call vehicle phases
-        elif commandObject.commandType == 6:
-            self.commandScheduler.add_job(self.snmp.callVehPhases, args = [commandObject.phase], 
+        # Clear Veh-Omit
+        elif commandObject.commandType == CLEAR_VEH_OMIT:
+            self.commandScheduler.add_job(self.snmp.omitVehPhases, args = [0], 
                     trigger = 'date', 
-                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime-0.001)), 
                     id = str(self.commandId))
             return self.commandId
 
-        # Call pedestrian phases
-        elif commandObject.commandType == 7:
-            self.commandScheduler.add_job(self.snmp.callPedPhases, args = [commandObject.phase], 
+        # Clear Ped-Omit
+        elif commandObject.commandType == CLEAR_PED_OMIT:
+            self.commandScheduler.add_job(self.snmp.omitPedPhases, args = [0], 
                     trigger = 'date', 
-                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime-0.001)), 
                     id = str(self.commandId))
             return self.commandId
+
+
+
+
 
     def stopCommandScheduler(self):
         # _TODO_ Remove current holds, ommits and forceoffs
@@ -186,7 +229,6 @@ class Scheduler:
     # _TODO_
     def clearScheduler(self):
         pass
-    '''
 
 '''##############################################
                    Unit testing
@@ -200,7 +242,7 @@ if __name__ == "__main__":
     controllerCommInfo = (controllerIp, controllerPort)
 
     # Create an object of Scheduler class
-    scheduler = Scheduler(controllerCommInfo, 2)
+    scheduler = Scheduler(controllerCommInfo, 10)
 
     # Open a dummy schedule and load it into a json object
     scheduleFile = open("schedule.json", "r")
@@ -209,5 +251,5 @@ if __name__ == "__main__":
     scheduler.processNewSchedule(scheduleJson)
 
     # Schedule a vehicle call on all phases after 10 seconds
-    #scheduler.addCommandToSchedule(Command(255,10,10,6))
-    #time.sleep(15)
+    # scheduler.addCommandToSchedule(Command(255,10,10,6))
+    time.sleep(100)
