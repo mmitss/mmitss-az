@@ -13,21 +13,23 @@ class Scheduler:
         self.snmp = SnmpApi(signalControllerCommInfo)
 
         # Scheduler parameters
-        self.commandScheduler = BackgroundScheduler() 
-        self.commandScheduler.start()
+        #self.commandScheduler = BackgroundScheduler() 
+        #self.commandScheduler.start()
         self.commandId = 0
         
     def processNewSchedule(self, scheduleJson:json):
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
-        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandType"], i["commandEndTime"]))
+        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
 
         # Read the json into a data structure
         scheduleDataStructure = self.createScheduleDataStructure(scheduleJson)
 
         # Form action group
         index = 0
+        newScheduleDict = ""
         while index < len(scheduleDataStructure):
+            
             currentGroup = [scheduleDataStructure[index]]
 
             # Look for all commands in the list that has same start time and the type
@@ -37,13 +39,39 @@ class Scheduler:
                     index = index+1
 
             groupCommand =  self.formulateGroupCommand(currentGroup)
-            currentGroup = []
-            index = index + 1
 
-        # _TODO_: Check the end times of all items in the current group and add additional commands for the phases that end later.
+
+            # Check the end times of all items in the current group and add additional commands for the phases that end later.
+            for command in currentGroup:
+                if command.endTime > groupCommand.endTime:
+                    command.startTime = groupCommand.endTime
+                    scheduleDataStructure.append(command)
+                    command.endTime = groupCommand.endTime
+                    # Resort the schedule data structure based on command start time
+                    scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
+
+        #     # Create a JSON string of the current group:
+        #     for command in currentGroup:
+        #         commandDict =   {
+        #                             "commandEndTime": command.endTime,
+        #                             "commandPhase": command.phase,
+        #                             "commandStartTime": command.startTime,
+        #                             "commandType": command.commandType
+        #                         }
+        #         newScheduleDict = newScheduleDict + "," + (json.dumps(commandDict))
+            
+        #     currentGroup = []
+        #     index = index + 1
         
-        # while
+        # newScheduleJson =   {
+        #                         "MsgType": "Schedule",
+        #                         "Schedule": newScheduleDict
+        #                     }
+        # f = open("ModifiedSchedule.json", "w")
+        # f.write(json.dumps(newScheduleJson))
+        # f.close()
     
+
     # Create Schedule data structure
     def createScheduleDataStructure(self, scheduleJson:json):
         scheduleDataStructure = []
@@ -76,16 +104,17 @@ class Scheduler:
         groupPhaseStr = groupPhaseStr[::-1]
         groupPhaseStr = "".join(groupPhaseStr)
         groupPhaseInt = int(groupPhaseStr,2)
-        # print(groupPhases)
-        # print(groupPhaseStr)
-        # print(groupPhaseInt)
-        # print("\n")
+        print("GroupPhases="+str(groupPhases))
+        print("GroupPhasesStr="+str(groupPhaseStr))
+        print("GroupPhasesInt="+str(groupPhaseInt))
+        print("\n")
         return groupPhaseInt    
 
+    
     '''##############################################
                     Scheduler Methods
     ##############################################'''
-
+    '''
     def addCommandToSchedule(self, commandObject:Command):
         if self.commandId > 65534:
             self.commandId = 0
@@ -157,6 +186,7 @@ class Scheduler:
     # _TODO_
     def clearScheduler(self):
         pass
+    '''
 
 '''##############################################
                    Unit testing
@@ -169,7 +199,6 @@ if __name__ == "__main__":
     controllerPort = 501
     controllerCommInfo = (controllerIp, controllerPort)
 
-
     # Create an object of Scheduler class
     scheduler = Scheduler(controllerCommInfo, 2)
 
@@ -180,5 +209,5 @@ if __name__ == "__main__":
     scheduler.processNewSchedule(scheduleJson)
 
     # Schedule a vehicle call on all phases after 10 seconds
-    scheduler.addCommandToSchedule(Command(255,10,10,6))
-    time.sleep(15)
+    #scheduler.addCommandToSchedule(Command(255,10,10,6))
+    #time.sleep(15)
