@@ -1,5 +1,6 @@
 import json
 import datetime
+import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from SnmpApi import SnmpApi
 from Command import Command
@@ -15,15 +16,17 @@ class Scheduler:
         # Scheduler parameters
         self.commandScheduler = BackgroundScheduler() 
         self.commandScheduler.start()
+        
         self.commandId = 0
         self.currentCommandPool = []
         
+        # Ensure that the scheduler shuts down when the app is exited
+        atexit.register(lambda: self.commandScheduler.shutdown(wait=False))
+
     def processNewSchedule(self, scheduleJson:json):
-        # _TODO_
-        # Check if there is any previous schedule being processed
-        if len(self.currentCommandPool) == 0:
-            updatedSchedule = False
-        else: updatedSchedule = False
+        # Clear existing schedule _TODO_
+
+
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
@@ -34,6 +37,7 @@ class Scheduler:
 
         # Form action group
         index = 0
+        groupIndex = 0
         while index < len(scheduleDataStructure):
             
             currentGroup = [scheduleDataStructure[index]]
@@ -69,11 +73,25 @@ class Scheduler:
             # Resort the schedule data structure based on command start time
             scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
 
+            # If this is the first commandGroup of the schedule, check if it is already being executed inside the signal controller.
+
+            if groupIndex == 0:
+                # Check if the current groupCommand is already running in the signalController:
+                    
+                if False:
+                    pass
+                else:
+                    self.clearScheduler()
+                    self.addCommandToSchedule(groupCommand)
+            else: 
+                self.addCommandToSchedule(groupCommand)
+                
             currentGroup = []
             index = index + 1
+            groupIndex = groupIndex + 1
 
-            self.currentCommandPool.append(self.addCommandToSchedule(groupCommand)) 
-            print("pause here!")
+
+
 
     # Create Schedule data structure
     def createScheduleDataStructure(self, scheduleJson:json):
@@ -222,12 +240,19 @@ class Scheduler:
 
 
     def stopCommandScheduler(self):
-        # _TODO_ Remove current holds, ommits and forceoffs
+        # _TODO_ Remove current holds and omits
         self.commandScheduler.remove_all_jobs()
-        self.commandScheduler.shutdown()
+        self.snmp.holdPhases(0)
+        self.snmp.omitVehPhases(0)
+        self.snmp.omitPedPhases(0)        
+        self.commandScheduler.shutdown(wait=False)
         
     # _TODO_
     def clearScheduler(self):
+        self.commandScheduler.remove_all_jobs()
+        self.snmp.holdPhases(0)
+        self.snmp.omitVehPhases(0)
+        self.snmp.omitPedPhases(0)    
         pass
 
 '''##############################################

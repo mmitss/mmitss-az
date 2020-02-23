@@ -77,6 +77,15 @@ class SnmpApi:
     def enableSpat(self):
         self.snmpSet(EconoliteMib.asc3ViiMessageEnable, 6)
 
+    def getCurrentHoldPhases(self):
+        return self.snmpGet(StandardMib.PHASE_CONTROL_HOLD)
+
+    def getCurrentVehOmitPhases(self):
+        return self.snmpGet(StandardMib.PHASE_CONTROL_VEH_OMIT)
+
+    def getCurrentPedOmitPhases(self):
+        return self.snmpGet(StandardMib.PHASE_CONTROL_PED_OMIT)
+
     def getNextPhases(self):
         nextPhases = int(self.snmpGet(StandardMib.PHASE_GROUP_STATUS_NEXT))
         return nextPhases
