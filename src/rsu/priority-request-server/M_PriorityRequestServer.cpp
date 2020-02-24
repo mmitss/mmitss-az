@@ -1567,5 +1567,7 @@ void deleteTimedOutRequest(LinkedList<ReqEntry> &Req_List)
             Req_List.DeleteAt();
             cout << "***************Cleared the request from list*************" << endl;
         }
+        if(Req_List.ListSize() == 0)
+            sendClearCommandsToInterface();
     }
 }
