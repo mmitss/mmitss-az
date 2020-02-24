@@ -25,8 +25,8 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = False
 
-controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-#controllerIP = '127.0.0.1' #use for simulation testing
+#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
+controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -324,7 +324,7 @@ while True:
         # determine the active map so that only meaningful SPaT data will be displayed 
         spat_map_active = False
         spat_map_ID = -1 
-        if len(availableMaps) == 0 :
+        if availableMaps == [] or availableMaps == None :
             spat_map_active = False
             spat_map_ID = -1
         else :
