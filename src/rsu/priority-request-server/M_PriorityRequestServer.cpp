@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
                 clearSignalControllerCommands = false;
 
                 sendSSM(req_List, IntersectionID, MsgReceiverSocket);
-                
+
                 startUpdateETAofRequestsInList(Rsu_ID, req_List, ReqListUpdateFlag, clearSignalControllerCommands);
 
                 // sendSSM(req_List, IntersectionID, MsgReceiverSocket);
@@ -168,10 +168,10 @@ int main(int argc, char *argv[])
         // There are updated ETA's in the request list
         if (((dTime - dLastETAUpdateTime) > COUNT_DOWN_INTERVAL_FOR_ETA) && (req_List.ListSize() > 0))
         {
-// #ifdef LOGGING
-//             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
-//             outputlog(temp_log);
-// #endif
+            // #ifdef LOGGING
+            //             sprintf(temp_log, "Updated ETAs in the list at time : %.2f \n ", dTime);
+            //             outputlog(temp_log);
+            // #endif
 
             dLastETAUpdateTime = dTime;
 
@@ -181,6 +181,7 @@ int main(int argc, char *argv[])
 
             // sendSSM(req_List, IntersectionID, MsgReceiverSocket);
         }
+        deleteTimedOutRequest(req_List);
     }
 
     deleteMapPayloadFile();
@@ -206,6 +207,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
     char temp_log[256]{};
     int iRequestType{};
     int ibasicVehicleRole{};
+    double drequestReceivedTime{};
 
     std::string receivedSrmJsonString = rxMsgBuffer;
 
@@ -246,6 +248,7 @@ void processRxMessage(const char *rxMsgBuffer, char tempMsg[], string &Rsu_id, c
         iMsgCnt = currentSRM.getMsgCount();
 
         ibasicVehicleRole = currentSRM.getBasicVehicleRole();
+        // drequestReceivedTime = getSystemTime();
 
         //KLH - concerned about this being a bug
         //if (iVehicleState == 3) // vehicle is in queue
@@ -309,7 +312,6 @@ void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket 
     int ssmReceiverPort = (jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]).asInt();
     int dataCollectorPort = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
 
-
     int listSize = ReqList.ListSize();
 
     if (!ReqList.ListEmpty())
@@ -348,7 +350,6 @@ void sendSSM(LinkedList<ReqEntry> &ReqList, const int IntersectionID, UdpSocket 
     // cout<<"SSM Json String: "<<jsonString <<endl;
     MsgReceiverSocket.sendData(ssmReceiverIP, ssmReceiverPort, jsonString);
     MsgReceiverSocket.sendData(dataCollectorIP, dataCollectorPort, jsonString);
-
 }
 
 void getSignalConfigFile(char *ConfigFile, int *CombinedPhase)
@@ -968,11 +969,11 @@ string getRSUid() //Debashis: changed it to return as string
 
     if (rsu_id.size() != 0)
     {
-// #ifdef LOGGING
+        // #ifdef LOGGING
         sprintf(temp, " RSU ID %s\n", rsu_id.c_str());
         cout << temp << endl;
-//         outputlog(temp);
-// #endif
+        //         outputlog(temp);
+        // #endif
     }
     else
     {
@@ -1507,4 +1508,66 @@ void doUpdateETAofRequestsInList(const string &rsu_id, LinkedList<ReqEntry> &req
 #ifdef LOGGING
     printReqestFile2Log(REQUESTFILENAME_COMBINED);
 #endif
+}
+
+bool shouldDeleteTimedOutRequestfromList(LinkedList<ReqEntry> &Req_List)
+{
+    Req_List.Reset();
+
+    bool deleteSignalRequest = false;
+    double currentTime = getSystemTime();
+
+    if (Req_List.ListEmpty() == 0)
+    {
+        while (!Req_List.EndOfList())
+        {
+            if (abs(currentTime - Req_List.Data().drequestReceivedTime) >= TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST)
+            {
+                deleteSignalRequest = true;
+                return deleteSignalRequest;
+            }
+            else
+            {
+                Req_List.Next();
+            }
+        }
+    }
+
+    return deleteSignalRequest;
+}
+
+int findTimeOutRequestPosition(LinkedList<ReqEntry> &Req_List)
+{
+    Req_List.Reset();
+    int temp = -1;
+    double currentTime = getSystemTime();
+
+    while (!Req_List.EndOfList())
+    {
+        double temptime = Req_List.Data().drequestReceivedTime;
+        if (abs(currentTime - Req_List.Data().drequestReceivedTime) >= TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST)
+            return Req_List.CurrentPosition();
+
+        Req_List.Next();
+    }
+
+    return temp;
+}
+
+void deleteTimedOutRequest(LinkedList<ReqEntry> &Req_List)
+{
+    int pos{};
+    if (shouldDeleteTimedOutRequestfromList(Req_List) == true)
+    {
+        pos = findTimeOutRequestPosition(Req_List);
+        if (pos >= 0)
+        {
+            Req_List.Reset(pos);
+
+            Req_List.DeleteAt();
+            cout << "***************Cleared the request from list*************" << endl;
+        }
+        if(Req_List.ListSize() == 0)
+            sendClearCommandsToInterface();
+    }
 }

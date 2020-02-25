@@ -23,6 +23,7 @@ public:
 	int iRequestType;
     int ibasicVehicleRole;
     int ipriorityRequestStatus;
+	double drequestReceivedTime; //Debashis added this for request time out logic
 
 
 public:
@@ -30,7 +31,7 @@ public:
 	ReqEntry(long vehID, int VehClass, float eta, int phase,float mgreen, double dSetRequestTime, int split_phase,int iInLane,
 	int iOutLane,int iStrHour,int iStrMinute,int iStrSecond,int iEndHour,int iEndMinute,int iEndSecond,int iVehState, int iMsgCnt,
 	double dUpdateTimeOfETA, int iLeavingCounter, double dTimeInCycle, long IntersectionId, int iRequestType, int basicVehicleRole,
-    int priorityRequestStatus);
+    int priorityRequestStatus, double requestReceivedTime);
 
 	ReqEntry(ReqEntry& Req);
 	ReqEntry& operator=(ReqEntry& Req);
