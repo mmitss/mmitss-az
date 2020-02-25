@@ -44,7 +44,7 @@ sudo mkdir -p /nojournal/bin/log
 sudo mkdir /usr/local/lib/mmitss
 sleep 1s
 
-echo "Copy the configuration files of the intersection rse82_mountain to /nojournal/bin/"
+echo "Copy the configuration files of the intersection Daisy-Gavilan to /nojournal/bin/"
 sudo cp -r ./docker/corridors/Anthem/Daisy-Gavilan/nojournal/bin /nojournal
 sleep 1s
 
