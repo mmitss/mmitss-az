@@ -368,8 +368,8 @@ void PrintList2File(const char *Filename, const string &rsu_id, LinkedList<ReqEn
 
     FILE *pFile = fopen(Filename, "w");
     int TotalReqNum = 0;
-    int CurPhase;
-    int SplitPhase;
+    int CurPhase{};
+    int SplitPhase{};
 
     if (!ReqList.ListEmpty() && pFile != NULL)
     {

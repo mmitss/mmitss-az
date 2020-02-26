@@ -232,6 +232,8 @@ void calculateRedElapseTime(double red_start_time[], int previous_signal_color[]
 void initializeRedStartVar(double red_start_time[], int previous_signal_color[]);
 void handleAdaptivePriorityCase();
 bool loggingSchedule();
+void sendClearCommandsToInterface();
+void packEventList(char *tmp_event_data, int &size);
 
 int main(int argc, char *argv[])
 {
@@ -266,7 +268,16 @@ int main(int argc, char *argv[])
 			ReqList.ClearList();
 			readRequestListFromFiles();
 			logRequestList();
-			if (ReqListUpdateFlag > 0)
+
+			if (ReqListUpdateFlag == 10)
+			{
+				sendClearCommandsToInterface();
+				ReqListUpdateFlag = 0;
+				PrintList2File(requestfilename, ReqList);
+				PrintList2File_EV(request_combined_filename, Req_List_Combined);
+			}
+
+			else if (ReqListUpdateFlag > 0 && ReqListUpdateFlag != 10)
 			{
 				sprintf(tmp_log, "\n...............Solve the problem..............\t FLAG is : {%d} At time: %10.2lf", ReqListUpdateFlag, GetSeconds());
 				outputlog(tmp_log);
@@ -325,22 +336,22 @@ int main(int argc, char *argv[])
 					}
 				}
 				// Rewright the request list into the file and SET the ReqListUpdateFlag in requests.txt to:"0"   ***IMPORTANT***
-				ReqListUpdateFlag = 0;
-				PrintList2File(requestfilename, ReqList);
-				PrintList2File_EV(request_combined_filename, Req_List_Combined);
+				// ReqListUpdateFlag = 0;
+				// PrintList2File(requestfilename, ReqList);
+				// PrintList2File_EV(request_combined_filename, Req_List_Combined);
 				// Solve the problem, write to "Results.txt"
 				dStartTimeOfGLPKcall = GetSeconds();
 				GLPKSolver();
 				if (logSchedule == true)
+				{
+					outputfile << "\n Current Results File is : " << endl;
+					infile.open("/nojournal/bin/Results.txt");
+					for (std::string line; getline(infile, line);)
 					{
-						outputfile << "\n Current Results File is : " << endl;
-						infile.open("/nojournal/bin/Results.txt");
-						for (std::string line; getline(infile, line);)
-						{
-							outputfile << line << endl;
-						}
-						infile.close();
+						outputfile << line << endl;
 					}
+					infile.close();
+				}
 				dEndTimeOfGLPKcall = GetSeconds();
 				sprintf(tmp_log, "Time for solving the problem is about: {%.3f}.\n", dEndTimeOfGLPKcall - dStartTimeOfGLPKcall);
 				outputlog(tmp_log);
@@ -373,7 +384,17 @@ int main(int argc, char *argv[])
 							Construct_eventlist_EV(adCriticalPoints, omitPhase, Req_List_Combined);
 						else
 							Construct_eventlist(adCriticalPoints, Req_List_Combined);
-						sendEventListToSignalCntlInterface();
+						// sendEventListToSignalCntlInterface();
+						
+						readRequestListFromFiles();
+						if (ReqListUpdateFlag == 10)
+							sendClearCommandsToInterface();
+						else
+							sendEventListToSignalCntlInterface();
+
+						ReqListUpdateFlag = 0;
+						PrintList2File(requestfilename, ReqList);
+						PrintList2File_EV(request_combined_filename, Req_List_Combined);
 					}
 					else if (codeUsage == COP_AND_PRIORITY) // Send to COP
 						sendEventListToCOP();
@@ -545,8 +566,8 @@ void captureRequiredSignalStatus()
 	{
 		InitPhase[ii] = Phases.InitPhase[ii] + 1; //{1-8}
 		cout << "Initial phase: " << InitPhase[ii] << endl;
-		InitTime[ii] = Phases.InitTime[ii];		  // ALSO is the (Yellow+Red) Left for the counting down time ***Important***
-		GrnElapse[ii] = Phases.GrnElapse[ii];	 // If in Green
+		InitTime[ii] = Phases.InitTime[ii];   // ALSO is the (Yellow+Red) Left for the counting down time ***Important***
+		GrnElapse[ii] = Phases.GrnElapse[ii]; // If in Green
 	}
 
 	//IF we can get signal information, then we connect to the ASC controller
@@ -642,7 +663,7 @@ void handleEVCase()
 	}
 	//Debashis on january 26,2019 before the demo
 	int fixedPhaseSize{};
-	vector<int> fixedPhase{2,4,6,8};
+	vector<int> fixedPhase{2, 4, 6, 8};
 	fixedPhaseSize = fixedPhase.size();
 
 	EV_Phase_size = EV_Phase_vc.size(); //  EV_Phase_size could be changed.
@@ -873,8 +894,8 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 	int PhaseNo{};
 	char TempStr[16];
 	vector<int> P11, P12, P21, P22;
-	int PhaseSeq[8]={0};
-	float Gmin[8]={0.0}, Gmax[8]={0.0}, Yellow[8]={0.0}, Red[8]={0.0}; // If
+	int PhaseSeq[8] = {0};
+	float Gmin[8] = {0.0}, Gmax[8] = {0.0}, Yellow[8] = {0.0}, Red[8] = {0.0}; // If
 
 	for (int i = 1; i < 8; i = i + 2) // Add {2,4,6,8} into the PhaseSeq: NECESSARY Phases
 	{
@@ -917,13 +938,13 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 			}
 			else if (strcmp(TempStr, "Gmin") == 0)
 			{
-				sscanf(lineread.c_str(), "%*s %d %d %d %d %d %d %d %d",
+				sscanf(lineread.c_str(), "%*s %f %f %f %f %f %f %f %f",
 					   &Gmin[0], &Gmin[1], &Gmin[2], &Gmin[3],
 					   &Gmin[4], &Gmin[5], &Gmin[6], &Gmin[7]);
 			}
 			else if (strcmp(TempStr, "Gmax") == 0)
 			{
-				sscanf(lineread.c_str(), "%*s %d %d %d %d %d %d %d %d",
+				sscanf(lineread.c_str(), "%*s %f %f %f %f %f %f %f %f",
 					   &Gmax[0], &Gmax[1], &Gmax[2], &Gmax[3],
 					   &Gmax[4], &Gmax[5], &Gmax[6], &Gmax[7]);
 			}
@@ -961,7 +982,7 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 
 	//-------READING the priority Configuratio file ---------------
 	double dCoordinationWeight{};
-	int iCoordinatedPhase[2] ={0};
+	int iCoordinatedPhase[2] = {0};
 	double dTransitWeight{};
 	double dTruckWeight{};
 	double dCoordinationOffset{};
@@ -1001,7 +1022,7 @@ void GenerateMod(char *Filename, RSU_Config ConfigIS, char *OutFilename, int hav
 		exit(1);
 	}
 
-	int PhaseSeqArray[8]={0};
+	int PhaseSeqArray[8] = {0};
 	int kk = 0;
 
 	// =================Defining the sets ======================
@@ -2150,8 +2171,8 @@ void Pack_Event_List(char *tmp_event_data, int &size) // This function is writte
 {
 	int offset = 0;
 	byte *pByte; // pointer used (by cast)to get at each byte
-		// of the shorts, longs, and blobs
-		//    byte    tempByte;   // values to hold data once converted to final format
+				 // of the shorts, longs, and blobs
+				 //    byte    tempByte;   // values to hold data once converted to final format
 	unsigned short tempUShort;
 	long tempLong;
 	//header 2 bytes
@@ -2918,7 +2939,13 @@ void ReqListFromFile(char *filename, LinkedList<ReqEntry> &Req_List)
 	Req_List.ClearList();
 	getline(fss, lineread);
 	sscanf(lineread.c_str(), "%*s %d %d", &ReqNo, &ReqListUpdateFlag);
-	if (ReqListUpdateFlag > 0)
+	// if(ReqListUpdateFlag == 10)
+	// {
+	// 	cout << "***************Need to Send Clear command*************" << endl;
+	// }
+	//sendClearCommandsToInterface();
+
+	if (ReqListUpdateFlag > 0 && ReqListUpdateFlag != 10)
 	{
 		sprintf(temp_log, "request number in requests.txt is: %d, Flag is{%d}\n", ReqNo, ReqListUpdateFlag);
 		outputlog(temp_log);
@@ -2953,7 +2980,13 @@ void ReqListFromFile_EV(char *filename, LinkedList<ReqEntry> &Req_List)
 	Req_List.ClearList();
 	getline(fss, lineread);
 	sscanf(lineread.c_str(), "%*s %d %d", &ReqNo, &ReqListUpdateFlag);
-	if (ReqListUpdateFlag > 0)
+	// if(ReqListUpdateFlag == 10)
+	// {
+	// 	cout << "***************Send Clear command*************" << endl;
+	// }
+	// sendClearCommandsToInterface();
+
+	if (ReqListUpdateFlag > 0 && ReqListUpdateFlag != 10)
 	{
 		sprintf(temp_log, "request number in requests_combined.txt is: %d, Flag is{%d}\n", ReqNo, ReqListUpdateFlag);
 		outputlog(temp_log);
@@ -3610,7 +3643,7 @@ void LinkList2DatFileForEV(LinkedList<ReqEntry> Req_List, char *filename, double
 	fs << "param Grn1 :=" << GrnElapse[0] << ";\n";
 	fs << "param Grn2 :=" << GrnElapse[1] << ";\n";
 
-	int MP[2]={0};			   //=ConfigIS.MissPhase[i];// Missing phase
+	int MP[2] = {0};	   //=ConfigIS.MissPhase[i];// Missing phase
 	int RlP[2] = {-1, -1}; //=ConfigIS.MP_Relate[i];// Missing Phase related
 	int Found{};
 
@@ -6447,3 +6480,109 @@ void LinkList2DatFileForAdaptivePriority(LinkedList<ReqEntry> Req_List,char *fil
 }
 
 */
+
+void sendClearCommandsToInterface()
+{
+	int addr_length = sizeof(recvaddr);
+	byte tmp_event_data[500];
+	int size = 0;
+	char *event_data;
+	char temp_log[256];
+
+	packEventList(tmp_event_data, size);
+
+	event_data = new char[size];
+
+	for (int i = 0; i < size; i++)
+		event_data[i] = tmp_event_data[i];
+	recvaddr.sin_port = htons(TxEventListPort);
+
+	if (sendto(sockfd, event_data, size + 1, 0, (struct sockaddr *)&recvaddr, addr_length))
+	{
+		cout << " The Event List sent to SignalControllerInterface to delete all previous commands. " << endl;
+	}
+
+	delete event_data;
+}
+
+void packEventList(char *tmp_event_data, int &size)
+{
+	int offset = 0;
+	byte *pByte; // pointer used (by cast)to get at each byte
+	// of the shorts, longs, and blobs
+	// byte    tempByte;   // values to hold data once converted to final format
+	unsigned short tempUShort;
+	long tempLong;
+	//header 2 bytes
+	tmp_event_data[offset] = 0xFF;
+	offset += 1;
+	tmp_event_data[offset] = 0xFF;
+	offset += 1;
+	//MSG ID: 0x03 for signal event data send to Signal Control Interface
+	tmp_event_data[offset] = 0x03;
+	offset += 1;
+	//No. events in R1
+	int numberOfPhase = 4;
+	int tempTime = 0;
+	int tempCmd = 3;
+	tempUShort = (unsigned short)numberOfPhase;
+	pByte = (byte *)&tempUShort;
+	tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+	tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+	offset = offset + 2;
+	//Events in R1
+	for (int iii = 0; iii < 4; iii++)
+	{
+		//Time
+		tempLong = (long)(tempTime);
+		pByte = (byte *)&tempLong;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 3);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 2);
+		tmp_event_data[offset + 2] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 3] = (byte) * (pByte + 0);
+		offset = offset + 4;
+		//phase
+		tempUShort = (unsigned short)iii + 1;
+		pByte = (byte *)&tempUShort;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+		offset = offset + 2;
+		//action
+		tempUShort = (unsigned short)tempCmd;
+		pByte = (byte *)&tempUShort;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+		offset = offset + 2;
+	}
+
+	tempUShort = (unsigned short)numberOfPhase;
+	pByte = (byte *)&tempUShort;
+	tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+	tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+	//Events in R
+	offset = offset + 2;
+	for (int iii = 0; iii < 4; iii++)
+	{
+		//Time
+		tempLong = (long)(tempTime);
+		pByte = (byte *)&tempLong;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 3);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 2);
+		tmp_event_data[offset + 2] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 3] = (byte) * (pByte + 0);
+		offset = offset + 4;
+		//phase
+		tempUShort = (unsigned short)iii + 5;
+		pByte = (byte *)&tempUShort;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+		offset = offset + 2;
+		//action
+		tempUShort = (unsigned short)tempCmd;
+		pByte = (byte *)&tempUShort;
+		tmp_event_data[offset + 0] = (byte) * (pByte + 1);
+		tmp_event_data[offset + 1] = (byte) * (pByte + 0);
+		offset = offset + 2;
+	}
+	size = offset;
+}

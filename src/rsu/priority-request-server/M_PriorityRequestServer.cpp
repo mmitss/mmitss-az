@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
                 // sendSSM(req_List, IntersectionID, MsgReceiverSocket);
 
                 sendClearCommandsToInterface();
+                writeClearRequestInFile();
             }
         }
 
@@ -1568,6 +1569,22 @@ void deleteTimedOutRequest(LinkedList<ReqEntry> &Req_List)
             cout << "***************Cleared the request from list*************" << endl;
         }
         if(Req_List.ListSize() == 0)
-            sendClearCommandsToInterface();
+            writeClearRequestInFile();
     }
+}
+
+
+void writeClearRequestInFile()
+{   
+    // ReqListUpdateFlag = CANCEL_REQUEST_LEAVING_INTERSECTION;
+    ofstream outputfile;
+    outputfile.open("/nojournal/bin/requests.txt");
+    outputfile << "Num_req " << "0 " << "10" << endl;
+    outputfile.close();
+
+    outputfile.open("/nojournal/bin/requests_combined.txt");
+    outputfile << "Num_req " << "0 " << "10" << endl;
+    outputfile.close();
+    // ReqListUpdateFlag = NO_UPDATE;
+
 }
