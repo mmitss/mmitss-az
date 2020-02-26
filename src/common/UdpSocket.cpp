@@ -140,18 +140,6 @@ std::string UdpSocket::receivePayloadHexString()
 		    ss << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(receivedData[i]);
 
         payload = ss.str();
-        if(payload.substr(0,4)=="0100")
-        {
-            size_t pos = payload.find("0014");
-            payload.erase(0,pos);
-        }
-        else
-        {
-            size_t pos = payload.find("001"); //find location of word
-            payload.erase(0,pos);
-        }
-               
-        
         return payload;        
     }
 }

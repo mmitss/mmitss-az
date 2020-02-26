@@ -3,7 +3,6 @@ import json
 import datetime
 import DataCollectorMethods as DCM
 import sys
-import sh
 import time
 
 DEBUGGING = False

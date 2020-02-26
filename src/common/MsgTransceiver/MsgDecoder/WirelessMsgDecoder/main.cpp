@@ -25,52 +25,60 @@ int main()
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-
+    
+    std::string receivedPayload{};
+    std::string extractedPayload{};
+    
     while(true)
     {
 
-        std::string receivedPayload = decoderSocket.receivePayloadHexString();
-        int msgType = decoder.getMessageType(receivedPayload);
+        receivedPayload = decoderSocket.receivePayloadHexString();
+        size_t pos = receivedPayload.find("001");
+        if (pos!=std::string::npos)
+        {
+            extractedPayload = receivedPayload.erase(0,pos);
+            int msgType = decoder.getMessageType(extractedPayload);
 
-        if (msgType == MsgEnum::DSRCmsgID_map)
-        {
-            std::string mapJsonString = decoder.createJsonStingOfMapPayload(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(mapReceiverPortNo), mapJsonString);
-            std::cout << "Decoded MAP" << std::endl;
+            if (msgType == MsgEnum::DSRCmsgID_map)
+            {
+                std::string mapJsonString = decoder.createJsonStingOfMapPayload(extractedPayload);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(mapReceiverPortNo), mapJsonString);
+                std::cout << "Decoded MAP" << std::endl;
+            }
+            
+            else if (msgType == MsgEnum::DSRCmsgID_bsm)
+            {
+                std::string bsmJsonString = decoder.bsmDecoder(extractedPayload);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
+                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                std::cout << "Decoded BSM" << std::endl;
+            }
+            
+            else if (msgType == MsgEnum::DSRCmsgID_srm)
+            {
+                std::string srmJsonString = decoder.srmDecoder(extractedPayload);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
+                std::cout << "Decoded SRM" << std::endl;
+            }
+            
+            else if (msgType == MsgEnum::DSRCmsgID_spat)
+            {
+                std::string spatJsonString = decoder.spatDecoder(extractedPayload);
+                decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
+                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
+                std::cout << "Decoded SPAT" << std::endl;
+            }
+            
+            else if (msgType == MsgEnum::DSRCmsgID_ssm)
+            {
+                std::string ssmJsonString = decoder.ssmDecoder(extractedPayload);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
+                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                std::cout << "Decoded SSM" << std::endl;
+            }        
         }
-        
-        else if (msgType == MsgEnum::DSRCmsgID_bsm)
-        {
-            std::string bsmJsonString = decoder.bsmDecoder(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
-            decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
-            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
-            std::cout << "Decoded BSM" << std::endl;
-        }
-        
-        else if (msgType == MsgEnum::DSRCmsgID_srm)
-        {
-            std::string srmJsonString = decoder.srmDecoder(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
-            std::cout << "Decoded SRM" << std::endl;
-        }
-        
-        else if (msgType == MsgEnum::DSRCmsgID_spat)
-        {
-            std::string spatJsonString = decoder.spatDecoder(receivedPayload);
-            decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
-            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
-            std::cout << "Decoded SPAT" << std::endl;
-        }
-        
-        else if (msgType == MsgEnum::DSRCmsgID_ssm)
-        {
-            std::string ssmJsonString = decoder.ssmDecoder(receivedPayload);
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
-            decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
-            std::cout << "Decoded SSM" << std::endl;
-        }        
     }
     
     return 0;

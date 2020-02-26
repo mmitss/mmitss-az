@@ -136,3 +136,5 @@ bool shouldDeleteTimedOutRequestfromList(LinkedList<ReqEntry> &Req_List);
 int findTimeOutRequestPosition(LinkedList<ReqEntry> &Req_List);
 
 void deleteTimedOutRequest(LinkedList<ReqEntry> &Req_List);
+
+void writeClearRequestInFile();

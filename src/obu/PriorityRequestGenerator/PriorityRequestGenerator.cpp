@@ -187,6 +187,12 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			std::cout << "SRM is sent since ART is empty" << std::endl;
 		}
 
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+		{
+			bSendRequest = true;
+			std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		}
+
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
 			bSendRequest = true;
@@ -218,10 +224,10 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= PRS_REQUEST_GAPOUT_TIME)
-			{
-				bSendRequest = true;
-				std::cout << "SRM is sent to avoid PRS timed out" << std::endl;
-			}
+		{
+			bSendRequest = true;
+			std::cout << "SRM is sent to avoid PRS timed out" << std::endl;
+		}
 	}
 
 	if (bSendRequest == true)
