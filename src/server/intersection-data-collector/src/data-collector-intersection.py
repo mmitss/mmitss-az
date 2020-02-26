@@ -56,15 +56,15 @@ def main():
             ssmLogFile.close()
 
             # Interaction with CyVerse
-            # spatLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
-            # bsmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)
-            # srmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Srm, currentSrmFilename)
-            # ssmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Ssm, currentSsmFilename)
-            # totalTransferSizeBytes = spatLogSizeBytes + bsmLogSizeBytes + srmLogSizeBytes + ssmLogSizeBytes
-            # notification = str(totalTransferSizeBytes)
+            spatLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
+            bsmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)
+            srmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Srm, currentSrmFilename)
+            ssmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Ssm, currentSsmFilename)
+            totalTransferSizeBytes = spatLogSizeBytes + bsmLogSizeBytes + srmLogSizeBytes + ssmLogSizeBytes
+            notification = str(totalTransferSizeBytes)
             
             # Send notification to email server
-            #s.sendto(notification.encode(),emailServerAddress)
+            s.sendto(notification.encode(),emailServerAddress)
             
             # Open a new log file with new timestamp and initialize it
             spatLogFile, currentSpatFilename = DCM.initializeSpatLogFile(IntersectionName)
