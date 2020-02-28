@@ -1,5 +1,4 @@
-/*
-**********************************************************************************
+/***********************************************************************************
  © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
        granted for USDOT OSADP distribution with the Apache 2.0 open source license.
 **********************************************************************************
@@ -51,6 +50,7 @@ private:
     vector<Schedule::TCISchedule> ring2_TCISchedule;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
+    vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV;
     vector<int> PhaseNumber;
     vector<double> PedWalk;
     vector<double> PedClear;
@@ -61,6 +61,7 @@ private:
     vector<double> RedClear;
     vector<int> PhaseRing;
     vector<int> requestedSignalGroup;
+    vector<int> plannedEVPhases;
     vector<int> P11;
     vector<int> P12;
     vector<int> P21;

@@ -50,6 +50,7 @@ int main()
 
             if (priorityRequestSolver.getRequestedSignalGroupSize() <= 2)
             {
+                priorityRequestSolver.getEVPhases();
                 priorityRequestSolver.createEventList();
                 priorityRequestSolver.createScheduleJsonString();
             }
@@ -66,6 +67,8 @@ int main()
                 priorityRequestSolver.generateDatFile();
                 priorityRequestSolver.generateEVModFile();
                 priorityRequestSolver.GLPKSolver();
+                priorityRequestSolver.obtainRequiredSignalGroup();
+                priorityRequestSolver.readOptimalSignalPlan();
             }
         }
         else
