@@ -1,0 +1,14 @@
+{
+    "TrafficControllerData":
+    {
+        "TrafficControllerStatus":
+        {
+            "SP1": 4,
+            "SP2": 8,
+            "init1": 0,
+            "init2": 0,
+            "Grn1": 10.0,
+            "Grn2": 10.0
+        }
+    }
+}

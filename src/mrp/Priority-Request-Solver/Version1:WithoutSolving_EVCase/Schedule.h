@@ -22,7 +22,6 @@ namespace Schedule
     {
         int phaseNo{};
         double time{};
-        int cycleNo{};
         int action{};
     };
 };

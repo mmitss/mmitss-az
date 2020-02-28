@@ -13,6 +13,7 @@
 */
 
 #pragma once
+
 #include <iostream>
 #include <vector>
 #include "TrafficSignalPlan.h"
@@ -25,10 +26,10 @@ using std::endl;
 using std::string;
 using std::stringstream;
 using std::vector;
+// using std::fstream;
 using std::ifstream;
-using std::ofstream;
 using std::ios;
-
+using std::ofstream;
 
 class PriorityRequestSolver
 {
@@ -43,6 +44,8 @@ private:
     bool bEVStatus{};
 
     vector<RequestList> priorityRequestList;
+    // vector<Schedule::GLPKSchedule> glpkSchedule;
+    // vector<Schedule::GLPKSchedule>requestedVehicleCall;
     vector<Schedule::TCISchedule> ring1_TCISchedule;
     vector<Schedule::TCISchedule> ring2_TCISchedule;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
@@ -63,6 +66,10 @@ private:
     vector<int> P12;
     vector<int> P21;
     vector<int> P22;
+    vector<int> EV_P11;
+    vector<int> EV_P12;
+    vector<int> EV_P21;
+    vector<int> EV_P22;
     vector<double> singleEV_PhaseDuration_Ring1;
     vector<double> singleEV_PhaseDuration_Ring2;
     vector<double> leftCriticalPoints_PhaseDuration_Ring1;
@@ -81,8 +88,31 @@ public:
     PriorityRequestSolver();
     ~PriorityRequestSolver();
 
-  void readCurrentSignalTimingPlan();
-  void generateModFile();
-  void printSignalPlan();
+    void createPriorityRequestList(string jsonString);
+    bool findEVInList();
+    void modifyPriorityRequestList();
+    void getEVPhases();
+    void getCurrentSignalStatus();
+    void getRequestedSignalGroupFromPriorityRequestList();
+    void removeDuplicateSignalGroup();
+    void addAssociatedSignalGroup();
+    void modifyGreenMax();
+    void generateDatFile();
+    double GetSeconds();
+    void GLPKSolver();
+    bool GLPKSolutionValidation();
+    void readOptimalSignalPlan();
+    void obtainRequiredSignalGroup();
+    void createEventList();
+    string createScheduleJsonString();
+    // void split(string strToSplit);
+    void readCurrentSignalTimingPlan();
+    void generateEVModFile();
+    void generateModFile();
+    void printSignalPlan();
+    void printvector();
+    int getNoOfEVInList();
+    int getRequestedSignalGroupSize();
+    int getEVRingBarrierGroup();
+    void getEVTrafficSignalPlan();
 };
-

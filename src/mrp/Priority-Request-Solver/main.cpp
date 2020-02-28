@@ -12,7 +12,6 @@
   Revision History:
   1. 
 */
-
 #include <UdpSocket.h>
 #include <fstream>
 #include "PriorityRequestSolver.h"
@@ -34,60 +33,4 @@ int main()
     priorityRequestSolver.readCurrentSignalTimingPlan();
     priorityRequestSolver.printSignalPlan();
     priorityRequestSolver.generateModFile();
-    // priorityRequestSolver.readOptimalPlan();
-    while (true)
-    {
-        priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedJsonString(receiveBuffer);
-        cout << "Received Json String " << receivedJsonString << endl;
-        priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-        priorityRequestSolver.getCurrentSignalStatus();
-        if (priorityRequestSolver.findEVInList() == true)
-        {
-            priorityRequestSolver.modifyPriorityRequestList();
-            priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
-            priorityRequestSolver.removeDuplicateSignalGroup();
-
-            if (priorityRequestSolver.getRequestedSignalGroupSize() <= 2)
-            {
-                priorityRequestSolver.getEVPhases();
-                priorityRequestSolver.createEventList();
-                priorityRequestSolver.createScheduleJsonString();
-            }
-            // if(priorityRequestSolver.getNoOfEVInList()<=2)
-            // {
-            //     priorityRequestSolver.createEventList();
-            //     priorityRequestSolver.createScheduleJsonString();
-            // }
-
-            else if (priorityRequestSolver.getNoOfEVInList() > 2 && priorityRequestSolver.getRequestedSignalGroupSize() > 2)
-            {
-                
-                priorityRequestSolver.getEVPhases();
-                priorityRequestSolver.generateDatFile();
-                priorityRequestSolver.generateEVModFile();
-                priorityRequestSolver.GLPKSolver();
-                priorityRequestSolver.obtainRequiredSignalGroup();
-                priorityRequestSolver.readOptimalSignalPlan();
-            }
-        }
-        else
-        {
-            priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
-            priorityRequestSolver.removeDuplicateSignalGroup();
-            //priorityRequestSolver.printvector();
-            priorityRequestSolver.addAssociatedSignalGroup();
-            // priorityRequestSolver.printvector();
-            priorityRequestSolver.modifyGreenMax();
-
-            priorityRequestSolver.generateDatFile();
-
-            priorityRequestSolver.GLPKSolver();
-            priorityRequestSolver.readOptimalSignalPlan();
-            priorityRequestSolver.obtainRequiredSignalGroup();
-            priorityRequestSolver.createEventList();
-            priorityRequestSolver.createScheduleJsonString();
-            //cout << "current time " << priorityRequestSolver.GetSeconds() << endl;
-        }
-    }
 }
