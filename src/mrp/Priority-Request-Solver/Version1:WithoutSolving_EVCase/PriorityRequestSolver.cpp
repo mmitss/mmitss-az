@@ -269,11 +269,11 @@ void PriorityRequestSolver::generateDatFile()
     int vehicleClass{}; //to match the old PRSolver
     int numberOfRequest{};
     int ReqSeq = 1;
-    double tempVehicleETA{};
-    double tempVehicleETA_Duration{};
-    vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV;
-    vector<double> temporaryVehicleETA;
-    vector<double> temporaryVehicleETA_Duration;
+    // double maxEV_ETA{};
+    // double maxEV_ETA_Duration{};
+    // vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV;
+    // vector<double> temporaryVehicleETA;
+    // vector<double> temporaryVehicleETA_Duration;
 
     ofstream fs;
     fs.open("NewModelData.dat", ios::out);
@@ -314,14 +314,15 @@ void PriorityRequestSolver::generateDatFile()
         }
 
         //Find the maximum ETA and ETA duration from among all the EV
-        for (size_t k = 0; k < priorityRequestList.size(); k++)
-        {
-            temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
-            temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
-        }
+        findMaximumETAofEV();
+        // for (size_t k = 0; k < priorityRequestList.size(); k++)
+        // {
+        //     temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
+        //     temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
+        // }
 
-        tempVehicleETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
-        tempVehicleETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
+        // maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
+        // maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
 
         fs << "param y          \t:=";
         for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
@@ -340,7 +341,7 @@ void PriorityRequestSolver::generateDatFile()
 
         fs << "param gmax      \t:=";
 
-        if (MAXGREEN > tempVehicleETA + tempVehicleETA_Duration)
+        if (MAXGREEN > maxEV_ETA + maxEV_ETA_Duration)
         {
             for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
                 fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << MAXGREEN;
@@ -349,7 +350,7 @@ void PriorityRequestSolver::generateDatFile()
         else
         {
             for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-                fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << tempVehicleETA + tempVehicleETA_Duration;
+                fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration;
         }
 
         fs << ";\n";
@@ -813,511 +814,633 @@ void PriorityRequestSolver::createEventList()
     int vehicleSignalGroup{};
     int vehicleSignalGroupRing{};
     int temporaryPhase{};
-    double tempVehicleETA{};
-    double tempVehicleETA_Duration{};
-    vector<double> temporaryVehicleETA;
-    vector<double> temporaryVehicleETA_Duration;
     vector<int>::iterator it;
 
     //Only One EV is the list
-    if (bEVStatus == true && noOfEVInList <= 2)
+    if (bEVStatus == true)
     {
         ring1_TCISchedule.clear();
         ring2_TCISchedule.clear();
+        getEVPhases();
+        getEVTrafficSignalPlan();
 
-        // if(EV_P12.size()==0 && EV_P22.size())
-
-        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+        //If EV_P11 and EV_P21 are empty then phase 2 and 6 should be gree or EV_P21 and EV_P22 are empty then phase 4,8 should be green
+        if ((EV_P11.size() == 0 && EV_P21.size() == 0) || (EV_P12.size() == 0 && EV_P22.size() == 0))
         {
-            temporaryPhase = trafficControllerStatus[i].startingPhase1;
-            it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
 
-            //If requested phases and starting phases are different
-            if (it == requestedSignalGroup.end()) //Check whether starting phase 1 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+            findMaximumETAofEV();
+            for (size_t i = 0; i < trafficControllerStatus.size(); i++)
             {
-                ring1Schedule.commandPhase = temporaryPhase;
-                ring1Schedule.commandType = FORCEOFF_PHASES;
-                ring1Schedule.commandStartTime = 0.0;
-                ring1Schedule.commandEndTime = 0.0;
-                ring1_TCISchedule.push_back(ring1Schedule);
-
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                temporaryPhase = trafficControllerStatus[i].startingPhase1;
+                // it = std::find(EV_P11.begin(), EV_P11.end(), temporaryPhase);
+                //If starting phase1 is phase is last phase of EV_P11 or EV_P21 (for example phase 2 or 4) hold that phase
+                if ((temporaryPhase == EV_P11.at(EV_P11.size() - 1)) || (temporaryPhase == EV_P12.at(EV_P12.size() - 1)))
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
+                    ring1Schedule.commandPhase = temporaryPhase;
+                    ring1Schedule.commandType = HOLD_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                    ring1_TCISchedule.push_back(ring1Schedule);
+                }
 
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+                else
+                {
+                    ring1Schedule.commandPhase = temporaryPhase;
+                    ring1Schedule.commandType = FORCEOFF_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = 0.0;
+                    ring1_TCISchedule.push_back(ring1Schedule);
 
-                    if (findSignalGroup1RingNO->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                    if (!EV_P11.empty())
+                        vehicleSignalGroup = EV_P11.at(EV_P11.size() - 1);
+
+                    else if (!EV_P12.empty())
+                        vehicleSignalGroup = EV_P12.at(EV_P12.size() - 1);
+
+                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase1_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
+                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                    ring1Schedule.commandPhase = vehicleSignalGroup;
+                    ring1Schedule.commandType = HOLD_PHASES;
+                    ring1Schedule.commandStartTime = findStartingPhase1_OnSignalPlan->yellowChange + findStartingPhase1_OnSignalPlan->redClear;
+                    ring1Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                    ring1_TCISchedule.push_back(ring1Schedule);
+                }
+            }
+
+            for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase2;
+
+                //If starting phase2 is phase is last phase of EV_P21 or EV_P22 (for example phase 6 or 8) hold that phase
+                if ((temporaryPhase == EV_P21.at(EV_P21.size() - 1)) || (temporaryPhase == EV_P22.at(EV_P22.size() - 1)))
+                {
+                    ring2Schedule.commandPhase = temporaryPhase;
+                    ring2Schedule.commandType = HOLD_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                    ring2_TCISchedule.push_back(ring2Schedule);
+                }
+
+                else
+                {
+                    ring2Schedule.commandPhase = temporaryPhase;
+                    ring2Schedule.commandType = FORCEOFF_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = 0.0;
+                    ring2_TCISchedule.push_back(ring1Schedule);
+
+                    if (!EV_P21.empty())
+                        vehicleSignalGroup = EV_P21.at(EV_P21.size() - 1);
+
+                    else if (!EV_P22.empty())
+                        vehicleSignalGroup = EV_P22.at(EV_P22.size() - 1);
+
+                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase2_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
+                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                    ring2Schedule.commandPhase = vehicleSignalGroup;
+                    ring2Schedule.commandType = HOLD_PHASES;
+                    ring2Schedule.commandStartTime = findStartingPhase2_OnSignalPlan->yellowChange + findStartingPhase2_OnSignalPlan->redClear;
+                    ring2Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                    ring2_TCISchedule.push_back(ring2Schedule);
+                }
+            }
+
+            /*vehicle Call */
+            for (size_t i = 0; i < priorityRequestList.size(); i++)
+            {
+                vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+
+                for (int k = 0; k < noOfPhase; k++)
+                {
+                    if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+                        vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+                }
+
+                if (vehicleSignalGroupRing == 1)
+                {
+                    ring1Schedule.commandPhase = vehicleSignalGroup;
+                    ring1Schedule.commandType = CALL_VEH_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+
+                    ring1_TCISchedule.push_back(ring1Schedule);
+                }
+
+                if (vehicleSignalGroupRing == 2)
+                {
+                    ring2Schedule.commandPhase = vehicleSignalGroup;
+                    ring2Schedule.commandType = CALL_VEH_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+
+                    ring2_TCISchedule.push_back(ring2Schedule);
+                }
+            }
+        }
+
+        else if (noOfEVInList <= 2)
+        {
+            // ring1_TCISchedule.clear();
+            // ring2_TCISchedule.clear();
+
+            for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase1;
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
+
+                //If requested phases and starting phases are different
+                if (it == requestedSignalGroup.end()) //Check whether starting phase 1 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+                {
+                    ring1Schedule.commandPhase = temporaryPhase;
+                    ring1Schedule.commandType = FORCEOFF_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = 0.0;
+                    ring1_TCISchedule.push_back(ring1Schedule);
+
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
                     {
-                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase1_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (findSignalGroup1RingNO->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                        {
+                            vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase1_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+                            vector<RequestList>::iterator findSignalGroup1_OnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                                         [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring1Schedule.commandPhase = vehicleSignalGroup;
+                            ring1Schedule.commandType = HOLD_PHASES;
+                            ring1Schedule.commandStartTime = findStartingPhase1_OnSignalPlan->yellowChange + findStartingPhase1_OnSignalPlan->redClear;
+                            ring1Schedule.commandEndTime = findSignalGroup1_OnPriorityList->vehicleETA + findSignalGroup1_OnPriorityList->vehicleETA_Duration;
+                            ring1_TCISchedule.push_back(ring1Schedule);
+                        }
+                    }
+                }
+                //If starting phases are in requested signal group
+                else
+                {
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                    {
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                                [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (temporaryPhase == vehicleSignalGroup && findSignalGroup1_OnSignalPlan->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
+                        {
+                            vector<RequestList>::iterator findETAOfSignalGroup1 = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                               [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring1Schedule.commandPhase = vehicleSignalGroup;
+                            ring1Schedule.commandType = HOLD_PHASES;
+                            ring1Schedule.commandStartTime = 0.0;
+                            ring1Schedule.commandEndTime = findETAOfSignalGroup1->vehicleETA + findETAOfSignalGroup1->vehicleETA_Duration;
+                            ring1_TCISchedule.push_back(ring1Schedule);
+                        }
+                    }
+                }
+
+                temporaryPhase = trafficControllerStatus[i].startingPhase2;
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
+                //If requested phases and starting phases are different
+                if (it == requestedSignalGroup.end()) //Check whether starting phase 2 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+                {
+                    ring2Schedule.commandPhase = temporaryPhase;
+                    ring2Schedule.commandType = FORCEOFF_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = 0.0;
+                    ring2_TCISchedule.push_back(ring2Schedule);
+
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                    {
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (findSignalGroup2RingNO->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                        {
+                            vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase2_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+                            vector<RequestList>::iterator findSignalGroup2_OnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                                         [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring2Schedule.commandPhase = vehicleSignalGroup;
+                            ring2Schedule.commandType = HOLD_PHASES;
+                            ring2Schedule.commandStartTime = findStartingPhase2_OnSignalPlan->yellowChange + findStartingPhase2_OnSignalPlan->redClear;
+                            ring2Schedule.commandEndTime = findSignalGroup2_OnPriorityList->vehicleETA + findSignalGroup2_OnPriorityList->vehicleETA_Duration;
+                            ring2_TCISchedule.push_back(ring2Schedule);
+                        }
+                    }
+                }
+                //If starting phases are in requested signal group
+                else
+                {
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                    {
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                                [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (temporaryPhase == vehicleSignalGroup && findSignalGroup2_OnSignalPlan->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
+                        {
+                            vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                                       [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring2Schedule.commandPhase = vehicleSignalGroup;
+                            ring2Schedule.commandType = HOLD_PHASES;
+                            ring2Schedule.commandStartTime = 0.0;
+                            ring2Schedule.commandEndTime = findSignalGroupOnPriorityList->vehicleETA + findSignalGroupOnPriorityList->vehicleETA_Duration;
+                            ring2_TCISchedule.push_back(ring2Schedule);
+                        }
+                    }
+                }
+            }
+
+            /*vehicle Call */
+            for (size_t i = 0; i < priorityRequestList.size(); i++)
+            {
+                vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+
+                for (int k = 0; k < noOfPhase; k++)
+                {
+                    if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+                        vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+                }
+
+                if (vehicleSignalGroupRing == 1)
+                {
+                    ring1Schedule.commandPhase = vehicleSignalGroup;
+                    ring1Schedule.commandType = CALL_VEH_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+
+                    ring1_TCISchedule.push_back(ring1Schedule);
+                }
+
+                if (vehicleSignalGroupRing == 2)
+                {
+                    ring2Schedule.commandPhase = vehicleSignalGroup;
+                    ring2Schedule.commandType = CALL_VEH_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+
+                    ring2_TCISchedule.push_back(ring2Schedule);
+                }
+            }
+        }
+        //If there is multiple EV comming from the same direction
+        else if (noOfEVInList > 2 && requestedSignalGroup.size() <= 2)
+        {
+            // ring1_TCISchedule.clear();
+            // ring2_TCISchedule.clear();
+
+            //Find the maximum ETA and ETA duration from among all the EV
+            findMaximumETAofEV();
+            // for (size_t k = 0; k < priorityRequestList.size(); k++)
+            // {
+            //     temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
+            //     temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
+            // }
+
+            // maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
+            // maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
+
+            for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase1;
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
+                //If requested phases and starting phases are different
+                if (it == requestedSignalGroup.end()) //Check whether starting phase 1 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+                {
+                    ring1Schedule.commandPhase = temporaryPhase;
+                    ring1Schedule.commandType = FORCEOFF_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = 0.0;
+                    ring1_TCISchedule.push_back(ring1Schedule);
+
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                    {
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (findSignalGroup1RingNO->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                        {
+                            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-                        vector<RequestList>::iterator findSignalGroup1_OnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                                     [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
-
-                        ring1Schedule.commandPhase = vehicleSignalGroup;
-                        ring1Schedule.commandType = HOLD_PHASES;
-                        ring1Schedule.commandStartTime = findStartingPhase1_OnSignalPlan->yellowChange + findStartingPhase1_OnSignalPlan->redClear;
-                        ring1Schedule.commandEndTime = findSignalGroup1_OnPriorityList->vehicleETA + findSignalGroup1_OnPriorityList->vehicleETA_Duration;
-                        ring1_TCISchedule.push_back(ring1Schedule);
+                            ring1Schedule.commandPhase = vehicleSignalGroup;
+                            ring1Schedule.commandType = HOLD_PHASES;
+                            ring1Schedule.commandStartTime = findSignalGroupOnSignalPlan->yellowChange + findSignalGroupOnSignalPlan->redClear;
+                            ring1Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                            ring1_TCISchedule.push_back(ring1Schedule);
+                        }
                     }
                 }
-            }
-            //If starting phases are in requested signal group
-            else
-            {
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                //If starting phases are in requested signal group
+                else
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
-
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (temporaryPhase == vehicleSignalGroup && findSignalGroup1_OnSignalPlan->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
                     {
-                        vector<RequestList>::iterator findETAOfSignalGroup1 = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                           [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
 
-                        ring1Schedule.commandPhase = vehicleSignalGroup;
-                        ring1Schedule.commandType = HOLD_PHASES;
-                        ring1Schedule.commandStartTime = 0.0;
-                        ring1Schedule.commandEndTime = findETAOfSignalGroup1->vehicleETA + findETAOfSignalGroup1->vehicleETA_Duration;
-                        ring1_TCISchedule.push_back(ring1Schedule);
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (temporaryPhase == vehicleSignalGroup && findSignalGroupOnSignalPlan->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
+                        {
+                            // vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                            //                                                                            [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring1Schedule.commandPhase = vehicleSignalGroup;
+                            ring1Schedule.commandType = HOLD_PHASES;
+                            ring1Schedule.commandStartTime = 0.0;
+                            ring1Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                            ring1_TCISchedule.push_back(ring1Schedule);
+                        }
                     }
                 }
-            }
 
-            temporaryPhase = trafficControllerStatus[i].startingPhase2;
-            it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
-            //If requested phases and starting phases are different
-            if (it == requestedSignalGroup.end()) //Check whether starting phase 2 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
-            {
-                ring2Schedule.commandPhase = temporaryPhase;
-                ring2Schedule.commandType = FORCEOFF_PHASES;
-                ring2Schedule.commandStartTime = 0.0;
-                ring2Schedule.commandEndTime = 0.0;
-                ring2_TCISchedule.push_back(ring2Schedule);
-
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                temporaryPhase = trafficControllerStatus[i].startingPhase2;
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
+                //If requested phases and starting phases are different
+                if (it == requestedSignalGroup.end()) //Check whether starting phase 2 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
+                    ring2Schedule.commandPhase = temporaryPhase;
+                    ring2Schedule.commandType = FORCEOFF_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = 0.0;
+                    ring2_TCISchedule.push_back(ring2Schedule);
 
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (findSignalGroup2RingNO->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
                     {
-                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findStartingPhase2_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
+
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (findSignalGroup2RingNO->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
+                        {
+                            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-                        vector<RequestList>::iterator findSignalGroup2_OnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                                     [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+                            ring2Schedule.commandPhase = vehicleSignalGroup;
+                            ring2Schedule.commandType = HOLD_PHASES;
+                            ring2Schedule.commandStartTime = findSignalGroupOnSignalPlan->yellowChange + findSignalGroupOnSignalPlan->redClear;
+                            ring2Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                            ring2_TCISchedule.push_back(ring2Schedule);
+                        }
+                    }
+                }
+                //If starting phases are in requested signal group
+                else
+                {
+                    for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                    {
+                        vehicleSignalGroup = requestedSignalGroup.at(j);
 
-                        ring2Schedule.commandPhase = vehicleSignalGroup;
-                        ring2Schedule.commandType = HOLD_PHASES;
-                        ring2Schedule.commandStartTime = findStartingPhase2_OnSignalPlan->yellowChange + findStartingPhase2_OnSignalPlan->redClear;
-                        ring2Schedule.commandEndTime = findSignalGroup2_OnPriorityList->vehicleETA + findSignalGroup2_OnPriorityList->vehicleETA_Duration;
-                        ring2_TCISchedule.push_back(ring2Schedule);
+                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+
+                        if (temporaryPhase == vehicleSignalGroup && findSignalGroupOnSignalPlan->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
+                        {
+                            // vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                            //                                                                            [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+
+                            ring2Schedule.commandPhase = vehicleSignalGroup;
+                            ring2Schedule.commandType = HOLD_PHASES;
+                            ring2Schedule.commandStartTime = 0.0;
+                            ring2Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+                            ring2_TCISchedule.push_back(ring2Schedule);
+                        }
                     }
                 }
             }
-            //If starting phases are in requested signal group
-            else
+            /*vehicle Call */
+            for (size_t i = 0; i < requestedSignalGroup.size(); i++)
             {
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                vehicleSignalGroup = requestedSignalGroup.at(i);
+
+                for (int k = 0; k < noOfPhase; k++)
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
+                    if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+                        vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+                }
 
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2_OnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
+                if (vehicleSignalGroupRing == 1)
+                {
+                    ring1Schedule.commandPhase = vehicleSignalGroup;
+                    ring1Schedule.commandType = CALL_VEH_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
 
-                    if (temporaryPhase == vehicleSignalGroup && findSignalGroup2_OnSignalPlan->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
-                    {
-                        vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                                   [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
+                    ring1_TCISchedule.push_back(ring1Schedule);
+                }
 
-                        ring2Schedule.commandPhase = vehicleSignalGroup;
-                        ring2Schedule.commandType = HOLD_PHASES;
-                        ring2Schedule.commandStartTime = 0.0;
-                        ring2Schedule.commandEndTime = findSignalGroupOnPriorityList->vehicleETA + findSignalGroupOnPriorityList->vehicleETA_Duration;
-                        ring2_TCISchedule.push_back(ring2Schedule);
-                    }
+                if (vehicleSignalGroupRing == 2)
+                {
+                    ring2Schedule.commandPhase = vehicleSignalGroup;
+                    ring2Schedule.commandType = CALL_VEH_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = maxEV_ETA + maxEV_ETA_Duration;
+
+                    ring2_TCISchedule.push_back(ring2Schedule);
                 }
             }
         }
-
-        /*vehicle Call */
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        //Multiple EV coming from different direction
+        else if (noOfEVInList > 2 && requestedSignalGroup.size() > 2)
         {
-            vehicleSignalGroup = priorityRequestList[i].requestedPhase;
-
-            for (int k = 0; k < noOfPhase; k++)
+            generateDatFile();
+            generateEVModFile();
+            GLPKSolver();
+            obtainRequiredSignalGroup();
+            readOptimalSignalPlan();
+            //Computing ring wise cummilative sum for phase duration of left and right cricital points
+            // For example leftCriticalPoints PhaseDuration for any phase is the sum of leftCriticalPoints PhaseDuration of previous phase and leftCriticalPoints PhaseDuration of that phase.
+            for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
             {
-                if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
-                    vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
+                leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_PhaseDuration_Ring1[i];
             }
 
-            if (vehicleSignalGroupRing == 1)
+            for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring1.size(); i++)
             {
-                ring1Schedule.commandPhase = vehicleSignalGroup;
-                ring1Schedule.commandType = CALL_VEH_PHASES;
-                ring1Schedule.commandStartTime = 0.0;
-                ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+                rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_PhaseDuration_Ring1[i];
+            }
+
+            for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
+            {
+                leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_PhaseDuration_Ring2[i];
+            }
+
+            for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring2.size(); i++)
+            {
+                rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_PhaseDuration_Ring2[i];
+            }
+
+            //Computing ring wise cummilative sum for green time of left and right cricital points
+            // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring1.size(); i++)
+            // {
+            //     leftCriticalPoints_GreenTime_Ring1[i] = leftCriticalPoints_GreenTime_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
+            // }
+
+            // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
+            // {
+            //     rightCriticalPoints_GreenTime_Ring1[i] = rightCriticalPoints_GreenTime_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
+            // }
+
+            // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring2.size(); i++)
+            // {
+            //     leftCriticalPoints_GreenTime_Ring2[i] = leftCriticalPoints_GreenTime_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
+            // }
+
+            // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
+            // {
+            //     rightCriticalPoints_GreenTime_Ring2[i] = rightCriticalPoints_GreenTime_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
+            // }
+
+            // ring1_TCISchedule.clear();
+            // ring2_TCISchedule.clear();
+
+            /*Hold Ring1 */
+            for (size_t i = 0; i < plannedSignalGroupInRing1.size(); i++)
+            {
+
+                ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
+                ring1Schedule.commandType = HOLD_PHASES;
+
+                /*
+                -Hold upto green time for starting phase(first phase having green time greater than zero)
+            */
+                if (i == 0)
+                {
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring1[i];
+                }
+                /*
+                - For rest of the phase hold will start at the end of previous phase
+                - For rest of the phase hold will continue upto the end the green time
+                - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+            */
+                else
+                {
+                    ring1Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1];
+                    ring1Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
+                }
 
                 ring1_TCISchedule.push_back(ring1Schedule);
             }
 
-            if (vehicleSignalGroupRing == 2)
+            /*Hold Ring2 */
+            for (size_t i = 0; i < plannedSignalGroupInRing2.size(); i++)
             {
-                ring2Schedule.commandPhase = vehicleSignalGroup;
-                ring2Schedule.commandType = CALL_VEH_PHASES;
-                ring2Schedule.commandStartTime = 0.0;
-                ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+                ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
+                ring2Schedule.commandType = HOLD_PHASES;
+
+                /*
+                -Hold upto green time for starting phase(first phase having green time greater than zero)
+            */
+                if (i == 0)
+                {
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring2[i];
+                }
+
+                /*
+                - For rest of the phase hold will start at the end of previous phase
+                - For rest of the phase hold will continue upto the end the green time
+                - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+            */
+                else
+                {
+                    ring2Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1];
+                    ring2Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
+                }
 
                 ring2_TCISchedule.push_back(ring2Schedule);
             }
-        }
-    }
-    //If there is multiple EV comming from the same direction
-    else if (bEVStatus == true && noOfEVInList > 2 && requestedSignalGroup.size() <= 2)
-    {
-        ring1_TCISchedule.clear();
-        ring2_TCISchedule.clear();
 
-        //Find the maximum ETA and ETA duration from among all the EV
-        for (size_t k = 0; k < priorityRequestList.size(); k++)
-        {
-            temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
-            temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
-        }
-
-        tempVehicleETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
-        tempVehicleETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
-
-        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-        {
-            temporaryPhase = trafficControllerStatus[i].startingPhase1;
-            it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
-            //If requested phases and starting phases are different
-            if (it == requestedSignalGroup.end()) //Check whether starting phase 1 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+            /*ForceOff Ring1 */
+            for (size_t i = 0; i < plannedSignalGroupInRing1.size(); i++)
             {
-                ring1Schedule.commandPhase = temporaryPhase;
+                ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
                 ring1Schedule.commandType = FORCEOFF_PHASES;
-                ring1Schedule.commandStartTime = 0.0;
+
+                /*
+                -Force off for starting phase (first phase having green time greater than zero) at the end of green time
+                -End time for force off will be zero
+            */
+                if (i == 0)
+                    ring1Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring1[i];
+
+                /*
+                - For rest of the phase force off at the end of green time of corresponding phase
+                - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
+                - End time for force off will be zero
+            */
+                else
+                    ring1Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
+
                 ring1Schedule.commandEndTime = 0.0;
+
                 ring1_TCISchedule.push_back(ring1Schedule);
-
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
-                {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
-
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (findSignalGroup1RingNO->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
-                    {
-                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-                        ring1Schedule.commandPhase = vehicleSignalGroup;
-                        ring1Schedule.commandType = HOLD_PHASES;
-                        ring1Schedule.commandStartTime = findSignalGroupOnSignalPlan->yellowChange + findSignalGroupOnSignalPlan->redClear;
-                        ring1Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-                        ring1_TCISchedule.push_back(ring1Schedule);
-                    }
-                }
-            }
-            //If starting phases are in requested signal group
-            else
-            {
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
-                {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
-
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (temporaryPhase == vehicleSignalGroup && findSignalGroupOnSignalPlan->phaseRing == 1) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
-                    {
-                        // vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                        //                                                                            [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
-
-                        ring1Schedule.commandPhase = vehicleSignalGroup;
-                        ring1Schedule.commandType = HOLD_PHASES;
-                        ring1Schedule.commandStartTime = 0.0;
-                        ring1Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-                        ring1_TCISchedule.push_back(ring1Schedule);
-                    }
-                }
             }
 
-            temporaryPhase = trafficControllerStatus[i].startingPhase2;
-            it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), temporaryPhase);
-            //If requested phases and starting phases are different
-            if (it == requestedSignalGroup.end()) //Check whether starting phase 2 is in requested Signal group or not. If it is not in requested signal group forceoff that phase.
+            /*ForceOff Ring2 */
+            for (size_t i = 0; i < plannedSignalGroupInRing2.size(); i++)
             {
-                ring2Schedule.commandPhase = temporaryPhase;
+                ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
                 ring2Schedule.commandType = FORCEOFF_PHASES;
-                ring2Schedule.commandStartTime = 0.0;
+
+                if (i == 0)
+                    ring2Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring2[i];
+
+                else
+                    ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
+
                 ring2Schedule.commandEndTime = 0.0;
-                ring2_TCISchedule.push_back(ring2Schedule);
 
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+                ring2_TCISchedule.push_back(ring2Schedule);
+            }
+
+            /*vehicle Call */
+            for (size_t i = 0; i < priorityRequestList.size(); i++)
+            {
+                vehicleSignalGroup = priorityRequestList[i].requestedPhase;
+
+                for (int k = 0; k < noOfPhase; k++)
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
-
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2RingNO = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (findSignalGroup2RingNO->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be sum of yellow and red time of starting phase1
-                    {
-                        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-                        ring2Schedule.commandPhase = vehicleSignalGroup;
-                        ring2Schedule.commandType = HOLD_PHASES;
-                        ring2Schedule.commandStartTime = findSignalGroupOnSignalPlan->yellowChange + findSignalGroupOnSignalPlan->redClear;
-                        ring2Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-                        ring2_TCISchedule.push_back(ring2Schedule);
-                    }
+                    if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
+                        vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
                 }
-            }
-            //If starting phases are in requested signal group
-            else
-            {
-                for (size_t j = 0; j < requestedSignalGroup.size(); j++)
+
+                if (vehicleSignalGroupRing == 1)
                 {
-                    vehicleSignalGroup = requestedSignalGroup.at(j);
+                    ring1Schedule.commandPhase = vehicleSignalGroup;
+                    ring1Schedule.commandType = CALL_VEH_PHASES;
+                    ring1Schedule.commandStartTime = 0.0;
+                    ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
-                    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnSignalPlan = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == vehicleSignalGroup; });
-
-                    if (temporaryPhase == vehicleSignalGroup && findSignalGroupOnSignalPlan->phaseRing == 2) //Find the requested phase which is on ring1. Need to hold that phase. Starting time will be 0.0 and end time will be eta+eta_duration
-                    {
-                        // vector<RequestList>::iterator findSignalGroupOnPriorityList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                        //                                                                            [&](RequestList const &p) { return p.requestedPhase == vehicleSignalGroup; });
-
-                        ring2Schedule.commandPhase = vehicleSignalGroup;
-                        ring2Schedule.commandType = HOLD_PHASES;
-                        ring2Schedule.commandStartTime = 0.0;
-                        ring2Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-                        ring2_TCISchedule.push_back(ring2Schedule);
-                    }
+                    ring1_TCISchedule.push_back(ring1Schedule);
                 }
-            }
-        }
-        /*vehicle Call */
-        for (size_t i = 0; i < requestedSignalGroup.size(); i++)
-        {
-            vehicleSignalGroup = requestedSignalGroup.at(i);
 
-            for (int k = 0; k < noOfPhase; k++)
-            {
-                if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
-                    vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
-            }
+                if (vehicleSignalGroupRing == 2)
+                {
+                    ring2Schedule.commandPhase = vehicleSignalGroup;
+                    ring2Schedule.commandType = CALL_VEH_PHASES;
+                    ring2Schedule.commandStartTime = 0.0;
+                    ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
-            if (vehicleSignalGroupRing == 1)
-            {
-                ring1Schedule.commandPhase = vehicleSignalGroup;
-                ring1Schedule.commandType = CALL_VEH_PHASES;
-                ring1Schedule.commandStartTime = 0.0;
-                ring1Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-
-                ring1_TCISchedule.push_back(ring1Schedule);
-            }
-
-            if (vehicleSignalGroupRing == 2)
-            {
-                ring2Schedule.commandPhase = vehicleSignalGroup;
-                ring2Schedule.commandType = CALL_VEH_PHASES;
-                ring2Schedule.commandStartTime = 0.0;
-                ring2Schedule.commandEndTime = tempVehicleETA + tempVehicleETA_Duration;
-
-                ring2_TCISchedule.push_back(ring2Schedule);
-            }
-        }
-    }
-    //Multiple EV coming from different direction
-    else if (bEVStatus == true && noOfEVInList > 2 && requestedSignalGroup.size() > 2)
-    {
-        //Computing ring wise cummilative sum for phase duration of left and right cricital points
-        // For example leftCriticalPoints PhaseDuration for any phase is the sum of leftCriticalPoints PhaseDuration of previous phase and leftCriticalPoints PhaseDuration of that phase.
-        for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
-        {
-            leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_PhaseDuration_Ring1[i];
-        }
-
-        for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring1.size(); i++)
-        {
-            rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_PhaseDuration_Ring1[i];
-        }
-
-        for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
-        {
-            leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_PhaseDuration_Ring2[i];
-        }
-
-        for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring2.size(); i++)
-        {
-            rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_PhaseDuration_Ring2[i];
-        }
-
-        //Computing ring wise cummilative sum for grren time of left and right cricital points
-        // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring1.size(); i++)
-        // {
-        //     leftCriticalPoints_GreenTime_Ring1[i] = leftCriticalPoints_GreenTime_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
-        // }
-
-        // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
-        // {
-        //     rightCriticalPoints_GreenTime_Ring1[i] = rightCriticalPoints_GreenTime_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
-        // }
-
-        // for (size_t i = 1; i < leftCriticalPoints_GreenTime_Ring2.size(); i++)
-        // {
-        //     leftCriticalPoints_GreenTime_Ring2[i] = leftCriticalPoints_GreenTime_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
-        // }
-
-        // for (size_t i = 1; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
-        // {
-        //     rightCriticalPoints_GreenTime_Ring2[i] = rightCriticalPoints_GreenTime_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
-        // }
-
-        ring1_TCISchedule.clear();
-        ring2_TCISchedule.clear();
-
-        /*Hold Ring1 */
-        for (size_t i = 0; i < plannedSignalGroupInRing1.size(); i++)
-        {
-
-            ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
-            ring1Schedule.commandType = HOLD_PHASES;
-
-            /*
-            -Hold upto green time for starting phase(first phase having green time greater than zero)
-        */
-            if (i == 0)
-            {
-                ring1Schedule.commandStartTime = 0.0;
-                ring1Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring1[i];
-            }
-            /*
-            - For rest of the phase hold will start at the end of previous phase
-            - For rest of the phase hold will continue upto the end the green time
-            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
-        */
-            else
-            {
-                ring1Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1];
-                ring1Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_GreenTime_Ring1[i];
-            }
-
-            ring1_TCISchedule.push_back(ring1Schedule);
-        }
-
-        /*Hold Ring2 */
-        for (size_t i = 0; i < plannedSignalGroupInRing2.size(); i++)
-        {
-            ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
-            ring2Schedule.commandType = HOLD_PHASES;
-
-            /*
-            -Hold upto green time for starting phase(first phase having green time greater than zero)
-        */
-            if (i == 0)
-            {
-                ring2Schedule.commandStartTime = 0.0;
-                ring2Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring2[i];
-            }
-
-            /*
-            - For rest of the phase hold will start at the end of previous phase
-            - For rest of the phase hold will continue upto the end the green time
-            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
-        */
-            else
-            {
-                ring2Schedule.commandStartTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1];
-                ring2Schedule.commandEndTime = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_GreenTime_Ring2[i];
-            }
-
-            ring2_TCISchedule.push_back(ring2Schedule);
-        }
-
-        /*ForceOff Ring1 */
-        for (size_t i = 0; i < plannedSignalGroupInRing1.size(); i++)
-        {
-            ring1Schedule.commandPhase = plannedSignalGroupInRing1[i];
-            ring1Schedule.commandType = FORCEOFF_PHASES;
-
-            /*
-            -Force off for starting phase (first phase having green time greater than zero) at the end of green time
-            -End time for force off will be zero
-        */
-            if (i == 0)
-                ring1Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring1[i];
-
-            /*
-            - For rest of the phase force off at the end of green time of corresponding phase
-            - Logic is: Cumulative Phase duration of the previous phase plus green time of the current phase
-            - End time for force off will be zero
-        */
-            else
-                ring1Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
-
-            ring1Schedule.commandEndTime = 0.0;
-
-            ring1_TCISchedule.push_back(ring1Schedule);
-        }
-
-        /*ForceOff Ring2 */
-        for (size_t i = 0; i < plannedSignalGroupInRing2.size(); i++)
-        {
-            ring2Schedule.commandPhase = plannedSignalGroupInRing2[i];
-            ring2Schedule.commandType = FORCEOFF_PHASES;
-
-            if (i == 0)
-                ring2Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring2[i];
-
-            else
-                ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
-
-            ring2Schedule.commandEndTime = 0.0;
-
-            ring2_TCISchedule.push_back(ring2Schedule);
-        }
-
-        /*vehicle Call */
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
-        {
-            vehicleSignalGroup = priorityRequestList[i].requestedPhase;
-
-            for (int k = 0; k < noOfPhase; k++)
-            {
-                if (trafficSignalPlan[k].phaseNumber == vehicleSignalGroup)
-                    vehicleSignalGroupRing = trafficSignalPlan[k].phaseRing;
-            }
-
-            if (vehicleSignalGroupRing == 1)
-            {
-                ring1Schedule.commandPhase = vehicleSignalGroup;
-                ring1Schedule.commandType = CALL_VEH_PHASES;
-                ring1Schedule.commandStartTime = 0.0;
-                ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
-
-                ring1_TCISchedule.push_back(ring1Schedule);
-            }
-
-            if (vehicleSignalGroupRing == 2)
-            {
-                ring2Schedule.commandPhase = vehicleSignalGroup;
-                ring2Schedule.commandType = CALL_VEH_PHASES;
-                ring2Schedule.commandStartTime = 0.0;
-                ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
-
-                ring2_TCISchedule.push_back(ring2Schedule);
+                    ring2_TCISchedule.push_back(ring2Schedule);
+                }
             }
         }
     }
@@ -2377,6 +2500,21 @@ int PriorityRequestSolver::getRequestedSignalGroupSize()
     int signalGroupSize{};
     signalGroupSize = static_cast<int>(requestedSignalGroup.size());
     return signalGroupSize;
+}
+
+void PriorityRequestSolver::findMaximumETAofEV()
+{
+    vector<double> temporaryVehicleETA;
+    vector<double> temporaryVehicleETA_Duration;
+    //Find the maximum ETA and ETA duration from among all the EV
+    for (size_t k = 0; k < priorityRequestList.size(); k++)
+    {
+        temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
+        temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
+    }
+
+    maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
+    maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

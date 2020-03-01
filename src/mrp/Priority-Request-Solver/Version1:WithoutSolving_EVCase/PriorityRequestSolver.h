@@ -40,6 +40,8 @@ private:
     int noOfPhasesInRing1{};
     int noOfPhasesInRing2{};
     int noOfEVInList{};
+    double maxEV_ETA{};
+    double maxEV_ETA_Duration{};
     string scheduleJsonString{};
     bool bEVStatus{};
 
@@ -115,4 +117,5 @@ public:
     int getRequestedSignalGroupSize();
     int getEVRingBarrierGroup();
     void getEVTrafficSignalPlan();
+    void findMaximumETAofEV();
 };
