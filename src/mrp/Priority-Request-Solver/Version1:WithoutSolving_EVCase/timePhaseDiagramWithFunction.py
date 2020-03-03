@@ -252,10 +252,8 @@ def main():
     print("ini2 =", init2)
     print("Elapesd Green1 =", grn1)
     print("Elapesd Green2 =", grn2)
-    left_R1_CP_phase_times = getPhaseTimesForCycle1(
-        left_R1_CP_phase_times, SP1, 'Left')
-    right_R1_CP_phase_times = getPhaseTimesForCycle1(
-        right_R1_CP_phase_times, SP1, 'Right')
+    left_R1_CP_phase_times = getPhaseTimesForCycle1(left_R1_CP_phase_times, SP1, 'Left')
+    right_R1_CP_phase_times = getPhaseTimesForCycle1(right_R1_CP_phase_times, SP1, 'Right')
     print("Left Critical Points Phase times for Ring1 =", left_R1_CP_phase_times)
     print("Right Critical Points Phase times for Ring1 =", right_R1_CP_phase_times)
     # #creating cumulative list

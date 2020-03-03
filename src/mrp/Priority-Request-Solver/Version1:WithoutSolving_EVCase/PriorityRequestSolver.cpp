@@ -834,7 +834,7 @@ void PriorityRequestSolver::createEventList()
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 // it = std::find(EV_P11.begin(), EV_P11.end(), temporaryPhase);
                 //If starting phase1 is phase is last phase of EV_P11 or EV_P21 (for example phase 2 or 4) hold that phase
-                if ((temporaryPhase == EV_P11.at(EV_P11.size() - 1)) || (temporaryPhase == EV_P12.at(EV_P12.size() - 1)))
+                if ((!EV_P11.empty() && temporaryPhase == EV_P11.at(EV_P11.size() - 1)) || (!EV_P12.empty() && temporaryPhase == EV_P12.at(EV_P12.size() - 1)))
                 {
                     ring1Schedule.commandPhase = temporaryPhase;
                     ring1Schedule.commandType = HOLD_PHASES;
@@ -872,7 +872,7 @@ void PriorityRequestSolver::createEventList()
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
 
                 //If starting phase2 is phase is last phase of EV_P21 or EV_P22 (for example phase 6 or 8) hold that phase
-                if ((temporaryPhase == EV_P21.at(EV_P21.size() - 1)) || (temporaryPhase == EV_P22.at(EV_P22.size() - 1)))
+                if ((!EV_P21.empty() && temporaryPhase == EV_P21.at(EV_P21.size() - 1)) || (!EV_P22.empty() && temporaryPhase == EV_P22.at(EV_P22.size() - 1)))
                 {
                     ring2Schedule.commandPhase = temporaryPhase;
                     ring2Schedule.commandType = HOLD_PHASES;
@@ -887,7 +887,7 @@ void PriorityRequestSolver::createEventList()
                     ring2Schedule.commandType = FORCEOFF_PHASES;
                     ring2Schedule.commandStartTime = 0.0;
                     ring2Schedule.commandEndTime = 0.0;
-                    ring2_TCISchedule.push_back(ring1Schedule);
+                    ring2_TCISchedule.push_back(ring2Schedule);
 
                     if (!EV_P21.empty())
                         vehicleSignalGroup = EV_P21.at(EV_P21.size() - 1);

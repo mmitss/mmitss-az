@@ -3,12 +3,17 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
 
+#Get the stating phase information
 def getStartingPhases():
     with open('Results.txt') as f:
         first_line = f.readline()
     return first_line
 
-
+#Appending the SP1 into phasesInring list
+#Appending the phases which are greater than the starting phase for that ring
+#Appending the phases which are less than the starting phase for that ring
+#Repeat all the phase number
+#Appending the phases which are greater than the starting phase for that ring
 def phaseGroupInRing(SP, ring_phases, phasesInRing):
     i = SP
     for i in ring_phases:
@@ -37,8 +42,8 @@ def getInitToPhasesAndElaspedGreenTime():
                 break
     return line
 
-
-def getPhaseTimesForCycle1(phase_Times, SP, CP):
+#Find the phase duration for all the planned phases.
+def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
     if(CP == 'Left'):
         with open('Results.txt') as f:
             for i, line in enumerate(f):
@@ -46,12 +51,15 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
                     break
         durationOfP1K1R1, durationOfP2K1R1, durationOfP3K1R1, durationOfP4K1R1, durationOfP5K1R1, durationOfP6K1R1, durationOfP7K1R1, durationOfP8K1R1 = line.split()
         # print(line)
+        if(RingNo == 'Ring1'):
+            left_r1_k1_Phase_Times = [float(durationOfP1K1R1), float(durationOfP2K1R1), float(durationOfP3K1R1), float(durationOfP4K1R1)]
+            if SP > 1:
+                left_r1_k1_Phase_Times = left_r1_k1_Phase_Times[SP-1:]
 
-        left_r1_k1_Phase_Times = [float(durationOfP1K1R1), float(
-            durationOfP2K1R1), float(durationOfP3K1R1), float(durationOfP4K1R1)]
-
-        if SP > 1:
-            left_r1_k1_Phase_Times = left_r1_k1_Phase_Times[SP-1:]
+        elif(RingNo == 'Ring2'):
+            left_r2_k1_Phase_Times = [float(durationOfP5K1R1), float(durationOfP6K1R1), float(durationOfP7K1R1), float(durationOfP8K1R1)]
+            if SP > 4:
+                left_r2_k1_Phase_Times = left_r2_k1_Phase_Times[SP-5:]
 
         # For cycle2 Left CP
         with open('Results.txt') as f:
@@ -60,9 +68,13 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
                     break
         durationOfP1K2R1, durationOfP2K2R1, durationOfP3K2R1, durationOfP4K2R1, durationOfP5K2R1, durationOfP6K2R1, durationOfP7K2R1, durationOfP8K2R1 = line.split()
 
-        left_r1_k2_Phase_Times = [float(durationOfP1K2R1), float(
-            durationOfP2K2R1), float(durationOfP3K2R1), float(durationOfP4K2R1)]
-        left_r1_k1_Phase_Times.extend(left_r1_k2_Phase_Times)
+        if(RingNo == 'Ring1'):    
+            left_r1_k2_Phase_Times = [float(durationOfP1K2R1), float(durationOfP2K2R1), float(durationOfP3K2R1), float(durationOfP4K2R1)]
+            left_r1_k1_Phase_Times.extend(left_r1_k2_Phase_Times)
+        
+        elif(RingNo == 'Ring2'):
+            left_r2_k2_Phase_Times = [float(durationOfP5K2R1), float(durationOfP6K2R1), float(durationOfP7K2R1), float(durationOfP8K2R1)]
+            left_r2_k1_Phase_Times.extend(left_r2_k2_Phase_Times)
 
         # For cycle3 Left CP
         with open('Results.txt') as f:
@@ -71,11 +83,18 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
                     break
         durationOfP1K3R1, durationOfP2K3R1, durationOfP3K3R1, durationOfP4K3R1, durationOfP5K3R1, durationOfP6K3R1, durationOfP7K3R1, durationOfP8K3R1 = line.split()
 
-        left_r1_k2_Phase_Times = [float(durationOfP1K3R1), float(
-            durationOfP2K3R1), float(durationOfP3K3R1), float(durationOfP4K3R1)]
-        left_r1_k1_Phase_Times.extend(left_r1_k2_Phase_Times)
-        del left_r1_k1_Phase_Times[8:]
-        phase_Times = left_r1_k1_Phase_Times
+        if(RingNo == 'Ring1'):
+            left_r1_k3_Phase_Times = [float(durationOfP1K3R1), float(durationOfP2K3R1), float(durationOfP3K3R1), float(durationOfP4K3R1)]
+            left_r1_k1_Phase_Times.extend(left_r1_k3_Phase_Times)
+            del left_r1_k1_Phase_Times[8:]
+            phase_Times = left_r1_k1_Phase_Times
+        
+        elif(RingNo == 'Ring2'):
+            left_r2_k3_Phase_Times = [float(durationOfP5K3R1), float(durationOfP6K3R1), float(durationOfP7K3R1), float(durationOfP8K3R1)]
+            left_r2_k1_Phase_Times.extend(left_r2_k3_Phase_Times)
+            del left_r2_k1_Phase_Times[8:]
+            phase_Times = left_r2_k1_Phase_Times
+
 
     # # # For cycle1 Right CP
     if(CP == 'Right'):
@@ -86,10 +105,16 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
         durationOfP1K1R2, durationOfP2K1R2, durationOfP3K1R2, durationOfP4K1R2, durationOfP5K1R2, durationOfP6K1R2, durationOfP7K1R2, durationOfP8K1R2 = line.split()
         # print(line)
 
-        right_r1_k1_Phase_Times = [float(durationOfP1K1R2), float(
-            durationOfP2K1R2), float(durationOfP3K1R2), float(durationOfP4K1R2)]
-        if SP > 1:
-            right_r1_k1_Phase_Times = right_r1_k1_Phase_Times[SP-1:]
+        if(RingNo == 'Ring1'):
+            right_r1_k1_Phase_Times = [float(durationOfP1K1R2), float(durationOfP2K1R2), float(durationOfP3K1R2), float(durationOfP4K1R2)]
+            if SP > 1:
+                right_r1_k1_Phase_Times = right_r1_k1_Phase_Times[SP-1:]
+        
+        elif(RingNo == 'Ring2'):
+            right_r2_k1_Phase_Times = [float(durationOfP5K1R2), float(durationOfP6K1R2), float(durationOfP7K1R2), float(durationOfP8K1R2)]
+            if SP > 4:
+                right_r2_k1_Phase_Times = right_r2_k1_Phase_Times[SP-1:]
+
 
         # For cycle2 Right CP
         with open('Results.txt') as f:
@@ -98,9 +123,13 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
                     break
         durationOfP1K2R2, durationOfP2K2R2, durationOfP3K2R2, durationOfP4K2R2, durationOfP5K2R2, durationOfP6K2R2, durationOfP7K2R2, durationOfP8K2R2 = line.split()
 
-        right_r1_k2_Phase_Times = [float(durationOfP1K2R2), float(
-            durationOfP2K2R2), float(durationOfP3K2R2), float(durationOfP4K2R2)]
-        right_r1_k1_Phase_Times.extend(right_r1_k2_Phase_Times)
+        if(RingNo == 'Ring1'):
+            right_r1_k2_Phase_Times = [float(durationOfP1K2R2), float(durationOfP2K2R2), float(durationOfP3K2R2), float(durationOfP4K2R2)]
+            right_r1_k1_Phase_Times.extend(right_r1_k2_Phase_Times)
+        
+        elif(RingNo == 'Ring2'):
+            right_r2_k2_Phase_Times = [float(durationOfP5K2R2), float(durationOfP6K2R2), float(durationOfP7K2R2), float(durationOfP8K2R2)]
+            right_r2_k1_Phase_Times.extend(right_r2_k2_Phase_Times)
 
         # For cycle3 Right CP
         with open('Results.txt') as f:
@@ -108,24 +137,30 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP):
                 if i == 4:
                     break
         durationOfP1K3R2, durationOfP2K3R2, durationOfP3K3R2, durationOfP4K3R2, durationOfP5K3R2, durationOfP6K3R2, durationOfP7K3R2, durationOfP8K3R2 = line.split()
+        
+        if(RingNo == 'Ring1'):
+            right_r1_k3_Phase_Times = [float(durationOfP1K3R2), float(durationOfP2K3R2), float(durationOfP3K3R2), float(durationOfP4K3R2)]
+            right_r1_k1_Phase_Times.extend(right_r1_k3_Phase_Times)
+            del right_r1_k1_Phase_Times[8:]
+            phase_Times = right_r1_k1_Phase_Times
 
-        right_r1_k3_Phase_Times = [float(durationOfP1K3R2), float(
-            durationOfP2K3R2), float(durationOfP3K3R2), float(durationOfP4K3R2)]
-        right_r1_k1_Phase_Times.extend(right_r1_k3_Phase_Times)
-        del right_r1_k1_Phase_Times[8:]
-        phase_Times = right_r1_k1_Phase_Times
+        elif(RingNo == 'Ring2'):
+            right_r2_k3_Phase_Times = [float(durationOfP5K3R2), float(durationOfP6K3R2), float(durationOfP7K3R2), float(durationOfP8K3R2)]
+            right_r2_k1_Phase_Times.extend(right_r2_k3_Phase_Times)
+            del right_r2_k1_Phase_Times[8:]
+            phase_Times = right_r2_k1_Phase_Times
 
     return phase_Times
 
 
-def getCummulativePhaseTimes(r1_Phase_Times):
-    cum_Ring1_Phase_Times = []
-    cum_Ring1_Phase_Times = np.cumsum(r1_Phase_Times)
+def getCummulativePhaseTimes(ring_Phase_Times):
+    cum_Ring_Phase_Times = []
+    cum_Ring_Phase_Times = np.cumsum(ring_Phase_Times)
 
     # Appending 0 in the  beiginning of the list.
-    cum_Ring1_Phase_Times = np.insert(
-        cum_Ring1_Phase_Times, 0, 0)  # First 0 is position
-    return cum_Ring1_Phase_Times
+    cum_Ring_Phase_Times = np.insert(
+        cum_Ring_Phase_Times, 0, 0)  # First 0 is position
+    return cum_Ring_Phase_Times
 
 
 def getPriorityRequest():
@@ -156,16 +191,16 @@ def getPriorityRequest():
     return eta
 
 
-def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, ETA, phasesInRing1, phasesInRing2,req_phase):
+def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, cum_phaseInRing2, ETA, phasesInRing1, phasesInRing2,req_phase):
     #cum_phaseInRing1 = [0,10,20,30,40,50,60,70,80,90]
     #um_phaseInRing2 = cum_phaseInRing1
     # Plotting time-phase diagram
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(2)
 
     color = 'tab:red'
-    ax1.set_xlabel('time (s)')
-    ax1.set_ylabel('Ring 1', color=color)
-    ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
+    ax1[0].set_xlabel('time (s)')
+    ax1[0].set_ylabel('Ring 1', color=color)
+    ax1[0].plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
     # print("cum_Right_Ring1_Phase_Times", cum_Right_Ring1_Phase_Times[-1])
     plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10)) 
 
@@ -174,12 +209,12 @@ def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cu
     # ax1.set_xticklabels(cum_Right_Ring1_Phase_Times)  
     # ax1.tick_params(axis='x', labelcolor=color)
 
-    ax1.set_yticks(ticks=np.arange(
+    ax1[0].set_yticks(ticks=np.arange(
         cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  # added by Kelsey
-    ax1.set_yticklabels(phasesInRing1)  # added by Kelsey
-    ax1.tick_params(axis='y', labelcolor=color)
+    ax1[0].set_yticklabels(phasesInRing1)  # added by Kelsey
+    ax1[0].tick_params(axis='y', labelcolor=color)
 
-    ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+    ax2 = ax1[0].twinx()  # instantiate a second axes that shares the same x-axis
 
     color = 'tab:blue'
     # we already handled the x-label with ax1
@@ -190,6 +225,41 @@ def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cu
     ax2.set_yticklabels(phasesInRing2)  # added by Kelsey
     # ax2.set_ylabel(phaseInRing2)
     ax2.tick_params(axis='y', labelcolor=color)
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.grid()
+
+
+###For second plot (Ring2)
+    color = 'tab:red'
+    ax1[1].set_xlabel('time (s)')
+    ax1[1].set_ylabel('Ring 1', color=color)
+    ax1[1].plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
+    # print("cum_Right_Ring1_Phase_Times", cum_Right_Ring1_Phase_Times[-1])
+    plt.xticks(np.arange(cum_Right_Ring2_Phase_Times[0], cum_Right_Ring2_Phase_Times[-1], 10)) 
+
+    # ax1.set_xticks(ticks=np.arange(
+    #     cum_phaseInRing1[0], cum_phaseInRing1[-1], 10)) 
+    # ax1.set_xticklabels(cum_Right_Ring1_Phase_Times)  
+    # ax1.tick_params(axis='x', labelcolor=color)
+
+    ax1[1].set_yticks(ticks=np.arange(
+        cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
+    ax1[1].set_yticklabels(phasesInRing1) 
+    ax1[1].tick_params(axis='y', labelcolor=color)
+
+    ax2 = ax1[1].twinx()  # instantiate a second axes that shares the same x-axis
+
+    color = 'tab:blue'
+    # we already handled the x-label with ax1
+    ax2.set_ylabel('Ring 2', color=color)
+    ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
+    ax2.set_yticks(ticks=np.arange(
+        cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
+    ax2.set_yticklabels(phasesInRing2) 
+    # ax2.set_ylabel(phaseInRing2)
+    ax2.tick_params(axis='y', labelcolor=color)
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.grid()
 
 
     # Requested phase
@@ -213,13 +283,15 @@ def timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cu
         x = ETA[i]
         y = requestedPhasePosition[i]
         patches.append(matplotlib.patches.Rectangle((x, y),5,10,angle=0.0,color='r'))
-    ax1.add_collection(PatchCollection(patches))
+    ax1[0].add_collection(PatchCollection(patches))
+    ax1[1].add_collection(PatchCollection(patches))
+    
     #Plotting the priority request
     # rect = plt.Rectangle((ETA[0], pos), ETA[1]-ETA[0],
     #                      10, color='r', alpha=0.3)
     # ax1.add_patch(rect)
-    fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    plt.grid()
+    # fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    # plt.grid()
     plt.show()
 
 
@@ -231,31 +303,44 @@ def main():
     cum_Left_Ring1_Phase_Times = []
     cum_Right_Ring1_Phase_Times = []
     cum_phaseInRing1 = [0]
+
+    left_R2_CP_phase_times = []
+    right_R2_CP_phase_times = []
+    cum_Left_Ring2_Phase_Times = []
+    cum_Right_Ring2_Phase_Times = []
+    cum_phaseInRing2 = [0]
+
     ETA = []
     req_phase = [2,8]
 
-    SP1, SP2 = getStartingPhases().split()
+    SP1, SP2 = getStartingPhases().split() #Get the stating phase information
     print("SP1 =", SP1)
     print("SP2 =", SP2)
-    SP1 = int(SP1)
-    SP2 = int(SP2)
-    phasesInRing1 = [SP1]
-    phasesInRing2 = [SP2]
-
+    SP1 = int(SP1) #Converting starting phase into integar value
+    SP2 = int(SP2) #Converting starting phase into integar value
+    phasesInRing1 = [SP1] #Appending the SP1 into phasesInring1 list
+    phasesInRing2 = [SP2] #Appending the SP2 into phasesInring2 list
+    
+    #Obtained planned signal phase of cycle1,2,3 for ring 1. There will be 8 phases.
     phasesInRing1 = phaseGroupInRing(SP1, r1_phases, phasesInRing1)
     print("Phases In Ring1", phasesInRing1)
+    #Obtained planned signal phase of cycle1,2,3 for ring 2. There will be 8 phases
     phasesInRing2 = phaseGroupInRing(SP2, r2_phases, phasesInRing2)
     print("Phases In Ring1", phasesInRing2)
-
+    #obtained init time and green elapssed time
     init1, init2, grn1, grn2 = getInitToPhasesAndElaspedGreenTime().split()
     print("ini1 =", init1)
     print("ini2 =", init2)
     print("Elapesd Green1 =", grn1)
     print("Elapesd Green2 =", grn2)
+    
+    ################## For Ring1##################
+
+    #Obatined ring wise phase duration for left and right critical points
     left_R1_CP_phase_times = getPhaseTimesForCycle1(
-        left_R1_CP_phase_times, SP1, 'Left')
+        left_R1_CP_phase_times, SP1, 'Left','Ring1')
     right_R1_CP_phase_times = getPhaseTimesForCycle1(
-        right_R1_CP_phase_times, SP1, 'Right')
+        right_R1_CP_phase_times, SP1, 'Right', 'Ring1')
     print("Left Critical Points Phase times for Ring1 =", left_R1_CP_phase_times)
     print("Right Critical Points Phase times for Ring1 =", right_R1_CP_phase_times)
     # #creating cumulative list
@@ -274,10 +359,41 @@ def main():
         x = x+10
         cum_phaseInRing1.append(x)
     print("Cumulative Phases in Ring1 =", cum_phaseInRing1)
+    
+    ################## For Ring2##################
+    
+    left_R2_CP_phase_times = getPhaseTimesForCycle1(
+        left_R2_CP_phase_times, SP2, 'Left','Ring2')
+    right_R2_CP_phase_times = getPhaseTimesForCycle1(
+        right_R2_CP_phase_times, SP2, 'Right', 'Ring2')
+    print("Left Critical Points Phase times for Ring2 =", left_R2_CP_phase_times)
+    print("Right Critical Points Phase times for Ring2 =", right_R2_CP_phase_times)
+    # #creating cumulative list
+    cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(
+        left_R2_CP_phase_times)
+    cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(
+        right_R2_CP_phase_times)
+
+    print("Cumulative Left Critical Points Phase times for Ring2 =",
+          cum_Left_Ring2_Phase_Times)
+    print("Cumulative Right Critical Points Phase times for Ring2 =",
+          cum_Right_Ring2_Phase_Times)
+    x = 0
+    length = len(cum_Left_Ring2_Phase_Times)-1
+    for i in range(length):
+        x = x+10
+        cum_phaseInRing2.append(x)
+    print("Cumulative Phases in Ring1 =", cum_phaseInRing2)
+
+
+
+    
     ETA = getPriorityRequest()
     print("ETA", ETA)
+
     timePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
-                     cum_phaseInRing1, ETA, phasesInRing1, phasesInRing2,req_phase)
+                     cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
+                     cum_phaseInRing2, ETA, phasesInRing1, phasesInRing2,req_phase)
 
 
 if __name__ == '__main__':

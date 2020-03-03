@@ -29,7 +29,7 @@ int main()
     vector<int>laneID{2, 8, 9, 5, 8, 9};
     vector<double>ETA{24.0, 40.0,40.0, 35.0, 45.0, 45.0};
     vector<double>ETADuration{5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
-    vector<int>requestedPhase{3, 2, 5, 4, 4, 7};
+    vector<int>requestedPhase{3, 8, 3, 4, 4, 7};
     vector<int>requestStatus{5, 4, 4, 5, 4, 4};
 
     jsonObject["MsgType"] = "PriorityRequest";
