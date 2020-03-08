@@ -1,3 +1,18 @@
+/*
+**********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  PriorrityRequestServer.h
+  Created by: Debashis Das
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. This script is the header file for PriorrityRequestServer.cpp
+*/
+
 #pragma once
 
 #include "SignalRequest.h"
@@ -8,7 +23,7 @@ class PriorityRequestServer
 {
 private:
     std::vector<ActiveRequest> ActiveRequestTable;
-    std::vector<int> phaseGroup;
+    // std::vector<int> phaseGroup;
     int messageType{};
     int minuteOfYear{};
     int msOfMinute{};
@@ -16,6 +31,7 @@ private:
     int intersectionID{};
     int sequenceNumber{};
     int updateCount{};
+    int vehicleType{};
     int priorityRequestStatus{};
     double expectedTimeOfArrivalToStopBar{0.0};
     int requestTimedOutVehicleID{};
@@ -25,32 +41,35 @@ public:
     PriorityRequestServer();
     ~PriorityRequestServer();
 
+    
+    std::string createSSMJsonString(SignalStatus signalStatus);
+    std::string createJsonStringForPrioritySolver();
+    void creatingSignalRequestTable(SignalRequest signalRequest);
+    void findSplitPhase();
+    void deleteTimedOutRequestfromActiveRequestTable();
+    void updateETAInActiveRequestTable();
+    void writeMAPPayloadInFile();
+    void deleteMapPayloadFile();
+    void printvector();
+    void setRequestTimedOutVehicleID(int timedOutVehicleID);
+    void setPriorityRequestStatus(); 
+    void setPRSUpdateCount();
+    void setVehicleType(SignalRequest signalRequest);
     int getMessageType(std::string jsonString);
     int getIntersectionID();
     int getRegionalID();
-    bool aceeptSignalRequest(SignalRequest signalRequest);
-    bool addToActiveRequesttable(SignalRequest signalRequest);
-    bool updateActiveRequestTable(SignalRequest signalRequest);
-    bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
-    bool shouldDeleteTimedOutRequestfromActiveRequestTable();
-    bool findEVInList();
-    // void findSplitPhase();
-    // void modifyPriorityRequestList();
-    void setRequestTimedOutVehicleID(int timedOutVehicleID);
     int getRequestTimedOutVehicleID();
-    std::vector<ActiveRequest> creatingSignalRequestTable(SignalRequest signalRequest);
-    void deleteTimedOutRequestfromActiveRequestTable();
-    void updateETAInActiveRequestTable();
-    void printvector();
-    void setPriorityRequestStatus(); //Check with Dr. Head
-    //int getPriorityRequestStatus();
     int getMinuteOfYear();
     int getMsOfMinute();
     int getPRSSequenceNumber();
-    int getPRSUpdateCount(SignalRequest signalRequest);
-    int getSignalGroup(SignalRequest signalRequest);
-    void writeMAPPayloadInFile();
-    void deleteMapPayloadFile();
-    void getPhaseGroup(std::string jsonString);
-    std::string createSSMJsonString(SignalRequest signalRequest, SignalStatus signalStatus);
+    int getPRSUpdateCount();
+    int getSignalGroup(SignalRequest signalRequest);    
+    bool aceeptSignalRequest(SignalRequest signalRequest);
+    bool addToActiveRequestTable(SignalRequest signalRequest);
+    bool updateActiveRequestTable(SignalRequest signalRequest);
+    bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
+    bool shouldDeleteTimedOutRequestfromActiveRequestTable();
+    bool updateETA();
+    bool sendClearRequest();
+    bool findEVInList();
 };

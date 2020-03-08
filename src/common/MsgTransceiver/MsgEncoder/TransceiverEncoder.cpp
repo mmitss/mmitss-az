@@ -244,7 +244,7 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
         requestStatus.vehRole = static_cast<MsgEnum::basicRole>((basicVehicleRole[i]));
         requestStatus.inLaneId = static_cast<int8_t>(inBoundLaneID[i]);
         requestStatus.inApprochId = static_cast<int8_t>(inBoundApproachID[i]); //It is not present in TestDecoder
-        requestStatus.ETAminute = expectedTimeOfArrival_Minute[i];
+        requestStatus.ETAminute = static_cast<uint32_t>(expectedTimeOfArrival_Minute[i]);
         requestStatus.ETAsec = static_cast<int16_t>(expectedTimeOfArrival_Second[i]);
         requestStatus.duration = static_cast<int16_t>(expectedTimeOfArrival_Duration[i]);
         requestStatus.status = static_cast<MsgEnum::requestStatus>(priorityRequestStatus[i]);

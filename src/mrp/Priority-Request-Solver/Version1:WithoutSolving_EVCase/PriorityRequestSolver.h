@@ -31,9 +31,13 @@ using std::ifstream;
 using std::ios;
 using std::ofstream;
 
+#define PRIORITYREQUEST 1
+#define CLEARREQUEST 2
+
 class PriorityRequestSolver
 {
 private:
+    int messageType{};
     int noOfPhase{};
     int numberOfTransitInList{};
     int numberOfTruckInList{};
@@ -42,7 +46,6 @@ private:
     int noOfEVInList{};
     double maxEV_ETA{};
     double maxEV_ETA_Duration{};
-    string scheduleJsonString{};
     bool bEVStatus{};
 
     vector<RequestList> priorityRequestList;
@@ -107,12 +110,14 @@ public:
     void obtainRequiredSignalGroup();
     void createEventList();
     string createScheduleJsonString();
+    string createClearScheduleJsonString();
     // void split(string strToSplit);
     void readCurrentSignalTimingPlan();
     void generateEVModFile();
     void generateModFile();
     void printSignalPlan();
     void printvector();
+    int getMessageType(std::string jsonString);
     int getNoOfEVInList();
     int getRequestedSignalGroupSize();
     int getEVRingBarrierGroup();

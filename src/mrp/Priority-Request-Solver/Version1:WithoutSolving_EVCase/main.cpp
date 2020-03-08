@@ -30,6 +30,7 @@ int main()
     UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySOlver"].asInt()));
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     char receiveBuffer[5120];
+    int msgType{};
 
     priorityRequestSolver.readCurrentSignalTimingPlan();
     priorityRequestSolver.printSignalPlan();
@@ -40,53 +41,64 @@ int main()
         priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string receivedJsonString(receiveBuffer);
         cout << "Received Json String " << receivedJsonString << endl;
-        priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-        priorityRequestSolver.getCurrentSignalStatus();
-        //For EV
-        if (priorityRequestSolver.findEVInList() == true)
+        msgType = priorityRequestSolver.getMessageType(receivedJsonString);
+
+        if (msgType == PRIORITYREQUEST)
         {
-            priorityRequestSolver.modifyPriorityRequestList();
-            priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
-            priorityRequestSolver.removeDuplicateSignalGroup();
-            priorityRequestSolver.createEventList();
-            priorityRequestSolver.createScheduleJsonString();
+            priorityRequestSolver.createPriorityRequestList(receivedJsonString);
+            priorityRequestSolver.getCurrentSignalStatus();
+            //For EV
+            if (priorityRequestSolver.findEVInList() == true)
+            {
+                priorityRequestSolver.modifyPriorityRequestList();
+                priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
+                priorityRequestSolver.removeDuplicateSignalGroup();
+                priorityRequestSolver.createEventList();
+                // priorityRequestSolver.createScheduleJsonString();
+                std::cout << "Schedule: " << priorityRequestSolver.createScheduleJsonString() << std::endl;
 
-            // //Single or Multiple EV coming from same direction
-            // if (priorityRequestSolver.getRequestedSignalGroupSize() <= 2)
-            // {
-            //     // priorityRequestSolver.getEVPhases();
-            //     // priorityRequestSolver.getEVTrafficSignalPlan();
-            //     priorityRequestSolver.createEventList();
-            //     priorityRequestSolver.createScheduleJsonString();
-            // }
-            // //Multiple EV coming from different direction
-            // else if (priorityRequestSolver.getNoOfEVInList() > 2 && priorityRequestSolver.getRequestedSignalGroupSize() > 2)
-            // {
+                // //Single or Multiple EV coming from same direction
+                // if (priorityRequestSolver.getRequestedSignalGroupSize() <= 2)
+                // {
+                //     // priorityRequestSolver.getEVPhases();
+                //     // priorityRequestSolver.getEVTrafficSignalPlan();
+                //     priorityRequestSolver.createEventList();
+                //     priorityRequestSolver.createScheduleJsonString();
+                // }
+                // //Multiple EV coming from different direction
+                // else if (priorityRequestSolver.getNoOfEVInList() > 2 && priorityRequestSolver.getRequestedSignalGroupSize() > 2)
+                // {
 
-            //     // priorityRequestSolver.getEVPhases();
-            //     // priorityRequestSolver.getEVTrafficSignalPlan();
-            //     priorityRequestSolver.generateDatFile();
-            //     priorityRequestSolver.generateEVModFile();
-            //     priorityRequestSolver.GLPKSolver();
-            //     priorityRequestSolver.obtainRequiredSignalGroup();
-            //     priorityRequestSolver.readOptimalSignalPlan();
-            //     priorityRequestSolver.createEventList();
-            //     priorityRequestSolver.createScheduleJsonString();
-            // }
+                //     // priorityRequestSolver.getEVPhases();
+                //     // priorityRequestSolver.getEVTrafficSignalPlan();
+                //     priorityRequestSolver.generateDatFile();
+                //     priorityRequestSolver.generateEVModFile();
+                //     priorityRequestSolver.GLPKSolver();
+                //     priorityRequestSolver.obtainRequiredSignalGroup();
+                //     priorityRequestSolver.readOptimalSignalPlan();
+                //     priorityRequestSolver.createEventList();
+                //     priorityRequestSolver.createScheduleJsonString();
+                // }
+            }
+            //For Transit or Truck
+            else
+            {
+                priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
+                priorityRequestSolver.removeDuplicateSignalGroup();
+                priorityRequestSolver.addAssociatedSignalGroup();
+                priorityRequestSolver.modifyGreenMax();
+                priorityRequestSolver.generateDatFile();
+                priorityRequestSolver.GLPKSolver();
+                priorityRequestSolver.readOptimalSignalPlan();
+                priorityRequestSolver.obtainRequiredSignalGroup();
+                priorityRequestSolver.createEventList();
+                priorityRequestSolver.createScheduleJsonString();
+            }
         }
-        //For Transit or Truck
-        else
+
+        else if(msgType == CLEARREQUEST)
         {
-            priorityRequestSolver.getRequestedSignalGroupFromPriorityRequestList();
-            priorityRequestSolver.removeDuplicateSignalGroup();
-            priorityRequestSolver.addAssociatedSignalGroup();
-            priorityRequestSolver.modifyGreenMax();
-            priorityRequestSolver.generateDatFile();
-            priorityRequestSolver.GLPKSolver();
-            priorityRequestSolver.readOptimalSignalPlan();
-            priorityRequestSolver.obtainRequiredSignalGroup();
-            priorityRequestSolver.createEventList();
-            priorityRequestSolver.createScheduleJsonString();
+            priorityRequestSolver.createClearScheduleJsonString();
         }
     }
 }

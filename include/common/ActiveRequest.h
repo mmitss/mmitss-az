@@ -22,9 +22,11 @@ struct ActiveRequest
     int requestID;
     int msgCount;
     int basicVehicleRole;
+    int vehicleType;
     int vehicleLaneID;
     int vehicleApproachID;
     double vehicleETA;
+    double vehicleETADuration;
     int prsStatus;
     int minuteOfYear;
     int secondOfMinute;
@@ -35,9 +37,11 @@ struct ActiveRequest
         requestID = 0;
         msgCount = 0;
         basicVehicleRole = 0;
+        vehicleType  = 0;
         vehicleLaneID = 0;
         vehicleApproachID = 0;
         vehicleETA = 0.0;
+        vehicleETADuration = 0.0;
         prsStatus = 0;
         minuteOfYear = 0;
         secondOfMinute = 0;

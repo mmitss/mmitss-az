@@ -57,12 +57,14 @@ private:
     vector<double> YellowChange;
     vector<double> RedClear;
     vector<int> PhaseRing;
-    vector<int> requestedSignalGroup;
-    vector<int> plannedEVPhases;
     vector<int> P11;
     vector<int> P12;
     vector<int> P21;
     vector<int> P22;
+    vector<int> requestedSignalGroup;
+    vector<int> plannedSignalGroupInRing1;
+    vector<int> plannedSignalGroupInRing2;
+    vector<int> plannedEVPhases;
     vector<double> singleEV_PhaseDuration_Ring1;
     vector<double> singleEV_PhaseDuration_Ring2;
     vector<double> leftCriticalPoints_PhaseDuration_Ring1;
@@ -73,8 +75,7 @@ private:
     vector<double> leftCriticalPoints_GreenTime_Ring2;
     vector<double> rightCriticalPoints_GreenTime_Ring1;
     vector<double> rightCriticalPoints_GreenTime_Ring2;
-    vector<int> plannedSignalGroupInRing1;
-    vector<int> plannedSignalGroupInRing2;
+    
     // vector<int> a;
 
 public:

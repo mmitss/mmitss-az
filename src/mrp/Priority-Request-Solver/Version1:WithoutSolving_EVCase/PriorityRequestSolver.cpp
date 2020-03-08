@@ -1637,7 +1637,7 @@ string PriorityRequestSolver::createScheduleJsonString()
     // ring1_TCISchedule.insert(ring1_TCISchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
     // completeSchedule.insert(completeSchedule.end(), ring1_TCISchedule.begin(), ring1_TCISchedule.end());
     // completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
-
+    string scheduleJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     Json::StyledStreamWriter styledStreamWriter;
@@ -1677,6 +1677,22 @@ string PriorityRequestSolver::createScheduleJsonString()
         // }
     }
 
+    scheduleJsonString = fastWriter.write(jsonObject);
+    styledStreamWriter.write(outputter, jsonObject);
+
+    return scheduleJsonString;
+}
+
+string PriorityRequestSolver::createClearScheduleJsonString()
+{
+    string scheduleJsonString{};
+    Json::Value jsonObject;
+    Json::FastWriter fastWriter;
+    Json::StyledStreamWriter styledStreamWriter;
+    ofstream outputter("schedule.json");
+    jsonObject["MsgType"] = "Schedule";
+    jsonObject["Schedule"] = "Clear";
+    
     scheduleJsonString = fastWriter.write(jsonObject);
     styledStreamWriter.write(outputter, jsonObject);
 
@@ -2488,6 +2504,25 @@ void PriorityRequestSolver::generateModFile()
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();
+}
+
+int PriorityRequestSolver::getMessageType(std::string jsonString)
+{
+	Json::Value jsonObject;
+	Json::Reader reader;
+	reader.parse(jsonString.c_str(), jsonObject);
+
+	if ((jsonObject["MsgType"]).asString() == "PriorityRequest")
+	{
+		messageType = PRIORITYREQUEST;
+	}
+
+	else if ((jsonObject["MsgType"]).asString() == "ClearRequest")
+	{
+		messageType = CLEARREQUEST;
+	}
+
+	return messageType;
 }
 
 int PriorityRequestSolver::getNoOfEVInList()

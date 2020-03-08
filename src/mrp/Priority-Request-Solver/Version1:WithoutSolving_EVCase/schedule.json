@@ -5,20 +5,20 @@
 		"Ring1" : 
 		[
 			{
-				"commandEndTime" : 50.0,
+				"commandEndTime" : 0.0,
 				"commandPhase" : 4,
 				"commandStartTime" : 0.0,
+				"commandType" : 5
+			},
+			{
+				"commandEndTime" : 2.0,
+				"commandPhase" : 2,
+				"commandStartTime" : 5.0,
 				"commandType" : 4
 			},
 			{
-				"commandEndTime" : 45.0,
-				"commandPhase" : 3,
-				"commandStartTime" : 0.0,
-				"commandType" : 6
-			},
-			{
-				"commandEndTime" : 50.0,
-				"commandPhase" : 4,
+				"commandEndTime" : 2.0,
+				"commandPhase" : 2,
 				"commandStartTime" : 0.0,
 				"commandType" : 6
 			}
@@ -32,20 +32,14 @@
 				"commandType" : 5
 			},
 			{
-				"commandEndTime" : 50.0,
-				"commandPhase" : 8,
+				"commandEndTime" : 2.0,
+				"commandPhase" : 5,
 				"commandStartTime" : 5.0,
 				"commandType" : 4
 			},
 			{
-				"commandEndTime" : 45.0,
-				"commandPhase" : 8,
-				"commandStartTime" : 0.0,
-				"commandType" : 6
-			},
-			{
-				"commandEndTime" : 50.0,
-				"commandPhase" : 7,
+				"commandEndTime" : 2.0,
+				"commandPhase" : 5,
 				"commandStartTime" : 0.0,
 				"commandType" : 6
 			}
