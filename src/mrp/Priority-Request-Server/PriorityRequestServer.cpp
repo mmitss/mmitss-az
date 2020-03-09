@@ -219,7 +219,7 @@ bool PriorityRequestServer::shouldDeleteTimedOutRequestfromActiveRequestTable()
 			}
 		}
 	}
-	return deleteSignalRequest; 
+	return deleteSignalRequest;
 }
 
 /*
@@ -387,8 +387,6 @@ void PriorityRequestServer::findSplitPhase()
 	ActiveRequestTable.insert(ActiveRequestTable.end(), temporarySplitPriorityRequestList.begin(), temporarySplitPriorityRequestList.end());
 }
 
-
-
 /*
 	Method to create, update and delete Active Request Table
 */
@@ -496,7 +494,6 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 						ActiveRequestTable.erase(findVehicleIDOnTable);
 					}
 				}
-				
 			}
 
 			else
@@ -632,15 +629,15 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute);
-				ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
+				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 
 			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute);
-				ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
+				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 		}
 	}

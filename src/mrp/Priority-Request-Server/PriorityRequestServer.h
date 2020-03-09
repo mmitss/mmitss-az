@@ -23,7 +23,6 @@ class PriorityRequestServer
 {
 private:
     std::vector<ActiveRequest> ActiveRequestTable;
-    // std::vector<int> phaseGroup;
     int messageType{};
     int minuteOfYear{};
     int msOfMinute{};
@@ -41,7 +40,6 @@ public:
     PriorityRequestServer();
     ~PriorityRequestServer();
 
-    
     std::string createSSMJsonString(SignalStatus signalStatus);
     std::string createJsonStringForPrioritySolver();
     void creatingSignalRequestTable(SignalRequest signalRequest);
@@ -52,7 +50,7 @@ public:
     void deleteMapPayloadFile();
     void printvector();
     void setRequestTimedOutVehicleID(int timedOutVehicleID);
-    void setPriorityRequestStatus(); 
+    void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
     int getMessageType(std::string jsonString);
@@ -63,7 +61,7 @@ public:
     int getMsOfMinute();
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
-    int getSignalGroup(SignalRequest signalRequest);    
+    int getSignalGroup(SignalRequest signalRequest);
     bool aceeptSignalRequest(SignalRequest signalRequest);
     bool addToActiveRequestTable(SignalRequest signalRequest);
     bool updateActiveRequestTable(SignalRequest signalRequest);

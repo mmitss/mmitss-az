@@ -16,7 +16,7 @@ int main()
 {
     vector<requestEntry> ActiveRequestList;
     //Socket Communication
-    UdpSocket prioritymSenderSocket(20060);
+    UdpSocket prioritySenderSocket(20060);
     const string LOCALHOST = "127.0.0.1";
     const int receiverPortNo = 20003;
     std::string sendingJsonString;
@@ -50,11 +50,11 @@ int main()
     // for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
     for (unsigned int i = 0; i < noOfRequest; i++)
     {
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"] = vehicleID[i] ;               //ActiveRequestTable[i].vehicleID;
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"] = vehicleID[i];               //ActiveRequestTable[i].vehicleID;
         jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = vehicleType[i];
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] =basicVehicleRole[i]; //ActiveRequestTable[i].basicVehicleRole;
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = basicVehicleRole[i]; //ActiveRequestTable[i].basicVehicleRole;
         jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = laneID[i];       //ActiveRequestTable[i].vehicleLaneID;
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] =ETA[i];         //static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION)+ fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ETA[i];         //static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION)+ fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
         //jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
         //jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
         //jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
@@ -67,24 +67,3 @@ int main()
     std::cout << "JsonString: " << sendingJsonString << std::endl;
     prioritymSenderSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
 }
-
-//     std::ifstream infile;
-//     int count = 1;
-
-//     infile.open("bsmLog_fullLoop.txt");
-
-//     if (infile.fail())
-//         std::cout << "Fail to open file" << std::endl;
-
-//     else
-//     {
-//         for (std::string line; getline(infile, line);)
-//         {
-
-//             bsmSenderSocket.sendData(LOCALHOST, receiverPortNo, line);
-//             std::cout << "sent" << count << std::endl;
-//             count++;
-//             usleep(microseconds);
-//         }
-//     }
-// }

@@ -60,10 +60,10 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
+                std::cout << "Received SRM" << receivedJsonString << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.creatingSignalRequestTable(signalRequest);
                 // PRS.printvector();
-                // std::cout << "Received SRM" << std::endl;
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
@@ -73,30 +73,54 @@ int main()
             }
         }
 
-        /* 
-	        - Delete vehicle info from Active Request Table if Infrustracture doesn't receive and SRM for predefined time
-            - After the request, if Active request table is empty then send clear request message to PRSolver
-        */
-        else if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
+        else
         {
-            PRS.deleteTimedOutRequestfromActiveRequestTable();
-            // std::cout << "Deleted Timed out request" << std::endl;
-            if (PRS.sendClearRequest() == true)
+            /* 
+	            - Delete vehicle info from Active Request Table if Infrustracture doesn't receive and SRM for predefined time
+                - After the request, if Active request table is empty then send clear request message to PRSolver
+            */
+            if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
             {
-                solverJsonString = PRS.createJsonStringForPrioritySolver();
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
-                // PRS.printvector();
+                PRS.deleteTimedOutRequestfromActiveRequestTable();
+                // std::cout << "Deleted Timed out request" << std::endl;
+                if (PRS.sendClearRequest() == true)
+                {
+                    solverJsonString = PRS.createJsonStringForPrioritySolver();
+                    PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+                    // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
+                    // PRS.printvector();
+                }
+            }
+
+            else if (PRS.updateETA() == true)
+            {
+                PRS.updateETAInActiveRequestTable();
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
             }
         }
 
-        else if (PRS.updateETA() == true)
-        {
-            PRS.updateETAInActiveRequestTable();
-            ssmJsonString = PRS.createSSMJsonString(signalStatus);
-            // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
-            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-        }
+        // else if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
+        // {
+        //     PRS.deleteTimedOutRequestfromActiveRequestTable();
+        //     // std::cout << "Deleted Timed out request" << std::endl;
+        //     if (PRS.sendClearRequest() == true)
+        //     {
+        //         solverJsonString = PRS.createJsonStringForPrioritySolver();
+        //         PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+        //         // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
+        //         // PRS.printvector();
+        //     }
+        // }
+
+        // else if (PRS.updateETA() == true)
+        // {
+        //     PRS.updateETAInActiveRequestTable();
+        //     ssmJsonString = PRS.createSSMJsonString(signalStatus);
+        //     std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+        //     PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+        // }
     }
 
     return 0;
