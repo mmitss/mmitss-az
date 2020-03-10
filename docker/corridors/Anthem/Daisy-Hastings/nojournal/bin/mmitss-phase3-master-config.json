@@ -10,7 +10,7 @@
     "DataCollectorIP": "10.12.6.101",
     "VehicleType" : 6,
     "Logging" : "True",
-    "SRMTimeOutTime" : 10.0,
+    "SRMTimedOutTime" : 10.0,
     "PortNumber":
 	{
 		"MessageTransceiver":
