@@ -48,6 +48,7 @@ int main()
     PRS.writeMAPPayloadInFile();
     PRS.getIntersectionID();
     PRS.getRegionalID();
+    PRS.getRequestTimedOutValue();
 
     while (true)
     {
@@ -62,7 +63,7 @@ int main()
             {
                 // std::cout << "Received SRM" << receivedJsonString << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
-                PRS.creatingSignalRequestTable(signalRequest);
+                PRS.managingSignalRequestTable(signalRequest); 
                 // PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);

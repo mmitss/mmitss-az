@@ -33,6 +33,7 @@ private:
     int vehicleType{};
     int priorityRequestStatus{};
     double expectedTimeOfArrivalToStopBar{0.0};
+    double requestTimedOutValue{0.0};
     int requestTimedOutVehicleID{};
     int tempLastTimeETAUpdated{};
 
@@ -42,7 +43,7 @@ public:
 
     std::string createSSMJsonString(SignalStatus signalStatus);
     std::string createJsonStringForPrioritySolver();
-    void creatingSignalRequestTable(SignalRequest signalRequest);
+    void managingSignalRequestTable(SignalRequest signalRequest);
     void findSplitPhase();
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
@@ -62,7 +63,8 @@ public:
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
     int getSignalGroup(SignalRequest signalRequest);
-    bool aceeptSignalRequest(SignalRequest signalRequest);
+    double getRequestTimedOutValue();
+    bool acceptSignalRequest(SignalRequest signalRequest);
     bool addToActiveRequestTable(SignalRequest signalRequest);
     bool updateActiveRequestTable(SignalRequest signalRequest);
     bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
@@ -70,4 +72,5 @@ public:
     bool updateETA();
     bool sendClearRequest();
     bool findEVInList();
+    bool findEVInRequest(SignalRequest signalRequest);
 };

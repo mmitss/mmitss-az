@@ -36,10 +36,9 @@
 #include "locAware.h"
 #include "geoUtils.h"
 
-// using namespace GeoUtils;
 using namespace MsgEnum;
 
-const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 15;
+const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 10;
 const int SEQUENCE_NUMBER_MINLIMIT = 1;
 const int SEQUENCE_NUMBER_MAXLIMIT = 127;
 const int HOURSINADAY = 24;
@@ -76,7 +75,7 @@ int PriorityRequestServer::getMessageType(std::string jsonString)
 }
 
 /*
-	Get the Intersection ID from the IntersectionConfiguration file.
+	Get the Intersection ID from the configuration file.
 */
 int PriorityRequestServer::getIntersectionID()
 {
@@ -93,7 +92,7 @@ int PriorityRequestServer::getIntersectionID()
 }
 
 /*
-	Get the Regional ID from the IntersectionConfiguration file.
+	Get the Regional ID from the configuration file.
 */
 int PriorityRequestServer::getRegionalID()
 {
@@ -108,10 +107,27 @@ int PriorityRequestServer::getRegionalID()
 
 	return regionalID;
 }
+
+/*
+	Get the SRM timed out value from the configuration file.
+*/
+double PriorityRequestServer::getRequestTimedOutValue()
+{
+
+	Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble();
+	return requestTimedOutValue;
+}
+
 /*
 	If Intersection ID and Regional ID match then accept the srm
 */
-bool PriorityRequestServer::aceeptSignalRequest(SignalRequest signalRequest)
+bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
 {
 	bool matchIntersection = false;
 
@@ -124,7 +140,7 @@ bool PriorityRequestServer::aceeptSignalRequest(SignalRequest signalRequest)
 	return matchIntersection;
 }
 /*
-	If Active Request Table is empty or vehicle ID is not found in the Active Request Table add received srm in the Active Request table
+	If Active Request Table is empty or vehicle ID is not found in the Active Request Table and request type is priority request then add received srm in the Active Request table
 */
 bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 {
@@ -137,7 +153,7 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 	if (ActiveRequestTable.empty() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
 		addRequest = true;
 
-	else if (findVehicleIDOnTable == ActiveRequestTable.end() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
+	else if (ActiveRequestTable.empty() && findVehicleIDOnTable == ActiveRequestTable.end() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
 		addRequest = true;
 
 	// else
@@ -205,13 +221,13 @@ bool PriorityRequestServer::shouldDeleteTimedOutRequestfromActiveRequestTable()
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if ((getMsOfMinute() / SECONDTOMILISECOND > ActiveRequestTable[i].secondOfMinute) && (getMsOfMinute() / SECONDTOMILISECOND - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST)
+			if ((getMsOfMinute() / SECONDTOMILISECOND > ActiveRequestTable[i].secondOfMinute) && (getMsOfMinute() / SECONDTOMILISECOND - ActiveRequestTable[i].secondOfMinute) >= requestTimedOutValue)
 			{
 				deleteSignalRequest = true;
 				setRequestTimedOutVehicleID(ActiveRequestTable[i].vehicleID);
 				break;
 			}
-			else if ((getMsOfMinute() / SECONDTOMILISECOND < ActiveRequestTable[i].secondOfMinute) && (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST)
+			else if ((getMsOfMinute() / SECONDTOMILISECOND < ActiveRequestTable[i].secondOfMinute) && (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute) >= requestTimedOutValue)
 			{
 				deleteSignalRequest = true;
 				setRequestTimedOutVehicleID(ActiveRequestTable[i].vehicleID);
@@ -266,7 +282,20 @@ bool PriorityRequestServer::findEVInList()
 }
 
 /*
-    -Obtain Split Phase information if EV is in List
+	Method to check if received SRM is from EV or not
+*/
+bool PriorityRequestServer::findEVInRequest(SignalRequest signalRequest)
+{
+	bool bEVRequest = false;
+
+	if (signalRequest.getBasicVehicleRole() == static_cast<int>(MsgEnum::basicRole::fire))
+		bEVRequest = true;
+
+	return bEVRequest;
+}
+
+/*
+    - Obtain Split Phase information if EV is in List
         - Copy the EV request object.
 		- Change the signal group with split phase
 		- Append that object in the ART
@@ -388,15 +417,20 @@ void PriorityRequestServer::findSplitPhase()
 }
 
 /*
-	Method to create, update and delete Active Request Table
+	- Method to create, update and delete Active Request Table
+	- If the the request type is update:
+		- If the update request is from transit or truck, find the position of the corresponding vehicle and update the information.
+		- If the update request is from EV, remove the vehicle request(both requested phase and split phase request) from the list.
+			- Then append the new received update request in the list 
+			- Then append the request regarding the split phase
 */
-void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalRequest)
+void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalRequest)
 {
 	ActiveRequest activeRequest;
 	activeRequest.reset();
 	int vehid{};
 	// std::cout << "Add To ActiveRequesttable(True/False): " << addToActiveRequestTable(signalRequest) << std::endl;
-	if (aceeptSignalRequest(signalRequest) == true)
+	if (acceptSignalRequest(signalRequest) == true)
 	{
 		if (addToActiveRequestTable(signalRequest) == true)
 		{
@@ -410,28 +444,22 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 			activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 			activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
 			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
-			// activeRequest.prsStatus = MsgEnum::requestStatus::granted;
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 			activeRequest.signalGroup = getSignalGroup(signalRequest);
 			ActiveRequestTable.push_back(activeRequest);
-			//setPriorityRequestStatus(signalRequest);
-			if (findEVInList() == true)
+			if (findEVInRequest(signalRequest) == true)
 			{
 				findSplitPhase();
 			}
 			updateETAInActiveRequestTable();
 		}
-		/*
-			- If the update request is from transit or truck, find the position of the corresponding vehicle and update the information.
-			- If the update request is from EV then at first remove the vehicle request(both requested phase and split phase request) from the list.
-				- Then the request in the list after that append the request regarding the split phase 
-		*/
+
 		else if (updateActiveRequestTable(signalRequest) == true)
 		{
 			setPRSUpdateCount();
 			vehid = signalRequest.getTemporaryVehicleID();
-			if (signalRequest.getBasicVehicleRole() == static_cast<int>(MsgEnum::basicRole::fire))
+			if (signalRequest.getBasicVehicleRole() == static_cast<int>(MsgEnum::basicRole::fire)) //For EV
 			{
 				for (int i = 0; i < 2; i++)
 				{
@@ -454,13 +482,13 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 				activeRequest.signalGroup = getSignalGroup(signalRequest);
 				ActiveRequestTable.push_back(activeRequest);
 				//setPriorityRequestStatus(signalRequest);
-				if (findEVInList() == true)
+				if (findEVInRequest(signalRequest) == true)
 				{
 					findSplitPhase();
 				}
 			}
 
-			else
+			else //For Transit and Truck
 			{
 				std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																						 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
@@ -484,7 +512,7 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 			vehid = signalRequest.getTemporaryVehicleID();
 
 			//If the delete request is for EV we need to delete both EV request (through and left turn phase)
-			if (signalRequest.getBasicVehicleRole() == static_cast<int>(MsgEnum::basicRole::fire))
+			if (findEVInRequest(signalRequest) == true)
 			{
 				for (int i = 0; i < 2; i++)
 				{
@@ -507,8 +535,10 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 				}
 			}
+			updateETAInActiveRequestTable();
 		}
-		updateETAInActiveRequestTable();
+		else
+			std::cout << "Unknown priority request type" << std::endl;
 		setPriorityRequestStatus();
 	}
 }
@@ -523,7 +553,19 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
-	if (findVehicleIDOnTable != ActiveRequestTable.end())
+
+	//For EV we have to delete two request
+	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::basicRole::fire) && findVehicleIDOnTable != ActiveRequestTable.end())
+	{
+		ActiveRequestTable.erase(findVehicleIDOnTable);
+
+		//Deleting the request related to split phase.
+		std::vector<ActiveRequest>::iterator findSplitPhaseEV = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+		ActiveRequestTable.erase(findSplitPhaseEV);
+	}
+
+	else if (findVehicleIDOnTable != ActiveRequestTable.end()) //For Transit and truck
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 	}
@@ -601,13 +643,13 @@ bool PriorityRequestServer::updateETA()
 	// std::ofstream outputfile;
 	// outputfile.open("timelog.txt", std::ios_base::app);
 	double timeDifference = abs(getMsOfMinute() / SECONDTOMILISECOND);
-	
+
 	if (!ActiveRequestTable.empty())
 	{
 		// outputfile << "current time: " << timeDifference << std::endl;
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if (timeDifference - ActiveRequestTable[i].secondOfMinute >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
+			if (timeDifference - ActiveRequestTable[i].secondOfMinute >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
 			{
 				// outputfile << ActiveRequestTable[i].secondOfMinute << std::endl;
 				bUpdateETA = true;
@@ -649,14 +691,14 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
+			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute);
 				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 
-			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
+			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute);
 				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
