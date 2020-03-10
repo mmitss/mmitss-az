@@ -24,10 +24,10 @@ int main()
     std::string extractedPayload{};
     std::string bsmJsonString{};
 
-
     while(true)
     {
         receivedPayload = decoderSocket.receivePayloadHexString();
+
         size_t pos = receivedPayload.find("0014");
         if (pos!=std::string::npos)
         {
@@ -39,5 +39,6 @@ int main()
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
         }        
     }
+
     return 0;
 }
