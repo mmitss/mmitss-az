@@ -31,10 +31,9 @@
 #include <vector>
 #include "../../include/common/UdpSocket.h"
 
-
-using std::string;
 using std::cout;
 using std::endl;
+using std::string;
 
 /************************************
  * CONSTRUCTORS 
@@ -42,49 +41,62 @@ using std::endl;
 
 UdpSocket::UdpSocket(const short unsigned int port)
 {
-    if(port >= MINPORTNO && port <= MAXPORTNO)
+    if (port >= MINPORTNO && port <= MAXPORTNO)
     {
-        if((selfName = socket(AF_INET, SOCK_DGRAM, 0))< 0) // If socket creation is unsuccessful, socket() function returns '-1'.
-            {throw (101);}
+        if ((selfName = socket(AF_INET, SOCK_DGRAM, 0)) < 0) // If socket creation is unsuccessful, socket() function returns '-1'.
+        {
+            throw(101);
+        }
         else
         {
             memset(&selfIdentifier, 0, sizeof(selfIdentifier));
             selfIdentifier.sin_family = AF_INET;
             selfIdentifier.sin_addr.s_addr = INADDR_ANY;
             selfIdentifier.sin_port = htons(port);
-            if ( bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0 )
-                {throw (102);}
+            if (bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0)
+            {
+                throw(102);
+            }
         }
     }
     else
-        {throw (103);}
+    {
+        throw(103);
+    }
 }
 
 UdpSocket::UdpSocket(const short unsigned int port, int timeOutSec, int timeOutMicroSec)
 {
-    if(port >= MINPORTNO && port <= MAXPORTNO)
+    if (port >= MINPORTNO && port <= MAXPORTNO)
     {
-        
-        if((selfName = socket(AF_INET, SOCK_DGRAM, 0))< 0) // If socket creation is unsuccessful, socket() function returns '-1'.
-            {throw (101);}
+
+        if ((selfName = socket(AF_INET, SOCK_DGRAM, 0)) < 0) // If socket creation is unsuccessful, socket() function returns '-1'.
+        {
+            throw(101);
+        }
         else
         {
             struct timeval tv;
             tv.tv_sec = timeOutSec;
             tv.tv_usec = timeOutMicroSec;
-            if (setsockopt(selfName, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
+            if (setsockopt(selfName, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) < 0)
+            {
                 perror("Error");
             }
             memset(&selfIdentifier, 0, sizeof(selfIdentifier));
             selfIdentifier.sin_family = AF_INET;
             selfIdentifier.sin_addr.s_addr = INADDR_ANY;
             selfIdentifier.sin_port = htons(port);
-            if ( bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0 )
-                {throw 102;}
+            if (bind(selfName, (sockaddr *)&selfIdentifier, sizeof(selfIdentifier)) < 0)
+            {
+                throw 102;
+            }
         }
     }
     else
-    {throw 103;}
+    {
+        throw 103;
+    }
 }
 
 /************************************
@@ -98,22 +110,24 @@ void UdpSocket::sendData(const string receiverIP, const short unsigned int recei
     receiverIdentifier.sin_addr.s_addr = inet_addr(receiverIP.c_str());
     receiverIdentifier.sin_port = htons(receiverPort);
     socklen_t receiverAddrLen = sizeof(receiverIdentifier);
-    sendto(selfName, sendBuffer.c_str(), strlen(sendBuffer.c_str()), 0, (sockaddr*)&receiverIdentifier, receiverAddrLen);
+    sendto(selfName, sendBuffer.c_str(), strlen(sendBuffer.c_str()), 0, (sockaddr *)&receiverIdentifier, receiverAddrLen);
 }
 
 bool UdpSocket::receiveData(char *receiveBuffer, size_t sizeofReceiveBuffer)
 {
     sockaddr_in senderIdentifier{};
     socklen_t senderAddrLen = sizeof(senderIdentifier);
-    long int n = recvfrom(selfName, receiveBuffer, sizeofReceiveBuffer, 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
+    long int n = recvfrom(selfName, receiveBuffer, sizeofReceiveBuffer, 0, (sockaddr *)&senderIdentifier, &senderAddrLen);
     if (n < 0)
-        {return 1;}
+    {
+        return 1;
+    }
     else
     {
-        receiveBuffer[n] = '\0'; 
-        senderPort =  ntohs(senderIdentifier.sin_port);
+        receiveBuffer[n] = '\0';
+        senderPort = ntohs(senderIdentifier.sin_port);
         senderIP = inet_ntoa(senderIdentifier.sin_addr);
-        return 0;        
+        return 0;
     }
 }
 
@@ -125,31 +139,27 @@ std::string UdpSocket::receivePayloadHexString()
     std::stringstream ss{};
     std::string payload{};
 
-    long int n = recvfrom(selfName, receiveBuffer, sizeof(receiveBuffer), 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
-    std::cout << "Received payload" << std::endl;
+    long int n = recvfrom(selfName, receiveBuffer, sizeof(receiveBuffer), 0, (sockaddr *)&senderIdentifier, &senderAddrLen);
+
     if (n < 0)
     {
-	std::cout << "In if loop" << std::endl;
-	return "1";
+        return "1";
     }
     else
     {
         unsigned char receivedData[n]{};
-	std::cout << "Before memcy" << std::endl;
         memcpy(receivedData, receiveBuffer, n);
-	std::cout << "After memcy" << std::endl;
-        senderPort =  ntohs(senderIdentifier.sin_port);
+        senderPort = ntohs(senderIdentifier.sin_port);
         senderIP = inet_ntoa(senderIdentifier.sin_addr);
-	std::cout << "created socket" <<std::endl;
+
         ss << std::hex;
-	std::cout << "Will enter for loop" <<std::endl;
-	    for (size_t i = 0; i < sizeof(receivedData); i++)
-		    ss << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(receivedData[i]);
-	std::cout << "Done with for loop" << std::endl;
+
+        for (size_t i = 0; i < sizeof(receivedData); i++)
+            ss << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(receivedData[i]);
 
         payload = ss.str();
-	std::cout << "Got the payload" << std::endl;
-        return payload;        
+
+        return payload;
     }
 }
 
