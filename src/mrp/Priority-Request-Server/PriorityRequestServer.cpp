@@ -39,7 +39,7 @@
 // using namespace GeoUtils;
 using namespace MsgEnum;
 
-const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 10;
+const double TIME_GAP_BETWEEN_RECEIVING_SIGNALREQUEST = 15;
 const int SEQUENCE_NUMBER_MINLIMIT = 1;
 const int SEQUENCE_NUMBER_MAXLIMIT = 127;
 const int HOURSINADAY = 24;
@@ -420,6 +420,7 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 			{
 				findSplitPhase();
 			}
+			updateETAInActiveRequestTable();
 		}
 		/*
 			- If the update request is from transit or truck, find the position of the corresponding vehicle and update the information.
@@ -476,6 +477,7 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 				findVehicleIDOnTable->secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				findVehicleIDOnTable->signalGroup = getSignalGroup(signalRequest);
 			}
+			updateETAInActiveRequestTable();
 		}
 		else if (deleteRequestfromActiveRequestTable(signalRequest) == true)
 		{
@@ -506,7 +508,7 @@ void PriorityRequestServer::creatingSignalRequestTable(SignalRequest signalReque
 				}
 			}
 		}
-
+		updateETAInActiveRequestTable();
 		setPriorityRequestStatus();
 	}
 }
@@ -596,7 +598,19 @@ bool PriorityRequestServer::updateETA()
 {
 	bool bUpdateETA = false;
 	if (!ActiveRequestTable.empty())
-		bUpdateETA = true;
+	{	
+		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
+		{
+			if (abs((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update)
+			{
+				bUpdateETA = true;
+				break;
+			}
+		}
+	}
+
+	else
+		bUpdateETA = false;
 
 	return bUpdateETA;
 }
