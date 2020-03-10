@@ -92,6 +92,8 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 		// if two vehicle information is removed from the table by PRS it may cause problem.
 
 		ActiveRequestTable.clear();
+		activeRequest.reset();
+		
 		for (int i = 0; i < signalStatus.getNoOfRequest(); i++)
 		{
 			activeRequest.vehicleID = vehicleID[i];

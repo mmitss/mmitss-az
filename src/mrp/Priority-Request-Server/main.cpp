@@ -32,7 +32,7 @@ int main()
     SignalRequest signalRequest;
     SignalStatus signalStatus;
 
-    UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()), 0, 100000);
+    UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()), 1, 0);
     const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySOlver"].asInt());
     char receiveBuffer[5120];
@@ -66,7 +66,7 @@ int main()
                 // PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-                std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+                // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
@@ -95,8 +95,9 @@ int main()
             else if (PRS.updateETA() == true)
             {
                 PRS.updateETAInActiveRequestTable();
+                // PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+                // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
             }
         }

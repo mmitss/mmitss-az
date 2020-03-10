@@ -592,25 +592,34 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 
 /*
 	- Checking whether PRS need to update the ETA in the ART.
-		-If there is no request in the list no need to update the ETA
+		- If there is no request in the list no need to update the ETA
+		- If vehicle ETA is zero no need to update.
 */
 bool PriorityRequestServer::updateETA()
 {
 	bool bUpdateETA = false;
+	// std::ofstream outputfile;
+	// outputfile.open("timelog.txt", std::ios_base::app);
+	double timeDifference = abs(getMsOfMinute() / SECONDTOMILISECOND);
+	
 	if (!ActiveRequestTable.empty())
-	{	
+	{
+		// outputfile << "current time: " << timeDifference << std::endl;
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if (abs((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update)
+			if (timeDifference - ActiveRequestTable[i].secondOfMinute >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
 			{
+				// outputfile << ActiveRequestTable[i].secondOfMinute << std::endl;
 				bUpdateETA = true;
 				break;
 			}
 		}
 	}
+	// outputfile << "Returned Value " << bUpdateETA << std::endl;
+	// outputfile.close();
 
-	else
-		bUpdateETA = false;
+	// else
+	// 	bUpdateETA = false;
 
 	return bUpdateETA;
 }
@@ -631,7 +640,7 @@ bool PriorityRequestServer::sendClearRequest()
 }
 
 /*
-	Method to update ETA in Active Request Table
+	- Method to update ETA in Active Request Table if vehile ETA is not zero.
 */
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
@@ -640,14 +649,14 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update)
+			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute);
 				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 
-			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update)
+			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA !=0)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute);
 				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
