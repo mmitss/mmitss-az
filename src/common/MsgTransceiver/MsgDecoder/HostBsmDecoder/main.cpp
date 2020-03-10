@@ -2,6 +2,9 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <cstring>
+#include <istream>
+#include <sstream>
 #include <UdpSocket.h>
 #include "json/json.h"
 
@@ -23,15 +26,21 @@ int main()
     std::string receivedPayload{};
     std::string extractedPayload{};
     std::string bsmJsonString{};
-
+    std::stringstream ss{};
+    std::ofstream outputfile;
+    outputfile.open("HostBSMLog.txt");
+    outputfile.clear();
 
     while(true)
     {
         receivedPayload = decoderSocket.receivePayloadHexString();
+	outputfile << receivedPayload.c_str() << std::endl;
         size_t pos = receivedPayload.find("0014");
         if (pos!=std::string::npos)
         {
+	    //outputfile << receivedPayload.c_str() << std::endl;
             extractedPayload = receivedPayload.erase(0,pos);
+	   //outputfile << receivedPayload.c_str() << std::endl;
             bsmJsonString = decoder.bsmDecoder(extractedPayload);
             std::cout << "Decoded HostBSM" << std::endl;
             std::cout << bsmJsonString << std::endl;
@@ -39,5 +48,6 @@ int main()
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
         }        
     }
+    outputfile.close();
     return 0;
 }

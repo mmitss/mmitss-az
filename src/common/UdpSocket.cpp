@@ -126,20 +126,29 @@ std::string UdpSocket::receivePayloadHexString()
     std::string payload{};
 
     long int n = recvfrom(selfName, receiveBuffer, sizeof(receiveBuffer), 0, (sockaddr*)&senderIdentifier, &senderAddrLen);
+    std::cout << "Received payload" << std::endl;
     if (n < 0)
-        {return "1";}
+    {
+	std::cout << "In if loop" << std::endl;
+	return "1";
+    }
     else
     {
         unsigned char receivedData[n]{};
-        memcpy(receivedData, receiveBuffer, n+1);
+	std::cout << "Before memcy" << std::endl;
+        memcpy(receivedData, receiveBuffer, n);
+	std::cout << "After memcy" << std::endl;
         senderPort =  ntohs(senderIdentifier.sin_port);
         senderIP = inet_ntoa(senderIdentifier.sin_addr);
-        
+	std::cout << "created socket" <<std::endl;
         ss << std::hex;
+	std::cout << "Will enter for loop" <<std::endl;
 	    for (size_t i = 0; i < sizeof(receivedData); i++)
 		    ss << std::uppercase << std::setw(2) << std::setfill('0') << static_cast<unsigned int>(receivedData[i]);
+	std::cout << "Done with for loop" << std::endl;
 
         payload = ss.str();
+	std::cout << "Got the payload" << std::endl;
         return payload;        
     }
 }
