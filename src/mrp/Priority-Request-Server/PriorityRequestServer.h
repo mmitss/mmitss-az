@@ -23,7 +23,7 @@ class PriorityRequestServer
 {
 private:
     std::vector<ActiveRequest> ActiveRequestTable;
-    int messageType{};
+    // int messageType{};
     int minuteOfYear{};
     int msOfMinute{};
     int regionalID;

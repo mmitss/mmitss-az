@@ -65,5 +65,5 @@ int main()
 
     sendingJsonString = fastWriter.write(jsonObject);
     std::cout << "JsonString: " << sendingJsonString << std::endl;
-    prioritymSenderSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
+    prioritySenderSocket.sendData(LOCALHOST, receiverPortNo, sendingJsonString);
 }

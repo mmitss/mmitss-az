@@ -22,23 +22,208 @@
 #include <algorithm>
 #include <cmath>
 
-const int transitWeight = 1;
-const int truckWeight = 1;
-const double MAXGREEN = 50.0;
+// const int transitWeight = 1;
+// const int truckWeight = 1;
+// const double MAXGREEN = 50.0;
 
-#define OMIT_VEH_PHASES 2
-#define OMIT_PED_PHASES 3
-#define HOLD_PHASES 4
-#define FORCEOFF_PHASES 5
-#define CALL_VEH_PHASES 6
-#define CALL_PED_PHASES 7
+// #define OMIT_VEH_PHASES 2
+// #define OMIT_PED_PHASES 3
+// #define HOLD_PHASES 4
+// #define FORCEOFF_PHASES 5
+// #define CALL_VEH_PHASES 6
+// #define CALL_PED_PHASES 7
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
 }
 
 /*
-    -
+	- Method for identifying the message type.
+*/
+int PriorityRequestSolver::getMessageType(string jsonString)
+{
+    int messageType{};
+    Json::Value jsonObject;
+    Json::Reader reader;
+    reader.parse(jsonString.c_str(), jsonObject);
+
+    if ((jsonObject["MsgType"]).asString() == "PriorityRequest")
+    {
+        messageType = static_cast<int>(msgType::priorityRequest);
+    }
+
+    else if ((jsonObject["MsgType"]).asString() == "ClearRequest")
+    {
+        messageType = static_cast<int>(msgType::clearRequest);
+    }
+
+    else
+        std::cout << "Message type is unknown" << std::endl;
+
+    return messageType;
+}
+
+/*
+    - This method is responsible for creating priority request list received from the PRS as Json String.
+*/
+void PriorityRequestSolver::createPriorityRequestList(string jsonString)
+{
+    int noOfRequest{};
+    RequestList requestList;
+    Json::Value jsonObject;
+    Json::Reader reader;
+    reader.parse(jsonString.c_str(), jsonObject);
+
+    priorityRequestList.clear();
+    noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
+    for (int i = 0; i < noOfRequest; i++)
+    {
+        requestList.vehicleID = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
+        requestList.vehicleType = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
+        requestList.basicVehicleRole = jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
+        requestList.laneID = jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"].asInt();
+        requestList.vehicleETA = jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"].asDouble();
+        requestList.vehicleETA_Duration = jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"].asDouble();
+        requestList.requestedPhase = jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"].asInt();
+        requestList.prioritystatus = jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"].asInt();
+        priorityRequestList.push_back(requestList);
+    }
+
+    // setPhaseCallForRequestedSignalGroup();
+    //This is optional. For priniting few attributes of the priority request list in the console
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
+    }
+}
+
+/*
+    - Method of solving the request in the priority request list  based on mod and dat files
+    - Solution will be written in the Results.txt file
+*/
+void PriorityRequestSolver::GLPKSolver(SolverDataManager solverDataManager)
+{
+    double startOfSolve{};
+    double endOfSolve{};
+
+    solverDataManager.generateDatFile(priorityRequestList,trafficControllerStatus,trafficSignalPlan);
+
+    char modFile[128] = "NewModel.mod";
+    glp_prob *mip;
+    glp_tran *tran;
+    int ret{};
+    int success = 1;
+    if (bEVStatus == true)
+    {
+        strcpy(modFile, "NewModel_EV.mod");
+    }
+    mip = glp_create_prob();
+    tran = glp_mpl_alloc_wksp();
+
+    ret = glp_mpl_read_model(tran, modFile, 1);
+
+    if (ret != 0)
+    {
+        fprintf(stderr, "Error on translating model\n");
+        goto skip;
+    }
+
+    ret = glp_mpl_read_data(tran, "NewModelData.dat");
+
+    if (ret != 0)
+    {
+        fprintf(stderr, "Error on translating data\n");
+        goto skip;
+    }
+
+    ret = glp_mpl_generate(tran, NULL);
+    if (ret != 0)
+    {
+        fprintf(stderr, "Error on generating model\n");
+        goto skip;
+    }
+
+    glp_mpl_build_prob(tran, mip);
+    glp_simplex(mip, NULL);
+    success = glp_intopt(mip, NULL);
+    endOfSolve = GetSeconds();
+    cout << "Success=" << success << endl;
+    cout << "Time of Solve" << endOfSolve - startOfSolve << endl;
+    ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
+    if (ret != 0)
+        fprintf(stderr, "Error on postsolving model\n");
+skip:
+    glp_mpl_free_wksp(tran);
+    glp_delete_prob(mip);
+}
+
+/*
+    - 
+*/
+string PriorityRequestSolver::getScheduleforTCI(ScheduleManager scheduleManager)
+{
+    string scheduleJsonString{};
+    scheduleManager.obtainRequiredSignalGroup(trafficControllerStatus, trafficSignalPlan);
+    scheduleManager.readOptimalSignalPlan();
+    scheduleManager.createEventList(priorityRequestList, trafficSignalPlan);
+    scheduleJsonString = scheduleManager.createScheduleJsonString();
+    
+    priorityRequestList.clear();
+    trafficControllerStatus.clear();
+    return scheduleJsonString;
+}
+
+
+
+
+
+
+/*
+    - If new priority request is received this method will obtain the current traffic signal Status.
+*/
+void PriorityRequestSolver::getCurrentSignalStatus()
+{
+    int temporaryPhase{};
+    TrafficControllerData::TrafficConrtollerStatus tcStatus;
+    Json::Value jsonObject;
+    Json::Reader reader;
+    ifstream jsonData("trafficControllerStatus.json");
+    string jsonString((std::istreambuf_iterator<char>(jsonData)), std::istreambuf_iterator<char>());
+    reader.parse(jsonString.c_str(), jsonObject);
+
+    trafficControllerStatus.clear();
+    tcStatus.startingPhase1 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["SP1"].asInt();
+    tcStatus.startingPhase2 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["SP2"].asInt();
+    tcStatus.initPhase1 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["init1"].asDouble();
+    tcStatus.initPhase2 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["init2"].asDouble();
+    tcStatus.elapsedGreen1 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["Grn1"].asDouble();
+    tcStatus.elapsedGreen2 = jsonObject["TrafficControllerData"]["TrafficControllerStatus"]["Grn2"].asDouble();
+    trafficControllerStatus.push_back(tcStatus);
+    //If signal phase is on rest, elapsed green time will be more than gmax. In that case elapsed green time will be min green time.
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        temporaryPhase = trafficControllerStatus[i].startingPhase1;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen)
+            trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+        temporaryPhase = trafficControllerStatus[i].startingPhase2;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen)
+            trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+    }
+
+    //This is optional. For priniting few attributes of the TCStatus in the console.
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        cout << trafficControllerStatus[i].startingPhase1 << " " << trafficControllerStatus[i].initPhase1 << " " << trafficControllerStatus[i].elapsedGreen2 << endl;
+    }
+}
+
+/*
+    - Method for obtaining static traffic signal plan from TCI
 */
 void PriorityRequestSolver::readCurrentSignalTimingPlan()
 {
@@ -133,7 +318,7 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan()
 }
 
 /*
-    -
+    - Method printing the traffic signal plan
 */
 void PriorityRequestSolver::printSignalPlan()
 {
@@ -144,7 +329,7 @@ void PriorityRequestSolver::printSignalPlan()
 }
 
 /*
-    -
+    - Method for generating Mod File for transit and truck
 */
 void PriorityRequestSolver::generateModFile()
 {
@@ -359,6 +544,33 @@ void PriorityRequestSolver::generateModFile()
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();
+}
+
+
+bool PriorityRequestSolver::findEVInList()
+{
+    if (priorityRequestList.empty())
+        bEVStatus = false;
+    else
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if (priorityRequestList[i].vehicleType == 2)
+            {
+                bEVStatus = true;
+                break;
+            }
+        }
+    }
+
+    return bEVStatus;
+}
+
+double PriorityRequestSolver::GetSeconds()
+{
+    struct timeval tv_tt;
+    gettimeofday(&tv_tt, NULL);
+    return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

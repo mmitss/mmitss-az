@@ -1,5 +1,5 @@
 # PRG Makefile 
-BUILD_ROOT=../../..
+BUILD_ROOT=../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
@@ -10,7 +10,7 @@ INCLUDES    := -I$(BUILD_ROOT)/3rdparty/ -I$(COMMON_INCL) -I$(GLPK_INCL)  # tell
 LIBS        := -L$(MMITSS_COMMON_LIB) -L$(GLPK_LIB) -lmmitss-common -lglpk   #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += main.cpp  PriorityRequestSolver.cpp 
+SRC += main.cpp  PriorityRequestSolver.cpp SolverDataManager.cpp ScheduleManager.cpp
 #the name of the executable goes here
 TARGET = M_PriorityRequestSolver
 

@@ -56,6 +56,7 @@ PriorityRequestServer::PriorityRequestServer()
 */
 int PriorityRequestServer::getMessageType(std::string jsonString)
 {
+	int messageType{};
 	Json::Value jsonObject;
 	Json::Reader reader;
 	reader.parse(jsonString.c_str(), jsonObject);
