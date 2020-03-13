@@ -11,11 +11,25 @@
 #define CALL_VEH_PHASES 6
 #define CALL_PED_PHASES 7
 
-ScheduleManager::ScheduleManager(/* args */)
+ScheduleManager::ScheduleManager()
 {
 }
 
-void ScheduleManager::obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
+{
+    if(!requestList.empty())
+        priorityRequestList = requestList;
+    
+    if(!signalStatus.empty())
+        trafficControllerStatus = signalStatus;
+    
+    if(!signalPlan.empty())
+        trafficSignalPlan = signalPlan;
+
+}
+
+//void ScheduleManager::obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+void ScheduleManager::obtainRequiredSignalGroup()
 {
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
@@ -324,7 +338,8 @@ void ScheduleManager::readOptimalSignalPlan()
 /*
     - Following Method will compute ring wise cummilative sum of phase duration for left and right cricital points
 */
-void ScheduleManager::createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+// void ScheduleManager::createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+void ScheduleManager::createEventList()
 {
     Schedule ring1Schedule;
     Schedule ring2Schedule;

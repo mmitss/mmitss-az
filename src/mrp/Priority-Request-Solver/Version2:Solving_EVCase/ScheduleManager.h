@@ -19,6 +19,10 @@ using std::ofstream;
 class ScheduleManager
 {
 private:
+    vector<RequestList> priorityRequestList;
+    vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
+    vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
+    
     vector<Schedule> ring1_TCISchedule;
     vector<Schedule> ring2_TCISchedule;
 
@@ -36,10 +40,13 @@ private:
 
 public:
     ScheduleManager();
+    ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan);
     ~ScheduleManager();
 
     void readOptimalSignalPlan();
-    void obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
-    void createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
+    // void obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
+    // void createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
+    void obtainRequiredSignalGroup();
+    void createEventList();
     string createScheduleJsonString();
 };

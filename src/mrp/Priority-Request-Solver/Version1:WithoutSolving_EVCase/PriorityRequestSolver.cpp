@@ -117,7 +117,7 @@ void PriorityRequestSolver::modifyPriorityRequestList()
 }
 
 /*
-    - If here is EV in priority request list Dat file will have information about EV requested phases and current phases.
+    - If here is EV in priority request list, Dat file will have information about EV requested phases and current phases.
 */
 void PriorityRequestSolver::getEVPhases()
 {
@@ -289,29 +289,29 @@ void PriorityRequestSolver::generateDatFile()
     }
     if (bEVStatus == true)
     {
-        trafficSignalPlan_EV.insert(trafficSignalPlan_EV.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
-        sort(plannedEVPhases.begin(), plannedEVPhases.end()); //arrange the numbers in ascending order
+        // trafficSignalPlan_EV.insert(trafficSignalPlan_EV.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
+        // sort(plannedEVPhases.begin(), plannedEVPhases.end()); //arrange the numbers in ascending order
 
-        for (size_t j = 0; j < plannedEVPhases.size(); j++)
-        {
-            temporaryPhase = plannedEVPhases.at(j);
-            it = std::find(temporaryPhaseNumber.begin(), temporaryPhaseNumber.end(), temporaryPhase);
-            if (it != temporaryPhaseNumber.end())
-            {
-                temporaryPhaseNumber.erase(it);
-            }
-        }
+        // for (size_t j = 0; j < plannedEVPhases.size(); j++)
+        // {
+        //     temporaryPhase = plannedEVPhases.at(j);
+        //     it = std::find(temporaryPhaseNumber.begin(), temporaryPhaseNumber.end(), temporaryPhase);
+        //     if (it != temporaryPhaseNumber.end())
+        //     {
+        //         temporaryPhaseNumber.erase(it);
+        //     }
+        // }
 
-        for (size_t i = 0; i < temporaryPhaseNumber.size(); i++)
-        {
-            temporaryPhase = temporaryPhaseNumber.at(i);
+        // for (size_t i = 0; i < temporaryPhaseNumber.size(); i++)
+        // {
+        //     temporaryPhase = temporaryPhaseNumber.at(i);
 
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
-                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        //     vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
+        //                                                                                                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if (findSignalGroupOnList != trafficSignalPlan_EV.end())
-                trafficSignalPlan_EV.erase(findSignalGroupOnList);
-        }
+        //     if (findSignalGroupOnList != trafficSignalPlan_EV.end())
+        //         trafficSignalPlan_EV.erase(findSignalGroupOnList);
+        // }
 
         //Find the maximum ETA and ETA duration from among all the EV
         findMaximumETAofEV();
@@ -2288,6 +2288,7 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod << "end;\n";
     FileMod.close();
 }
+
 /*
     -
 */

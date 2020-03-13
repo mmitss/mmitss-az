@@ -55,12 +55,19 @@ int main()
 
             if (priorityRequestSolver.findEVInList() == true)
             {
+                priorityRequestSolver.setOptimizationInput();
+                priorityRequestSolver.GLPKSolver();
+                tciJsonString = priorityRequestSolver.getScheduleforTCI();
+                priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             }
 
             else
             {
-                priorityRequestSolver.GLPKSolver(solverDataManager);
-                tciJsonString = priorityRequestSolver.getScheduleforTCI(scheduleManager);
+                // priorityRequestSolver.GLPKSolver(solverDataManager);
+                // tciJsonString = priorityRequestSolver.getScheduleforTCI(scheduleManager);
+                priorityRequestSolver.setOptimizationInput();
+                priorityRequestSolver.GLPKSolver();
+                tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             }
         }

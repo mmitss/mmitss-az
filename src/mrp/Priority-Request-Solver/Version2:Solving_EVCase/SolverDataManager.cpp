@@ -5,18 +5,41 @@ const int transitWeight = 1;
 const int truckWeight = 1;
 const double MAXGREEN = 50.0;
 
-SolverDataManager::SolverDataManager(/* args */)
+SolverDataManager::SolverDataManager()
 {
+}
+
+SolverDataManager::SolverDataManager(vector<RequestList> requestList)
+{
+    if (!requestList.empty())
+        priorityRequestList = requestList;
+}
+
+SolverDataManager::SolverDataManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
+{
+    if (!requestList.empty())
+        priorityRequestList = requestList;
+
+    if (!signalStatus.empty())
+        trafficControllerStatus = signalStatus;
+
+    if (!signalPlan.empty())
+        trafficSignalPlan = signalPlan;
 }
 
 /*
     - This method will obtain requested signal group information from the priority request list and store them in requestedSignalGroup list.
 */
-void SolverDataManager::getRequestedSignalGroupFromPriorityRequestList(vector<RequestList> priorityRequestList)
+// void SolverDataManager::getRequestedSignalGroupFromPriorityRequestList(vector<RequestList> priorityRequestList)
+vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
     //vector<int>requestedSignalGroup;
     for (size_t i = 0; i < priorityRequestList.size(); i++)
         requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
+
+    removeDuplicateSignalGroup();
+
+    return requestedSignalGroup;
 }
 
 /*
@@ -40,7 +63,8 @@ void SolverDataManager::removeDuplicateSignalGroup()
 - Append associated signal group information in the orignal signal group list.
 - Remove the duplicate phase number
 */
-void SolverDataManager::addAssociatedSignalGroup(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+// void SolverDataManager::addAssociatedSignalGroup(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+void SolverDataManager::addAssociatedSignalGroup()
 {
     vector<int> tempListOfRequestedSignalGroup = requestedSignalGroup;
     int associatedSignalGroup{};
@@ -73,7 +97,8 @@ void SolverDataManager::addAssociatedSignalGroup(vector<TrafficControllerData::T
 /*
     - This function will increase the  value of green max by 15% if there is Transit or Truck in the priority request list.
 */
-void SolverDataManager::modifyGreenMax(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+// void SolverDataManager::modifyGreenMax(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+void SolverDataManager::modifyGreenMax()
 {
     for (auto i = requestedSignalGroup.begin(); i != requestedSignalGroup.end(); ++i)
     {
@@ -85,9 +110,28 @@ void SolverDataManager::modifyGreenMax(vector<TrafficControllerData::TrafficSign
 }
 
 /*
+    - This method is responsible for finding the largest ETA and ETA_Duration value from the priorityRequest List.
+*/
+void SolverDataManager::findMaximumETAofEV()
+{
+    vector<double> temporaryVehicleETA;
+    vector<double> temporaryVehicleETA_Duration;
+    //Find the maximum ETA and ETA duration from among all the EV
+    for (size_t k = 0; k < priorityRequestList.size(); k++)
+    {
+        temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
+        temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
+    }
+
+    maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
+    maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
+}
+
+/*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+// void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+void SolverDataManager::generateDatFile(bool bEVStatus)
 {
     // int temporaryPhase{};
     // vector<int> temporaryPhaseNumber{};
@@ -97,11 +141,14 @@ void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList,
     int numberOfRequest{};
     int ReqSeq = 1;
 
-    getRequestedSignalGroupFromPriorityRequestList(priorityRequestList);
-    removeDuplicateSignalGroup();
-    addAssociatedSignalGroup(trafficSignalPlan);
-    modifyGreenMax(trafficSignalPlan);
-
+    // getRequestedSignalGroupFromPriorityRequestList(priorityRequestList);
+    // removeDuplicateSignalGroup();
+    // addAssociatedSignalGroup(trafficSignalPlan);
+    // modifyGreenMax(trafficSignalPlan);
+    // getRequestedSignalGroupFromPriorityRequestList();
+    // removeDuplicateSignalGroup();
+    // addAssociatedSignalGroup();
+    // modifyGreenMax();
 
     ofstream fs;
     fs.open("NewModelData.dat", ios::out);
@@ -115,97 +162,44 @@ void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList,
         fs << "param Grn1 :=" << trafficControllerStatus[i].elapsedGreen1 << ";" << endl;
         fs << "param Grn2 :=" << trafficControllerStatus[i].elapsedGreen2 << ";" << endl;
     }
-    // if (bEVStatus == true)
-    // {
-    //     trafficSignalPlan_EV.insert(trafficSignalPlan_EV.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
-    //     sort(plannedEVPhases.begin(), plannedEVPhases.end()); //arrange the numbers in ascending order
 
-    //     for (size_t j = 0; j < plannedEVPhases.size(); j++)
-    //     {
-    //         temporaryPhase = plannedEVPhases.at(j);
-    //         it = std::find(temporaryPhaseNumber.begin(), temporaryPhaseNumber.end(), temporaryPhase);
-    //         if (it != temporaryPhaseNumber.end())
-    //         {
-    //             temporaryPhaseNumber.erase(it);
-    //         }
-    //     }
+    fs << "param y          \t:=";
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+        fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].yellowChange;
+    fs << ";\n";
 
-    //     for (size_t i = 0; i < temporaryPhaseNumber.size(); i++)
-    //     {
-    //         temporaryPhase = temporaryPhaseNumber.at(i);
+    fs << "param red          \t:=";
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+        fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].redClear;
+    fs << ";\n";
 
-    //         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
-    //                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+    fs << "param gmin      \t:=";
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+        fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].minGreen;
+    fs << ";\n";
 
-    //         if (findSignalGroupOnList != trafficSignalPlan_EV.end())
-    //             trafficSignalPlan_EV.erase(findSignalGroupOnList);
-    //     }
+    fs << "param gmax      \t:=";
+    if (bEVStatus == true)
+    {
+        findMaximumETAofEV();
+        if (MAXGREEN > maxEV_ETA + maxEV_ETA_Duration)
+        {
+            for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+        }
 
-    //     //Find the maximum ETA and ETA duration from among all the EV
-    //     findMaximumETAofEV();
-    //     // for (size_t k = 0; k < priorityRequestList.size(); k++)
-    //     // {
-    //     //     temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
-    //     //     temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
-    //     // }
-
-    //     // maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
-    //     // maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
-
-    //     fs << "param y          \t:=";
-    //     for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    //         fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << trafficSignalPlan_EV[i].yellowChange;
-    //     fs << ";\n";
-
-    //     fs << "param red          \t:=";
-    //     for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    //         fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << trafficSignalPlan_EV[i].redClear;
-    //     fs << ";\n";
-
-    //     fs << "param gmin      \t:=";
-    //     for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    //         fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << trafficSignalPlan_EV[i].minGreen;
-    //     fs << ";\n";
-
-    //     fs << "param gmax      \t:=";
-
-    //     if (MAXGREEN > maxEV_ETA + maxEV_ETA_Duration)
-    //     {
-    //         for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    //             fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << MAXGREEN;
-    //     }
-
-    //     else
-    //     {
-    //         for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    //             fs << "\t" << trafficSignalPlan_EV[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration;
-    //     }
-
-    //     fs << ";\n";
-    // }
-
-    // else
-    // {
-        fs << "param y          \t:=";
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].yellowChange;
-        fs << ";\n";
-
-        fs << "param red          \t:=";
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].redClear;
-        fs << ";\n";
-
-        fs << "param gmin      \t:=";
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].minGreen;
-        fs << ";\n";
-
-        fs << "param gmax      \t:=";
+        else
+        {
+            for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration;
+        }
+    }
+    else
+    {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
             fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-        fs << ";\n";
-    // }
+    }
+    fs << ";\n";
 
     fs << "param priorityType:= ";
 
@@ -269,9 +263,9 @@ void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList,
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
             fs << ReqSeq << "  ";
-            for (size_t j = 0; j < trafficSignalPlan.size(); j++)
+            for (size_t j = 1; j < 9; j++)
             {
-                if (priorityRequestList[i].requestedPhase == trafficSignalPlan[j].phaseNumber)
+                if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                     fs << priorityRequestList[i].vehicleETA << "\t";
                 else
                     fs << ".\t";
@@ -291,9 +285,9 @@ void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList,
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
             fs << ReqSeq << "  ";
-            for (size_t j = 0; j < trafficSignalPlan.size(); j++)
+            for (size_t j = 1; j < 9; j++)
             {
-                if (priorityRequestList[i].requestedPhase == trafficSignalPlan[j].phaseNumber)
+                if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                     fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
                 else
                     fs << ".\t";
@@ -307,8 +301,6 @@ void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList,
     fs << "end;";
     fs.close();
 }
-
-
 
 SolverDataManager::~SolverDataManager()
 {

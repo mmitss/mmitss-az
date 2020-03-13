@@ -55,7 +55,7 @@ int main()
                 priorityRequestSolver.removeDuplicateSignalGroup();
                 priorityRequestSolver.createEventList();
                 // priorityRequestSolver.createScheduleJsonString();
-                std::cout << "Schedule: " << priorityRequestSolver.createScheduleJsonString() << std::endl;
+                // std::cout << "Schedule: " << priorityRequestSolver.createScheduleJsonString() << std::endl;
 
                 // //Single or Multiple EV coming from same direction
                 // if (priorityRequestSolver.getRequestedSignalGroupSize() <= 2)

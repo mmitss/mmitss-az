@@ -20,26 +20,30 @@ int main()
     const string LOCALHOST = "127.0.0.1";
     const int receiverPortNo = 20003;
     std::string sendingJsonString;
-    int noOfRequest = 2;
+    int noOfRequest{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    // vector<int>vehicleID{1201, 1205, 1205, 1240, 1250, 1250};
-    // vector<int>vehicleType{6, 2, 2, 9, 2, 2};
-    // vector<int>basicVehicleRole{16 ,13, 13, 9, 12, 12};
-    // vector<int>laneID{2, 8, 9, 5, 8, 9};
-    // vector<double>ETA{24.0, 40.0,40.0, 35.0, 45.0, 45.0};
-    // vector<double>ETADuration{5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
-    // vector<int>requestedPhase{3, 8, 3, 4, 4, 7};
-    // vector<int>requestStatus{5, 4, 4, 5, 4, 4};
-    vector<int>vehicleID{1201, 1240};
-    vector<int>vehicleType{6, 9};
-    vector<int>basicVehicleRole{16, 9};
-    vector<int>laneID{2, 8};
-    vector<double>ETA{24.0, 35.0};
-    vector<double>ETADuration{5.0, 5.0};
-    vector<int>requestedPhase{3, 4};
-    vector<int>requestStatus{ 4, 4};
+    //With EV
+    vector<int>vehicleID{1201, 1205, 1205, 1240, 1250, 1250};
+    vector<int>vehicleType{6, 2, 2, 9, 2, 2};
+    vector<int>basicVehicleRole{16 ,13, 13, 9, 12, 12};
+    vector<int>laneID{2, 8, 9, 5, 8, 9};
+    vector<double>ETA{24.0, 40.0,40.0, 35.0, 45.0, 45.0};
+    vector<double>ETADuration{5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+    vector<int>requestedPhase{3, 2, 5, 4, 4, 7};
+    vector<int>requestStatus{5, 4, 4, 5, 4, 4};
+    
+    //Without EV
+    // vector<int>vehicleID{1201, 1240};
+    // vector<int>vehicleType{6, 9};
+    // vector<int>basicVehicleRole{16, 9};
+    // vector<int>laneID{2, 8};
+    // vector<double>ETA{24.0, 35.0};
+    // vector<double>ETADuration{5.0, 5.0};
+    // vector<int>requestedPhase{3, 4};
+    // vector<int>requestStatus{ 4, 4};
 
+    noOfRequest = static_cast<int>(requestedPhase.size());
     jsonObject["MsgType"] = "PriorityRequest";
     jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest;        //ActiveRequestTable.size();
     jsonObject["PriorityRequestList"]["minuteOfYear"] = 22478;   //minuteOfYear;

@@ -46,7 +46,7 @@ private:
   // int numberOfTruckInList{};
   int noOfPhasesInRing1{};
   int noOfPhasesInRing2{};
-  // int noOfEVInList{};
+  int noOfEVInList{};
   // string scheduleJsonString{};
   bool bEVStatus{};
 
@@ -69,10 +69,14 @@ private:
   vector<int> P12;
   vector<int> P21;
   vector<int> P22;
-  // vector<int> requestedSignalGroup;
+  vector<int> EV_P11;
+  vector<int> EV_P12;
+  vector<int> EV_P21;
+  vector<int> EV_P22;
+  vector<int> requestedSignalGroup;
   // vector<int> plannedSignalGroupInRing1;
   // vector<int> plannedSignalGroupInRing2;
-  // vector<int> plannedEVPhases;
+  vector<int> plannedEVPhases;
   // vector<double> singleEV_PhaseDuration_Ring1;
   // vector<double> singleEV_PhaseDuration_Ring2;
   // vector<double> leftCriticalPoints_PhaseDuration_Ring1;
@@ -89,13 +93,19 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void GLPKSolver(SolverDataManager solverDataManager);
-
+  void modifyPriorityRequestList();
+  // void GLPKSolver(SolverDataManager solverDataManager);
+  void GLPKSolver();
   void readCurrentSignalTimingPlan();
   void generateModFile();
-
+  void generateEVModFile();
+  void setOptimizationInput();
+  void getRequestedSignalGroup();
+  void getEVPhases();
+  void getEVTrafficSignalPlan();
   void getCurrentSignalStatus();
-  string getScheduleforTCI(ScheduleManager scheduleManager);
+  // string getScheduleforTCI(ScheduleManager scheduleManager);
+  string getScheduleforTCI();
   int getMessageType(string jsonString);
   // vector<RequestList> getPriorityRequestList();
 
