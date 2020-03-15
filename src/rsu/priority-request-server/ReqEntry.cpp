@@ -26,6 +26,7 @@ ReqEntry::ReqEntry(void) {
     iRequestType = 0;
     ibasicVehicleRole = 0;
     ipriorityRequestStatus = 0;
+    drequestReceivedTime = 0.0;
 }
 
 
@@ -33,7 +34,7 @@ ReqEntry::ReqEntry(long vehID, int vehClass, float eta, int phase, float mgreen,
                    int split_phase, int iinLane, int ioutLane, int istrHour, int istrMinute, int istrSecond,
                    int iendHour, int iendMinute, int iendSecond, int ivehState, int imsgcnt, double dupdateTimeOfETA,
                    int ileavingCounter, double dtimeInCycle, long lintersectionId, int requestType, int basicVehicleRole,
-                   int priorityRequestStatus) {
+                   int priorityRequestStatus, double requestReceivedTime) {
     VehID = vehID;
     VehClass = vehClass;
     ETA = eta;
@@ -59,6 +60,7 @@ ReqEntry::ReqEntry(long vehID, int vehClass, float eta, int phase, float mgreen,
     iRequestType = requestType;
     ibasicVehicleRole = basicVehicleRole;
     ipriorityRequestStatus = priorityRequestStatus;
+    drequestReceivedTime = requestReceivedTime;
 }
 
 
@@ -88,6 +90,7 @@ ReqEntry::ReqEntry(ReqEntry &Req) {
     iRequestType = Req.iRequestType;
     ibasicVehicleRole = Req.ibasicVehicleRole;
     ipriorityRequestStatus = Req.ipriorityRequestStatus;
+    drequestReceivedTime = Req.drequestReceivedTime;
 }
 
 ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
@@ -115,6 +118,7 @@ ReqEntry &ReqEntry::operator=(ReqEntry &Req) {
     iRequestType = Req.iRequestType;
     ibasicVehicleRole = Req.ibasicVehicleRole;
     ipriorityRequestStatus = Req.ipriorityRequestStatus;
+    drequestReceivedTime = Req.drequestReceivedTime;
     return *this;
 }
 
