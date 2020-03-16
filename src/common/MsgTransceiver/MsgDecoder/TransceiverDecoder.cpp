@@ -97,6 +97,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     jsonString = fastWriter.write(jsonObject);
 
     remove(deleteFileName.c_str());
+    delete plocAwareLib;
 
     return jsonString;
 }
