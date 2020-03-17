@@ -345,7 +345,7 @@ void ScheduleManager::createEventList()
     Schedule ring2Schedule;
     int vehicleSignalGroup{};
     int vehicleSignalGroupRing{};
-    int temporaryPhase{};
+    // int temporaryPhase{};
     vector<int>::iterator it;
 
     ring1_TCISchedule.clear();

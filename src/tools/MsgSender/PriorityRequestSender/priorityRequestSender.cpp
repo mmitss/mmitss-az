@@ -27,13 +27,24 @@ int main()
     
     vector<int>vehicleID{1201, 1205, 1205, 1240, 1250, 1250};
     vector<int>vehicleType{6, 2, 2, 9, 2, 2};
-    vector<int>basicVehicleRole{16 ,13, 13, 9, 12, 12};
+    vector<int>basicVehicleRole{16 ,13, 13, 9, 13, 13};
     vector<int>laneID{2, 8, 9, 5, 8, 9};
-    vector<double>ETA{25.0, 20.0,20.0, 35.0, 35.0, 35.0};
+    vector<double>ETA{25.0, 30.0,30.0, 35.0, 40.0, 40.0};
     vector<double>ETADuration{5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
-    vector<int>requestedPhase{3, 2, 5, 4, 4, 7};
+    vector<int>requestedPhase{3, 8, 3, 4, 4, 7};
     vector<int>requestStatus{5, 4, 4, 5, 4, 4};
+
+    //With mulptiple EV: no left turn phase
     
+    // vector<int>vehicleID{1201, 1205, 1240, 1250};
+    // vector<int>vehicleType{6, 2, 9, 2};
+    // vector<int>basicVehicleRole{16 ,13, 9, 13};
+    // vector<int>laneID{2, 8, 5, 14};
+    // vector<double>ETA{25.0, 30.0, 35.0, 40.0};
+    // vector<double>ETADuration{5.0, 5.0, 5.0, 5.0};
+    // vector<int>requestedPhase{3, 2, 4, 4};
+    // vector<int>requestStatus{5, 4,  5, 4};
+        
     //With single EV
     
     // vector<int>vehicleID{1201, 1205, 1205, 1240};
@@ -45,11 +56,22 @@ int main()
     // vector<int>requestedPhase{3, 4, 7, 4};
     // vector<int>requestStatus{5, 4, 4, 5};
     
-    //Without EV
+    //Without EV: one transit, one truck
     
     // vector<int>vehicleID{1201, 1240};
     // vector<int>vehicleType{6, 9};
     // vector<int>basicVehicleRole{16, 9};
+    // vector<int>laneID{2, 8};
+    // vector<double>ETA{25.0, 35.0};
+    // vector<double>ETADuration{5.0, 5.0};
+    // vector<int>requestedPhase{4, 3};
+    // vector<int>requestStatus{ 4, 4};
+
+    //Without EV: two transit
+
+    // vector<int>vehicleID{1201, 1240};
+    // vector<int>vehicleType{6, 6};
+    // vector<int>basicVehicleRole{16, 16};
     // vector<int>laneID{2, 8};
     // vector<double>ETA{25.0, 35.0};
     // vector<double>ETADuration{5.0, 5.0};

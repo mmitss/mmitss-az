@@ -1,8 +1,8 @@
 #include <algorithm>
 #include "SolverDataManager.h"
 
-const int transitWeight = 1;
-const int truckWeight = 1;
+const double transitWeight = 1;
+const double truckWeight = 1;
 const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()
@@ -209,7 +209,14 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         {
             vehicleClass = 0;
             numberOfRequest++;
-            if (priorityRequestList[i].basicVehicleRole == 16)
+
+            if (priorityRequestList[i].basicVehicleRole == 13)
+            {
+                // numberOfEVInList++;
+                vehicleClass = 1;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 16)
             {
                 numberOfTransitInList++;
                 vehicleClass = 2;
@@ -242,14 +249,16 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     fs << "param PrioWeigth:=  1 1 2 ";
     if (numberOfTransitInList > 0)
-        fs << transitWeight / numberOfTransitInList;
+        fs << transitWeight;
+        // fs << transitWeight / numberOfTransitInList;
     else
     {
         fs << 0;
     }
     fs << " 3 ";
     if (numberOfTruckInList > 0)
-        fs << truckWeight / numberOfTruckInList;
+        fs << truckWeight;
+        // fs << truckWeight / numberOfTruckInList;
     else
     {
         fs << 0;
