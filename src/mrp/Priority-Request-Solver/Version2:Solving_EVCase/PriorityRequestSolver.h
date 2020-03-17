@@ -15,7 +15,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-
+#include <chrono>
 #include <sstream>
 #include "ScheduleManager.h"
 #include "SolverDataManager.h"
@@ -114,5 +114,6 @@ public:
   // vector<TrafficControllerData::TrafficSignalPlan> getTrafficSignalPlan_EV();
   double GetSeconds();
   bool findEVInList();
+  bool logging();
   void printSignalPlan();
 };

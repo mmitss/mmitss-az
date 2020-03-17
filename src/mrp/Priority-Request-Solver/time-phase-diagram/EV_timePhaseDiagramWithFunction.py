@@ -371,7 +371,7 @@ def subplotTimePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Ti
 
 def main():
     r1_phases = [1, 2, 3, 4]
-    r2_phases = [5, 6, 7, 8]
+    r2_phases = (5, 6, 7, 8)
     left_R1_CP_phase_times = []
     right_R1_CP_phase_times = []
     cum_Left_Ring1_Phase_Times = []

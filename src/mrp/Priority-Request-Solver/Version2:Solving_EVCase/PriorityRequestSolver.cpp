@@ -126,9 +126,6 @@ void PriorityRequestSolver::setOptimizationInput()
     if (bEVStatus == true)
     {
         modifyPriorityRequestList();
-        // SolverDataManager solverDataManager;
-        // requestedSignalGroup.clear();
-        // requestedSignalGroup = solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         getRequestedSignalGroup();
         getEVPhases();
         getEVTrafficSignalPlan();
@@ -141,7 +138,6 @@ void PriorityRequestSolver::setOptimizationInput()
     {
         SolverDataManager solverDataManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
-        // solverDataManager.removeDuplicateSignalGroup();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
         solverDataManager.generateDatFile(bEVStatus);
@@ -794,13 +790,18 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
 
     // // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
-    // FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P11.size() > 0)
+    //     FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P12.size() > 0)
+    //     FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P21.size() > 0)
+    //     FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P22.size() > 0)
+    //     FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
     // FileMod << "param barrier1GmaxSlack, := sumOfGMax11 - sumOfGMax21 ;\n";
     // FileMod << "param barrier2GmaxSlack, := sumOfGMax12 - sumOfGMax22 ;\n";
     // FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
+    // FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
     FileMod << "\n";
     // // ==================== VARIABLES =======================
@@ -1020,6 +1021,27 @@ double PriorityRequestSolver::GetSeconds()
     struct timeval tv_tt;
     gettimeofday(&tv_tt, NULL);
     return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
+}
+
+bool PriorityRequestSolver::logging()
+{
+	bool bLogging = false;
+	string logging{};
+	Json::Value jsonObject;
+	Json::Reader reader;
+	ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+	logging = (jsonObject["Logging"]).asString();
+
+	if (logging == "True")
+		bLogging = true;
+
+	else
+		bLogging = false;
+
+	return bLogging;
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

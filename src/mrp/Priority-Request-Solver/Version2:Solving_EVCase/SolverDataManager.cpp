@@ -3,7 +3,7 @@
 
 const int transitWeight = 1;
 const int truckWeight = 1;
-const double MAXGREEN = 50.0;
+const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()
 {
