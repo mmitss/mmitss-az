@@ -370,8 +370,8 @@ def subplotTimePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Ti
 
 
 def main():
-    r1_phases = [1, 2, 3, 4]
-    r2_phases = [5, 6, 7, 8]
+    r1_phases = []
+    r2_phases = []
     left_R1_CP_phase_times = []
     right_R1_CP_phase_times = []
     cum_Left_Ring1_Phase_Times = []
@@ -386,30 +386,34 @@ def main():
 
     ETA = []
     req_phase = [3, 4]
+        
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information
     print("SP1 =", SP1)
     print("SP2 =", SP2)
     SP1 = int(SP1) #Converting starting phase into integar value
     SP2 = int(SP2) #Converting starting phase into integar value
-    # if SP2-SP1 == 3:
-    #     phasesInRing1 = [SP1-1,SP1]
-    # else:
-    #     phasesInRing1 = [SP1] #Appending the SP1 into phasesInring1 list
-    
-    # if SP2-SP1 == 5:
-    #     phasesInRing2 = [SP2-1,SP1]
-    # else:
-    #     phasesInRing2 = [SP2] #Appending the SP2 into phasesInring2 list
 
-    phasesInRing1 = [SP1] #Appending the SP1 into phasesInring1 list
-    phasesInRing2 = [SP2] #Appending the SP2 into phasesInring2 list
+
+    # phasesInRing1 = [SP1] #Appending the SP1 into phasesInring1 list
+    # phasesInRing2 = [SP2] #Appending the SP2 into phasesInring2 list
     
     #Obtained planned signal phase of cycle1,2,3 for ring 1. There will be 8 phases.
-    phasesInRing1 = phaseGroupInRing(SP1, r1_phases, phasesInRing1)
+    # phasesInRing1 = phaseGroupInRing(SP1, r1_phases, phasesInRing1)
+    phasesInRing1= []
+    n = int(input("Enter no of Phases: "))
+    phasesInRing1 = list(map(int,input("\nEnter the numbers : ").strip().split()))[:n] 
+    # for i in range(0, ring1_input): 
+    #     ele = int(input()) 
+  
+    #     phasesInRing1.append(ele)
     print("Phases In Ring1", phasesInRing1)
     #Obtained planned signal phase of cycle1,2,3 for ring 2. There will be 8 phases
-    phasesInRing2 = phaseGroupInRing(SP2, r2_phases, phasesInRing2)
+    # phasesInRing2 = phaseGroupInRing(SP2, r2_phases, phasesInRing2)
+    phasesInRing2 = []
+    n = int(input("Enter no of Phases: "))
+    phasesInRing2 = list(map(int,input("\nEnter the numbers : ").strip().split()))[:n]
+    
     print("Phases In Ring2", phasesInRing2)
     #obtained init time and green elapssed time
     init1, init2, grn1, grn2 = getInitToPhasesAndElaspedGreenTime().split()
@@ -418,6 +422,9 @@ def main():
     print("Elapesd Green1 =", grn1)
     print("Elapesd Green2 =", grn2)
     
+
+
+
     ################## For Ring1##################
 
     #Obatined ring wise phase duration for left and right critical points

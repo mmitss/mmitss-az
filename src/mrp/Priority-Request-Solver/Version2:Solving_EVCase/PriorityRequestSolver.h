@@ -15,7 +15,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
-
+#include <chrono>
 #include <sstream>
 #include "ScheduleManager.h"
 #include "SolverDataManager.h"
@@ -51,8 +51,6 @@ private:
   bool bEVStatus{};
 
   vector<RequestList> priorityRequestList;
-  // vector<Schedule> ring1_TCISchedule;
-  // vector<Schedule> ring2_TCISchedule;
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV;
@@ -74,19 +72,8 @@ private:
   vector<int> EV_P21;
   vector<int> EV_P22;
   vector<int> requestedSignalGroup;
-  // vector<int> plannedSignalGroupInRing1;
-  // vector<int> plannedSignalGroupInRing2;
   vector<int> plannedEVPhases;
-  // vector<double> singleEV_PhaseDuration_Ring1;
-  // vector<double> singleEV_PhaseDuration_Ring2;
-  // vector<double> leftCriticalPoints_PhaseDuration_Ring1;
-  // vector<double> leftCriticalPoints_PhaseDuration_Ring2;
-  // vector<double> rightCriticalPoints_PhaseDuration_Ring1;
-  // vector<double> rightCriticalPoints_PhaseDuration_Ring2;
-  // vector<double> leftCriticalPoints_GreenTime_Ring1;
-  // vector<double> leftCriticalPoints_GreenTime_Ring2;
-  // vector<double> rightCriticalPoints_GreenTime_Ring1;
-  // vector<double> rightCriticalPoints_GreenTime_Ring2;
+
 
 public:
   PriorityRequestSolver();
@@ -94,6 +81,7 @@ public:
 
   void createPriorityRequestList(string jsonString);
   void modifyPriorityRequestList();
+  void deleteSplitPhasesFromPriorityRequestList();
   // void GLPKSolver(SolverDataManager solverDataManager);
   void GLPKSolver();
   void readCurrentSignalTimingPlan();
@@ -114,5 +102,6 @@ public:
   // vector<TrafficControllerData::TrafficSignalPlan> getTrafficSignalPlan_EV();
   double GetSeconds();
   bool findEVInList();
+  bool logging();
   void printSignalPlan();
 };

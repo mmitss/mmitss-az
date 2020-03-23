@@ -120,16 +120,90 @@ void PriorityRequestSolver::modifyPriorityRequestList()
     }
 }
 
+/*
+    - If EV is priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
+*/
+void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
+{
+    int temporaryPhase{};
+    if (noOfEVInList > 0 && requestedSignalGroup.size() > 2)
+    {
+        vector<int> requestedEV_P11;
+        vector<int> requestedEV_P12;
+        vector<int> requestedEV_P21;
+        vector<int> requestedEV_P22;
+        for (size_t i = 0; i < requestedSignalGroup.size(); i++)
+        {
+            if (requestedSignalGroup[i] == 1 || requestedSignalGroup[i] == 2)
+                requestedEV_P11.push_back(requestedSignalGroup[i]);
+
+            else if (requestedSignalGroup[i] == 3 || requestedSignalGroup[i] == 4)
+                requestedEV_P12.push_back(requestedSignalGroup[i]);
+
+            else if (requestedSignalGroup[i] == 5 || requestedSignalGroup[i] == 6)
+                requestedEV_P21.push_back(requestedSignalGroup[i]);
+
+            else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
+                requestedEV_P22.push_back(requestedSignalGroup[i]);
+        }
+
+        if (requestedEV_P11.empty() && requestedEV_P21.empty())
+        {
+            vector<int> LeftTurnPhases{3, 7};
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                        priorityRequestList.erase(findSignalGroupOnList);
+
+                    else if (findSignalGroupOnList == priorityRequestList.end())
+                        break;
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
+        }
+
+        else if (requestedEV_P12.empty() && requestedEV_P22.empty())
+        {
+            vector<int> LeftTurnPhases{1, 5};
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                        priorityRequestList.erase(findSignalGroupOnList);
+
+                    else if (findSignalGroupOnList == priorityRequestList.end())
+                        break;
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
+        }
+
+    }
+}
+
 void PriorityRequestSolver::setOptimizationInput()
 {
 
     if (bEVStatus == true)
     {
         modifyPriorityRequestList();
-        // SolverDataManager solverDataManager;
-        // requestedSignalGroup.clear();
-        // requestedSignalGroup = solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         getRequestedSignalGroup();
+        deleteSplitPhasesFromPriorityRequestList();
         getEVPhases();
         getEVTrafficSignalPlan();
         generateEVModFile();
@@ -141,7 +215,6 @@ void PriorityRequestSolver::setOptimizationInput()
     {
         SolverDataManager solverDataManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
-        // solverDataManager.removeDuplicateSignalGroup();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
         solverDataManager.generateDatFile(bEVStatus);
@@ -163,10 +236,7 @@ void PriorityRequestSolver::GLPKSolver()
 {
     double startOfSolve{};
     double endOfSolve{};
-    // SolverDataManager solverDataManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan);
 
-    // solverDataManager.generateDatFile(priorityRequestList,trafficControllerStatus,trafficSignalPlan);
-    // solverDataManager.generateDatFile();
     char modFile[128] = "NewModel.mod";
     glp_prob *mip;
     glp_tran *tran;
@@ -216,21 +286,6 @@ skip:
     glp_delete_prob(mip);
 }
 
-/*
-    - 
-*/
-// string PriorityRequestSolver::getScheduleforTCI(ScheduleManager scheduleManager)
-// {
-//     string scheduleJsonString{};
-//     scheduleManager.obtainRequiredSignalGroup(trafficControllerStatus, trafficSignalPlan);
-//     scheduleManager.readOptimalSignalPlan();
-//     scheduleManager.createEventList(priorityRequestList, trafficSignalPlan);
-//     scheduleJsonString = scheduleManager.createScheduleJsonString();
-
-//     priorityRequestList.clear();
-//     trafficControllerStatus.clear();
-//     return scheduleJsonString;
-// }
 
 string PriorityRequestSolver::getScheduleforTCI()
 {
@@ -794,13 +849,18 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
 
     // // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
-    // FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P11.size() > 0)
+    //     FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P12.size() > 0)
+    //     FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P21.size() > 0)
+    //     FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
+    // if (EV_P22.size() > 0)
+    //     FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
     // FileMod << "param barrier1GmaxSlack, := sumOfGMax11 - sumOfGMax21 ;\n";
     // FileMod << "param barrier2GmaxSlack, := sumOfGMax12 - sumOfGMax22 ;\n";
     // FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
+    // FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
     FileMod << "\n";
     // // ==================== VARIABLES =======================
@@ -1009,6 +1069,9 @@ bool PriorityRequestSolver::findEVInList()
                 bEVStatus = true;
                 break;
             }
+
+            else
+                bEVStatus = false;
         }
     }
 
@@ -1020,6 +1083,27 @@ double PriorityRequestSolver::GetSeconds()
     struct timeval tv_tt;
     gettimeofday(&tv_tt, NULL);
     return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
+}
+
+bool PriorityRequestSolver::logging()
+{
+    bool bLogging = false;
+    string logging{};
+    Json::Value jsonObject;
+    Json::Reader reader;
+    ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+    string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+    logging = (jsonObject["Logging"]).asString();
+
+    if (logging == "True")
+        bLogging = true;
+
+    else
+        bLogging = false;
+
+    return bLogging;
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
