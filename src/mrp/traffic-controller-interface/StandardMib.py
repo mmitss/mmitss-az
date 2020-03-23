@@ -1,0 +1,9 @@
+PHASE_GROUP_STATUS_NEXT         =   "1.3.6.1.4.1.1206.4.2.1.1.4.1.11.1"
+
+# Phase Control
+PHASE_CONTROL_VEH_OMIT          =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.2.1"
+PHASE_CONTROL_PED_OMIT          =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.3.1"
+PHASE_CONTROL_HOLD              =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.4.1"
+PHASE_CONTROL_FORCEOFF          =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.5.1"
+PHASE_CONTROL_VEHCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.6.1"
+PHASE_CONTROL_PEDCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.7.1"    
