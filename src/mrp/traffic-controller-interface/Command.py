@@ -39,7 +39,7 @@ class Command:
     from now until 21 seconds from now,
     - > command = Command(255, 1, 20, 21)
     """
-    def __init__(self, phases, action, startTime, endTime):
+    def __init__(self, phases:int, action:int, startTime:float, endTime:float):
 
         self.action = action
         self.phases = phases

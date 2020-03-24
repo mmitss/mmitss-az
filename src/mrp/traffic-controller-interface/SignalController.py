@@ -42,7 +42,8 @@ from Snmp import Snmp
 class SignalController:
     """
     SignalController class encapsulates all methods that interact with the signal controller. 
-    Arguments: (1) An object of Snmp class (2) Timing plan update interval (seconds)
+    Arguments: (1) An object of Snmp class, (2) Timing plan update interval (seconds), and
+    (3) ntcipBackupTime (seconds)
     For example: asc = SignalController(snmp, 10)
     """
     def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int, ntcipBackupTime_sec:int):
@@ -73,7 +74,7 @@ class SignalController:
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
     
-    def getPhaseControl(self, action):
+    def getPhaseControl(self, action:int):
         command = Command(0,0,0,0)
         if action == command.CALL_VEH_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEHCALL))

@@ -30,6 +30,9 @@ function in the background scheduler.
 (5) If the schedule is new, make sure not to stop the currently active actions in the NTCIP
 mode of the signal controller, before executing the new schedule.
 (6) At exit, clear the NTCIP commands in the signal controller, and in the background scheduler.
+
+This class uses the APScheduler library, which needs to be installed separately.
+For installation and general help: https://apscheduler.readthedocs.io/en/v1.3.1/
 ***************************************************************************************
 """
 
@@ -42,11 +45,18 @@ from Command import Command
 from SignalController import SignalController
 
 class Scheduler:
+    """
+    Scheduler class is responsible for processing the schedule received from MMITSS components,
+    and accordingly managing the BackgroundScheduler from the APScheduler library. The API for 
+    managing the BackgroundScheduler is provided in the member functions. 
+    Arguments: an object of the SignalController class.
+    For example: scheduler = Scheduler(signalController)
+    """
     def __init__(self, signalController:SignalController):
-        # NTCIP Backup Time
+        
         self.commandId = 0        
-        # Create an object of SnmpApi
-        self.snmp = snmp
+        
+        # Create an object of the SignalCOntroller class and extract the ntcipBackupTime.
         self.signalController = signalController
         self.ntcipBackupTime_Sec = signalController.ntcipBackupTime_sec
 
@@ -55,56 +65,85 @@ class Scheduler:
         self.backgroundScheduler.start()
         self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
         
-
-        self.currentCommandPool = []
-        
-        self.scheduleExecutionCompletion = True
-
         # Ensure that the scheduler shuts down when the app is exited
         atexit.register(lambda: self.stopBackgroundScheduler())
 
-    def clearOldSchedule(self, scheduleDataStructure):        
-
-        self.clearBackgroundScheduler(True)
-        
-        clearHolds = True
-        clearPedOmit = True
-        clearVehOmit = True
-
-        for command in scheduleDataStructure:
-            if command.startTime == 0 or command.startTime == 0.0:
-                if command.action == command.HOLD_VEH_PHASES:
-                    if self.signalController.getPhaseControl(command.HOLD_VEH_PHASES) > 0:
-                        clearHolds = False
-                elif command.action == command.OMIT_VEH_PHASES:    
-                    if self.signalController.getPhaseControl(command.OMIT_VEH_PHASES) > 0:
-                        clearVehOmit = False
-                elif command.action == command.OMIT_PED_PHASES:
-                    if self.signalController.getPhaseControl(command.OMIT_PED_PHASES) > 0:
-                        clearPedOmit = False
-
-        if clearHolds == True:
-            self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)    
-            
-        if clearVehOmit == True:
-            self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)    
-        
-        if clearPedOmit == True:
-            self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)    
-
-        # Clear VehCalls
-        self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
-        # Clear PedCalls
-        self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
-        # Clear Forceoffs
-        self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)        
+      
 
     def processReceivedSchedule(self, scheduleJson:json):
+        """
+        Scheduler::processReceivedSchedule function is responsible for processing the schedule (json) passed in the arguments.
+        After processing, command groups are created based on start times of individual commands, phases in the command, and the action required in command.
+        The group commands are scheduled in the BackgroundScheduler. In addition to group commands, additional commands are created for:
+        (1) Ending the scheudled commands after their EndTime is reached
+        (2) If two (or more) commands have same startTime, same actions, but different endTimes.
+        Arguments: (1) A JSON string containing the schedule
+
+        *Scheduler::processReceivedSchedulefunction has three subfunctions:
+        (1) clearOldSchedule(scheduleDataStructure)
+        (2) formulateGroupCommand(currentGroup)
+        (3) clearScheduleDataStructure(scheduleJson)
+
+        
+        """
+        def clearOldSchedule(scheduleDataStructure:list):   
+            """
+            clearOldSchedule function checks the received schedule for actions starting at time 0.0.
+            If a hold, vehOmit, or pedOmit starts at time zero, this function checks if the corresponding action is already active in 
+            the signal controller. Only if such action is NOT active in the signal controller, then it is cleared from the signal controller.
+            On the other hand, vehCall, pedCall, and forceoffs are cleared from the signal controller unconditionally.
+            """     
+            self.clearBackgroundScheduler(True)
+            
+            clearHolds = True
+            clearPedOmit = True
+            clearVehOmit = True
+
+            for command in scheduleDataStructure:
+                if command.startTime == 0 or command.startTime == 0.0:
+                    if command.action == command.HOLD_VEH_PHASES:
+                        if self.signalController.getPhaseControl(command.HOLD_VEH_PHASES) > 0:
+                            clearHolds = False
+                    elif command.action == command.OMIT_VEH_PHASES:    
+                        if self.signalController.getPhaseControl(command.OMIT_VEH_PHASES) > 0:
+                            clearVehOmit = False
+                    elif command.action == command.OMIT_PED_PHASES:
+                        if self.signalController.getPhaseControl(command.OMIT_PED_PHASES) > 0:
+                            clearPedOmit = False
+
+            if clearHolds == True:
+                self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)    
+                
+            if clearVehOmit == True:
+                self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)    
+            
+            if clearPedOmit == True:
+                self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)    
+
+            # Clear VehCalls
+            self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
+            # Clear PedCalls
+            self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
+            # Clear Forceoffs
+            self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)  
+        
+        
         # Formulate group command:
         def formulateGroupCommand(currentGroup:list):
+            """
+            formulateGroupCommand function takes a list of commands as an argument and returns a single object of Command class,
+            that represents all commands in the group supplied in the arguments.
+            arguments: (1) list of commands in current group
+            *This function has 1 subfunction: formulateBinaryIntegerRepresentation.
+            """
 
             # Formulate the binary integer representation of the commandPhase:
-            def formulateBinaryIntegerRepresentation(groupPhases):
+            def formulateBinaryIntegerRepresentation(groupPhases:list):
+                """
+                formulateBinaryIntegerRepresentation takes a list of phases in the argument, 
+                creates a bitstring and returns the integer corresponding to the bitstring.
+                arguments: (1) list of phases in the group
+                """
                 groupPhaseStr = list("00000000")
                 
                 if groupPhases[0] != 0:
@@ -131,13 +170,17 @@ class Scheduler:
             
         # Create Schedule data structure
         def createScheduleDataStructure(scheduleJson:json):
+            """
+            createScheduleDataStructure function takes a json string containing the schedule, and returns a list of CommandObjects.
+            """
             scheduleDataStructure = []
             for command in scheduleJson:
                 commandObject = Command(command["commandPhase"], command["commandType"],  command["commandStartTime"], command["commandEndTime"])
                 scheduleDataStructure = scheduleDataStructure + [commandObject]
 
             return scheduleDataStructure
-
+    
+    ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
@@ -146,7 +189,7 @@ class Scheduler:
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
         
-        self.clearOldSchedule(scheduleDataStructure)    
+        clearOldSchedule(scheduleDataStructure)    
 
         # Form action group
         index = 0
@@ -184,29 +227,30 @@ class Scheduler:
             currentGroup = []
             index = index + 1
             groupIndex = groupIndex + 1    
-
-
     
     '''##############################################
                     Scheduler Methods
     ##############################################'''
     
     def addCommandToSchedule(self, commandObject:Command):
-
-        # Define Command Types:
+        """
+        addCommandToScgedule function takes a commandObject as an argument, and based on whether it is a clear command or setPhaseControl command,
+        it schedules in the BackgroundScheduler. The function returns the ID of the scheduled command.
+        arguments: (1) an object of the Command class.
+        """
         # Assign Command ID:       
         if self.commandId > 65534:
             self.commandId = 0
         self.commandId = self.commandId + 1
 
-        if commandObject.phases == 0:
+        if commandObject.phases == 0: # Then add a single instance of a function call that clears the phase control.
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
             return self.commandId
         
-        else: 
+        else: # first add a single instance of the a function call for setting phase control at startTime, and then add a series of function calls till endTime, separated by interval corresponding to ntcipBackupTime.
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -222,6 +266,9 @@ class Scheduler:
             return self.commandId
 
     def scheduleTimingPlanUpdate(self, interval:int):
+        """
+        scheduleTimingPlanUpdate takes in the interval as an argument, and for that interval, schedules the update of active timing plan.
+        """
         self.backgroundScheduler.add_job(self.signalController.updateActiveTimingPlan,
                     trigger = 'interval',
                     seconds = interval,
@@ -229,6 +276,10 @@ class Scheduler:
         return self.commandId
 
     def stopBackgroundScheduler(self):
+        """
+        stopBackgroundScheduler function first clears all jobs from the backgroundScheduler, clears all NTCIP commands in the signal controller, and then shuts down
+        the backgroundScheduler.This function is intended to run at the exit.
+        """
         command = Command(0,0,0,0)
         self.clearBackgroundScheduler(False)
 
@@ -244,10 +295,15 @@ class Scheduler:
         self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)
         # Clear PedOmits
         self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)
-        # Clear background scheudler
+        # shut down the background scheudler
         self.backgroundScheduler.shutdown(wait=False)
         
     def clearBackgroundScheduler(self, rescheduleTimingPlanUpdate:bool):
+        """
+        clearBackgroundScheduler clears all jobs from the BackgroundScheduler. 
+        If the argument rescheduleTimingPlanUpdate is True, then adds the update of timing plan to the Background scheduler.
+        Arguments: (1) Boolean to indicate whether TimingPlanUpdater needs to be scheduled after clearing the schedule.
+        """
         self.backgroundScheduler.remove_all_jobs()
         if rescheduleTimingPlanUpdate==True:
             self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
@@ -264,7 +320,7 @@ if __name__ == "__main__":
     controllerCommInfo = (controllerIp, controllerPort)
 
     snmp = Snmp(controllerCommInfo)
-    asc = SignalController(snmp,10,100)
+    asc = SignalController(snmp,5,100)
 
     # Create an object of Scheduler class
     scheduler = Scheduler(asc)
