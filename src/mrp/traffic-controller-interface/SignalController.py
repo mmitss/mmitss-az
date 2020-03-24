@@ -42,10 +42,10 @@ from Snmp import Snmp
 class SignalController:
     """
     SignalController class encapsulates all methods that interact with the signal controller. 
-    Arguments: (1) An object of Snmp class
-    For example: asc = SignalController(snmp)
+    Arguments: (1) An object of Snmp class (2) Timing plan update interval (seconds)
+    For example: asc = SignalController(snmp, 10)
     """
-    def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int):
+    def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int, ntcipBackupTime_sec:int):
 
         # Communication Parameters
         self.snmp = snmp
@@ -54,6 +54,7 @@ class SignalController:
         self.currentTimingPlanJson = ""
 
         self.timingPlanUpdateInterval_sec = timingPlanUpdateInterval_sec
+        self.ntcipBackupTime_sec = ntcipBackupTime_sec
         
         self.enableSpatBroadcast()
         self.updateActiveTimingPlan()
@@ -68,6 +69,7 @@ class SignalController:
         in the controller menu. This function requires no arguments.
         """
         self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6)
+        print("SPAT Broadcast Set Successfully!")
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
     
@@ -262,6 +264,8 @@ class SignalController:
             }})
 
             self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
+            print("Current Timing Plan Updated")
+        else: print("Timing plan is not changed. Hence, not updated")
 
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
@@ -277,6 +281,6 @@ if __name__ == "__main__":
 
     snmp = Snmp(controllerCommInfo)
     # Create an object of SignalController class
-    controller = SignalController(snmp, 10)
+    controller = SignalController(snmp, 10, 5)
     controller.setPhaseControl(1,3)
 

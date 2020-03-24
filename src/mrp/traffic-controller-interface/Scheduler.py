@@ -42,20 +42,20 @@ from Command import Command
 from SignalController import SignalController
 
 class Scheduler:
-    def __init__(self, snmp:Snmp, signalController:SignalController, ntcipBackupTime_Sec:int):
+    def __init__(self, signalController:SignalController):
         # NTCIP Backup Time
-        self.ntcipBackupTime_Sec = ntcipBackupTime_Sec
-        
+        self.commandId = 0        
         # Create an object of SnmpApi
         self.snmp = snmp
         self.signalController = signalController
+        self.ntcipBackupTime_Sec = signalController.ntcipBackupTime_sec
 
         # Scheduler parameters
         self.backgroundScheduler = BackgroundScheduler() 
         self.backgroundScheduler.start()
-        self.scheduleTimingPlanUpdate(self.signalController.updateActiveTimingPlan())
+        self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
         
-        self.commandId = 0
+
         self.currentCommandPool = []
         
         self.scheduleExecutionCompletion = True
@@ -65,8 +65,7 @@ class Scheduler:
 
     def clearOldSchedule(self, scheduleDataStructure):        
 
-        self.clearBackgroundScheduler()
-        self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec) # Restart the scheduled timing plan update 
+        self.clearBackgroundScheduler(True)
         
         clearHolds = True
         clearPedOmit = True
@@ -180,14 +179,11 @@ class Scheduler:
             # Resort the schedule data structure based on command start time
             scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
 
-            print(groupCommand)
             self.addCommandToSchedule(groupCommand)
                 
             currentGroup = []
             index = index + 1
-            groupIndex = groupIndex + 1
-        pass
-    
+            groupIndex = groupIndex + 1    
 
 
     
@@ -204,14 +200,20 @@ class Scheduler:
         self.commandId = self.commandId + 1
 
         if commandObject.phases == 0:
-            self.backgroundScheduler.add_job(self.signalController.setPhaseControl(), args = [commandObject.action, commandObject.phases], 
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
             return self.commandId
         
         else: 
-            self.backgroundScheduler.add_job(self.signalController.setPhaseControl(), args = [commandObject.action, commandObject.phases], 
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            self.commandId = self.commandId + 1            
+            
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'interval',
                     seconds = self.ntcipBackupTime_Sec-1,
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -220,7 +222,7 @@ class Scheduler:
             return self.commandId
 
     def scheduleTimingPlanUpdate(self, interval:int):
-        self.backgroundScheduler.add_job(self.signalController.updateActiveTimingPlan(), 
+        self.backgroundScheduler.add_job(self.signalController.updateActiveTimingPlan,
                     trigger = 'interval',
                     seconds = interval,
                     id = str(self.commandId))
@@ -228,7 +230,7 @@ class Scheduler:
 
     def stopBackgroundScheduler(self):
         command = Command(0,0,0,0)
-        self.clearBackgroundScheduler()
+        self.clearBackgroundScheduler(False)
 
         # Clear VehCalls
         self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
@@ -245,8 +247,10 @@ class Scheduler:
         # Clear background scheudler
         self.backgroundScheduler.shutdown(wait=False)
         
-    def clearBackgroundScheduler(self):
+    def clearBackgroundScheduler(self, rescheduleTimingPlanUpdate:bool):
         self.backgroundScheduler.remove_all_jobs()
+        if rescheduleTimingPlanUpdate==True:
+            self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
 
 '''##############################################
                    Unit testing
@@ -260,10 +264,10 @@ if __name__ == "__main__":
     controllerCommInfo = (controllerIp, controllerPort)
 
     snmp = Snmp(controllerCommInfo)
-    asc = SignalController(snmp, 60)
+    asc = SignalController(snmp,10,100)
 
     # Create an object of Scheduler class
-    scheduler = Scheduler(controllerCommInfo, asc,1)
+    scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
     scheduleFile = open("schedule.json", "r")

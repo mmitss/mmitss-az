@@ -75,9 +75,6 @@ class Snmp:
         """
         if not DEBUGGING:
             self.session.set(oid, value, "int")
-
-        else: 
-            print(str(oid) + " is set to a value of " + str(value))
     ######################## Definition End: setValue(self, oid:str) ########################
 
 

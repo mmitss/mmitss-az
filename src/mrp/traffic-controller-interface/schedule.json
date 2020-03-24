@@ -6,24 +6,6 @@
 			"commandPhase": 4,
 			"commandStartTime": 0.0,
 			"commandType": 5
-		},
-		{
-			"commandEndTime": 15.0,
-			"commandPhase": 8,
-			"commandStartTime": 0.0,
-			"commandType": 5
-		},
-		{
-			"commandEndTime": 20.0,
-			"commandPhase": 2,
-			"commandStartTime": 0.0,
-			"commandType": 4
-		},
-		{
-			"commandEndTime": 20.0,
-			"commandPhase": 6,
-			"commandStartTime": 0.0,
-			"commandType": 4
 		}
 
 	]
