@@ -45,13 +45,19 @@ class SignalController:
     Arguments: (1) An object of Snmp class
     For example: asc = SignalController(snmp)
     """
-    def __init__(self, snmp:Snmp):
+    def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int):
 
         # Communication Parameters
         self.snmp = snmp
         
         self.currentTimingPlanId = 0
         self.currentTimingPlanJson = ""
+
+        self.timingPlanUpdateInterval_sec = timingPlanUpdateInterval_sec
+        
+        self.enableSpatBroadcast()
+        self.updateActiveTimingPlan()
+
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
     def enableSpatBroadcast(self):
@@ -64,7 +70,25 @@ class SignalController:
         self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6)
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
-    def phaseControl(self, action:int, phases:int):
+    
+    def getPhaseControl(self, action):
+        command = Command(0,0,0,0)
+        if action == command.CALL_VEH_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEHCALL))
+        elif action == command.CALL_PED_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_PEDCALL))
+        elif action == command.FORCEOFF_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_FORCEOFF))
+        elif action == command.HOLD_VEH_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_HOLD))
+        elif action == command.OMIT_VEH_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEH_OMIT))
+        elif action == command.OMIT_PED_PHASES:
+            value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_PED_OMIT))
+        
+        return value
+
+    def setPhaseControl(self, action:int, phases:int):
         """
         SignalController::phaseControl funtion is responsible for setting the NTCIP phase control
         in the signal controller. 
@@ -253,8 +277,6 @@ if __name__ == "__main__":
 
     snmp = Snmp(controllerCommInfo)
     # Create an object of SignalController class
-    controller = SignalController(snmp)
-    controller.enableSpatBroadcast()
-    controller.updateActiveTimingPlan()
-    print(controller.currentTimingPlanJson)
+    controller = SignalController(snmp, 10)
+    controller.setPhaseControl(1,3)
 

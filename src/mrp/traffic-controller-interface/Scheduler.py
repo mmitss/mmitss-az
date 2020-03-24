@@ -53,6 +53,7 @@ class Scheduler:
         # Scheduler parameters
         self.backgroundScheduler = BackgroundScheduler() 
         self.backgroundScheduler.start()
+        self.scheduleTimingPlanUpdate(self.signalController.updateActiveTimingPlan())
         
         self.commandId = 0
         self.currentCommandPool = []
@@ -60,26 +61,93 @@ class Scheduler:
         self.scheduleExecutionCompletion = True
 
         # Ensure that the scheduler shuts down when the app is exited
-        atexit.register(lambda: self.stopbackgroundScheduler())
-    
-    def markExecutionCompletion(self):
-        self.scheduleExecutionCompletion = True
+        atexit.register(lambda: self.stopBackgroundScheduler())
 
-    def processReceivedSchedule(self, receivedSchedule:json):
-        
-        self.scheduleExecutionCompletion = False
+    def clearOldSchedule(self, scheduleDataStructure):        
 
+        self.clearBackgroundScheduler()
+        self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec) # Restart the scheduled timing plan update 
         
+        clearHolds = True
+        clearPedOmit = True
+        clearVehOmit = True
+
+        for command in scheduleDataStructure:
+            if command.startTime == 0 or command.startTime == 0.0:
+                if command.action == command.HOLD_VEH_PHASES:
+                    if self.signalController.getPhaseControl(command.HOLD_VEH_PHASES) > 0:
+                        clearHolds = False
+                elif command.action == command.OMIT_VEH_PHASES:    
+                    if self.signalController.getPhaseControl(command.OMIT_VEH_PHASES) > 0:
+                        clearVehOmit = False
+                elif command.action == command.OMIT_PED_PHASES:
+                    if self.signalController.getPhaseControl(command.OMIT_PED_PHASES) > 0:
+                        clearPedOmit = False
+
+        if clearHolds == True:
+            self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)    
+            
+        if clearVehOmit == True:
+            self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)    
         
-        receivedSchedule = receivedSchedule["Schedule"]
-        maxEndTime = max([x['commandEndTime'] for x in receivedSchedule])
-        print(maxEndTime)
-        
+        if clearPedOmit == True:
+            self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)    
+
+        # Clear VehCalls
+        self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
+        # Clear PedCalls
+        self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
+        # Clear Forceoffs
+        self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)        
+
+    def processReceivedSchedule(self, scheduleJson:json):
+        # Formulate group command:
+        def formulateGroupCommand(currentGroup:list):
+
+            # Formulate the binary integer representation of the commandPhase:
+            def formulateBinaryIntegerRepresentation(groupPhases):
+                groupPhaseStr = list("00000000")
+                
+                if groupPhases[0] != 0:
+                    for phase in groupPhases:
+                        groupPhaseStr[phase-1]="1"
+                groupPhaseStr = groupPhaseStr[::-1]
+                groupPhaseStr = "".join(groupPhaseStr)
+                groupPhaseInt = int(groupPhaseStr,2)
+                
+                return groupPhaseInt    
+
+
+            groupCommand = currentGroup[0].action
+            groupStartTime = currentGroup[0].startTime
+            groupEndTime = min(command.endTime for command in currentGroup )
+            groupPhases = []
+            for command in currentGroup:
+                groupPhases = groupPhases + [command.phases]
+
+            groupPhaseInt = formulateBinaryIntegerRepresentation(groupPhases)
+
+            groupCommand = Command(groupPhaseInt, groupCommand, groupStartTime, groupEndTime)
+            return groupCommand
+            
+        # Create Schedule data structure
+        def createScheduleDataStructure(scheduleJson:json):
+            scheduleDataStructure = []
+            for command in scheduleJson:
+                commandObject = Command(command["commandPhase"], command["commandType"],  command["commandStartTime"], command["commandEndTime"])
+                scheduleDataStructure = scheduleDataStructure + [commandObject]
+
+            return scheduleDataStructure
+
+
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
-        receivedSchedule = sorted(receivedSchedule, key = lambda i: (i["commandStartTime"]))
+        scheduleJson = scheduleJson["Schedule"]
+        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
 
         # Read the json into a data structure
-        scheduleDataStructure = self.createScheduleDataStructure(receivedSchedule)
+        scheduleDataStructure = createScheduleDataStructure(scheduleJson)
+        
+        self.clearOldSchedule(scheduleDataStructure)    
 
         # Form action group
         index = 0
@@ -94,76 +162,33 @@ class Scheduler:
                     currentGroup = currentGroup + [command]
                     index = index+1
 
-            groupCommand =  self.formulateGroupCommand(currentGroup)
+            groupCommand =  formulateGroupCommand(currentGroup)
 
             # Check the end times of all items in the current group and add additional commands for the phases that end later.
             for command in currentGroup:
                 if command.endTime > groupCommand.endTime:
-                    scheduleDataStructure.append(Command(command.phase,command.action,groupCommand.endTime,command.endTime))
+                    scheduleDataStructure.append(Command(command.phases,command.action,groupCommand.endTime,command.endTime))
 
             groupMaxEndTime = max(command.endTime for command in currentGroup)
-            
+            groupEndCommand = Command(0,command.action,groupMaxEndTime,groupMaxEndTime)
 
-            groupEndCommand = Command(0,groupCommand.action,groupMaxEndTime,groupMaxEndTime)
-            scheduleDataStructure.append(groupEndCommand)
+            # Add the group end command at the endTime of the group only if it does not already exist in the scheduleDataStructure
+            addEndCommandFlag = any((elem.phases==groupEndCommand.phases and elem.action==groupEndCommand.action and elem.startTime==groupEndCommand.startTime) for elem in scheduleDataStructure)
+            if addEndCommandFlag == False:
+                scheduleDataStructure.append(groupEndCommand)
 
             # Resort the schedule data structure based on command start time
             scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
 
-            # If this is the first commandGroup of the schedule, check if it is already being executed inside the signal controller.
-
-            if groupIndex == 0:
-                # Check if the current groupCommand is already running in the signalController:
-                    
-                if False:
-                    pass
-                else:
-                    self.clearBackgroundScheduler()
-                    self.addCommandToSchedule(groupCommand)
-            else: 
-                self.addCommandToSchedule(groupCommand)
+            print(groupCommand)
+            self.addCommandToSchedule(groupCommand)
                 
             currentGroup = []
             index = index + 1
             groupIndex = groupIndex + 1
-
-
-
-
-    # Create Schedule data structure
-    def createScheduleDataStructure(self, scheduleJson:json):
-        scheduleDataStructure = []
-        for command in scheduleJson:
-            commandObject = Command(command["commandPhase"], command["commandType"],  command["commandStartTime"], command["commandEndTime"])
-            scheduleDataStructure = scheduleDataStructure + [commandObject]
-
-        return scheduleDataStructure
-
-
-    # Formulate group command:
-    def formulateGroupCommand(self, currentGroup:list):
-        groupCommand = currentGroup[0].action
-        groupStartTime = currentGroup[0].startTime
-        groupEndTime = min(command.endTime for command in currentGroup )
-        groupPhases = []
-        for command in currentGroup:
-            groupPhases = groupPhases + [command.phases]
-
-        groupPhaseInt = self.formulateBinaryIntegerRepresentation(groupPhases)
-
-        groupCommand = Command(groupPhaseInt, groupCommand, groupStartTime, groupEndTime)
-        return groupCommand
+        pass
     
 
-    # Formulate the binary integer representation of the commandPhase:
-    def formulateBinaryIntegerRepresentation(self, groupPhases):
-        groupPhaseStr = list("00000000")
-        for phase in groupPhases:
-            groupPhaseStr[phase-1]="1"
-        groupPhaseStr = groupPhaseStr[::-1]
-        groupPhaseStr = "".join(groupPhaseStr)
-        groupPhaseInt = int(groupPhaseStr,2)
-        return groupPhaseInt    
 
     
     '''##############################################
@@ -178,29 +203,50 @@ class Scheduler:
             self.commandId = 0
         self.commandId = self.commandId + 1
 
-        self.backgroundScheduler.add_job(self.signalController.phaseControl(), args = [commandObject.action, commandObject.phases], 
-                trigger = 'interval',
-                seconds = self.ntcipBackupTime_Sec-1,
-                start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
-                end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
-                id = str(self.commandId))
+        if commandObject.phases == 0:
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl(), args = [commandObject.action, commandObject.phases], 
+                    trigger = 'date', 
+                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    id = str(self.commandId))
+            return self.commandId
+        
+        else: 
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl(), args = [commandObject.action, commandObject.phases], 
+                    trigger = 'interval',
+                    seconds = self.ntcipBackupTime_Sec-1,
+                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
+                    id = str(self.commandId))
+            return self.commandId
+
+    def scheduleTimingPlanUpdate(self, interval:int):
+        self.backgroundScheduler.add_job(self.signalController.updateActiveTimingPlan(), 
+                    trigger = 'interval',
+                    seconds = interval,
+                    id = str(self.commandId))
         return self.commandId
 
-    def stopbackgroundScheduler(self):
-        self.clearBackgroudScheduler()
-        self.clearNtcipCommandsFromSignalController()
+    def stopBackgroundScheduler(self):
+        command = Command(0,0,0,0)
+        self.clearBackgroundScheduler()
+
+        # Clear VehCalls
+        self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
+        # Clear PedCalls
+        self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
+        # Clear Forceoffs
+        self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)
+        # Clear Holds
+        self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)
+        # Clear VehOmits
+        self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)
+        # Clear PedOmits
+        self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)
+        # Clear background scheudler
         self.backgroundScheduler.shutdown(wait=False)
         
     def clearBackgroundScheduler(self):
         self.backgroundScheduler.remove_all_jobs()
-        
-    def clearNtcipCommandsFromSignalController(self):    
-        self.signalController.phaseControl(1,0)
-        self.signalController.phaseControl(2,0)
-        self.signalController.phaseControl(3,0)
-        self.signalController.phaseControl(4,0)
-        self.signalController.phaseControl(5,0)
-        self.signalController.phaseControl(6,0)
 
 '''##############################################
                    Unit testing
@@ -213,8 +259,11 @@ if __name__ == "__main__":
     controllerPort = 501
     controllerCommInfo = (controllerIp, controllerPort)
 
+    snmp = Snmp(controllerCommInfo)
+    asc = SignalController(snmp, 60)
+
     # Create an object of Scheduler class
-    scheduler = Scheduler(controllerCommInfo, 10,1)
+    scheduler = Scheduler(controllerCommInfo, asc,1)
 
     # Open a dummy schedule and load it into a json object
     scheduleFile = open("schedule.json", "r")

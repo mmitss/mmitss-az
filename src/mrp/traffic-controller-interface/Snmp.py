@@ -37,6 +37,8 @@ Finally, for installing easysnmp libraries: https://easysnmp.readthedocs.io/en/l
 # Import the Session class from the easysnmp library. 
 from easysnmp import Session
 
+DEBUGGING = True
+
 class Snmp:
     """
     Snmp class provides easy API (for get and set) to the library used for SNMP sessions. 
@@ -47,7 +49,8 @@ class Snmp:
     def __init__(self, targetDeviceCommInfo:tuple):
         self.targetDeviceCommInfo = targetDeviceCommInfo
         self.targetDeviceIp, self.targetDevicePort = targetDeviceCommInfo
-        self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort)
+        if not DEBUGGING:
+            self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort)
     ######################## Definition End: __init__(self, targetDeviceCommInfo:tuple) ########################
 
     def getValue(self, oid:str):
@@ -55,8 +58,13 @@ class Snmp:
         Snmp::getValue function takes an OID as an argument. Through the established session this function queries the SNMP device for the requested value. 
         Finally the function returns the value received from the SNMP device for the requested OID.
         """
-        value = self.session.get(oid).value
-        return value
+        if not DEBUGGING:
+            value = self.session.get(oid).value
+            return value
+        
+        else:
+            value = 1
+            return value 
     ######################## Definition End: getValue(self, oid:str) ########################
 
 
@@ -65,7 +73,11 @@ class Snmp:
         Snmp::setValue function takes two arguments: (1) an OID for which the value needs to be set, and (2) the value.
         The function sets the requested value to the requested OID through the established SNMP session.
         """
-        self.session.set(oid, value, "int")
+        if not DEBUGGING:
+            self.session.set(oid, value, "int")
+
+        else: 
+            print(str(oid) + " is set to a value of " + str(value))
     ######################## Definition End: setValue(self, oid:str) ########################
 
 
