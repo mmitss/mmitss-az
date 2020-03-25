@@ -61,8 +61,8 @@ def main():
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
-    permissiveEnabled = config["PermissiveEnabled"]
-    splitPhases = config["SplitPhases"]
+    permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
+    splitPhases = config["SignalController"]["SplitPhases"]
 
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
     currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases)
@@ -73,7 +73,7 @@ def main():
     spatObject.setRegionalID(config["RegionalID"])
 
     # Read controllerIp from the config file and store it.
-    controllerIp = config["ControllerIp"]
+    controllerIp = config["SignalController"]["IpAddress"]
 
     msgCnt = 0
     spatMapMsgCount = 0

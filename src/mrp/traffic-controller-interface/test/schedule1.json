@@ -1,0 +1,30 @@
+{
+	"MsgType": "Schedule",
+	"Schedule": [
+		{
+			"commandEndTime": 0.0,
+			"commandPhase": 4,
+			"commandStartTime": 0.0,
+			"commandType": 5
+		},
+		{
+			"commandEndTime": 0.0,
+			"commandPhase": 4,
+			"commandStartTime": 0.0,
+			"commandType": 5
+		},
+		{
+			"commandEndTime": 40.0,
+			"commandPhase": 5,
+			"commandStartTime": 5.0,
+			"commandType": 5
+		},
+		{
+			"commandEndTime": 40.0,
+			"commandPhase": 6,
+			"commandStartTime": 5.0,
+			"commandType": 5
+		}
+
+	]
+}

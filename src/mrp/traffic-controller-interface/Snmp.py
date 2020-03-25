@@ -37,7 +37,7 @@ Finally, for installing easysnmp libraries: https://easysnmp.readthedocs.io/en/l
 # Import the Session class from the easysnmp library. 
 from easysnmp import Session
 
-DEBUGGING = True
+DEBUGGING = False
 
 class Snmp:
     """
@@ -82,7 +82,10 @@ class Snmp:
                    Unit testing
 ##############################################'''
 if __name__ == "__main__":
-    signalControllerIP = "10.12.6.17"
+    signalControllerIP = "10.12.6.102"
     signalControllerPort = 501
     signalControllerCommInfo = (signalControllerIP, signalControllerPort)
     snmp = Snmp(signalControllerCommInfo)
+    print(snmp.getValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1"))
+    print(snmp.setValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1",6))
+    print(snmp.getValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1"))

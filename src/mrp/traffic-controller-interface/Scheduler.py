@@ -179,15 +179,23 @@ class Scheduler:
                 scheduleDataStructure = scheduleDataStructure + [commandObject]
 
             return scheduleDataStructure
+
+           
+
     
     ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
+        # Delete the commands with invalid combination of startTime and EndTime
+        scheduleJson = [i for i in scheduleJson if not ((i["commandStartTime"] == i["commandEndTime"]) or (i["commandStartTime"] > i["commandEndTime"]))] 
+        
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
 
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
+
+
         
         clearOldSchedule(scheduleDataStructure)    
 
@@ -243,6 +251,9 @@ class Scheduler:
             self.commandId = 0
         self.commandId = self.commandId + 1
 
+        if commandObject.startTime == 0.0:
+            commandObject.startTime = 0.001 # Add a small delay as the startTime can not be NOW
+
         if commandObject.phases == 0: # Then add a single instance of a function call that clears the phase control.
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'date', 
@@ -250,12 +261,7 @@ class Scheduler:
                     id = str(self.commandId))
             return self.commandId
         
-        else: # first add a single instance of the a function call for setting phase control at startTime, and then add a series of function calls till endTime, separated by interval corresponding to ntcipBackupTime.
-            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
-                    trigger = 'date', 
-                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
-                    id = str(self.commandId))
-            self.commandId = self.commandId + 1            
+        else: # Then add a series of function calls starting at startTime, ending at endTime and separated by ntcipBackupTime.           
             
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'interval',

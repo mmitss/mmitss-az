@@ -253,6 +253,11 @@ class SignalController:
                 oid = (EconoliteMib.PHASE_PARAMETERS_RED_CLR) + '.' + str(currentTimingPlanId) + "." + str(i+1)
                 redClear[i] = int(self.snmp.getValue(oid))*0.1
 
+            phaseRing = [0 for phase in range(0,8)]
+            for i in range(0,8):
+                oid = (StandardMib.PHASE_PARAMETERS_RING) +  "." + str(i+1)
+                phaseRing[i] = int(self.snmp.getValue(oid))
+
             activeTimingPlan =  dict({"TimingPlan":{
                                 "PhaseNumber": phaseNumber,
                                 "PedWalk": pedWalk,
@@ -261,7 +266,8 @@ class SignalController:
                                 "Passage": passage,
                                 "MaxGreen": maxGreen,
                                 "YellowChange": yellowChange,
-                                "RedClear": redClear
+                                "RedClear": redClear,
+                                "PhaseRing": phaseRing
             }})
 
             self.currentTimingPlanJson =  json.dumps(activeTimingPlan)

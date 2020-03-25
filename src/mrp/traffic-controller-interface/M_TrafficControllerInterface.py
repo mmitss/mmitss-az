@@ -57,7 +57,7 @@ def main():
     observerPort = config["PortNumber"]["TrafficControllerObserver"]
     observer_commInfo = (mrpIp, observerPort)
 
-    signalControllerIp = config["SignalController"]["ControllerIp"]
+    signalControllerIp = config["SignalController"]["IpAddress"]
     signalControllerNtcipPort = config["SignalController"]["NtcipPort"]
     signalController_commInfo = (signalControllerIp, signalControllerNtcipPort)
     timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
@@ -71,11 +71,11 @@ def main():
         data, address = s.recvfrom(2048)
         receivedMessage = json.loads(data.decode())
         if receivedMessage["MsgType"]=="Schedule":
-            receivedSchedule = receivedMessage["Schedule"]
-            if receivedSchedule == "Clear":
+            if receivedMessage["Schedule"] == "Clear":
                 scheduler.clearBackgroundScheduler(True)
                 scheduler.clearAllNtcipCommandsFromSignalController()
-            else: scheduler.processReceivedSchedule(receivedSchedule)
+            else: 
+                scheduler.processReceivedSchedule(receivedMessage)
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             asc.sendCurrentAndNextPhasesDict(observer_commInfo, address)
         elif receivedMessage["MsgType"]=="TimingPlanRequest":
@@ -83,3 +83,6 @@ def main():
             s.sendto(currentTimingPlan.encode(),address)
         else: print("Invalid message received!")
     s.close()
+
+if __name__ == "__main__":
+    main()    

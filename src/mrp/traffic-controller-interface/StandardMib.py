@@ -1,3 +1,5 @@
+PHASE_PARAMETERS_RING           =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.22."
+
 PHASE_GROUP_STATUS_NEXT         =   "1.3.6.1.4.1.1206.4.2.1.1.4.1.11.1"
 
 # Phase Control
