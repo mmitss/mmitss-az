@@ -280,9 +280,15 @@ class Scheduler:
         stopBackgroundScheduler function first clears all jobs from the backgroundScheduler, clears all NTCIP commands in the signal controller, and then shuts down
         the backgroundScheduler.This function is intended to run at the exit.
         """
-        command = Command(0,0,0,0)
+        
         self.clearBackgroundScheduler(False)
+        self.clearAllNtcipCommandsFromSignalController()
+        
+        # shut down the background scheudler
+        self.backgroundScheduler.shutdown(wait=False)
 
+    def clearAllNtcipCommandsFromSignalController(self):
+        command = Command(0,0,0,0)
         # Clear VehCalls
         self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
         # Clear PedCalls
@@ -295,8 +301,6 @@ class Scheduler:
         self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)
         # Clear PedOmits
         self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)
-        # shut down the background scheudler
-        self.backgroundScheduler.shutdown(wait=False)
         
     def clearBackgroundScheduler(self, rescheduleTimingPlanUpdate:bool):
         """
