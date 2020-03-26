@@ -6,7 +6,7 @@
 
 ***************************************************************************************
 
-M_TrafficControllerInterface.py
+M_TrafficControllerCommander.py
 Created by: Niraj Vasant Altekar
 University of Arizona   
 College of Engineering
@@ -18,7 +18,7 @@ in the Systems and Industrial Engineering Department.
 
 Description:
 ------------
-This is a wrapper module for the traffic controller interface software. It performs
+This is a wrapper module for the traffic controller commander software. It performs
 following functions:
 (1) Listens for messages from other MMITSS components
 (2) If the received message is a schedule:
@@ -51,12 +51,12 @@ def main():
     # Open a socket and bind it to the IP and port dedicated for this application:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
-    port = config["PortNumber"]["TrafficControllerInterface"]
+    port = config["PortNumber"]["TrafficControllerCommander"]
     tci_commInfo = (mrpIp, port)
     s.bind(tci_commInfo)
     
     # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
-    observerPort = config["PortNumber"]["TrafficControllerObserver"]
+    observerPort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
     observer_commInfo = (mrpIp, observerPort)
 
     # Create a tuple to store the communication address of the traffic signal controller:

@@ -55,7 +55,7 @@ def main():
     pedAppPort = 6060
     pedAppAddress = (pedAppIp, pedAppPort)
 
-    tci_currPhasePort = config["PortNumber"]["TrafficControllerObserver"]
+    tci_currPhasePort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
     tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
 
     # Store map payload in a string
