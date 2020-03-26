@@ -95,10 +95,12 @@ class Scheduler:
             """     
             self.clearBackgroundScheduler(True)
             
+            # Initialize flags to clear Holds, PedOmits, and VehOmits
             clearHolds = True
             clearPedOmit = True
             clearVehOmit = True
 
+            # Update the flags based on the commands in the schedule
             for command in scheduleDataStructure:
                 if command.startTime == 0 or command.startTime == 0.0:
                     if command.action == command.HOLD_VEH_PHASES:
@@ -111,12 +113,15 @@ class Scheduler:
                         if self.signalController.getPhaseControl(command.OMIT_PED_PHASES) > 0:
                             clearPedOmit = False
 
+            # Clear Holds if its flag is True    
             if clearHolds == True:
                 self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)    
-                
+            
+            # Clear VehOmits if its flag is True    
             if clearVehOmit == True:
                 self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)    
-            
+
+            # Clear PedOmits if its flag is True            
             if clearPedOmit == True:
                 self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)    
 
@@ -155,7 +160,8 @@ class Scheduler:
                 
                 return groupPhaseInt    
 
-
+            # End the group at time which is minimum of all commands' end time. Additional commands will be added later in the code
+            # for controls that end later.
             groupCommand = currentGroup[0].action
             groupStartTime = currentGroup[0].startTime
             groupEndTime = min(command.endTime for command in currentGroup )
@@ -179,39 +185,34 @@ class Scheduler:
                 scheduleDataStructure = scheduleDataStructure + [commandObject]
 
             return scheduleDataStructure
-
-           
-
     
     ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
-        # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = scheduleJson["Schedule"]
+
         # Delete the commands with invalid combination of startTime and EndTime
         scheduleJson = [i for i in scheduleJson if not ((i["commandStartTime"] == i["commandEndTime"]) or (i["commandStartTime"] > i["commandEndTime"]))] 
         
+        # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
 
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
-
-        
+        # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
         clearOldSchedule(scheduleDataStructure)    
 
         # Form action group
         index = 0
-        groupIndex = 0
         while index < len(scheduleDataStructure):
             
             currentGroup = [scheduleDataStructure[index]]
 
-            # Look for all commands in the list that has same start time and the type
+            # Look for all commands in the list that has same start time and the type, and gather them together
             for command in scheduleDataStructure:
                 if (command != currentGroup[0] and (command.startTime == currentGroup[0].startTime) and (command.action == currentGroup[0].action)):
                     currentGroup = currentGroup + [command]
                     index = index+1
-
             groupCommand =  formulateGroupCommand(currentGroup)
 
             # Check the end times of all items in the current group and add additional commands for the phases that end later.
@@ -219,6 +220,7 @@ class Scheduler:
                 if command.endTime > groupCommand.endTime:
                     scheduleDataStructure.append(Command(command.phases,command.action,groupCommand.endTime,command.endTime))
 
+            # Find out the maximum end time when entire group command ends, and formulate a groupEndCommand (clear) at the maximum end time.
             groupMaxEndTime = max(command.endTime for command in currentGroup)
             groupEndCommand = Command(0,command.action,groupMaxEndTime,groupMaxEndTime)
 
@@ -230,11 +232,12 @@ class Scheduler:
             # Resort the schedule data structure based on command start time
             scheduleDataStructure.sort(key=lambda x: x.startTime, reverse=False)
 
+            # Add the group command to the BackgroundScheduler
             self.addCommandToSchedule(groupCommand)
                 
+            # Clear the current group before the formulation of the next group.
             currentGroup = []
             index = index + 1
-            groupIndex = groupIndex + 1    
     
     '''##############################################
                     Scheduler Methods
@@ -251,10 +254,13 @@ class Scheduler:
             self.commandId = 0
         self.commandId = self.commandId + 1
 
+        # Add a small delay to startTime, of the startTime is 0.0
         if commandObject.startTime == 0.0:
-            commandObject.startTime = 0.001 # Add a small delay as the startTime can not be NOW
+            commandObject.startTime = 0.001 
 
-        if commandObject.phases == 0: # Then add a single instance of a function call that clears the phase control.
+        # If the phase control needs to be cleared (command.phases == 0), 
+        # then add a single instance of a function call that clears the phase control.
+        if commandObject.phases == 0: 
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
