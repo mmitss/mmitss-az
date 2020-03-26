@@ -70,7 +70,7 @@ class SignalController:
         in the controller menu. This function requires no arguments.
         """
         self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6)
-        print("SPAT Broadcast Set Successfully!")
+        print("SPAT Broadcast Set Successfully at time:" + str(time.time()))
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
     
@@ -271,9 +271,7 @@ class SignalController:
             }})
 
             self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
-            print("Current Timing Plan Updated")
-        else: print("Timing plan is not changed. Hence, not updated")
-
+            print("Detected a new timing plan - updated the local timing plan at time:" + str(time.time()))
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
 

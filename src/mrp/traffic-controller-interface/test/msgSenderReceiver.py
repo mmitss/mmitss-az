@@ -1,7 +1,7 @@
 import socket
 import json
 
-fileName = "test/req-plan.json"
+fileName = "test/req-curr.json"
 
 # Read a config file into a json object:
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')

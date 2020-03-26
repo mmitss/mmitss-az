@@ -72,9 +72,11 @@ def main():
         receivedMessage = json.loads(data.decode())
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
+                print("Received a clear request at time:" + str(time.time()))
                 scheduler.clearBackgroundScheduler(True)
                 scheduler.clearAllNtcipCommandsFromSignalController()
-            else: 
+            else:
+                print("Received a new schedule at time:" + str(time.time())) 
                 scheduler.processReceivedSchedule(receivedMessage)
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             asc.sendCurrentAndNextPhasesDict(observer_commInfo, address)

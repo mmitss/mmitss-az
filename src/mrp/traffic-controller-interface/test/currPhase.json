@@ -1,0 +1,17 @@
+{
+    "currentPhases": [
+        {
+            "Phase": 2,
+            "State": 6,
+            "ElapsedTime": 566
+        },
+        {
+            "Phase": 6,
+            "State": 6,
+            "ElapsedTime": 566
+        }
+    ],
+    "nextPhases": [
+        0
+    ]
+}
