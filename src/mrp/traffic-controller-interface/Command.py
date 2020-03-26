@@ -46,7 +46,7 @@ class Command:
         self.startTime = startTime
         self.endTime = endTime
 
-        # Define Command Actions:
+        # Define Command Actions (Used in phase controls):
         self.CALL_VEH_PHASES = 1
         self.CALL_PED_PHASES = 2
         self.FORCEOFF_PHASES = 3

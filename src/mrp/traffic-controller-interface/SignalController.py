@@ -38,7 +38,6 @@ import EconoliteMib
 from Command import Command
 from Snmp import Snmp
 
-
 class SignalController:
     """
     SignalController class encapsulates all methods that interact with the signal controller. 
@@ -47,17 +46,20 @@ class SignalController:
     For example: asc = SignalController(snmp, 10)
     """
     def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int, ntcipBackupTime_sec:int):
-
-        # Communication Parameters
-        self.snmp = snmp
         
-        self.currentTimingPlanId = 0
-        self.currentTimingPlanJson = ""
-
+        # Read the arguments into local variables:
+        self.snmp = snmp
         self.timingPlanUpdateInterval_sec = timingPlanUpdateInterval_sec
         self.ntcipBackupTime_sec = ntcipBackupTime_sec
         
+        # Initialize current timing plan ID and corresponding JSON string
+        self.currentTimingPlanId = 0
+        self.currentTimingPlanJson = ""
+
+        # Enable the broadcast of SPAT message in the signal controller       
         self.enableSpatBroadcast()
+        
+        # Read the currently active timing plan and store it into a JSON string
         self.updateActiveTimingPlan()
 
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
@@ -75,7 +77,15 @@ class SignalController:
     
     
     def getPhaseControl(self, action:int):
+        """
+        SignalController::getPhaseControl function takes an action ID as an argument, and returns the integer representation of bit-string denoting 
+        which phases are currently executing the action.
+        Arguments: (1) Action
+        """
+
+        # Create a dummy command to get the enumerations corresponding to each phase control action
         command = Command(0,0,0,0)
+
         if action == command.CALL_VEH_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEHCALL))
         elif action == command.CALL_PED_PHASES:
@@ -93,7 +103,7 @@ class SignalController:
 
     def setPhaseControl(self, action:int, phases:int):
         """
-        SignalController::phaseControl funtion is responsible for setting the NTCIP phase control
+        SignalController::setPhaseControl funtion is responsible for setting the NTCIP phase control
         in the signal controller. 
         Arguments: 
         (1) Action:

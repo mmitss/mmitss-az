@@ -37,6 +37,11 @@ Finally, for installing easysnmp libraries: https://easysnmp.readthedocs.io/en/l
 # Import the Session class from the easysnmp library. 
 from easysnmp import Session
 
+# While debugging, if there is no access to a real signal controller, set the DEBUGGING flag to True.
+# In this case, the module will mock the snmpGet function, by always returning a value of 1. 
+# This feature is developed so that testing of other components is not hampered if there is no access
+# to real signal controller.
+
 DEBUGGING = False
 
 class Snmp:
@@ -58,6 +63,7 @@ class Snmp:
         Snmp::getValue function takes an OID as an argument. Through the established session this function queries the SNMP device for the requested value. 
         Finally the function returns the value received from the SNMP device for the requested OID.
         """
+        
         if not DEBUGGING:
             value = self.session.get(oid).value
             return value

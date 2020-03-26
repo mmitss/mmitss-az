@@ -293,7 +293,10 @@ class Scheduler:
         the backgroundScheduler.This function is intended to run at the exit.
         """
         
+        # Clear all jobs from the BackgroundScheduler
         self.clearBackgroundScheduler(False)
+
+        # Clear all phase controls from the traffic signal controller
         self.clearAllNtcipCommandsFromSignalController()
         
         # shut down the background scheudler
