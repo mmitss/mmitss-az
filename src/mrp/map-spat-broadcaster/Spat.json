@@ -1,149 +1,147 @@
 {
-	"MsgType": "SPAT",   
-	"Spat":
-    {
-        "IntersectionState":
-        {
+    "MsgType": "SPaT",
+    "Timestamp_verbose": "2020-03-26 04:20:09.898820",
+    "Timestamp_posix": 1585221609.898842,
+    "Spat": {
+        "IntersectionState": {
             "regionalID": 0,
-            "intersectionID": 1003
+            "intersectionID": 44383
         },
-        "msgCnt": 3,
-        "minuteOfYear": 120001,
-        "msOfMinute": 50001,
+        "msgCnt": 10,
+        "minuteOfYear": 122660,
+        "msOfMinute": 9897,
         "status": "0000000000000000",
-        "phaseState":
-        [
+        "phaseState": [
             {
                 "phaseNo": 1,
                 "currState": 3,
-                "startTime": 50,
-                "minEndTime": 51,
-                "maxEndTime": 52,
-                "elapsedTime": 54
+                "startTime": 0,
+                "minEndTime": 220,
+                "maxEndTime": 820,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 2,
-                "currState": 3,
-                "startTime": 55,
-                "minEndTime": 56,
-                "maxEndTime": 57,
-                "elapsedTime": 58
+                "currState": 8,
+                "startTime": 0,
+                "minEndTime": 30,
+                "maxEndTime": 30,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 3,
                 "currState": 3,
-                "startTime": 59,
-                "minEndTime": 60,
-                "maxEndTime": 61,
-                "elapsedTime": 62
+                "startTime": 0,
+                "minEndTime": 40,
+                "maxEndTime": 40,
+                "elapsedTime": 8
             },
             {
                 "phaseNo": 4,
                 "currState": 3,
-                "startTime": 63,
-                "minEndTime": 64,
-                "maxEndTime": 65,
-                "elapsedTime": 66
+                "startTime": 0,
+                "minEndTime": 130,
+                "maxEndTime": 430,
+                "elapsedTime": 8
             },
             {
                 "phaseNo": 5,
                 "currState": 3,
-                "startTime": 67,
-                "minEndTime": 68,
-                "maxEndTime": 69,
-                "elapsedTime": 70
+                "startTime": 0,
+                "minEndTime": 220,
+                "maxEndTime": 820,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 6,
-                "currState": 3,
-                "startTime": 71,
-                "minEndTime": 72,
-                "maxEndTime": 73,
-                "elapsedTime": 74
+                "currState": 8,
+                "startTime": 0,
+                "minEndTime": 30,
+                "maxEndTime": 30,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 7,
                 "currState": 3,
-                "startTime": 75,
-                "minEndTime": 76,
-                "maxEndTime": 77,
-                "elapsedTime": 78
+                "startTime": 0,
+                "minEndTime": 40,
+                "maxEndTime": 40,
+                "elapsedTime": 8
             },
             {
                 "phaseNo": 8,
                 "currState": 3,
-                "startTime": 79,
-                "minEndTime": 80,
-                "maxEndTime": 81,
-                "elapsedTime": 82
+                "startTime": 0,
+                "minEndTime": 130,
+                "maxEndTime": 430,
+                "elapsedTime": 8
             }
         ],
-        "pedPhaseState":
-        [
+        "pedPhaseState": [
             {
                 "phaseNo": 1,
                 "currState": 3,
-                "startTime": 83,
-                "minEndTime": 84,
-                "maxEndTime": 85,
-                "elapsedTime": 86
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 2,
                 "currState": 3,
-                "startTime": 87,
-                "minEndTime": 88,
-                "maxEndTime": 89,
-                "elapsedTime": 90
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 3,
                 "currState": 3,
-                "startTime": 91,
-                "minEndTime": 92,
-                "maxEndTime": 93,
-                "elapsedTime": 94
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 4,
                 "currState": 3,
-                "startTime": 95,
-                "minEndTime": 96,
-                "maxEndTime": 97,
-                "elapsedTime": 98
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 5,
                 "currState": 3,
-                "startTime": 99,
-                "minEndTime": 100,
-                "maxEndTime": 101,
-                "elapsedTime": 102
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 6,
                 "currState": 3,
-                "startTime": 103,
-                "minEndTime": 104,
-                "maxEndTime": 105,
-                "elapsedTime": 106
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 7,
                 "currState": 3,
-                "startTime": 107,
-                "minEndTime": 108,
-                "maxEndTime": 109,
-                "elapsedTime": 110
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
             },
             {
                 "phaseNo": 8,
                 "currState": 3,
-                "startTime": 111,
-                "minEndTime": 112,
-                "maxEndTime": 113,
-                "elapsedTime": 114
-            }            
-        ]       
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            }
+        ]
     }
 }
