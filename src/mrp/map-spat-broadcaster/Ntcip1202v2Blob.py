@@ -14,7 +14,7 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
 
-  Revision History:
+  Description:
   1. This is the initial revision. NTCIP1202v2Blob class does the following tasks:
     -> Read the NTCIP1202v2 blob received from a trafficController.
     -> Manually unpack the blob using byte-structure provided in Econolite SPAT Guide.
