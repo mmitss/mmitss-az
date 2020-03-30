@@ -1,7 +1,7 @@
 import socket
 import json
 
-fileName = "test/scheduleclear.json"
+fileName = "test/schedule1.json"
 
 # Read a config file into a json object:
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -13,7 +13,7 @@ solverPort = config["PortNumber"]["PrioritySOlver"]
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hostIp,solverPort))
 
-tciPort = config["PortNumber"]["TrafficControllerInterface"]
+tciPort = config["PortNumber"]["TrafficControllerCommander"]
 tci_commInfo = (hostIp, tciPort)
 
 f = open(fileName, 'r')

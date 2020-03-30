@@ -49,7 +49,10 @@ DEBUGGING = False # TESTING
 class Snmp:
     """
     Snmp class provides easy API (for get and set) to the library used for SNMP sessions. 
-    A single SNMP session is opened in the constructor of Snmp class and it is reused in further calls to SNMP device.
+    A single SNMP session is opened in the constructor of Snmp class and it is reused in further calls to SNMP device. 
+    The program terminates if the session can not be established.
+    After establishing a session, if there are any communication issues in the network, the session still remains active, but throws exceptions at each get or set call.
+    Once the communication issues are resolved, the get and set calls start working again.
     A tuple containing the IP address (string) and NTCIP port (integer) of the target SNMP device needs to be provided as an argument for instantiating an object of this class.
     For example: snmpObject = Snmp(("10.12.6.10", 501))
     """
@@ -79,6 +82,26 @@ class Snmp:
             return value 
     ######################## Definition End: getValue(self, oid:str) ########################
 
+    def getBulk(self, oidList:list):
+        """
+        Snmp::getValue function takes an OID as an argument. Through the established session this function queries the SNMP device for the requested value. 
+        Finally the function returns the value received from the SNMP device for the requested OID.
+        """
+        
+        if not DEBUGGING: # TESTING
+            objectList = self.session.get(oidList)
+            valueList = []
+            for eachObject in objectList:
+                valueList = valueList + [eachObject.value]
+
+            return valueList
+        
+        else:
+            valueList = []
+            for oid in oidList:
+                valueList = valueList + ['1']
+            return valueList
+    ######################## Definition End: getValue(self, oid:str) ########################
 
     def setValue(self, oid:str, value:int):
         """
@@ -98,6 +121,4 @@ if __name__ == "__main__":
     signalControllerPort = 501
     signalControllerCommInfo = (signalControllerIP, signalControllerPort)
     snmp = Snmp(signalControllerCommInfo)
-    print(snmp.getValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1"))
-    print(snmp.setValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1",6))
-    print(snmp.getValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1"))
+    print(snmp.getBulk(["1.3.6.1.4.1.1206.3.5.2.1.2.1.19.1.1","1.3.6.1.4.1.1206.3.5.2.1.2.1.19.1.2"]))

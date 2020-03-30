@@ -13,7 +13,7 @@ solverPort = config["PortNumber"]["PrioritySOlver"]
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hostIp,solverPort))
 
-tciPort = config["PortNumber"]["TrafficControllerInterface"]
+tciPort = config["PortNumber"]["TrafficControllerCommander"]
 tci_commInfo = (hostIp, tciPort)
 
 f = open(fileName, 'r')

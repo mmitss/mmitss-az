@@ -51,9 +51,9 @@ def main():
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
 
-    config = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
-    clients_spatBlob = config["spat"]["blob"]
-    clients_spatJson = config["spat"]["json"]
+    clientsJson = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
+    clients_spatBlob = clientsJson["spat"]["blob"]
+    clients_spatJson = clientsJson["spat"]["json"]
 
     tci_currPhasePort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
     tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
