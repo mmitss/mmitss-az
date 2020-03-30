@@ -272,7 +272,6 @@ class SignalController:
                 oid = (StandardMib.PHASE_PARAMETERS_RING) +  "." + str(i+1)
                 phaseRingOidList = phaseRingOidList + [oid]
 
-            startTime = time.time()
             phaseNumber = self.snmp.getBulk(phaseNumberOidList)
             pedWalk = self.snmp.getBulk(pedWalkOidList)
             pedClear = self.snmp.getBulk(pedClearOidList)
@@ -282,9 +281,6 @@ class SignalController:
             yellowChange = self.snmp.getBulk(yellowChangeOidList)
             redClear = self.snmp.getBulk(redClearOidList)
             phaseRing = self.snmp.getBulk(phaseRingOidList)
-            endTime = time.time()
-            leadTime = endTime - startTime
-            print(leadTime)
             
             for i in range(len(phaseNumber)):
                 phaseNumber[i] = int(phaseNumber[i])
