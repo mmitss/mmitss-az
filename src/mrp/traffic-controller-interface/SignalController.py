@@ -227,50 +227,78 @@ class SignalController:
         if (currentTimingPlanId != self.currentTimingPlanId):
             self.currentTimingPlanId = currentTimingPlanId
 
-            phaseNumber = [0 for phase in range(0,8)]
+            
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_PHASE_NUMBER) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                phaseNumber[i] = int(self.snmp.getValue(oid))
+                oidList = oidList + [oid]
+                phaseNumber = self.snmp.getBulk(oidList)
+            for i in range(len(phaseNumber)):
+                phaseNumber[i] = int(phaseNumber[i])
 
-            pedWalk = [0 for phase in range(0,8)]
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_PEDWALK) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                pedWalk[i] = int(self.snmp.getValue(oid))
+                oidList = oidList + [oid]
+                pedWalk = self.snmp.getBulk(oidList)
+            for i in range(len(pedWalk)):
+                pedWalk[i] = int(pedWalk[i])
 
-            pedClear = [0 for phase in range(0,8)]
+            oidList = []    
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_PEDCLEAR) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                pedClear[i] = int(self.snmp.getValue(oid))
-            
-            minGreen = [0 for phase in range(0,8)]
+                oidList = oidList + [oid]
+                pedClear = self.snmp.getBulk(oidList)
+            for i in range(len(pedClear)):
+                pedClear[i] = int(pedClear[i])
+
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_MIN_GRN) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                minGreen[i] = int(self.snmp.getValue(oid)) 
-            
-            passage = [0 for phase in range(0,8)]
+                oidList = oidList + [oid]
+                minGreen = self.snmp.getBulk(oidList)
+            for i in range(len(minGreen)):
+                minGreen[i] = int(minGreen[i])
+                            
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_PASSAGE) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                passage[i] = int(self.snmp.getValue(oid))*0.1
-            
-            maxGreen = [0 for phase in range(0,8)]
+                oidList = oidList + [oid]
+                passage = self.snmp.getBulk(oidList)
+            for i in range(len(passage)):
+                passage[i] = int(passage[i])
+
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_MAX_GRN) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                maxGreen[i] = int(self.snmp.getValue(oid))
-            
-            yellowChange = [0 for phase in range(0,8)]
+                oidList = oidList + [oid]
+                maxGreen = self.snmp.getBulk(oidList)
+            for i in range(len(maxGreen)):
+                maxGreen[i] = int(maxGreen[i])
+
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_YELLOW_CHANGE) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                yellowChange[i] = int(self.snmp.getValue(oid))*0.1
-            
-            redClear = [0 for phase in range(0,8)]
+                oidList = oidList + [oid]
+                yellowChange = self.snmp.getBulk(oidList)
+            for i in range(len(yellowChange)):
+                yellowChange[i] = int(yellowChange[i])
+
+            oidList = []
             for i in range(0,8):
                 oid = (EconoliteMib.PHASE_PARAMETERS_RED_CLR) + '.' + str(currentTimingPlanId) + "." + str(i+1)
-                redClear[i] = int(self.snmp.getValue(oid))*0.1
+                oidList = oidList + [oid]
+                redClear = self.snmp.getBulk(oidList)
+            for i in range(len(redClear)):
+                redClear[i] = int(redClear[i])
 
-            phaseRing = [0 for phase in range(0,8)]
+            oidList = []
             for i in range(0,8):
                 oid = (StandardMib.PHASE_PARAMETERS_RING) +  "." + str(i+1)
-                phaseRing[i] = int(self.snmp.getValue(oid))
+                oidList = oidList + [oid]
+                phaseRing = self.snmp.getBulk(oidList)
+            for i in range(len(phaseRing)):
+                phaseRing[i] = int(phaseRing[i])
 
             activeTimingPlan =  dict({"TimingPlan":{
                                 "PhaseNumber": phaseNumber,
@@ -301,7 +329,7 @@ if __name__ == "__main__":
     snmp = Snmp(controllerCommInfo)
     # Create an object of SignalController class
     controller = SignalController(snmp, 10, 5)
-    controller.setPhaseControl(1,3)
-
+    controller.updateActiveTimingPlan()
+    print(controller.currentTimingPlanJson)
     # Write more test cases - active timing plan
 

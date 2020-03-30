@@ -84,8 +84,8 @@ class Snmp:
 
     def getBulk(self, oidList:list):
         """
-        Snmp::getValue function takes an OID as an argument. Through the established session this function queries the SNMP device for the requested value. 
-        Finally the function returns the value received from the SNMP device for the requested OID.
+        Snmp::getBulk function takes a list of OIDs as an argument. Through the established session this function queries the SNMP device for the requested OIDs. 
+        Finally the function returns the list of values received from the SNMP device for the requested list of OIDs.
         """
         
         if not DEBUGGING: # TESTING
