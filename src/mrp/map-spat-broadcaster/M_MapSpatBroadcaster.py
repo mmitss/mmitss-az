@@ -51,11 +51,9 @@ def main():
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
 
-    # NOTE: Move to configuration file - All consumers - Publish and Subscribe - Look for a package.
-
-    pedAppIp = '10.12.6.59'
-    pedAppPort = 6060
-    pedAppAddress = (pedAppIp, pedAppPort)
+    config = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
+    clients_spatBlob = config["spat"]["blob"]
+    clients_spatJson = config["spat"]["json"]
 
     tci_currPhasePort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
     tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
@@ -82,9 +80,13 @@ def main():
     spatMapMsgCount = 0
     while True:
         try:
-            spatBlob, addr = outerSocket.recvfrom(1024)            
+            spatBlob, addr = outerSocket.recvfrom(1024)     
+            # Send spat blob to external clients:       
             if addr[0] == controllerIp:
-                outerSocket.sendto(spatBlob, pedAppAddress)
+                for client in clients_spatBlob:
+                    address = (client["IP"], client["Port"])
+                    outerSocket.sendto(spatBlob, address)
+                        
                 currentBlob.processNewData(spatBlob)
                 if(msgCnt < 127):
                     msgCnt = msgCnt + 1
@@ -98,6 +100,12 @@ def main():
                 outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
                 #print(currentPhasesJson)
                 print("Sent SPAT to MsgEncoder")
+                
+                # Send spat json to external clients:
+                for client in clients_spatJson:
+                    address = (client["IP"], client["Port"])
+                    outerSocket.sendto(spatJsonString.encode(), address)
+
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
                     outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
