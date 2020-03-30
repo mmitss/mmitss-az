@@ -254,9 +254,10 @@ class Scheduler:
             self.commandId = 0
         self.commandId = self.commandId + 1
 
-        # Add a small delay to startTime, of the startTime is 0.0
+        # The BackgroundScheduler does not support the tasks that need to be done NOW, as for such tasks, there is no need of using a scheduler.
+        # For such tasks, that is for commands with startTime = 0.0, a small delay needs to be added.
         if commandObject.startTime == 0.0:
-            commandObject.startTime = 0.001 # IF we want to do something NOW then we dont need a ascheduler..........
+            commandObject.startTime = 0.001 
 
         # If the phase control needs to be cleared (command.phases == 0), 
         # then add a single instance of a function call that clears the phase control.

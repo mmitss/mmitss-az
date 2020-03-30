@@ -21,10 +21,19 @@ Description:
 This module stores the OIDs of vendor specific NTCIP objects. These are special objects
 which are not available in the standard. 
 
+This module contains the following:
+1) an OID for enabling streaming of SPAT streaming from the controller
+2) OIDs for obtaining timing plan parameters (such as Gmin, Gmax, RedClear, etc), 
+pertaining to an active timing plan.
+
+The standard MIB also provides these parameters, however it provides these parameters 
+only for the timing plan # 1, regardless whether it is currently active or no. 
+
+Hence, for obtaining these parameters for any timing plan based on whether it is active, 
+OIDs in this module can be used.
 ***************************************************************************************
 """
 
-## NOTE: Explain the need of using this MIB.
 
 # Object that controls the broadcast of SPAT blob from the controller:
 # For MMITSS applications, this object needs to be set to the value = 6.

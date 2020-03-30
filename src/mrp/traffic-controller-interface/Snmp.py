@@ -37,14 +37,12 @@ Finally, for installing easysnmp libraries: https://easysnmp.readthedocs.io/en/l
 # Import the Session class from the easysnmp library. 
 from easysnmp import Session
 
-# While debugging, if there is no access to a real signal controller, set the DEBUGGING flag to True.
-# In this case, the module will mock the snmpGet function, by always returning a value of 1. 
-# This feature is developed so that testing of other components is not hampered if there is no access
+# While testing other modules, if there is no access to a real signal controller, set the TESTING_OTHER_MODULES flag to True.
+# In this case, the module will not establish a session and mock the snmpGet function, by always returning a value of 1. 
+# This feature is developed so that the testing of other components is not hampered if there is no access
 # to real signal controller.
 
-
-# TESTING OTHER CLASSES..........
-DEBUGGING = False # TESTING
+TESTING_OTHER_MODULES = True
 
 class Snmp:
     """
@@ -59,12 +57,10 @@ class Snmp:
     def __init__(self, targetDeviceCommInfo:tuple):
         self.targetDeviceCommInfo = targetDeviceCommInfo
         self.targetDeviceIp, self.targetDevicePort = targetDeviceCommInfo
-        if not DEBUGGING:
-            self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort)
+        if not TESTING_OTHER_MODULES:
+            self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort, retries=100)
+            print("Connection to " + str(self.targetDeviceIp)) + ":" + str(self.targetDevicePort) + " established successfully!"
 
-            ## NOTE: What happens when the network connection is lost?
-            ## ERROR HANDLING IN THE DESIGN DOCUMENT. 
-            ## RETRY at the beginning? This may result in crashes.. Uptime??
     ######################## Definition End: __init__(self, targetDeviceCommInfo:tuple) ########################
 
     def getValue(self, oid:str):
@@ -73,7 +69,7 @@ class Snmp:
         Finally the function returns the value received from the SNMP device for the requested OID.
         """
         
-        if not DEBUGGING: # TESTING
+        if not TESTING_OTHER_MODULES: # TESTING
             value = self.session.get(oid).value
             return value
         
@@ -88,7 +84,7 @@ class Snmp:
         Finally the function returns the list of values received from the SNMP device for the requested list of OIDs.
         """
         
-        if not DEBUGGING: # TESTING
+        if not TESTING_OTHER_MODULES: # TESTING
             objectList = self.session.get(oidList)
             valueList = []
             for eachObject in objectList:
@@ -108,7 +104,7 @@ class Snmp:
         Snmp::setValue function takes two arguments: (1) an OID for which the value needs to be set, and (2) the value.
         The function sets the requested value to the requested OID through the established SNMP session.
         """
-        if not DEBUGGING:
+        if not TESTING_OTHER_MODULES:
             self.session.set(oid, value, "int")
     ######################## Definition End: setValue(self, oid:str) ########################
 

@@ -71,7 +71,7 @@ class SignalController:
         port (default 6053) of the set server IP. This configuration can be set in MM-1-5-1
         in the controller menu. This function requires no arguments.
         """
-        self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6) # NOTE: What about other controllers?
+        self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6) 
         print("SPAT Broadcast Set Successfully at time:" + str(time.time()))
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
@@ -218,9 +218,6 @@ class SignalController:
         the function updates the timing plan stored in the class attribute, via different calls to Snmp::getValue function.
         This function requires no arguments.
         """
-
-        # Hardcoded for econolite??????? Intellite signal controller. Parent class and subclasses
-        # Go through NTCIP for accumulated SNMP requests - one get or one set request with multiple OIDs
 
         currentTimingPlanId = int(self.snmp.getValue(EconoliteMib.CUR_TIMING_PLAN))
 
