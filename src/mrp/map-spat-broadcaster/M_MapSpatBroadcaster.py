@@ -51,6 +51,8 @@ def main():
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
 
+    # NOTE: Move to configuration file - All consumers - Publish and Subscribe - Look for a package.
+
     pedAppIp = '10.12.6.59'
     pedAppPort = 6060
     pedAppAddress = (pedAppIp, pedAppPort)
@@ -66,6 +68,7 @@ def main():
 
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
     currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases)
+    # NOTE: Think about V2 and V3. Encapsulation.
 
     # Create an object of Spat class filled with static information:
     spatObject = Spat.Spat()

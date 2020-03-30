@@ -256,7 +256,7 @@ class Scheduler:
 
         # Add a small delay to startTime, of the startTime is 0.0
         if commandObject.startTime == 0.0:
-            commandObject.startTime = 0.001 
+            commandObject.startTime = 0.001 # IF we want to do something NOW then we dont need a ascheduler..........
 
         # If the phase control needs to be cleared (command.phases == 0), 
         # then add a single instance of a function call that clears the phase control.
@@ -271,7 +271,7 @@ class Scheduler:
             
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
                     trigger = 'interval',
-                    seconds = self.ntcipBackupTime_Sec-1,
+                    seconds = self.ntcipBackupTime_Sec-1, # ADD EXPLANATION -> NTCIP BACKUPTIME MUST NOT BE 1.
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
                     id = str(self.commandId))

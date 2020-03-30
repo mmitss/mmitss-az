@@ -24,6 +24,8 @@ which are not available in the standard.
 ***************************************************************************************
 """
 
+## NOTE: Explain the need of using this MIB.
+
 # Object that controls the broadcast of SPAT blob from the controller:
 # For MMITSS applications, this object needs to be set to the value = 6.
 asc3ViiMessageEnable            =   "1.3.6.1.4.1.1206.3.5.2.9.44.1.1"

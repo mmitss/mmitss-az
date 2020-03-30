@@ -42,7 +42,9 @@ from easysnmp import Session
 # This feature is developed so that testing of other components is not hampered if there is no access
 # to real signal controller.
 
-DEBUGGING = False
+
+# TESTING OTHER CLASSES..........
+DEBUGGING = False # TESTING
 
 class Snmp:
     """
@@ -56,6 +58,10 @@ class Snmp:
         self.targetDeviceIp, self.targetDevicePort = targetDeviceCommInfo
         if not DEBUGGING:
             self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort)
+
+            ## NOTE: What happens when the network connection is lost?
+            ## ERROR HANDLING IN THE DESIGN DOCUMENT. 
+            ## RETRY at the beginning? This may result in crashes.. Uptime??
     ######################## Definition End: __init__(self, targetDeviceCommInfo:tuple) ########################
 
     def getValue(self, oid:str):
@@ -64,7 +70,7 @@ class Snmp:
         Finally the function returns the value received from the SNMP device for the requested OID.
         """
         
-        if not DEBUGGING:
+        if not DEBUGGING: # TESTING
             value = self.session.get(oid).value
             return value
         
