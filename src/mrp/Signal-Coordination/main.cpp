@@ -4,12 +4,14 @@
 int main()
 {
     SignalCoordination coordination;
-    coordination.getCoordinationTime();
-    coordination.getCurrentTime();
+    coordination.readIntersectionConfig();
+    // coordination.getCurrentTime();
     coordination.readCurrentSignalTimingPlan();
-    while(coordination.checkCoordinationTimeOfTheDay() == true)
-    {
+    // while(coordination.checkCoordinationTimeOfTheDay() == true)
+    // {
         coordination.getCurrentSignalStatus();
-    }
+        coordination.generateVirtualCoordinationPriorityRequest();
+        coordination.generateModFile();
+    // }
 
 }

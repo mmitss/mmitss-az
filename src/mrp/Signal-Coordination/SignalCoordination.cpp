@@ -1,12 +1,11 @@
 #include <fstream>
 // #include <chrono>
-// #include <ctime> 
-#include <time.h> 
+// #include <ctime>
+#include <time.h>
 #include <algorithm>
+#include <cmath>
 #include "SignalCoordination.h"
 #include "json/json.h"
-
-
 
 SignalCoordination::SignalCoordination()
 {
@@ -14,7 +13,55 @@ SignalCoordination::SignalCoordination()
 
 void SignalCoordination::generateVirtualCoordinationPriorityRequest()
 {
+    RequestList requestList;
+    coordinationRequestList.clear();
+    double temporaryPhase{};
 
+    //For Cycle 1
+
+    cycleLengthOfFirstCycle = 15; //fmod(getCurrentTime(), cycleLength);
+    // cout << "Remaining cycle Length for current time " << currentTime << "is :" << cycleLengthOfFirstCycle << endl;
+
+    for (int i = 0; i < 2; i++)
+    {
+        temporaryPhase = CoordinatedPhases[i];
+
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        // if ((cycleLengthOfFirstCycle > findSignalGroup->yellowChange + findSignalGroup->redClear) && (cycleLengthOfFirstCycle >  CoordinatedPhasesGreenTime.at(1) - CoordinatedPhasesGreenTime.at(0) + findSignalGroup->yellowChange + findSignalGroup->redClear))
+        if ((cycleLengthOfFirstCycle > CoordinatedPhasesGreenTime.at(1) - CoordinatedPhasesGreenTime.at(0) + findSignalGroup->yellowChange + findSignalGroup->redClear))
+        {
+            requestList.vehicleETA = cycleLengthOfFirstCycle - (CoordinatedPhasesGreenTime.at(1) - CoordinatedPhasesGreenTime.at(0)) - findSignalGroup->yellowChange - findSignalGroup->redClear;
+            requestList.vehicleETA_Duration = cycleLengthOfFirstCycle - findSignalGroup->yellowChange - findSignalGroup->redClear;
+            requestList.requestedPhase = CoordinatedPhases[i];
+
+            coordinationRequestList.push_back(requestList);
+        }
+
+        else if ((cycleLengthOfFirstCycle < CoordinatedPhasesGreenTime.at(1) - CoordinatedPhasesGreenTime.at(0) + findSignalGroup->yellowChange + findSignalGroup->redClear) && (cycleLengthOfFirstCycle > findSignalGroup->yellowChange + findSignalGroup->redClear))
+        {
+            requestList.vehicleETA = 0.0;
+            requestList.vehicleETA_Duration = cycleLengthOfFirstCycle - findSignalGroup->yellowChange - findSignalGroup->redClear;
+            requestList.requestedPhase = CoordinatedPhases[i];
+
+            coordinationRequestList.push_back(requestList);
+        }
+    }
+
+    //For cycle 2
+    for (int i = 0; i < 2; i++)
+    {
+        requestList.vehicleID = 0;
+        requestList.vehicleType = 0;
+        requestList.basicVehicleRole = 8;
+        requestList.laneID = 0;
+        requestList.vehicleETA = cycleLengthOfFirstCycle + CoordinatedPhasesGreenTime.at(0);
+        requestList.vehicleETA_Duration = cycleLengthOfFirstCycle + CoordinatedPhasesGreenTime.at(1);
+        requestList.requestedPhase = CoordinatedPhases[i];
+        requestList.prioritystatus = 0;
+        coordinationRequestList.push_back(requestList);
+    }
 }
 
 void SignalCoordination::getCurrentSignalStatus()
@@ -58,7 +105,6 @@ void SignalCoordination::getCurrentSignalStatus()
     }
 }
 
-
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
@@ -68,8 +114,8 @@ void SignalCoordination::readCurrentSignalTimingPlan()
 
     Json::Value jsonObject;
     Json::Reader reader;
-    std::ifstream signalPlanJson("signalPlan.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
+    std::ifstream coordinationPlanJson("signalPlan.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(coordinationPlanJson)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject);
     const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
@@ -154,8 +200,7 @@ void SignalCoordination::readCurrentSignalTimingPlan()
     noOfPhasesInRing2 = unsigned(P21.size() + P22.size());
 }
 
-
-void SignalCoordination::getCoordinationTime()
+void SignalCoordination::readIntersectionConfig()
 {
     Json::Value jsonObject;
     Json::Reader reader;
@@ -163,63 +208,355 @@ void SignalCoordination::getCoordinationTime()
     string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
     reader.parse(configJsonString.c_str(), jsonObject);
 
-    coordinationStartTime = jsonObject["CoordinationStartTime"].asDouble();
-    coordinationEndTime = jsonObject["CoordinationEndTime"].asDouble();
+    coordinationMasterClockTime = jsonObject["CoordinationMasterClockTime"].asDouble();
+    coordinationStartTime = jsonObject["CoordinationStartingTimeOfADay"].asDouble();
+    coordinationEndTime = jsonObject["CoordinationEndingTimeOfADay"].asDouble();
     offsetTime = jsonObject["Offset"].asDouble();
     cycleLength = jsonObject["CycleLength"].asDouble();
+
+    CoordinatedPhases.push_back(jsonObject["CoordinatedPhase_Ring1"].asInt());
+    CoordinatedPhases.push_back(jsonObject["CoordinatedPhase_Ring2"].asInt());
+    CoordinatedPhasesGreenTime.push_back(jsonObject["CoordinatedPhaseStrartTimeOfACycle"].asDouble());
+    CoordinatedPhasesGreenTime.push_back(jsonObject["CoordinatedPhaseEndTimeOfACycle"].asDouble());
+    // coordinatedPhasesGreenTime = jsonObject["CoordinatedPhaseEndTimeOfACycle"].asDouble() - jsonObject["CoordinatedPhaseStrartTimeOfACycle"].asDouble();
+}
+
+/*
+    - Method for generating Mod File for transit and truck
+*/
+void SignalCoordination::generateModFile()
+{
+    ofstream FileMod;
+    FileMod.open("NewModel.mod", ios::out);
+    // =================Defining the sets ======================
+
+    if (P11.size() == 1)
+        FileMod << "set P11  :={" << P11[0] << "}; \n";
+
+    else if (P11.size() == 2)
+        FileMod << "set P11  :={" << P11[0] << "," << P11[1] << "};  \n";
+
+    if (P12.size() == 1)
+        FileMod << "set P12  :={" << P12[0] << "}; \n";
+
+    else if (P12.size() == 2)
+        FileMod << "set P12  :={" << P12[0] << "," << P12[1] << "};  \n";
+
+    if (P21.size() == 1)
+        FileMod << "set P21  :={" << P21[0] << "}; \n";
+
+    else if (P21.size() == 2)
+        FileMod << "set P21  :={" << P21[0] << "," << P21[1] << "};  \n";
+
+    if (P22.size() == 1)
+        FileMod << "set P22  :={" << P22[0] << "}; \n";
+
+    else if (P22.size() == 2)
+        FileMod << "set P22  :={" << P22[0] << "," << P22[1] << "};  \n";
+
+    FileMod << "set P  :={";
+    for (int i = 0; i < noOfPhase; i++)
+    {
+        if (i != noOfPhase - 1)
+            FileMod << " " << PhaseNumber[i] << ",";
+        else
+            FileMod << " " << PhaseNumber[i];
+    }
+    FileMod << "};\n";
+
+    FileMod << "set K  := {1..3};\n"; // Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
+    FileMod << "set J  := {1..10};\n";
+    FileMod << "set P2 := {1..8};\n";
+    FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
+
+    // at most 4 rcoordination requests may be considered, 2 phase * 2 cycles ahead. For example, if phases 2 and 6 are coordinated,
+    // then CP={2,6} and CP1={2} and CP2={6}. The values of Cl1 and Cu1 show the lower and upper bound of the arrival time of coordination request for phase p in CP1
+    // The values of Cl2 and Cu2 show the lower and upper bound of the arrival time of coordination request for phase p in CP2
+    FileMod << "set E  :={1,2};\n";
     
+    FileMod << "set C  :={";
+    for (size_t i = 0; i < coordinationRequestList.size(); i++)
+    {
+        if (i != coordinationRequestList.size() - 1)
+            FileMod << i+1 << ", ";
+        else
+            FileMod << i+1;
+    }
+    FileMod << "};\n";
+
+
+
+    if (CoordinatedPhases.size() == 1)
+        FileMod << "set CP  :={" << CoordinatedPhases[0] << "}; \n";
+
+    else if (CoordinatedPhases.size() == 2)
+        FileMod << "set CP  :={" << CoordinatedPhases[0] << "," << CoordinatedPhases[1] << "};  \n";
+
+    FileMod << "set CP1  :={" << CoordinatedPhases[0] << "};  \n";
+    FileMod << "set CP2  :={" << CoordinatedPhases[1] << "};  \n";
+
+    FileMod << "\n";
+    // //========================Parameters=========================
+
+    FileMod << "param y    {p in P}, >=0,default 0;\n";
+    FileMod << "param red  {p in P}, >=0,default 0;\n";
+    FileMod << "param gmin {p in P}, >=0,default 0;\n";
+    FileMod << "param gmax {p in P}, >=0,default 0;\n";
+    FileMod << "param init1,default 0;\n";
+    FileMod << "param init2,default 0;\n";
+    FileMod << "param Grn1, default 0;\n";
+    FileMod << "param Grn2, default 0;\n";
+    FileMod << "param SP1,  integer,default 0;\n";
+    FileMod << "param SP2,  integer,default 0;\n";
+    FileMod << "param M:=9999,integer;\n";
+    FileMod << "param alpha:=100,integer;\n";
+    FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
+    FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
+    FileMod << "param Cl{p in CP, c in C}, >=0,  default 0;\n";
+    FileMod << "param Cu{p in CP, c in C}, >=0,  default 0;\n";
+    // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
+    FileMod << "param active_coordination{p in CP, c in C}, integer, :=(if Cl[p,c]>0 then 1 else	0);\n";
+    FileMod << "param coordinationWeight{c in CP}, := coordWeight;  \n";
+    // FileMod << "param cycle, :=" << 100 << ";\n";
+    
+    FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
+    FileMod << "param PrioWeigth { t in T}, >=0, default 0;  \n";
+    FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
+    FileMod << "param priorityTypeWeigth{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeigth[t] else 0);  \n";
+    FileMod << "param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);\n";
+    FileMod << "param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);\n";
+    FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
+    FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
+    FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
+
+    // // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
+    FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
+    FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
+    FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
+    FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
+    FileMod << "param barrier1GmaxSlack, := sumOfGMax11 - sumOfGMax21 ;\n";
+    FileMod << "param barrier2GmaxSlack, := sumOfGMax12 - sumOfGMax22 ;\n";
+    FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
+    FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
+
+    FileMod << "\n";
+    // // ==================== VARIABLES =======================
+    FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
+    FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
+    FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
+    FileMod << "var d{p in P,j in J}, >=0;\n";
+    FileMod << "var theta{p in P,j in J}, binary;\n";
+    FileMod << "var ttheta{p in P,j in J}, >=0;\n";
+    FileMod << "var PriorityDelay;\n";
+    FileMod << "var Flex;\n";
+
+    FileMod << "\n";
+
+    // // ===================Constraints==============================
+
+    FileMod << "s.t. initial{e in E,p in P:(p<SP1) or (p<SP2 and p>4)}: t[p,1,e]=0;  \n";
+    FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
+    FileMod << "s.t. initial2{e in E,p in P:p=SP2}: t[p,1,e]=init2;  \n";
+    // # constraints in the same cycle in same P??
+    FileMod << "s.t. Prec_11_11_c1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. Prec_12_12_c1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. Prec_21_21_c1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. Prec_22_22_c1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    // # constraints in the same cycle in connecting
+    FileMod << "s.t. Prec_11_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
+    FileMod << "s.t. Prec_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
+    FileMod << "s.t. Prec_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
+    FileMod << "s.t. Prec_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
+    // // #================ END of cycle 1======================#
+
+    // // # constraints in the same cycle in same P??
+    FileMod << "s.t. Prec_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. Prec_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. Prec_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. Prec_22_22_c23{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+
+    // # constraints in the same cycle in connecting
+    FileMod << "s.t. Prec_11_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
+    FileMod << "s.t. Prec_11_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
+    FileMod << "s.t. Prec_21_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
+    FileMod << "s.t. Prec_21_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
+
+    // # constraints in connecting in different cycles
+    FileMod << "s.t. Prec_12_11_c23{e in E,p in P11, k in K: (card(P11)+p+1)=4 and k>1 }:    t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
+    FileMod << "s.t. Prec_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=8 and k>1 }:  t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
+    FileMod << "s.t. Prec_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=4 and k>1 }:  t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
+    FileMod << "s.t. Prec_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=8 and k>1 }:    t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
+
+    FileMod << "s.t. PhaseLen{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];\n";
+    FileMod << "s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
+    FileMod << "s.t. GrnMin{e in E,p in P ,k in K}:  g[p,k,e]>=(gmin[p]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
+
+    FileMod << "s.t. PrioDelay1{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Rl[p,j]; \n";
+    FileMod << "s.t. PrioDelay2{e in E,p in P,j in J: active_pj[p,j]>0}:    M*theta[p,j]>=Ru[p,j]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
+    FileMod << "s.t. PrioDelay3{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>= ttheta[p,j]-Rl[p,j]*theta[p,j];\n";
+    FileMod << "s.t. PrioDelay4{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Ru[p,j]-Rl[p,j])*(1-theta[p,j]);\n";
+    FileMod << "s.t. PrioDelay5{e in E,p in P,j in J: active_pj[p,j]>0}:    ttheta[p,j]<=M*theta[p,j];\n";
+    FileMod << "s.t. PrioDelay6{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-theta[p,j])<=ttheta[p,j];\n";
+    FileMod << "s.t. PrioDelay7{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-theta[p,j])>=ttheta[p,j];\n";
+    FileMod << "s.t. PrioDelay8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
+    FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
+
+    FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+
+    FileMod << "  minimize delay: PriorityDelay;     \n";
+    //=============================Writing the Optimal Output into the Results.txt file ==================================
+    FileMod << "  \n";
+    FileMod << "solve;  \n";
+    FileMod << "  \n";
+    FileMod << "printf \" \" > \"Results.txt\";  \n";
+    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"Results.txt\";  \n";
+    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"Results.txt\";  \n";
+    FileMod << " \n";
+    FileMod << "for {k in K}   \n";
+    FileMod << " { \n";
+    FileMod << "     for {p in P2} \n";
+    FileMod << "        { \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "        } \n";
+    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << " } \n";
+    FileMod << "  \n";
+    FileMod << "for {k in K}   \n";
+    FileMod << " { \n";
+    FileMod << "     for {p in P2} \n";
+    FileMod << "        { \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "        } \n";
+    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << " } \n";
+    FileMod << " \n";
+    FileMod << "for {k in K}   \n";
+    FileMod << " { \n";
+    FileMod << "     for {p in P2} \n";
+    FileMod << "        { \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "        } \n";
+    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << " } \n";
+    FileMod << "  \n";
+    FileMod << "for {k in K}   \n";
+    FileMod << " { \n";
+    FileMod << "     for {p in P2} \n";
+    FileMod << "        { \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "        } \n";
+    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << " } \n";
+    FileMod << "  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"Results.txt\";  \n";
+    FileMod << "  \n";
+    FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
+    FileMod << " {  \n";
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << " } \n";
+
+    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"Results.txt\"; \n";
+
+    FileMod << "printf \"%5.2f \\n \", Flex >>\"Results.txt\"; \n";
+    FileMod << "printf \" \\n \">>\"Results.txt\";\n";
+    //------------- End of Print the Main body of mode----------------
+    FileMod << "end;\n";
+    FileMod.close();
 }
 
 bool SignalCoordination::checkCoordinationTimeOfTheDay()
 {
     double currentHourOfTheDay{};
-    time_t s = 1; 
-    struct tm* current_time; 
-  
-    // time in seconds 
-    s = time(NULL); 
-  
-    // to get current time 
-    current_time = localtime(&s); 
+    time_t s = 1;
+    struct tm *current_time;
+
+    // time in seconds
+    s = time(NULL);
+
+    // to get current time
+    current_time = localtime(&s);
     currentHourOfTheDay = current_time->tm_hour;
 
     if (currentHourOfTheDay > coordinationStartTime && currentHourOfTheDay < coordinationEndTime)
         bCoordination = true;
-    
+
     else
         bCoordination = false;
 
     return bCoordination;
-    
 }
 
-void SignalCoordination::getFirstCycleLength()
-{
+// void SignalCoordination::getFirstCycleLength()
+// {
+//     // int temporaryPhase{};
+//     double ring1CycleLength{};
+//     double ring2CycleLength{};
 
-}
+//     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+//     {
+//         // temporaryPhase = trafficControllerStatus[i].startingPhase1;
 
-void SignalCoordination::getCurrentTime()
+//         for (size_t j = 0; j < trafficSignalPlan.size(); j++)
+//         {
+//             if ((trafficSignalPlan[j].phaseRing == 1) && (trafficSignalPlan[j].phaseNumber == trafficControllerStatus[i].startingPhase1) && (trafficControllerStatus[i].elapsedGreen1 > 0))
+//                 ring1CycleLength = ring1CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[j].maxGreen - trafficControllerStatus[i].elapsedGreen1;
+
+//             // else if((trafficSignalPlan[j].phaseRing == 1) && (trafficSignalPlan[j].phaseNumber == trafficControllerStatus[i].startingPhase1) &&(trafficControllerStatus[i].elapsedGreen1 >0))
+//             //     ring1CycleLength = ring1CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[j].maxGreen - trafficControllerStatus[i].elapsedGreen1;
+
+//             else if ((trafficSignalPlan[j].phaseRing == 1) && (trafficSignalPlan[j].phaseNumber > trafficControllerStatus[i].startingPhase1))
+//                 ring1CycleLength = ring1CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[j].maxGreen;
+
+//             else if (trafficSignalPlan[j].phaseRing == 2 && trafficSignalPlan[j].phaseNumber == trafficControllerStatus[i].startingPhase2 && (trafficControllerStatus[i].elapsedGreen2 > 0))
+//                 ring2CycleLength = ring2CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[j].maxGreen - trafficControllerStatus[i].elapsedGreen2;
+
+//             // else if(trafficSignalPlan[j].phaseRing == 2 && trafficSignalPlan[j].phaseNumber == trafficControllerStatus[i].startingPhase2 &&(trafficControllerStatus[i].elapsedGreen2 >0))
+//             //     ring2CycleLength = ring2CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[j].maxGreen - trafficControllerStatus[i].elapsedGreen2;
+
+//             else if (trafficSignalPlan[j].phaseRing == 2 && trafficSignalPlan[j].phaseNumber > trafficControllerStatus[i].startingPhase2)
+//                 ring2CycleLength = ring2CycleLength + trafficSignalPlan[j].yellowChange + trafficSignalPlan[j].redClear + trafficSignalPlan[i].maxGreen;
+//         }
+//     }
+
+//     if (ring1CycleLength >= ring2CycleLength)
+//         cycleLengthOfFirstCycle = ring1CycleLength;
+
+//     else
+//         cycleLengthOfFirstCycle = ring2CycleLength;
+
+//     //Second Approach
+//     int currentTime = static_cast<int>(getCurrentTime());
+//     int c = static_cast<int>(cycleLength);
+//     // div_t result1 = (currentTime, c);
+//     // cycleLengthOfFirstCycle = result1.rem;
+
+// }
+
+double SignalCoordination::getCurrentTime()
 {
-    time_t s = 1; 
-    struct tm* current_time; 
-  
-    // time in seconds 
-    s = time(NULL); 
-  
-    // to get current time 
-    current_time = localtime(&s); 
-  
-    // print time in minutes, 
-    // hours and seconds 
-    // printf("%02d:%02d:%02d ", 
-    //        current_time->tm_hour, 
-    //        current_time->tm_min, 
+    double currentTime{};
+    time_t s = 1;
+    struct tm *current_time;
+
+    // time in seconds
+    s = time(NULL);
+
+    // to get current time
+    current_time = localtime(&s);
+
+    // print time in minutes,
+    // hours and seconds
+    // printf("%02d:%02d:%02d ",
+    //        current_time->tm_hour,
+    //        current_time->tm_min,
     //        current_time->tm_sec);
 
-    double currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00+ current_time->tm_sec;
+    currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
     cout << "Current Time; " << currentTime << endl;
-}
 
+    return currentTime;
+}
 
 SignalCoordination::~SignalCoordination()
 {

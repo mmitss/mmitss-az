@@ -48,7 +48,7 @@ int main()
 
     priorityRequestSolver.readCurrentSignalTimingPlan();
     priorityRequestSolver.printSignalPlan();
-    priorityRequestSolver.generateModFile();
+    // priorityRequestSolver.generateModFile();
 
     while (true)
     {

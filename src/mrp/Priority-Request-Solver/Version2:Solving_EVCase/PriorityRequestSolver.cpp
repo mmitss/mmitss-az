@@ -610,12 +610,12 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "param SP1,  integer,default 0;\n";
     FileMod << "param SP2,  integer,default 0;\n";
     FileMod << "param M:=9999,integer;\n";
-    FileMod << "param alpha:=100,integer;\n";
+    // FileMod << "param alpha:=100,integer;\n";
     FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
     FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
 
     // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
-    FileMod << "param cycle, :=" << 100 << ";\n";
+    // FileMod << "param cycle, :=" << 100 << ";\n";
     FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
     FileMod << "param PrioWeigth { t in T}, >=0, default 0;  \n";
     FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
