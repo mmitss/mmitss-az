@@ -35,7 +35,9 @@ using std::vector;
 enum msgType
 {
   priorityRequest = 1,
-  clearRequest = 0
+  clearRequest = 0,
+  currentPhaseStatus = 3,
+  signalPlan = 4
 };
 
 class PriorityRequestSolver
@@ -84,7 +86,7 @@ public:
   void deleteSplitPhasesFromPriorityRequestList();
   // void GLPKSolver(SolverDataManager solverDataManager);
   void GLPKSolver();
-  void readCurrentSignalTimingPlan();
+  void readCurrentSignalTimingPlan(string jsonString);
   void generateModFile();
   void generateEVModFile();
   void setOptimizationInput();
@@ -94,6 +96,7 @@ public:
   void getCurrentSignalStatus();
   // string getScheduleforTCI(ScheduleManager scheduleManager);
   string getScheduleforTCI();
+  string getSignalTimingPlanRequestString();
   int getMessageType(string jsonString);
   // vector<RequestList> getPriorityRequestList();
 

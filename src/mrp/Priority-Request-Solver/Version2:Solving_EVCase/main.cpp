@@ -47,9 +47,8 @@ int main()
         outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
     }
 
-    priorityRequestSolver.readCurrentSignalTimingPlan();
-    priorityRequestSolver.printSignalPlan();
-    // priorityRequestSolver.generateModFile();
+    priorityRequestSolver.generateModFile();
+    priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
 
     while (true)
     {
@@ -58,7 +57,13 @@ int main()
         cout << "Received Json String " << receivedJsonString << endl;
         msgType = priorityRequestSolver.getMessageType(receivedJsonString);
 
-        if (msgType == static_cast<int>(msgType::priorityRequest))
+        if(msgType == static_cast<int>(msgType::signalPlan))
+        {
+            priorityRequestSolver.readCurrentSignalTimingPlan(receivedJsonString);
+            priorityRequestSolver.printSignalPlan();
+        }
+
+        else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
             priorityRequestSolver.getCurrentSignalStatus();
@@ -72,7 +77,7 @@ int main()
                 if (bLog == true)
                 {
                     auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                    
+
                     outputfile << "\n Current Mod File at time " << timenow << endl;
                     infile.open("NewModel_EV.mod");
                     for (string line; getline(infile, line);)
@@ -90,12 +95,12 @@ int main()
                     infile.close();
 
                     outputfile << "\n Current Results File at time : " << timenow << endl;
-					infile.open("Results.txt");
-					for (std::string line; getline(infile, line);)
-					{
-						outputfile << line << endl;
-					}
-					infile.close();
+                    infile.open("Results.txt");
+                    for (std::string line; getline(infile, line);)
+                    {
+                        outputfile << line << endl;
+                    }
+                    infile.close();
 
                     outputfile << "\n Following Schedule will send to TCI for EV case at time " << timenow << endl;
                     outputfile << tciJsonString << endl;

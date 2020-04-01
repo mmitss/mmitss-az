@@ -4,11 +4,11 @@
         "TrafficControllerStatus":
         {
             "SP1": 2,
-            "SP2": 5,
-            "init1": 0,
-            "init2": 0,
-            "Grn1": 5.0,
-            "Grn2": 5.0
+            "SP2": 6,
+            "init1": 4.0,
+            "init2": 4.0,
+            "Grn1": 0.0,
+            "Grn2": 0.0
         }
     }
 }

@@ -69,25 +69,25 @@ int main()
 
     //Without EV: two transit
 
-    // vector<int>vehicleID{1201, 1240};
-    // vector<int>vehicleType{6, 6};
-    // vector<int>basicVehicleRole{16, 16};
-    // vector<int>laneID{2, 8};
-    // vector<double>ETA{25.0, 35.0};
-    // vector<double>ETADuration{5.0, 5.0};
-    // vector<int>requestedPhase{4, 3};
-    // vector<int>requestStatus{ 4, 4};
+    vector<int>vehicleID{1201, 1240};
+    vector<int>vehicleType{6, 6};
+    vector<int>basicVehicleRole{16, 16};
+    vector<int>laneID{2, 8};
+    vector<double>ETA{25.0, 5.0};
+    vector<double>ETADuration{5.0, 5.0};
+    vector<int>requestedPhase{4, 3};
+    vector<int>requestStatus{ 4, 4};
 
     //For Coordination: 4 request for two cycle
 
-    vector<int>vehicleID{1201, 1240, 1201, 1240};
-    vector<int>vehicleType{6, 6, 6, 6};
-    vector<int>basicVehicleRole{16, 16, 16, 16};
-    vector<int>laneID{2, 8, 2, 8};
-    vector<double>ETA{20.0, 140.0, 20.0, 140.0};
-    vector<double>ETADuration{25.0, 25.0, 25.0, 25.0};
-    vector<int>requestedPhase{2, 2, 6, 6};
-    vector<int>requestStatus{ 4, 4, 4 ,4};
+    // vector<int>vehicleID{1201, 1240, 1201, 1240};
+    // vector<int>vehicleType{6, 6, 6, 6};
+    // vector<int>basicVehicleRole{16, 16, 16, 16};
+    // vector<int>laneID{2, 8, 2, 8};
+    // vector<double>ETA{20.0, 140.0, 20.0, 140.0};
+    // vector<double>ETADuration{25.0, 25.0, 25.0, 25.0};
+    // vector<int>requestedPhase{2, 2, 6, 6};
+    // vector<int>requestStatus{ 4, 4, 4 ,4};
 
     
 

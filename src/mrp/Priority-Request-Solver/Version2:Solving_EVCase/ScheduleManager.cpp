@@ -371,7 +371,23 @@ void ScheduleManager::createEventList()
         rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_PhaseDuration_Ring2[i];
     }
 
+    if(trafficControllerStatus[0].initPhase1>0)
+    {
+        for (size_t i = 0; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
+            leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i]+trafficControllerStatus[0].initPhase1;
     
+        for (size_t i = 0; i < rightCriticalPoints_PhaseDuration_Ring1.size(); i++)
+            rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i]+trafficControllerStatus[0].initPhase1;
+    }
+
+    if(trafficControllerStatus[0].initPhase2>0)
+    {
+        for (size_t i = 0; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
+            leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i]+trafficControllerStatus[0].initPhase2;
+    
+        for (size_t i = 0; i < rightCriticalPoints_PhaseDuration_Ring2.size(); i++)
+            rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i]+trafficControllerStatus[0].initPhase2;
+    }
 
     /*Hold Ring1 */
     for (size_t i = 0; i < plannedSignalGroupInRing1.size(); i++)
@@ -381,12 +397,12 @@ void ScheduleManager::createEventList()
         ring1Schedule.commandType = HOLD_PHASES;
 
         /*
-            -Hold upto green time for starting phase
+            -Hold upto the sum of green time and intPhase time for starting phase
         */
         if (i == 0)
         {
-            ring1Schedule.commandStartTime = 0.0;
-            ring1Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring1[i];
+            ring1Schedule.commandStartTime = 0.0 + trafficControllerStatus[0].initPhase1;
+            ring1Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring1[i] + trafficControllerStatus[0].initPhase1;
         }
         /*
             - For rest of the phase hold will start at the end of previous phase
@@ -409,12 +425,12 @@ void ScheduleManager::createEventList()
         ring2Schedule.commandType = HOLD_PHASES;
 
         /*
-            -Hold upto green time for starting phase
+            -Hold upto the sum of green time and initPhase1 for starting phase
         */
         if (i == 0)
         {
-            ring2Schedule.commandStartTime = 0.0;
-            ring2Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring2[i];
+            ring2Schedule.commandStartTime = 0.0 + trafficControllerStatus[0].initPhase2;
+            ring2Schedule.commandEndTime = leftCriticalPoints_GreenTime_Ring2[i] + trafficControllerStatus[0].initPhase2;
         }
 
         /*
@@ -438,11 +454,11 @@ void ScheduleManager::createEventList()
         ring1Schedule.commandType = FORCEOFF_PHASES;
 
         /*
-            -Force off for starting phase (first phase having green time greater than zero) at the end of green time
+            -Force off for starting phase (if first phase having green time greater than zero) is sum of green time and initPhase1
             -End time for force off will be zero
         */
         if (i == 0)
-            ring1Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring1[i];
+            ring1Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring1[i] + trafficControllerStatus[0].initPhase1;
 
         /*
             - For rest of the phase force off at the end of green time of corresponding phase
@@ -464,7 +480,7 @@ void ScheduleManager::createEventList()
         ring2Schedule.commandType = FORCEOFF_PHASES;
 
         if (i == 0)
-            ring2Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring2[i];
+            ring2Schedule.commandStartTime = rightCriticalPoints_GreenTime_Ring2[i] + trafficControllerStatus[0].initPhase2;
 
         else
             ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
