@@ -190,7 +190,14 @@ class Scheduler:
         scheduleJson = scheduleJson["Schedule"]
 
         # Delete the commands with invalid combination of startTime and EndTime
-        scheduleJson = [i for i in scheduleJson if not ((i["commandStartTime"] == i["commandEndTime"]) or (i["commandStartTime"] > i["commandEndTime"]))] 
+        scheduleJson =  [command for command in scheduleJson if not 
+                                                        (
+                                                            (command["commandStartTime"] == command["commandEndTime"]) or 
+                                                            (command["commandStartTime"] > command["commandEndTime"]) or
+                                                            (command["commandStartTime"] < 0) or
+                                                            (command["commandEndTime"] < 0)
+                                                        )
+                        ] 
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
