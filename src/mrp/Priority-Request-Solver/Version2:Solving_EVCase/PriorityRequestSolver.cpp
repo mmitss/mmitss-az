@@ -58,12 +58,12 @@ int PriorityRequestSolver::getMessageType(string jsonString)
         messageType = static_cast<int>(msgType::clearRequest);
     }
 
-    else if ((jsonObject["MsgType"]).asString() == "CurrentPhaseStatus")
+    else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseStatus")
     {
         messageType = static_cast<int>(msgType::currentPhaseStatus);
     }
 
-    else if ((jsonObject["MsgType"]).asString() == "TimingPlan")
+    else if ((jsonObject["MsgType"]).asString() == "ActiveTimingPlan")
     {
         messageType = static_cast<int>(msgType::signalPlan);
     }
@@ -422,7 +422,7 @@ void PriorityRequestSolver::getCurrentSignalStatus()
     reader.parse(configJsonString.c_str(), jsonObject_config);
     char receiveBuffer[5120];
     UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
-    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficController"].asInt());
+    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
@@ -430,10 +430,10 @@ void PriorityRequestSolver::getCurrentSignalStatus()
     Json::FastWriter fastWriter;
     Json::Value jsonObject;
     // Json::Reader reader;
-    ifstream jsonData("currPhase.json");
-    string jsonString((std::istreambuf_iterator<char>(jsonData)), std::istreambuf_iterator<char>());
-    reader.parse(jsonString.c_str(), jsonObject);
-    const Json::Value values = jsonObject["currentPhases"];
+    // ifstream jsonData("currPhase.json");
+    // string jsonString((std::istreambuf_iterator<char>(jsonData)), std::istreambuf_iterator<char>());
+    // reader.parse(jsonString.c_str(), jsonObject);
+    
 
     jsonObject["MsgType"] = "CurrNextPhaseRequest";
     currentPhaseStatusRequestJsonString = fastWriter.write(jsonObject);
@@ -442,6 +442,11 @@ void PriorityRequestSolver::getCurrentSignalStatus()
     std::string receivedJsonString(receiveBuffer);
     if (getMessageType(receivedJsonString) == static_cast<int>(msgType::currentPhaseStatus))
     {
+
+        Json::Value jsonObject1;
+        Json::Reader reader1;
+        reader1.parse(receivedJsonString.c_str(), jsonObject1);
+        const Json::Value values = jsonObject1["currentPhases"];
         for (int i = 0; i < 2; i++)
         {
             for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
@@ -532,6 +537,8 @@ void PriorityRequestSolver::getCurrentSignalStatus()
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
         }
     }
+
+    priorityRequestSolver_To_TCI_Interface_Socket.closeSocket();
 }
 
 // /*
@@ -1339,8 +1346,8 @@ string PriorityRequestSolver::getSignalTimingPlanRequestString()
 {
     std::string jsonString{};
     Json::Value jsonObject;
-	Json::FastWriter fastWriter;
-    jsonObject["MsgType"] = "signalTimingPlanRequest";
+    Json::FastWriter fastWriter;
+    jsonObject["MsgType"] = "TimingPlanRequest";
     jsonString = fastWriter.write(jsonObject);
 
     return jsonString;

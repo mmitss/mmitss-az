@@ -69,7 +69,7 @@ class SignalController:
         self.currPhaseListenerAddress = (mrpIp, currPhaseListenerPort)
 
         # Create a tuple to store the address of consumer of the timing plan.
-        solverPort = config["PortNumber"]["SolverPort"]
+        solverPort = config["PortNumber"]["PrioritySolver"]
         self.solverAddress = (mrpIp, solverPort)
 
         # Create a tuple to store the address of timing plan sender
@@ -228,7 +228,7 @@ class SignalController:
             nextPhasesDict = getNextPhasesDict()
 
         currentAndNextPhasesDict = currentPhasesDict
-        currentAndNextPhasesDict["MsgType"] = nextPhasesDict["CurrNextPhaseStatus"]
+        currentAndNextPhasesDict["MsgType"] = "CurrNextPhaseStatus"
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
@@ -319,6 +319,7 @@ class SignalController:
                             {   "MsgType": "ActiveTimingPlan",
                                 "TimingPlan":
                                 {
+                                    "NoOfPhase": 8,
                                     "PhaseNumber": phaseNumber,
                                     "PedWalk": pedWalk,
                                     "PedClear": pedClear,
@@ -335,6 +336,7 @@ class SignalController:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.bind(self.timingPlanSenderAddress)
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+            s.close()
             print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 

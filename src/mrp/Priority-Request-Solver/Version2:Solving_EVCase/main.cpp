@@ -31,8 +31,8 @@ int main()
     ScheduleManager scheduleManager;
     SolverDataManager solverDataManager;
     UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt()));
-    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
-    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficController"].asInt());
+    // UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
+    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     char receiveBuffer[5120];
     int msgType{};
@@ -47,7 +47,7 @@ int main()
         outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
     }
 
-    priorityRequestSolver.generateModFile();
+    // priorityRequestSolver.generateModFile();
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
 
     while (true)
@@ -61,6 +61,7 @@ int main()
         {
             priorityRequestSolver.readCurrentSignalTimingPlan(receivedJsonString);
             priorityRequestSolver.printSignalPlan();
+            priorityRequestSolver.generateModFile();
         }
 
         else if (msgType == static_cast<int>(msgType::priorityRequest))

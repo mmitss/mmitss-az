@@ -50,7 +50,7 @@ def main():
     # Open a socket and bind it to the IP and port dedicated for this application:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
-    port = config["PortNumber"]["TrafficControllerCommander"]
+    port = config["PortNumber"]["TrafficControllerInterface"]
     tci_commInfo = (mrpIp, port)
     s.bind(tci_commInfo)
     

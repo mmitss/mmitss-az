@@ -42,7 +42,7 @@ from easysnmp import Session
 # This feature is developed so that the testing of other components is not hampered if there is no access
 # to real signal controller.
 
-TESTING_OTHER_MODULES = True
+TESTING_OTHER_MODULES = False
 
 class Snmp:
     """
@@ -59,7 +59,7 @@ class Snmp:
         self.targetDeviceIp, self.targetDevicePort = targetDeviceCommInfo
         if not TESTING_OTHER_MODULES:
             self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort, retries=100)
-            print("Connection to " + str(self.targetDeviceIp)) + ":" + str(self.targetDevicePort) + " established successfully!"
+            #print("Connection to " + str(self.targetDeviceIp)) + ":" + str(self.targetDevicePort) + " established successfully!"
 
     ######################## Definition End: __init__(self, targetDeviceCommInfo:tuple) ########################
 
@@ -113,7 +113,7 @@ class Snmp:
                    Unit testing
 ##############################################'''
 if __name__ == "__main__":
-    signalControllerIP = "10.12.6.102"
+    signalControllerIP = "10.12.6.104"
     signalControllerPort = 501
     signalControllerCommInfo = (signalControllerIP, signalControllerPort)
     snmp = Snmp(signalControllerCommInfo)
