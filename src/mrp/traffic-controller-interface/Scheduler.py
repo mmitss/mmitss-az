@@ -40,7 +40,6 @@ import json
 import datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
-from Snmp import Snmp
 from Command import Command
 from SignalController import SignalController
 
@@ -282,7 +281,7 @@ class Scheduler:
         """
         scheduleTimingPlanUpdate takes in the interval as an argument, and for that interval, schedules the update of active timing plan.
         """
-        self.backgroundScheduler.add_job(self.signalController.updateActiveTimingPlan,
+        self.backgroundScheduler.add_job(self.signalController.updateAndSendActiveTimingPlan,
                     trigger = 'interval',
                     seconds = interval,
                     id = str(self.commandId))
@@ -334,13 +333,7 @@ class Scheduler:
 if __name__ == "__main__":
     import time
 
-    # Define controller's communication Info
-    controllerIp = "10.12.6.17"
-    controllerPort = 501
-    controllerCommInfo = (controllerIp, controllerPort)
-
-    snmp = Snmp(controllerCommInfo)
-    asc = SignalController(snmp,5,100)
+    asc = SignalController()
 
     # Create an object of Scheduler class
     scheduler = Scheduler(asc)

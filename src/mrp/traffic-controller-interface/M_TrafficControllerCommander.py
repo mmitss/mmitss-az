@@ -37,7 +37,6 @@ import json
 import socket
 import time
 from SignalController import SignalController
-from Snmp import Snmp
 from Scheduler import Scheduler
 
 def main():
@@ -55,22 +54,8 @@ def main():
     tci_commInfo = (mrpIp, port)
     s.bind(tci_commInfo)
     
-    # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
-    observerPort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
-    observer_commInfo = (mrpIp, observerPort)
-
-    # Create a tuple to store the communication address of the traffic signal controller:
-    signalControllerIp = config["SignalController"]["IpAddress"]
-    signalControllerNtcipPort = config["SignalController"]["NtcipPort"]
-    signalController_commInfo = (signalControllerIp, signalControllerNtcipPort)
-
-    # From the config file, read and store the information about ntcipBackupTime and the interval at which one wishes to change in a timing plan:
-    timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
-    ntcipBackupTime_sec = config["SignalController"]["NtcipBackupTime_sec"]
-
     # Create objects of the related modules:
-    snmp = Snmp(signalController_commInfo)
-    asc = SignalController(snmp,timingPlanUpdateInterval_sec,ntcipBackupTime_sec)
+    asc = SignalController()
     scheduler = Scheduler(asc)
 
     while(True):
@@ -92,7 +77,7 @@ def main():
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            asc.sendCurrentAndNextPhasesDict(observer_commInfo, address)
+            asc.sendCurrentAndNextPhasesDict(address)
 
         elif receivedMessage["MsgType"]=="TimingPlanRequest":
             # Read the current timing plan from the object of SignalController class

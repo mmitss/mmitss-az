@@ -40,3 +40,6 @@ PHASE_CONTROL_HOLD              =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.4.1"
 PHASE_CONTROL_FORCEOFF          =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.5.1"
 PHASE_CONTROL_VEHCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.6.1"
 PHASE_CONTROL_PEDCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.7.1"    
+
+# NTCIP Backup Time Parameter
+NTCIP_UNIT_BACKUP_TIME          =   "1.3.6.1.4.1.1206.4.2.1.3.3"

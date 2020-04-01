@@ -41,17 +41,41 @@ from Snmp import Snmp
 class SignalController:
     """
     SignalController class encapsulates all methods that interact with the signal controller. 
-    Arguments: (1) An object of Snmp class, (2) Timing plan update interval (seconds), and
-    (3) ntcipBackupTime (seconds)
-    For example: asc = SignalController(snmp, 10)
+    Arguments: This class takes no arguments.
+    For example: asc = SignalController()
     """
-    def __init__(self, snmp:Snmp, timingPlanUpdateInterval_sec:int, ntcipBackupTime_sec:int): # Check if there exists an NTCIP object to read it through SNMP.
+    def __init__(self): # Check if there exists an NTCIP object to read it through SNMP.
         
+        # Read the config file and store the configuration in an JSON object:
+        configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+        config = (json.load(configFile))
+
+        # Close the config file:
+        configFile.close()
+
+        # Create a tuple to store the communication address of the traffic signal controller:
+        signalControllerIp = config["SignalController"]["IpAddress"]
+        signalControllerNtcipPort = config["SignalController"]["NtcipPort"]
+        self.signalController_commInfo = (signalControllerIp, signalControllerNtcipPort)
+
         # Read the arguments into local variables:
-        self.snmp = snmp
-        self.timingPlanUpdateInterval_sec = timingPlanUpdateInterval_sec
-        self.ntcipBackupTime_sec = ntcipBackupTime_sec
+        self.snmp = Snmp(self.signalController_commInfo)
+        self.timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
+        self.ntcipBackupTime_sec = self.snmp.getValue(StandardMib.NTCIP_UNIT_BACKUP_TIME)
         
+        # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
+        mrpIp = config["HostIp"]
+        currPhaseListenerPort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
+        self.currPhaseListenerAddress = (mrpIp, currPhaseListenerPort)
+
+        # Create a tuple to store the address of consumer of the timing plan.
+        solverPort = config["PortNumber"]["SolverPort"]
+        self.solverAddress = (mrpIp, solverPort)
+
+        # Create a tuple to store the address of timing plan sender
+        timingPlanSenderPort = config["PortNumber"]["TrafficControllerTimingPlanSender"]
+        self.timingPlanSenderAddress = (mrpIp, timingPlanSenderPort)
+
         # Initialize current timing plan ID and corresponding JSON string
         self.currentTimingPlanId = 0
         self.currentTimingPlanJson = ""
@@ -60,7 +84,7 @@ class SignalController:
         self.enableSpatBroadcast()
         
         # Read the currently active timing plan and store it into a JSON string
-        self.updateActiveTimingPlan()
+        self.updateAndSendActiveTimingPlan()
 
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
@@ -149,7 +173,7 @@ class SignalController:
             print("Invalid action requested")
     ######################## Definition End: phaseControl(self, action, phases) ########################
 
-    def sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple):
+    def sendCurrentAndNextPhasesDict(self, requesterAddress:tuple):
         """
         This function does three tasks:
         (1) Open a UDP socket at a port where MapSpatBroadcaster sends the information about current phases.
@@ -193,7 +217,7 @@ class SignalController:
         ######################## Definition End: getNextPhasesDict() ########################
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind(currPhaseListenerAddress)
+        s.bind(self.currPhaseListenerAddress)
         data, addr = s.recvfrom(1024)
 
         currentPhasesDict = json.loads(data.decode())
@@ -204,6 +228,7 @@ class SignalController:
             nextPhasesDict = getNextPhasesDict()
 
         currentAndNextPhasesDict = currentPhasesDict
+        currentAndNextPhasesDict["MsgType"] = nextPhasesDict["CurrNextPhaseStatus"]
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
@@ -211,7 +236,7 @@ class SignalController:
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
-    def updateActiveTimingPlan(self):
+    def updateAndSendActiveTimingPlan(self):
         """
         SignalController::updateActiveTimingPlan function first checks the ID of currently active timing plan, through Snmp::getValue function.
         If the ID does not match the ID of the timing plan currently stored in the class attribute, 
@@ -290,20 +315,27 @@ class SignalController:
                 redClear[i] = int(redClear[i])
                 phaseRing[i] = int(phaseRing[i])
 
-            activeTimingPlan =  dict({"TimingPlan":{
-                                "PhaseNumber": phaseNumber,
-                                "PedWalk": pedWalk,
-                                "PedClear": pedClear,
-                                "MinGreen": minGreen,
-                                "Passage": passage,
-                                "MaxGreen": maxGreen,
-                                "YellowChange": yellowChange,
-                                "RedClear": redClear,
-                                "PhaseRing": phaseRing
-            }})
-
+            activeTimingPlan =  dict(
+                            {   "MsgType": "ActiveTimingPlan",
+                                "TimingPlan":
+                                {
+                                    "PhaseNumber": phaseNumber,
+                                    "PedWalk": pedWalk,
+                                    "PedClear": pedClear,
+                                    "MinGreen": minGreen,
+                                    "Passage": passage,
+                                    "MaxGreen": maxGreen,
+                                    "YellowChange": yellowChange,
+                                    "RedClear": redClear,
+                                    "PhaseRing": phaseRing
+                                }
+                            }
+            )
             self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
-            print("Detected a new timing plan - updated the local timing plan at time:" + str(time.time()))
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.bind(self.timingPlanSenderAddress)
+            s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+            print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
 
@@ -318,8 +350,8 @@ if __name__ == "__main__":
 
     snmp = Snmp(controllerCommInfo)
     # Create an object of SignalController class
-    controller = SignalController(snmp, 10, 5)
-    controller.updateActiveTimingPlan()
+    controller = SignalController()
+    controller.updateAndSendActiveTimingPlan()
     print(controller.currentTimingPlanJson)
     # Write more test cases - active timing plan
 
