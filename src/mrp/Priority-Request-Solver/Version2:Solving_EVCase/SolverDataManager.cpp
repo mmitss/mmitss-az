@@ -1,8 +1,8 @@
 #include <algorithm>
 #include "SolverDataManager.h"
 
-const double transitWeight = 1;
-const double truckWeight = 1;
+const double transitWeight = 10.0;
+const double truckWeight = 10.0;
 const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()

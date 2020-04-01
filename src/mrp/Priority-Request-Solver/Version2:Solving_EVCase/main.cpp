@@ -30,7 +30,8 @@ int main()
     PriorityRequestSolver priorityRequestSolver;
     ScheduleManager scheduleManager;
     SolverDataManager solverDataManager;
-    UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySOlver"].asInt()));
+    UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt()));
+    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficController"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     char receiveBuffer[5120];
@@ -48,7 +49,7 @@ int main()
 
     priorityRequestSolver.readCurrentSignalTimingPlan();
     priorityRequestSolver.printSignalPlan();
-    priorityRequestSolver.generateModFile();
+    // priorityRequestSolver.generateModFile();
 
     while (true)
     {
