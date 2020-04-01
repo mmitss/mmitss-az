@@ -60,10 +60,10 @@ def main():
 
     while(True):
         # Receive data on the TCI socket
-        data, address = s.recvfrom(2048)
-
+        data, address = s.recvfrom(4096)
+        data = data.decode()
         # Load the received data into a json object
-        receivedMessage = json.loads(data.decode())
+        receivedMessage = json.loads(data)
 
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":

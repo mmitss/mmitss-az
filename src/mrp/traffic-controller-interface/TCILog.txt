@@ -1,0 +1,21 @@
+SPAT Broadcast Set Successfully at time:1585723993.5737011
+Detected a new timing plan - updated and sent (to solver) the local timing plan at time:1585723993.657678
+Received a new schedule at time:1585724010.945719
+HOLD [] at time: 1585724010.949356
+Veh-OMIT [] at time: 1585724011.0245862
+Ped-OMIT [] at time: 1585724011.100389
+Veh-CALL [] at time: 1585724011.1762898
+Ped-CALL [] at time: 1585724011.2522073
+FORCEOFF [] at time: 1585724011.3278477
+Veh-CALL [3, 4] at time: 1585724011.4036407
+HOLD [1, 8] at time: 1585724018.0296988
+FORCEOFF [4, 7] at time: 1585724018.6314192
+FORCEOFF [] at time: 1585724019.6322005
+HOLD [] at time: 1585724022.0349457
+HOLD [2, 5] at time: 1585724026.034778
+Veh-CALL [] at time: 1585724026.6102612
+Ped-CALL [] at time: 1585724026.6860158
+FORCEOFF [] at time: 1585724026.7619817
+HOLD [] at time: 1585724026.8374622
+Veh-OMIT [] at time: 1585724026.913271
+Ped-OMIT [] at time: 1585724026.989104

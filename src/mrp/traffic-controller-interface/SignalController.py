@@ -61,7 +61,7 @@ class SignalController:
         # Read the arguments into local variables:
         self.snmp = Snmp(self.signalController_commInfo)
         self.timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
-        self.ntcipBackupTime_sec = self.snmp.getValue(StandardMib.NTCIP_UNIT_BACKUP_TIME)
+        self.ntcipBackupTime_sec = int(self.snmp.getValue(StandardMib.NTCIP_UNIT_BACKUP_TIME))
         
         # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
         mrpIp = config["HostIp"]

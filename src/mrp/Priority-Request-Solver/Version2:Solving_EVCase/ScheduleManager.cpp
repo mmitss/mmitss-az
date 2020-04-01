@@ -4,12 +4,12 @@
 #include "json/json.h"
 #include "ScheduleManager.h"
 
-#define OMIT_VEH_PHASES 2
-#define OMIT_PED_PHASES 3
+#define OMIT_VEH_PHASES 5
+#define OMIT_PED_PHASES 6
 #define HOLD_PHASES 4
-#define FORCEOFF_PHASES 5
-#define CALL_VEH_PHASES 6
-#define CALL_PED_PHASES 7
+#define FORCEOFF_PHASES 3
+#define CALL_VEH_PHASES 1
+#define CALL_PED_PHASES 2
 
 ScheduleManager::ScheduleManager()
 {
@@ -468,7 +468,7 @@ void ScheduleManager::createEventList()
         else
             ring1Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
 
-        ring1Schedule.commandEndTime = 0.0;
+        ring1Schedule.commandEndTime = ring1Schedule.commandStartTime + 1.0;
 
         ring1_TCISchedule.push_back(ring1Schedule);
     }
@@ -485,7 +485,7 @@ void ScheduleManager::createEventList()
         else
             ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
 
-        ring2Schedule.commandEndTime = 0.0;
+        ring2Schedule.commandEndTime = ring2Schedule.commandStartTime + 1.0;
 
         ring2_TCISchedule.push_back(ring2Schedule);
     }
@@ -525,10 +525,10 @@ void ScheduleManager::createEventList()
 
 string ScheduleManager::createScheduleJsonString()
 {
-    // vector<Schedule::TCISchedule> completeSchedule;
+    vector<Schedule> completeSchedule;
     // ring1_TCISchedule.insert(ring1_TCISchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
-    // completeSchedule.insert(completeSchedule.end(), ring1_TCISchedule.begin(), ring1_TCISchedule.end());
-    // completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
+    completeSchedule.insert(completeSchedule.end(), ring1_TCISchedule.begin(), ring1_TCISchedule.end());
+    completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
     string scheduleJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
@@ -545,28 +545,28 @@ string ScheduleManager::createScheduleJsonString()
 
     else
     {
-        for (unsigned int i = 0; i < ring1_TCISchedule.size(); i++)
-        {
-            jsonObject["Schedule"]["Ring1"][i]["commandPhase"] = ring1_TCISchedule[i].commandPhase;
-            jsonObject["Schedule"]["Ring1"][i]["commandStartTime"] = ring1_TCISchedule[i].commandStartTime;
-            jsonObject["Schedule"]["Ring1"][i]["commandEndTime"] = ring1_TCISchedule[i].commandEndTime;
-            jsonObject["Schedule"]["Ring1"][i]["commandType"] = ring1_TCISchedule[i].commandType;
-        }
-        for (unsigned int i = 0; i < ring2_TCISchedule.size(); i++)
-        {
-            jsonObject["Schedule"]["Ring2"][i]["commandPhase"] = ring2_TCISchedule[i].commandPhase;
-            jsonObject["Schedule"]["Ring2"][i]["commandStartTime"] = ring2_TCISchedule[i].commandStartTime;
-            jsonObject["Schedule"]["Ring2"][i]["commandEndTime"] = ring2_TCISchedule[i].commandEndTime;
-            jsonObject["Schedule"]["Ring2"][i]["commandType"] = ring2_TCISchedule[i].commandType;
-        }
-
-        // for (unsigned int i = 0; i < completeSchedule.size(); i++)
+        // for (unsigned int i = 0; i < ring1_TCISchedule.size(); i++)
         // {
-        //     jsonObject["Schedule"][i]["commandPhase"] = completeSchedule[i].commandPhase;
-        //     jsonObject["Schedule"][i]["commandStartTime"] = completeSchedule[i].commandStartTime;
-        //     jsonObject["Schedule"][i]["commandEndTime"] = completeSchedule[i].commandEndTime;
-        //     jsonObject["Schedule"][i]["commandType"] = completeSchedule[i].commandType;
+        //     jsonObject["Schedule"]["Ring1"][i]["commandPhase"] = ring1_TCISchedule[i].commandPhase;
+        //     jsonObject["Schedule"]["Ring1"][i]["commandStartTime"] = ring1_TCISchedule[i].commandStartTime;
+        //     jsonObject["Schedule"]["Ring1"][i]["commandEndTime"] = ring1_TCISchedule[i].commandEndTime;
+        //     jsonObject["Schedule"]["Ring1"][i]["commandType"] = ring1_TCISchedule[i].commandType;
         // }
+        // for (unsigned int i = 0; i < ring2_TCISchedule.size(); i++)
+        // {
+        //     jsonObject["Schedule"]["Ring2"][i]["commandPhase"] = ring2_TCISchedule[i].commandPhase;
+        //     jsonObject["Schedule"]["Ring2"][i]["commandStartTime"] = ring2_TCISchedule[i].commandStartTime;
+        //     jsonObject["Schedule"]["Ring2"][i]["commandEndTime"] = ring2_TCISchedule[i].commandEndTime;
+        //     jsonObject["Schedule"]["Ring2"][i]["commandType"] = ring2_TCISchedule[i].commandType;
+        // }
+
+        for (unsigned int i = 0; i < completeSchedule.size(); i++)
+        {
+            jsonObject["Schedule"][i]["commandPhase"] = completeSchedule[i].commandPhase;
+            jsonObject["Schedule"][i]["commandStartTime"] = completeSchedule[i].commandStartTime;
+            jsonObject["Schedule"][i]["commandEndTime"] = completeSchedule[i].commandEndTime;
+            jsonObject["Schedule"][i]["commandType"] = completeSchedule[i].commandType;
+        }
     }
 
     scheduleJsonString = fastWriter.write(jsonObject);

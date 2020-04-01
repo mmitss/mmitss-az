@@ -458,7 +458,7 @@ void PriorityRequestSolver::getCurrentSignalStatus()
                     temporaryPhaseState = values[i][values[i].getMemberNames()[j]].asInt();
 
                 else if (values[i].getMemberNames()[j] == "ElapsedTime")
-                    temporaryElaspedTime = values[i][values[i].getMemberNames()[j]].asDouble();
+                    temporaryElaspedTime = (values[i][values[i].getMemberNames()[j]].asDouble())/10.0;
             }
 
             if (temporaryCurrentPhase < 5 && temporaryPhaseState == 6)
@@ -740,7 +740,7 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        Passage.push_back((jsonObject["TimingPlan"]["Passage"][i]).asDouble());
+        Passage.push_back(((jsonObject["TimingPlan"]["Passage"][i]).asDouble())/10.0);
     }
 
     for (int i = 0; i < noOfPhase; i++)
@@ -750,12 +750,12 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        YellowChange.push_back((jsonObject["TimingPlan"]["YellowChange"][i]).asDouble());
+        YellowChange.push_back(((jsonObject["TimingPlan"]["YellowChange"][i]).asDouble())/10.0);
     }
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        RedClear.push_back((jsonObject["TimingPlan"]["RedClear"][i]).asDouble());
+        RedClear.push_back(((jsonObject["TimingPlan"]["RedClear"][i]).asDouble())/10.0);
     }
 
     for (int i = 0; i < noOfPhase; i++)
