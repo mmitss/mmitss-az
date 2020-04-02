@@ -102,10 +102,10 @@ class Ntcip1202v2Blob:
         self.msOfMinute = int((timeSinceStartOfTheYear.total_seconds() - (self.minuteOfYear * 60))*1000)
 ##################################### VEH INFORMATION ####################################################################
         # Phase status symbols: 
-        RED = 3
-        YELLOW = 8
-        GREEN = 6
-        PERMISSIVE = 7
+        RED = 'red'
+        YELLOW = 'yellow'
+        GREEN = 'green'
+        PERMISSIVE = 'permissive_yellow'
 
         # PhaseStatusRed:
         vehPhaseStatusRedStr = str(f'{receivedBlob[211]:08b}')[::-1]
@@ -174,9 +174,9 @@ class Ntcip1202v2Blob:
 
         
 ##################################### PED INFORMATION ####################################################################
-        DONTWALK = 3
-        PEDCLEAR = 8
-        WALK = 6
+        DONTWALK = 'dont_walk'
+        PEDCLEAR = 'ped_clear'
+        WALK = 'walk'
         # PhaseStatusDontWalk:
         pedPhaseStatusDontWalkStr = str(f'{receivedBlob[217]:08b}')[::-1]
         for i in range(0,self.numPedPhases):
