@@ -47,12 +47,12 @@ class Command:
         self.endTime = endTime
 
         # Define Command Actions (Used in phase controls):
-        self.CALL_VEH_PHASES = 1
-        self.CALL_PED_PHASES = 2
-        self.FORCEOFF_PHASES = 3
-        self.HOLD_VEH_PHASES = 4
-        self.OMIT_VEH_PHASES = 5
-        self.OMIT_PED_PHASES = 6        
+        self.CALL_VEH_PHASES = "call_veh"
+        self.CALL_PED_PHASES = "call_ped"
+        self.FORCEOFF_PHASES = "forceoff"
+        self.HOLD_VEH_PHASES = "hold"
+        self.OMIT_VEH_PHASES = "omit_veh"
+        self.OMIT_PED_PHASES = "omit_ped"
 
 '''##############################################
                    Unit testing

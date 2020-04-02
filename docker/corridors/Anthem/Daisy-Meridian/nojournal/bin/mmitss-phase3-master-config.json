@@ -26,7 +26,7 @@
 		"PriorityRequestServer": 20002,
 		"PrioritySolver": 20003,
 		"PriorityRequestGenerator": 20004,
-		"TrafficControllerCommander": 20005,
+		"TrafficControllerInterface": 20005,
 		"TrafficControllerCurrPhaseListener": 20006,
 		"TrafficControllerTimingPlanSender": 20007,
 		"PerformanceObserver": 20008,

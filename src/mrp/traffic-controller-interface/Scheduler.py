@@ -346,7 +346,7 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("schedule.json", "r")
+    scheduleFile = open("test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
 
     scheduler.processReceivedSchedule(scheduleJson)
