@@ -42,7 +42,7 @@ from easysnmp import Session
 # This feature is developed so that the testing of other components is not hampered if there is no access
 # to real signal controller.
 
-TESTING_OTHER_MODULES = False
+TESTING_OTHER_MODULES = True
 
 class Snmp:
     """

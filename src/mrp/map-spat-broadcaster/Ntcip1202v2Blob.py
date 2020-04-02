@@ -174,7 +174,7 @@ class Ntcip1202v2Blob:
 
         
 ##################################### PED INFORMATION ####################################################################
-        DONTWALK = 'dont_walk'
+        DONTWALK = 'do_not_walk'
         PEDCLEAR = 'ped_clear'
         WALK = 'walk'
         # PhaseStatusDontWalk:

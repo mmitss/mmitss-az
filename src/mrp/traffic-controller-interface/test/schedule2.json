@@ -5,25 +5,25 @@
 			"commandEndTime": 0.0,
 			"commandPhase": 4,
 			"commandStartTime": 0.0,
-			"commandType": 5
+			"commandType": "forceoff"
 		},
 		{
 			"commandEndTime": 0.0,
 			"commandPhase": 4,
 			"commandStartTime": 0.0,
-			"commandType": 5
+			"commandType": "forceoff"
 		},
 		{
 			"commandEndTime": 10.0,
 			"commandPhase": 5,
 			"commandStartTime": 0.0,
-			"commandType": 5
+			"commandType": "hold"
 		},
 		{
 			"commandEndTime": 10.0,
 			"commandPhase": 7,
 			"commandStartTime": 0.0,
-			"commandType": 5
+			"commandType": "hold"
 		}
 
 	]

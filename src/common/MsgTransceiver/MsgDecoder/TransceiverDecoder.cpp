@@ -19,6 +19,13 @@
 #include "Timestamp.h"
 
 const double KPH_TO_MPS_CONVERSION = 0.277778;
+const int RED = 3;
+const int YELLOW = 8;
+const int GREEN = 6;
+const int PERMISSIVE = 7;
+const int DONOTWALK = 3;
+const int PEDCLEAR = 8;
+const int WALK = 6;
 
 TransceiverDecoder::TransceiverDecoder()
 {
@@ -328,6 +335,8 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
 
         Json::Value jsonObject;
         Json::FastWriter fastWriter;
+        int currVehPhaseState{};
+        int currPedPhaseState{}; 
 
         jsonObject["MsgType"] = "SPaT";
         jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
@@ -345,11 +354,19 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
             {
                 const auto &phaseState = spatOut.phaseState[i];
                 jsonObject["Spat"]["phaseState"][i]["phaseNo"] = (i + 1);
-                jsonObject["Spat"]["phaseState"][i]["currState"] = static_cast<unsigned int>(phaseState.currState);
                 jsonObject["Spat"]["phaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["phaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["phaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
                 jsonObject["Spat"]["phaseState"][i]["elapsedTime"] = 0;
+                currVehPhaseState = static_cast<unsigned int>(phaseState.currState);
+                if(currVehPhaseState == RED)
+                    jsonObject["Spat"]["phaseState"][i]["currState"] = "red";
+                else if(currVehPhaseState == YELLOW)
+                    jsonObject["Spat"]["phaseState"][i]["currState"] = "yellow";
+                else if(currVehPhaseState == GREEN)
+                    jsonObject["Spat"]["phaseState"][i]["currState"] = "green";
+                else if(currVehPhaseState == PERMISSIVE)
+                    jsonObject["Spat"]["phaseState"][i]["currState"] = "permissive_yellow";
             }
         }
 
@@ -363,7 +380,13 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
                 jsonObject["Spat"]["pedPhaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
-                jsonObject["Spat"]["phaseState"][i]["elapsedTime"] = 0;
+                jsonObject["Spat"]["pedPhaseState"][i]["elapsedTime"] = 0;
+                if(currPedPhaseState == DONOTWALK)
+                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "do_not_walk";
+                else if(currPedPhaseState == PEDCLEAR)
+                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "ped_clear";
+                else if(currPedPhaseState == WALK)
+                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "walk";
             }
         }
 
