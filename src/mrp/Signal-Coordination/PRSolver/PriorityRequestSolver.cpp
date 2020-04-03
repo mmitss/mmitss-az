@@ -104,7 +104,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     //This is optional. For priniting few attributes of the priority request list in the console
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
-        cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
+        cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].requestedPhase << " " << priorityRequestList[i].vehicleETA << endl;
     }
 }
 
@@ -413,238 +413,106 @@ void PriorityRequestSolver::getCurrentSignalStatus()
     int temporaryNextPhase{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
-    string currentPhaseStatusRequestJsonString{};
-    char receiveBuffer[5120];
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
+    Json::Value jsonObject;
+    Json::Reader reader;
+    ifstream jsonData("currPhase.json");
+    string jsonString((std::istreambuf_iterator<char>(jsonData)), std::istreambuf_iterator<char>());
+    reader.parse(jsonString.c_str(), jsonObject);
+    const Json::Value values = jsonObject["currentPhases"];
     trafficControllerStatus.clear();
 
-    Json::Value jsonObject_config;
-    Json::Reader reader;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
-
-    Json::FastWriter fastWriter;
-    Json::Value jsonObject;
-
-    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
-    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
-
-    jsonObject["MsgType"] = "CurrNextPhaseRequest";
-    currentPhaseStatusRequestJsonString = fastWriter.write(jsonObject);
-    priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), currentPhaseStatusRequestJsonString);
-    priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-    std::string receivedJsonString(receiveBuffer);
-    if (getMessageType(receivedJsonString) == static_cast<int>(msgType::currentPhaseStatus))
+    for (int i = 0; i < 2; i++)
     {
-        Json::Value jsonObject_PhaseStatus;
-        Json::Reader reader_PhaseStatus;
-        reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
-        const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
-        for (int i = 0; i < 2; i++)
+        for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
         {
-            for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
-            {
-                if (values[i].getMemberNames()[j] == "Phase")
-                    temporaryCurrentPhase = values[i][values[i].getMemberNames()[j]].asInt();
+            if (values[i].getMemberNames()[j] == "Phase")
+                temporaryCurrentPhase = values[i][values[i].getMemberNames()[j]].asInt();
 
-                else if (values[i].getMemberNames()[j] == "State")
-                    temporaryPhaseState = values[i][values[i].getMemberNames()[j]].asString();
+            else if (values[i].getMemberNames()[j] == "State")
+                temporaryPhaseState = values[i][values[i].getMemberNames()[j]].asString();
 
-                else if (values[i].getMemberNames()[j] == "ElapsedTime")
-                    temporaryElaspedTime = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
-            }
-
-            if (temporaryCurrentPhase < 5 && temporaryPhaseState == "green")
-            {
-                tcStatus.startingPhase1 = temporaryCurrentPhase;
-                tcStatus.initPhase1 = 0.0;
-                tcStatus.elapsedGreen1 = temporaryElaspedTime;
-            }
-
-            else if (temporaryCurrentPhase > 4 && temporaryPhaseState == "green")
-            {
-                tcStatus.startingPhase2 = temporaryCurrentPhase;
-                tcStatus.initPhase2 = 0.0;
-                tcStatus.elapsedGreen2 = temporaryElaspedTime;
-            }
-
-            else if (temporaryPhaseState == "yellow")
-            {
-                temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
-                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
-                if (temporaryNextPhase < 5)
-                {
-                    tcStatus.startingPhase1 = temporaryNextPhase;
-                    tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-                    tcStatus.elapsedGreen1 = 0.0;
-                }
-                else if (temporaryNextPhase > 4)
-                {
-                    tcStatus.startingPhase2 = temporaryNextPhase;
-                    tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-                    tcStatus.elapsedGreen2 = 0.0;
-                }
-            }
-
-            else if (temporaryPhaseState == "red")
-            {
-                temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
-                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
-                if (temporaryNextPhase < 5)
-                {
-                    tcStatus.startingPhase1 = temporaryNextPhase;
-                    tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
-                    tcStatus.elapsedGreen1 = 0.0;
-                }
-                else if (temporaryNextPhase > 4)
-                {
-                    tcStatus.startingPhase2 = temporaryNextPhase;
-                    tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
-                    tcStatus.elapsedGreen2 = 0.0;
-                }
-            }
+            else if (values[i].getMemberNames()[j] == "ElapsedTime")
+                temporaryElaspedTime = values[i][values[i].getMemberNames()[j]].asDouble();
         }
 
-        trafficControllerStatus.push_back(tcStatus);
-        //If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
-        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+        if (temporaryCurrentPhase < 5 && temporaryPhaseState == "green")
         {
-            temporaryPhase = trafficControllerStatus[i].startingPhase1;
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+            tcStatus.startingPhase1 = temporaryCurrentPhase;
+            tcStatus.initPhase1 = 0.0;
+            tcStatus.elapsedGreen1 = temporaryElaspedTime;
+        }
 
-            temporaryPhase = trafficControllerStatus[i].startingPhase2;
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+        else if (temporaryCurrentPhase > 4 && temporaryPhaseState == "green")
+        {
+            tcStatus.startingPhase2 = temporaryCurrentPhase;
+            tcStatus.initPhase2 = 0.0;
+            tcStatus.elapsedGreen2 = temporaryElaspedTime;
+        }
+
+        else if (temporaryPhaseState == "yellow") //8 means yellow
+        {
+            temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
+            if (temporaryNextPhase < 5)
+            {
+                tcStatus.startingPhase1 = temporaryNextPhase;
+                tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
+                tcStatus.elapsedGreen1 = 0.0;
+            }
+            else if (temporaryNextPhase > 4)
+            {
+                tcStatus.startingPhase2 = temporaryNextPhase;
+                tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
+                tcStatus.elapsedGreen2 = 0.0;
+            }
+    
+        }
+
+        else if (temporaryPhaseState == "red") //3 means red
+        {
+            temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
+            if (temporaryNextPhase < 5)
+            {
+                tcStatus.startingPhase1 = temporaryNextPhase;
+                tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
+                tcStatus.elapsedGreen1 = 0.0;
+            }
+            else if (temporaryNextPhase > 4)
+            {
+                tcStatus.startingPhase2 = temporaryNextPhase;
+                tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
+                tcStatus.elapsedGreen2 = 0.0;
+            }
         }
     }
 
-    priorityRequestSolver_To_TCI_Interface_Socket.closeSocket();
+    trafficControllerStatus.push_back(tcStatus);
+    //If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        temporaryPhase = trafficControllerStatus[i].startingPhase1;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+            trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+        temporaryPhase = trafficControllerStatus[i].startingPhase2;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
+            trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+    }
+
+    //This is optional. For priniting few attributes of the TCStatus in the console.
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        cout << trafficControllerStatus[i].startingPhase1 << " " << trafficControllerStatus[i].initPhase1 << " " << trafficControllerStatus[i].elapsedGreen2 << endl;
+    }
 }
-
-// /*
-//     - If new priority request is received this method will obtain the current traffic signal Status.
-// */
-// void PriorityRequestSolver::getCurrentSignalStatus()
-// {
-//     int temporaryPhase{};
-//     int temporaryCurrentPhase{};
-//     int temporaryNextPhase{};
-//     int temporaryPhaseState{};
-//     double temporaryElaspedTime{};
-//     TrafficControllerData::TrafficConrtollerStatus tcStatus;
-//     Json::Value jsonObject;
-//     Json::Reader reader;
-//     ifstream jsonData("currPhase.json");
-//     string jsonString((std::istreambuf_iterator<char>(jsonData)), std::istreambuf_iterator<char>());
-//     reader.parse(jsonString.c_str(), jsonObject);
-//     const Json::Value values = jsonObject["currentPhases"];
-//     trafficControllerStatus.clear();
-
-//     for (int i = 0; i < 2; i++)
-//     {
-//         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
-//         {
-//             if (values[i].getMemberNames()[j] == "Phase")
-//                 temporaryCurrentPhase = values[i][values[i].getMemberNames()[j]].asInt();
-
-//             else if (values[i].getMemberNames()[j] == "State")
-//                 temporaryPhaseState = values[i][values[i].getMemberNames()[j]].asInt();
-
-//             else if (values[i].getMemberNames()[j] == "ElapsedTime")
-//                 temporaryElaspedTime = values[i][values[i].getMemberNames()[j]].asDouble();
-//         }
-
-//         if (temporaryCurrentPhase < 5 && temporaryPhaseState == 6)
-//         {
-//             tcStatus.startingPhase1 = temporaryCurrentPhase;
-//             tcStatus.initPhase1 = 0.0;
-//             tcStatus.elapsedGreen1 = temporaryElaspedTime;
-//         }
-
-//         else if (temporaryCurrentPhase > 4 && temporaryPhaseState == 6)
-//         {
-//             tcStatus.startingPhase2 = temporaryCurrentPhase;
-//             tcStatus.initPhase2 = 0.0;
-//             tcStatus.elapsedGreen2 = temporaryElaspedTime;
-//         }
-
-//         else if (temporaryPhaseState == 8) //8 means yellow
-//         {
-//             for (int i = 0; i < 2; i++)
-//             {
-//                 temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
-//                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
-//                 if (temporaryNextPhase < 5)
-//                 {
-//                     tcStatus.startingPhase1 = temporaryNextPhase;
-//                     tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-//                     tcStatus.elapsedGreen1 = 0.0;
-//                 }
-//                 else if (temporaryNextPhase > 4)
-//                 {
-//                     tcStatus.startingPhase2 = temporaryNextPhase;
-//                     tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-//                     tcStatus.elapsedGreen2 = 0.0;
-//                 }
-//             }
-//         }
-
-//         else if (temporaryPhaseState == 3) //3 means red
-//         {
-//             for (int i = 0; i < 2; i++)
-//             {
-//                 temporaryNextPhase = (jsonObject["nextPhases"][i]).asInt();
-//                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
-//                 if (temporaryNextPhase < 5)
-//                 {
-//                     tcStatus.startingPhase1 = temporaryNextPhase;
-//                     tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
-//                     tcStatus.elapsedGreen1 = 0.0;
-//                 }
-//                 else if (temporaryNextPhase > 4)
-//                 {
-//                     tcStatus.startingPhase2 = temporaryNextPhase;
-//                     tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
-//                     tcStatus.elapsedGreen2 = 0.0;
-//                 }
-//             }
-//         }
-//     }
-
-//     trafficControllerStatus.push_back(tcStatus);
-//     //If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
-//     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-//     {
-//         temporaryPhase = trafficControllerStatus[i].startingPhase1;
-//         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-//         if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-//             trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
-
-//         temporaryPhase = trafficControllerStatus[i].startingPhase2;
-//         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-//         if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-//             trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
-//     }
-
-//     //This is optional. For priniting few attributes of the TCStatus in the console.
-//     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-//     {
-//         cout << trafficControllerStatus[i].startingPhase1 << " " << trafficControllerStatus[i].initPhase1 << " " << trafficControllerStatus[i].elapsedGreen2 << endl;
-//     }
-// }
 
 // /*
 //     - If new priority request is received this method will obtain the current traffic signal Status.
@@ -693,16 +561,16 @@ void PriorityRequestSolver::getCurrentSignalStatus()
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
-void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
+void PriorityRequestSolver::readCurrentSignalTimingPlan()
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
 
     Json::Value jsonObject;
     Json::Reader reader;
-    // std::ifstream signalPlanJson("signalPlan.json");
-    // std::string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
-    // reader.parse(configJsonString.c_str(), jsonObject);
-    reader.parse(jsonString.c_str(), jsonObject);
+    std::ifstream signalPlanJson("signalPlan.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+
     const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
     cout << "Total Phase No: " << noOfPhase << endl;

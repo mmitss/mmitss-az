@@ -84,7 +84,7 @@ int main()
     // vector<int>vehicleType{6, 6, 6, 6};
     // vector<int>basicVehicleRole{16, 16, 16, 16};
     // vector<int>laneID{2, 8, 2, 8};
-    // vector<double>ETA{20.0, 140.0, 20.0, 140.0};
+    // vector<double>ETA{0.0, 120.0, 0.0, 120.0};
     // vector<double>ETADuration{25.0, 25.0, 25.0, 25.0};
     // vector<int>requestedPhase{2, 2, 6, 6};
     // vector<int>requestStatus{ 4, 4, 4 ,4};

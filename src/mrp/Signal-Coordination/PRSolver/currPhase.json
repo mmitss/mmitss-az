@@ -3,13 +3,13 @@
     [
         {
             "Phase": 2,
-            "State": 3,
-            "ElapsedTime": 1
+            "State": "green",
+            "ElapsedTime": 0
         },
         {
             "Phase": 6,
-            "State": 3,
-            "ElapsedTime": 1
+            "State": "green",
+            "ElapsedTime": 0
         }
     ],
     "nextPhases": 
