@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 #include "json/json.h"
 #include "ScheduleManager.h"
 
@@ -15,17 +16,18 @@ ScheduleManager::ScheduleManager()
 {
 }
 
-ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
+ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, bool EVStatus)
 {
-    if(!requestList.empty())
+    if (!requestList.empty())
         priorityRequestList = requestList;
-    
-    if(!signalStatus.empty())
+
+    if (!signalStatus.empty())
         trafficControllerStatus = signalStatus;
-    
-    if(!signalPlan.empty())
+
+    if (!signalPlan.empty())
         trafficSignalPlan = signalPlan;
 
+    bEVStatus = EVStatus;
 }
 
 //void ScheduleManager::obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
@@ -71,6 +73,22 @@ void ScheduleManager::obtainRequiredSignalGroup()
     {
         if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing2.front() && trafficSignalPlan[i].phaseRing == 2)
             plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
+    }
+}
+
+void ScheduleManager::getOmitPhases()
+{
+    omitPhases.clear();
+    int temporaryPhase{};
+
+    for (int i = 1; i < 9; i++)
+    {
+        temporaryPhase = i;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        if (findSignalGroupOnList == trafficSignalPlan.end())
+            omitPhases.push_back(temporaryPhase);
     }
 }
 
@@ -345,7 +363,7 @@ void ScheduleManager::createEventList()
     Schedule ring2Schedule;
     int vehicleSignalGroup{};
     int vehicleSignalGroupRing{};
-    // int temporaryPhase{};
+    int temporaryPhase{};
     vector<int>::iterator it;
 
     ring1_TCISchedule.clear();
@@ -511,7 +529,7 @@ void ScheduleManager::createEventList()
             ring1_TCISchedule.push_back(ring1Schedule);
         }
 
-        if (vehicleSignalGroupRing == 2)
+        else if (vehicleSignalGroupRing == 2)
         {
             ring2Schedule.commandPhase = vehicleSignalGroup;
             ring2Schedule.commandType = "call_veh";
@@ -519,6 +537,36 @@ void ScheduleManager::createEventList()
             ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
             ring2_TCISchedule.push_back(ring2Schedule);
+        }
+    }
+
+    if (bEVStatus == true)
+    {
+        getOmitPhases();
+
+        for (size_t i = 0; i < omitPhases.size(); i++)
+        {
+            temporaryPhase = omitPhases[i];
+
+            if (temporaryPhase < 5)
+            {
+                ring1Schedule.commandPhase = temporaryPhase;
+                ring1Schedule.commandType = "omit_veh";
+                ring1Schedule.commandStartTime = 0.0;
+                ring1Schedule.commandEndTime = rightCriticalPoints_PhaseDuration_Ring1[rightCriticalPoints_PhaseDuration_Ring1.size()-1];
+
+                ring1_TCISchedule.push_back(ring1Schedule);
+            }
+
+            else if (temporaryPhase > 4)
+            {
+                ring2Schedule.commandPhase = temporaryPhase;
+                ring2Schedule.commandType = "omit_veh";
+                ring2Schedule.commandStartTime = 0.0;
+                ring2Schedule.commandEndTime = rightCriticalPoints_PhaseDuration_Ring2[rightCriticalPoints_PhaseDuration_Ring2.size()-1];
+
+                ring2_TCISchedule.push_back(ring2Schedule);
+            }
         }
     }
 }

@@ -19,6 +19,7 @@ using std::ofstream;
 class ScheduleManager
 {
 private:
+    bool bEVStatus{};
     vector<RequestList> priorityRequestList;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
@@ -37,16 +38,16 @@ private:
 
     vector<int> plannedSignalGroupInRing1;
     vector<int> plannedSignalGroupInRing2;
+    vector<int> omitPhases;
 
 public:
     ScheduleManager();
-    ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan);
+    ScheduleManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, bool EVStatus);
     ~ScheduleManager();
 
     void readOptimalSignalPlan();
-    // void obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
-    // void createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
     void obtainRequiredSignalGroup();
     void createEventList();
+    void getOmitPhases();
     string createScheduleJsonString();
 };

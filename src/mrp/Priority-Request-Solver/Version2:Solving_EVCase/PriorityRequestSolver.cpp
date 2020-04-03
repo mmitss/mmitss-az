@@ -301,7 +301,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     string scheduleJsonString{};
     if (bEVStatus == true)
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV);
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, bEVStatus);
 
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
@@ -311,7 +311,7 @@ string PriorityRequestSolver::getScheduleforTCI()
 
     else
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan);
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, bEVStatus);
 
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
