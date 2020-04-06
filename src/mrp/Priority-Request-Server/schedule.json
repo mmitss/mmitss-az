@@ -1,3 +1,24 @@
 {
-	"MsgType" : "ClearRequest"
+	"MsgType" : "PriorityRequest",
+	"PriorityRequestList" : 
+	{
+		"intersectionID" : 22391,
+		"minuteOfYear" : 136842,
+		"msOfMinute" : 50000,
+		"noOfRequest" : 1,
+		"regionalID" : 0,
+		"requestorInfo" : 
+		[
+			{
+				"ETA" : 1.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 16,
+				"inBoundLaneID" : 12,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 8,
+				"vehicleID" : 77,
+				"vehicleType" : 6
+			}
+		]
+	}
 }

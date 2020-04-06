@@ -500,7 +500,7 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 				findVehicleIDOnTable->basicVehicleRole = signalRequest.getBasicVehicleRole();
 				findVehicleIDOnTable->vehicleLaneID = signalRequest.getInBoundLaneID();
 				findVehicleIDOnTable->vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-				findVehicleIDOnTable->vehicleETA = signalRequest.getETA_Duration();
+				findVehicleIDOnTable->vehicleETADuration = signalRequest.getETA_Duration();
 				//findVehicleIDOnTable->prsStatus = signalRequest.getPriorityRequestType();
 				findVehicleIDOnTable->minuteOfYear = getMinuteOfYear();
 				findVehicleIDOnTable->secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
@@ -538,8 +538,8 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 			}
 			updateETAInActiveRequestTable();
 		}
-		else
-			std::cout << "Unknown priority request type" << std::endl;
+		// else
+		// 	std::cout << "Unknown priority request type" << std::endl;
 		setPriorityRequestStatus();
 	}
 }
@@ -617,7 +617,10 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = ActiveRequestTable[i].vehicleType;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
+			if(ActiveRequestTable[i].vehicleETA <= 0)
+				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
+			else
+				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
@@ -625,8 +628,10 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 	}
 
 	else
+	{	
 		jsonObject["MsgType"] = "ClearRequest";
-
+		std::cout << "Sent Clear Request to Solver " << std::endl;
+	}
 	solverJsonString = fastWriter.write(jsonObject);
 	styledStreamWriter.write(outputter, jsonObject);
 

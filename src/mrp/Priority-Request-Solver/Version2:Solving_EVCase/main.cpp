@@ -31,23 +31,16 @@ int main()
     ScheduleManager scheduleManager;
     SolverDataManager solverDataManager;
     UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt()));
-    // UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
+    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()), 2, 0);
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     char receiveBuffer[5120];
+    char receivedSignalStatusBuffer[5120];
     int msgType{};
+    bool timedOutOccur{};
     string tciJsonString{};
-    ofstream outputfile;
-    ifstream infile;
-    bool bLog = priorityRequestSolver.logging();
 
-    if (bLog == true)
-    {
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-    }
-
-    // priorityRequestSolver.generateModFile();
+    priorityRequestSolver.logging();
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
 
     while (true)
@@ -57,8 +50,9 @@ int main()
         cout << "Received Json String " << receivedJsonString << endl;
         msgType = priorityRequestSolver.getMessageType(receivedJsonString);
 
-        if(msgType == static_cast<int>(msgType::signalPlan))
+        if (msgType == static_cast<int>(msgType::signalPlan))
         {
+            cout << "Received Signal Timing Plan " << endl;
             priorityRequestSolver.readCurrentSignalTimingPlan(receivedJsonString);
             priorityRequestSolver.printSignalPlan();
             priorityRequestSolver.generateModFile();
@@ -67,7 +61,19 @@ int main()
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-            priorityRequestSolver.getCurrentSignalStatus();
+
+            priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
+            timedOutOccur = priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
+            if (timedOutOccur == true)
+            {
+                priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
+                priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
+            }
+            std::string receivedString(receivedSignalStatusBuffer);
+            cout << "Received Signal Status" << receivedString << endl;
+            if (priorityRequestSolver.getMessageType(receivedString) == static_cast<int>(msgType::currentPhaseStatus))
+                priorityRequestSolver.getCurrentSignalStatus(receivedString);
+            // cout << "Received Current Signal Status " << endl;
 
             if (priorityRequestSolver.findEVInList() == true)
             {
@@ -75,37 +81,7 @@ int main()
                 priorityRequestSolver.GLPKSolver();
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-                if (bLog == true)
-                {
-                    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-                    outputfile << "\n Current Mod File at time " << timenow << endl;
-                    infile.open("NewModel_EV.mod");
-                    for (string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Current Dat File at time : " << timenow << endl;
-                    infile.open("NewModelData.dat");
-                    for (string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Current Results File at time : " << timenow << endl;
-                    infile.open("Results.txt");
-                    for (std::string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Following Schedule will send to TCI for EV case at time " << timenow << endl;
-                    outputfile << tciJsonString << endl;
-                }
+                priorityRequestSolver.loggingData(tciJsonString);
             }
             else
             {
@@ -113,26 +89,16 @@ int main()
                 priorityRequestSolver.GLPKSolver();
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-                if (bLog == true)
-                {
-                    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                    outputfile << "Following Schedule will send to TCI at time " << timenow << endl;
-                    outputfile << tciJsonString << endl;
-                }
+                priorityRequestSolver.loggingData(tciJsonString);
             }
         }
 
         else if (msgType == static_cast<int>(msgType::clearRequest))
         {
+            cout << "Received Clear Request " << endl;
+            tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-            if (bLog == true)
-            {
-                auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                outputfile << "Following empty Schedule will send to TCI  at time " << timenow << endl;
-                outputfile << tciJsonString << endl;
-            }
+            priorityRequestSolver.loggingData(tciJsonString);
         }
-    }
-
-    outputfile.close();
+        }
 }

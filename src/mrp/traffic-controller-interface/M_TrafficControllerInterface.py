@@ -60,7 +60,7 @@ def main():
 
     while(True):
         # Receive data on the TCI socket
-        data, address = s.recvfrom(4096)
+        data, address = s.recvfrom(10240)
         data = data.decode()
         # Load the received data into a json object
         receivedMessage = json.loads(data)
@@ -77,7 +77,9 @@ def main():
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
+            print("Received CurrNextPhaseRequest")
             asc.sendCurrentAndNextPhasesDict(address)
+            print("Sent currNextPhaseStatus")
 
         elif receivedMessage["MsgType"]=="TimingPlanRequest":
             # Read the current timing plan from the object of SignalController class

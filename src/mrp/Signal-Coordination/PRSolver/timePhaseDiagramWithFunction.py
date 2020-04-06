@@ -389,7 +389,7 @@ def main():
     req_phase = [2, 2]
 
     # ETA = getPriorityRequest()
-    ETA = [0.0, 0.0, 120.0, 120.0]
+    ETA = [20.0, 20.0, 140.0, 140.0]
     print("ETA", ETA)
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information

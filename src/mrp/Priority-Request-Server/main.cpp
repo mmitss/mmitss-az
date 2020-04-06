@@ -34,7 +34,7 @@ int main()
 
     UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()), 1, 0);
     const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
-    const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySOlver"].asInt());
+    const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
     char receiveBuffer[5120];
 
     const string LOCALHOST = jsonObject_config["HostIp"].asString(); //"127.0.0.1";
@@ -61,16 +61,18 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
-                // std::cout << "Received SRM" << receivedJsonString << std::endl;
+                std::cout << "Received SRM" << receivedJsonString << std::endl;
+                // std::cout << "Received SRM" << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.managingSignalRequestTable(signalRequest); 
-                // PRS.printvector();
+                PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+                std::cout << "Sent SSM" << std::endl;
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
+                std::cout << "Solver JsonString: " << solverJsonString << std::endl;
             }
         }
 
@@ -83,7 +85,7 @@ int main()
             if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
             {
                 PRS.deleteTimedOutRequestfromActiveRequestTable();
-                // std::cout << "Deleted Timed out request" << std::endl;
+                std::cout << "Deleted Timed out request" << std::endl;
                 if (PRS.sendClearRequest() == true)
                 {
                     solverJsonString = PRS.createJsonStringForPrioritySolver();
@@ -99,6 +101,7 @@ int main()
                 // PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
+                std::cout << "Sent SSM" << std::endl;
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
             }
         }

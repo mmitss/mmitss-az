@@ -51,6 +51,7 @@ private:
   int noOfEVInList{};
   // string scheduleJsonString{};
   bool bEVStatus{};
+  bool bLogging{};
 
   vector<RequestList> priorityRequestList;
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
@@ -93,10 +94,13 @@ public:
   void getRequestedSignalGroup();
   void getEVPhases();
   void getEVTrafficSignalPlan();
-  void getCurrentSignalStatus();
+  void getCurrentSignalStatus(string receivedJsonString);
+  void loggingData(string tciJsonString);
   // string getScheduleforTCI(ScheduleManager scheduleManager);
   string getScheduleforTCI();
+  string getClearCommandScheduleforTCI();
   string getSignalTimingPlanRequestString();
+  string getCurrentSignalStatusRequestString();
   int getMessageType(string jsonString);
   // vector<RequestList> getPriorityRequestList();
 
