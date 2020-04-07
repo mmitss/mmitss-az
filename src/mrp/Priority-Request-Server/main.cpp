@@ -49,6 +49,7 @@ int main()
     PRS.getIntersectionID();
     PRS.getRegionalID();
     PRS.getRequestTimedOutValue();
+    PRS.logging();
 
     while (true)
     {
@@ -61,12 +62,14 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
+                PRS.loggingData(receivedJsonString);
                 std::cout << "Received SRM" << receivedJsonString << std::endl;
                 // std::cout << "Received SRM" << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.managingSignalRequestTable(signalRequest); 
                 PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 std::cout << "Sent SSM" << std::endl;
@@ -86,6 +89,7 @@ int main()
             {
                 PRS.deleteTimedOutRequestfromActiveRequestTable();
                 std::cout << "Deleted Timed out request" << std::endl;
+                PRS.printvector();
                 if (PRS.sendClearRequest() == true)
                 {
                     solverJsonString = PRS.createJsonStringForPrioritySolver();
@@ -100,9 +104,10 @@ int main()
                 PRS.updateETAInActiveRequestTable();
                 // PRS.printvector();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
-                std::cout << "Sent SSM" << std::endl;
+                std::cout << "SSM JsonString after updating ETA: " << ssmJsonString << std::endl;
+                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                std::cout << "Sent is SSM after updating ETA" << std::endl;
             }
         }
     }

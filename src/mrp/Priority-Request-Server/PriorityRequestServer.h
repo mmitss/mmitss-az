@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <chrono>
 #include "SignalRequest.h"
 #include "SignalStatus.h"
 #include "ActiveRequest.h"
@@ -36,6 +37,7 @@ private:
     double requestTimedOutValue{0.0};
     int requestTimedOutVehicleID{};
     int tempLastTimeETAUpdated{};
+    bool bLogging{};
 
 public:
     PriorityRequestServer();
@@ -54,6 +56,7 @@ public:
     void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
+    void loggingData(std::string jsonString);
     int getMessageType(std::string jsonString);
     int getIntersectionID();
     int getRegionalID();
@@ -73,4 +76,5 @@ public:
     bool sendClearRequest();
     bool findEVInList();
     bool findEVInRequest(SignalRequest signalRequest);
+    bool logging();
 };

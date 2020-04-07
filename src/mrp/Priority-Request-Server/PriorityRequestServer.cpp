@@ -154,7 +154,7 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 	if (ActiveRequestTable.empty() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
 		addRequest = true;
 
-	else if (ActiveRequestTable.empty() && findVehicleIDOnTable == ActiveRequestTable.end() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
+	else if (!ActiveRequestTable.empty() && findVehicleIDOnTable == ActiveRequestTable.end() && signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))
 		addRequest = true;
 
 	// else
@@ -175,7 +175,6 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
 
 	if (ActiveRequestTable.empty())
-
 		updateValue = false;
 
 	else if (!ActiveRequestTable.empty() && findVehicleIDOnTable == ActiveRequestTable.end())
@@ -469,11 +468,12 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 				}
-
+				setVehicleType(signalRequest);
 				activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
 				activeRequest.requestID = signalRequest.getRequestID();
 				activeRequest.msgCount = signalRequest.getMsgCount();
 				activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
+				activeRequest.vehicleType = vehicleType;
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
 				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
@@ -551,6 +551,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehid{};
 
 	vehid = getRequestTimedOutVehicleID();
+	std::cout << "Need to delete the vehicleID " << vehid << std::endl;
 
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
@@ -578,14 +579,16 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 std::string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 {
 	std::string ssmJsonString{};
-
+	signalStatus.reset();
 	signalStatus.setMinuteOfYear(getMinuteOfYear());
 	signalStatus.setMsOfMinute(getMsOfMinute());
 	signalStatus.setSequenceNumber(getPRSSequenceNumber());
 	signalStatus.setUpdateCount(getPRSUpdateCount());
-	signalStatus.setRegionalID(getRegionalID());
-	signalStatus.setIntersectionID(getIntersectionID());
+	signalStatus.setRegionalID(regionalID);
+	signalStatus.setIntersectionID(intersectionID);
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
+
+	loggingData(ssmJsonString);
 
 	return ssmJsonString;
 }
@@ -617,7 +620,7 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = ActiveRequestTable[i].vehicleType;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
-			if(ActiveRequestTable[i].vehicleETA <= 0)
+			if (ActiveRequestTable[i].vehicleETA <= 0)
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
 			else
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
@@ -628,12 +631,14 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 	}
 
 	else
-	{	
+	{
 		jsonObject["MsgType"] = "ClearRequest";
 		std::cout << "Sent Clear Request to Solver " << std::endl;
 	}
 	solverJsonString = fastWriter.write(jsonObject);
 	styledStreamWriter.write(outputter, jsonObject);
+
+	loggingData(solverJsonString);
 
 	return solverJsonString;
 }
@@ -697,18 +702,25 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
+			if (ActiveRequestTable[i].vehicleETA <= 0)
 			{
-				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute);
-				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
+				ActiveRequestTable[i].vehicleETA = 0.0;
+				ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 
-			else if (ActiveRequestTable[i].secondOfMinute > getMsOfMinute() * SECONDTOMILISECOND && (ActiveRequestTable[i].secondOfMinute - getMsOfMinute() / SECONDTOMILISECOND) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
+			else if (ActiveRequestTable[i].secondOfMinute < (getMsOfMinute() / SECONDTOMILISECOND) && ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
+			{
+				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - ((getMsOfMinute() / SECONDTOMILISECOND) - ActiveRequestTable[i].secondOfMinute);
+				ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
+			}
+
+			else if (ActiveRequestTable[i].secondOfMinute > (getMsOfMinute() * SECONDTOMILISECOND) && (ActiveRequestTable[i].secondOfMinute - (getMsOfMinute() / SECONDTOMILISECOND)) >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
 			{
 				ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (getMsOfMinute() / SECONDTOMILISECOND + SECONDSINAMINUTE - ActiveRequestTable[i].secondOfMinute);
-				// ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-				// ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
+				ActiveRequestTable[i].secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
 			}
 		}
 	}
@@ -723,7 +735,7 @@ void PriorityRequestServer::printvector()
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleLaneID << " " << ActiveRequestTable[i].vehicleETA << std::endl;
+			std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleType << " " << ActiveRequestTable[i].vehicleETA << std::endl;
 		}
 	}
 
@@ -943,6 +955,51 @@ void PriorityRequestServer::deleteMapPayloadFile()
 	std::string deleteFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
 	remove(deleteFileName.c_str());
 }
+
+
+bool PriorityRequestServer::logging()
+{
+    std::string logging{};
+    std::ofstream outputfile;
+    Json::Value jsonObject;
+    Json::Reader reader;
+    std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+    logging = (jsonObject["Logging"]).asString();
+
+    if (logging == "True")
+    {
+        bLogging = true;
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        outputfile.open("/nojournal/bin/log/PRSLog.txt");
+		outputfile << "File opened at time : " << timenow << std::endl;
+        outputfile.close();
+    }
+    else
+        bLogging = false;
+
+    return bLogging;
+}
+
+void PriorityRequestServer::loggingData(std::string jsonString)
+{
+    std::ofstream outputfile;
+    std::ifstream infile;
+
+    if (bLogging == true)
+    {
+        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+        outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+        outputfile << "\nJsonString  : " << timenow << std::endl;
+		outputfile << jsonString   << timenow << std::endl;
+        outputfile.close();
+    }
+}
+
 
 PriorityRequestServer::~PriorityRequestServer()
 {

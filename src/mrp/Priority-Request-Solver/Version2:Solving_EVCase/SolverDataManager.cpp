@@ -275,7 +275,12 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             for (size_t j = 1; j < 9; j++)
             {
                 if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
-                    fs << priorityRequestList[i].vehicleETA << "\t";
+                {
+                    if(priorityRequestList[i].vehicleETA <= 3.0)
+                        fs << 1.0  << "\t";
+                    else
+                        fs << priorityRequestList[i].vehicleETA - 2.0 << "\t";
+                }
                 else
                     fs << ".\t";
             }

@@ -98,7 +98,8 @@ int main()
             cout << "Received Clear Request " << endl;
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
+            cout << "Sent Clear Request " << endl;
             priorityRequestSolver.loggingData(tciJsonString);
         }
-        }
+    }
 }

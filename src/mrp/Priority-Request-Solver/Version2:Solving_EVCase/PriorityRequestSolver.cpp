@@ -99,6 +99,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.prioritystatus = jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"].asInt();
         priorityRequestList.push_back(requestList);
     }
+    modifyPriorityRequestList();
 
     // setPhaseCallForRequestedSignalGroup();
     //This is optional. For priniting few attributes of the priority request list in the console
@@ -279,7 +280,7 @@ void PriorityRequestSolver::setOptimizationInput()
 
     if (bEVStatus == true)
     {
-        modifyPriorityRequestList();
+        // modifyPriorityRequestList();
         getRequestedSignalGroup();
         deleteSplitPhasesFromPriorityRequestList();
         getEVPhases();
@@ -1478,6 +1479,7 @@ bool PriorityRequestSolver::logging()
         bLogging = true;
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         outputfile.open("/nojournal/bin/log/PRSolverLog.txt");
+        outputfile << "File opened at time : " << timenow << std::endl;
         outputfile.close();
     }
     else
