@@ -191,7 +191,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         else
         {
             for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration;
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration + trafficSignalPlan[i].minGreen;
         }
     }
     else

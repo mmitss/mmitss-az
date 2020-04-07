@@ -109,7 +109,9 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 }
 
 /*
-    - If EV is priority request list, delete all the priority request from the list apart from EV
+    - If there is EV priority request in the list, following method will delete all the priority request from the list apart from EV request.
+    - Check vehicle type for all the received request.
+    - If vehicle type is not EV(For EV vehicleType is 2) remove that request from the list.
 */
 void PriorityRequestSolver::modifyPriorityRequestList()
 {
@@ -132,50 +134,123 @@ void PriorityRequestSolver::modifyPriorityRequestList()
 }
 
 /*
-    - If EV is priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
+    - For Single or Multiple EV priority request for same signal group:
+        - Append Starting phases into their respective ring barrier group
+        - If ring group is missing, then check whether starting phases left turn phase is same or not
+        - If they are not same remove left turn phases
+    - For Multiple EV priority request from different approach:
+        - If EV is priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
 */
 void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 {
     int temporaryPhase{};
-    if (noOfEVInList > 0 && requestedSignalGroup.size() > 2)
+
+    vector<int> requestedEV_P11;
+    vector<int> requestedEV_P12;
+    vector<int> requestedEV_P21;
+    vector<int> requestedEV_P22;
+
+    for (size_t i = 0; i < requestedSignalGroup.size(); i++)
     {
-        vector<int> requestedEV_P11;
-        vector<int> requestedEV_P12;
-        vector<int> requestedEV_P21;
-        vector<int> requestedEV_P22;
-        for (size_t i = 0; i < requestedSignalGroup.size(); i++)
+        if (requestedSignalGroup[i] == 1 || requestedSignalGroup[i] == 2)
+            requestedEV_P11.push_back(requestedSignalGroup[i]);
+
+        else if (requestedSignalGroup[i] == 3 || requestedSignalGroup[i] == 4)
+            requestedEV_P12.push_back(requestedSignalGroup[i]);
+
+        else if (requestedSignalGroup[i] == 5 || requestedSignalGroup[i] == 6)
+            requestedEV_P21.push_back(requestedSignalGroup[i]);
+
+        else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
+            requestedEV_P22.push_back(requestedSignalGroup[i]);
+    }
+
+    if (noOfEVInList > 0 && requestedSignalGroup.size() == 2)
+    {
+
+        for (size_t j = 0; j < trafficControllerStatus.size(); j++)
         {
-            if (requestedSignalGroup[i] == 1 || requestedSignalGroup[i] == 2)
-                requestedEV_P11.push_back(requestedSignalGroup[i]);
 
-            else if (requestedSignalGroup[i] == 3 || requestedSignalGroup[i] == 4)
-                requestedEV_P12.push_back(requestedSignalGroup[i]);
+            if (trafficControllerStatus[j].startingPhase1 == 1 || trafficControllerStatus[j].startingPhase1 == 2)
+                requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (requestedSignalGroup[i] == 5 || requestedSignalGroup[i] == 6)
-                requestedEV_P21.push_back(requestedSignalGroup[i]);
+            else if (trafficControllerStatus[j].startingPhase1 || trafficControllerStatus[j].startingPhase1 == 4)
+                requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
-                requestedEV_P22.push_back(requestedSignalGroup[i]);
+            else if (trafficControllerStatus[j].startingPhase1 == 5 || trafficControllerStatus[j].startingPhase1 == 6)
+                requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase1);
+
+            else if (trafficControllerStatus[j].startingPhase1 == 7 || trafficControllerStatus[j].startingPhase1 == 8)
+                requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase1);
+
+            else if (trafficControllerStatus[j].startingPhase2 == 1 || trafficControllerStatus[j].startingPhase2 == 2)
+                requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase2);
+
+            else if (trafficControllerStatus[j].startingPhase2 || trafficControllerStatus[j].startingPhase2 == 4)
+                requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase2);
+
+            else if (trafficControllerStatus[j].startingPhase2 == 5 || trafficControllerStatus[j].startingPhase2 == 6)
+                requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase2);
+
+            else if (trafficControllerStatus[j].startingPhase2 == 7 || trafficControllerStatus[j].startingPhase2 == 8)
+                requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase2);
         }
 
         if (requestedEV_P11.empty() && requestedEV_P21.empty())
         {
             vector<int> LeftTurnPhases{3, 7};
+
             for (size_t i = 0; i < LeftTurnPhases.size(); i++)
             {
                 temporaryPhase = LeftTurnPhases.at(i);
-
-                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                if ((trafficControllerStatus[0].startingPhase1 != temporaryPhase) || (trafficControllerStatus[0].startingPhase2 != temporaryPhase))
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
                                                                                        [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                         priorityRequestList.erase(findSignalGroupOnList);
-
-                    else if (findSignalGroupOnList == priorityRequestList.end())
-                        break;
                 }
+
+                requestedSignalGroup.clear();
+                getRequestedSignalGroup();
+            }
+        }
+
+        else if (requestedEV_P12.empty() && requestedEV_P22.empty())
+        {
+            vector<int> LeftTurnPhases{1, 5};
+
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+                if (trafficControllerStatus[0].startingPhase1 == temporaryPhase || (trafficControllerStatus[0].startingPhase2 != temporaryPhase))
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                        priorityRequestList.erase(findSignalGroupOnList);
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
+        }
+    }
+
+    else if (noOfEVInList > 0 && requestedSignalGroup.size() > 2)
+    {
+        if (requestedEV_P11.empty() && requestedEV_P21.empty())
+        {
+            vector<int> LeftTurnPhases{3, 7};
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+                vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                   [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                if (findSignalGroupOnList != priorityRequestList.end())
+                    priorityRequestList.erase(findSignalGroupOnList);
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
@@ -187,18 +262,11 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             for (size_t i = 0; i < LeftTurnPhases.size(); i++)
             {
                 temporaryPhase = LeftTurnPhases.at(i);
+                vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                   [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
-                for (size_t j = 0; j < priorityRequestList.size(); j++)
-                {
-                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
-
-                    if (findSignalGroupOnList != priorityRequestList.end())
-                        priorityRequestList.erase(findSignalGroupOnList);
-
-                    else if (findSignalGroupOnList == priorityRequestList.end())
-                        break;
-                }
+                if (findSignalGroupOnList != priorityRequestList.end())
+                    priorityRequestList.erase(findSignalGroupOnList);
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
@@ -311,7 +379,7 @@ string PriorityRequestSolver::getScheduleforTCI()
 
     else
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan,bEVStatus);
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, bEVStatus);
 
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
@@ -324,8 +392,22 @@ string PriorityRequestSolver::getScheduleforTCI()
     return scheduleJsonString;
 }
 
+string PriorityRequestSolver::getClearCommandScheduleforTCI()
+{
+    string clearScheduleJsonString{};
+
+    ScheduleManager scheduleManager;
+    clearScheduleJsonString = scheduleManager.createScheduleJsonString();
+
+    return clearScheduleJsonString;
+}
+
 /*
     - If here is EV in priority request list, Dat file will have information about EV requested phases and current phases.
+    - A vector called plannedEVPhases will hold the required signal group for EV priority.
+    - If there is onlye two required signal groups then dummy signal group will be added for other ring barrier.
+        - Suppose Starting Phase is {4,8} and requested Phase is {4,7}. Then split phase{7} is deleted by deleteSplitPhasesFromPriorityRequestList() method.
+        - Two Dummy phase {2,6} will be added to formulate the problem properly.
 */
 void PriorityRequestSolver::getEVPhases()
 {
@@ -345,6 +427,19 @@ void PriorityRequestSolver::getEVPhases()
         if (it == requestedSignalGroup.end())
             plannedEVPhases.push_back(tempSignalGroup);
     }
+
+    if (plannedEVPhases.size() <= 2)
+    {
+        vector<int> dummyPhases{2, 4, 6, 8};
+        for (size_t i = 0; i < dummyPhases.size(); i++)
+        {
+            tempSignalGroup = dummyPhases[i];
+            it = std::find(plannedEVPhases.begin(), plannedEVPhases.end(), tempSignalGroup);
+            if (it == plannedEVPhases.end())
+                plannedEVPhases.push_back(tempSignalGroup);
+        }
+    }
+
     sort(plannedEVPhases.begin(), plannedEVPhases.end());
 }
 
@@ -467,7 +562,6 @@ void PriorityRequestSolver::getCurrentSignalStatus()
                 tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
                 tcStatus.elapsedGreen2 = 0.0;
             }
-    
         }
 
         else if (temporaryPhaseState == "red") //3 means red
@@ -1219,8 +1313,8 @@ double PriorityRequestSolver::GetSeconds()
 
 bool PriorityRequestSolver::logging()
 {
-    bool bLogging = false;
     string logging{};
+    ofstream outputfile;
     Json::Value jsonObject;
     Json::Reader reader;
     ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
@@ -1230,12 +1324,51 @@ bool PriorityRequestSolver::logging()
     logging = (jsonObject["Logging"]).asString();
 
     if (logging == "True")
+    {
         bLogging = true;
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        outputfile.open("/nojournal/bin/log/PRSolverLog.txt");
+        outputfile.close();
+    }
 
     else
         bLogging = false;
 
     return bLogging;
+}
+
+void PriorityRequestSolver::loggingData(string tciJsonString)
+{
+    ofstream outputfile;
+    ifstream infile;
+
+    if (bLogging == true)
+    {
+        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+        outputfile << "\nCurrent Dat File at time : " << timenow << endl;
+        infile.open("NewModelData.dat");
+        for (string line; getline(infile, line);)
+        {
+            outputfile << line << endl;
+        }
+        infile.close();
+
+        outputfile << "\nCurrent Results File at time : " << timenow << endl;
+        infile.open("Results.txt");
+        for (std::string line; getline(infile, line);)
+        {
+            outputfile << line << endl;
+        }
+        infile.close();
+
+        outputfile << "\nFollowing Schedule will send to TCI for EV case at time " << timenow << endl;
+        outputfile << tciJsonString << endl;
+
+        outputfile.close();
+    }
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

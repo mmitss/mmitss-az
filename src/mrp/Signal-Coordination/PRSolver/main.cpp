@@ -36,15 +36,8 @@ int main()
     char receiveBuffer[5120];
     int msgType{};
     string tciJsonString{};
-    ofstream outputfile;
-    ifstream infile;
-    bool bLog = priorityRequestSolver.logging();
-
-    if (bLog == true)
-    {
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-    }
+ 
+    priorityRequestSolver.logging();
 
     priorityRequestSolver.readCurrentSignalTimingPlan();
     // priorityRequestSolver.printSignalPlan();
@@ -69,37 +62,7 @@ int main()
                 priorityRequestSolver.GLPKSolver();
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-                if (bLog == true)
-                {
-                    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-                    outputfile << "\n Current Mod File at time " << timenow << endl;
-                    infile.open("NewModel_EV.mod");
-                    for (string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Current Dat File at time : " << timenow << endl;
-                    infile.open("NewModelData.dat");
-                    for (string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Current Results File at time : " << timenow << endl;
-                    infile.open("Results.txt");
-                    for (std::string line; getline(infile, line);)
-                    {
-                        outputfile << line << endl;
-                    }
-                    infile.close();
-
-                    outputfile << "\n Following Schedule will send to TCI for EV case at time " << timenow << endl;
-                    outputfile << tciJsonString << endl;
-                }
+                priorityRequestSolver.loggingData(tciJsonString);
             }
             else
             {
@@ -107,26 +70,15 @@ int main()
                 priorityRequestSolver.GLPKSolver();
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-                if (bLog == true)
-                {
-                    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                    outputfile << "Following Schedule will send to TCI at time " << timenow << endl;
-                    outputfile << tciJsonString << endl;
-                }
+                priorityRequestSolver.loggingData(tciJsonString);
             }
         }
 
         else if (msgType == static_cast<int>(msgType::clearRequest))
         {
+            tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-            if (bLog == true)
-            {
-                auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-                outputfile << "Following empty Schedule will send to TCI  at time " << timenow << endl;
-                outputfile << tciJsonString << endl;
-            }
+            priorityRequestSolver.loggingData(tciJsonString);
         }
     }
-
-    outputfile.close();
 }
