@@ -113,7 +113,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
         elif(RingNo == 'Ring2'):
             right_r2_k1_Phase_Times = [float(durationOfP5K1R2), float(durationOfP6K1R2), float(durationOfP7K1R2), float(durationOfP8K1R2)]
             if SP > 4:
-                right_r2_k1_Phase_Times = right_r2_k1_Phase_Times[SP-1:]
+                right_r2_k1_Phase_Times = right_r2_k1_Phase_Times[SP-5:]
 
 
         # For cycle2 Right CP
@@ -134,7 +134,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
         # For cycle3 Right CP
         with open('Results.txt') as f:
             for i, line in enumerate(f):
-                if i == 4:
+                if i == 7:
                     break
         durationOfP1K3R2, durationOfP2K3R2, durationOfP3K3R2, durationOfP4K3R2, durationOfP5K3R2, durationOfP6K3R2, durationOfP7K3R2, durationOfP8K3R2 = line.split()
         
@@ -150,6 +150,8 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
             del right_r2_k1_Phase_Times[8:]
             phase_Times = right_r2_k1_Phase_Times
 
+    phase_Times = [x for x in phase_Times if x != 0]
+    
     return phase_Times
 
 
@@ -196,47 +198,48 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
     if ringNo == 'Ring1&2':
         #Ring1
         color = 'tab:red'
-        ax1.set_xlabel('time (s)')
-        ax1.set_ylabel('Ring 1', color=color)
+        ax1.set_xlabel('time (s)',fontsize=20)
+        ax1.set_ylabel('Ring 1', color=color, fontsize=20)
         ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
         ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10)) 
+        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10),fontsize = 18) 
         ax1.set_yticks(ticks=np.arange(cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  
         ax1.set_yticklabels(phasesInRing1)  
-        ax1.tick_params(axis='y', labelcolor=color)
+        ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
+        
 
         #Ring2
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         color = 'tab:blue'
-        ax2.set_ylabel('Ring 2', color=color)
+        ax2.set_ylabel('Ring 2', color=color, fontsize=20)
         ax2.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
         ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
         ax2.set_yticks(ticks=np.arange(cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
         ax2.set_yticklabels(phasesInRing2)
-        ax2.tick_params(axis='y', labelcolor=color)
+        ax2.tick_params(axis='y', labelcolor=color,labelsize=18)
     
     elif ringNo == 'Ring1':
         color = 'tab:red'
-        ax1.set_xlabel('time (s)')
-        ax1.set_ylabel('Ring 1', color=color)
+        ax1.set_xlabel('time (s)', fontsize=20)
+        ax1.set_ylabel('Ring 1', color=color, fontsize=20)
         ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
         ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10)) 
+        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10),fontsize = 18) 
         ax1.set_yticks(ticks=np.arange(cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  
         ax1.set_yticklabels(phasesInRing1)  
-        ax1.tick_params(axis='y', labelcolor=color)
+        ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
         
     
     elif ringNo == 'Ring2':
         color = 'tab:blue'
-        ax1.set_xlabel('time (s)')
-        ax1.set_ylabel('Ring 2', color=color)
+        ax1.set_xlabel('time (s)', fontsize=20)
+        ax1.set_ylabel('Ring 2', color=color, fontsize=20)
         ax1.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
         ax1.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-        plt.xticks(np.arange(cum_Right_Ring2_Phase_Times[0], cum_Right_Ring2_Phase_Times[-1], 10)) 
+        plt.xticks(np.arange(cum_Right_Ring2_Phase_Times[0], cum_Right_Ring2_Phase_Times[-1], 10),fontsize = 18) 
         ax1.set_yticks(ticks=np.arange(cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
         ax1.set_yticklabels(phasesInRing2)  
-        ax1.tick_params(axis='y', labelcolor=color)
+        ax1.tick_params(axis='y', labelcolor=color,labelsize=18)
         
     # Requested phase
     requestedPhasePosition =[]
@@ -269,102 +272,10 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
     for i in range(0,req_phase_length):
         x = ETA[i]
         y = requestedPhasePosition[i]
-        patches.append(matplotlib.patches.Rectangle((x, y),5,10,angle=0.0,color = 'red'))
+        patches.append(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'red'))
     ax1.add_collection(PatchCollection(patches))
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.grid()
-    plt.show()
-
-
-def subplotTimePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, cum_phaseInRing2, ETA, phasesInRing1, phasesInRing2,req_phase):
-
-    # Plotting time-phase diagram
-    fig, ax1 = plt.subplots(2)
-
-    color = 'tab:red'
-    ax1[0].set_xlabel('time (s)')
-    ax1[0].set_ylabel('Ring 1', color=color)
-    ax1[0].plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-    ax1[0].plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-    plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10))
-
-
-    ax1[0].set_yticks(ticks=np.arange(
-        cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  # added by Kelsey
-    ax1[0].set_yticklabels(phasesInRing1)  # added by Kelsey
-    ax1[0].tick_params(axis='y', labelcolor=color)
-    fig.tight_layout() 
-    ax1[0].grid(linestyle='-', linewidth='0.5', color='red')
-
-    # ax2 = ax1[0].twinx()  # instantiate a second axes that shares the same x-axis
-
-    # color = 'tab:blue'
-    # # we already handled the x-label with ax1
-    # ax2.set_ylabel('Ring 2', color=color)
-    # ax2.set_yticks(ticks=np.arange(
-    #     cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  # added by Kelsey
-    # ax2.set_yticklabels(phasesInRing2)  # added by Kelsey
-    # ax2.tick_params(axis='y', labelcolor=color)
-
-    
-
-
-###For second plot (Ring2)
-    color = 'tab:blue'
-    ax1[1].set_xlabel('time (s)')
-    ax1[1].set_ylabel('Ring 2', color=color)
-    ax1[1].plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-    ax1[1].plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-    plt.xticks(np.arange(cum_Right_Ring2_Phase_Times[0], cum_Right_Ring2_Phase_Times[-1], 10)) 
-
-
-    ax1[1].set_yticks(ticks=np.arange(
-        cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
-    ax1[1].set_yticklabels(phasesInRing1) 
-    ax1[1].tick_params(axis='y', labelcolor=color)
-
-    # ax2 = ax1[1].twinx()  # instantiate a second axes that shares the same x-axis
-
-    # color = 'tab:blue'
-    # # we already handled the x-label with ax1
-    # ax2.set_ylabel('Ring 2', color=color)
-    # ax2.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-    # ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-    # ax2.set_yticks(ticks=np.arange(
-    #     cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
-    # ax2.set_yticklabels(phasesInRing2) 
-    # ax2.tick_params(axis='y', labelcolor=color)
-
-    fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    ax1[1].grid(linestyle='-', linewidth='0.5', color='blue')
-
-
-    # Requested phase
-    # req_phase = [2,7]  
-    requestedPhasePosition =[]
-    for i in req_phase:
-        if i<5:
-            pos = phasesInRing1.index(i)#phasesInRing1.index(req_phase)
-            pos = cum_phaseInRing1[pos]
-            requestedPhasePosition.append(pos)
-        else:
-            i=i-4
-            pos = phasesInRing1.index(i)
-            pos = cum_phaseInRing1[pos]
-            requestedPhasePosition.append(pos)
-
-    patches =[]
-    req_phase_length = len(req_phase)
-    for i in range(0,req_phase_length):
-        x = ETA[i]
-        y = requestedPhasePosition[i]
-        patches.append(matplotlib.patches.Rectangle((x, y),5,10,angle=0.0,color='r'))
-    ax1[0].add_collection(PatchCollection(patches))
-    ax1[1].add_collection(PatchCollection(patches))
-    
-
-    # fig.tight_layout()  # otherwise the right y-label is slightly clipped
-    # plt.grid()
     plt.show()
 
 
@@ -385,8 +296,11 @@ def main():
     cum_phaseInRing2 = []
 
     ETA = []
-    req_phase = [3, 4]
-        
+    req_phase = [2, 5]
+    
+    # ETA = getPriorityRequest()
+    ETA = [30.0, 30.0, 30.0, 30.0 ]
+    print("ETA", ETA)
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information
     print("SP1 =", SP1)
@@ -394,27 +308,22 @@ def main():
     SP1 = int(SP1) #Converting starting phase into integar value
     SP2 = int(SP2) #Converting starting phase into integar value
 
-
-    # phasesInRing1 = [SP1] #Appending the SP1 into phasesInring1 list
-    # phasesInRing2 = [SP2] #Appending the SP2 into phasesInring2 list
     
     #Obtained planned signal phase of cycle1,2,3 for ring 1. There will be 8 phases.
-    # phasesInRing1 = phaseGroupInRing(SP1, r1_phases, phasesInRing1)
-    phasesInRing1= []
-    n = int(input("Enter no of Phases: "))
-    phasesInRing1 = list(map(int,input("\nEnter the numbers : ").strip().split()))[:n] 
-    # for i in range(0, ring1_input): 
-    #     ele = int(input()) 
-  
-    #     phasesInRing1.append(ele)
-    print("Phases In Ring1", phasesInRing1)
-    #Obtained planned signal phase of cycle1,2,3 for ring 2. There will be 8 phases
-    # phasesInRing2 = phaseGroupInRing(SP2, r2_phases, phasesInRing2)
-    phasesInRing2 = []
-    n = int(input("Enter no of Phases: "))
-    phasesInRing2 = list(map(int,input("\nEnter the numbers : ").strip().split()))[:n]
+    #phasesInRing1 = []
+    phasesInRing1 = [4,2,4,2]
+    # n = int(input("Enter no of Phases in Ring1: "))
+    # phasesInRing1 = list(map(int,input("\nEnter the phase numbers following by space : ").strip().split()))[:n] 
     
+    #Obtained planned signal phase of cycle1,2,3 for ring 2. There will be 8 phases
+    # phasesInRing2 = []
+    phasesInRing2 = [8,5,8,5]
+    # n = int(input("Enter no of Phases in Ring2: "))
+    # phasesInRing2 = list(map(int,input("\nEnter the phase numbers following by space : ").strip().split()))[:n]
+    
+    print("Phases In Ring1", phasesInRing1)
     print("Phases In Ring2", phasesInRing2)
+    
     #obtained init time and green elapssed time
     init1, init2, grn1, grn2 = getInitToPhasesAndElaspedGreenTime().split()
     print("ini1 =", init1)
@@ -539,10 +448,14 @@ def main():
             cum_phaseInRing2.append(x)
 
     else:
-        cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(
-            left_R2_CP_phase_times)
-        cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(
-            right_R2_CP_phase_times)
+        cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(left_R2_CP_phase_times)
+        cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(right_R2_CP_phase_times)
+        x = 0
+        cum_phaseInRing2= [x]
+        length = len(cum_Left_Ring2_Phase_Times)-1
+        for i in range(length):
+            x = x+10
+            cum_phaseInRing2.append(x)
             
     print("Phases In Ring2", phasesInRing2)
     print("Cumulative Left Critical Points Phase times for Ring2 =",
@@ -553,8 +466,8 @@ def main():
 
     
     # ETA = getPriorityRequest()
-    ETA = [24.0, 24.0, 24.0, 35.0,35.0]
-    print("ETA", ETA)
+    # ETA = [24.0, 24.0, 24.0, 35.0,35.0]
+    # print("ETA", ETA)
 
     timePhaseDiagram(SP1, SP2,cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
                      cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
