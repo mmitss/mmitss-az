@@ -35,7 +35,7 @@ int main()
     UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()), 1, 0);
     const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
-    char receiveBuffer[5120];
+    char receiveBuffer[10240];
 
     const string LOCALHOST = jsonObject_config["HostIp"].asString(); //"127.0.0.1";
     int msgType{};

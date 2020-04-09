@@ -58,7 +58,7 @@ class Snmp:
         self.targetDeviceCommInfo = targetDeviceCommInfo
         self.targetDeviceIp, self.targetDevicePort = targetDeviceCommInfo
         if not TESTING_OTHER_MODULES:
-            self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort, retries=100)
+            self.session = Session(hostname=self.targetDeviceIp, community="public", version=1, remote_port=self.targetDevicePort, retries=100, timeout=10)
             #print("Connection to " + str(self.targetDeviceIp)) + ":" + str(self.targetDevicePort) + " established successfully!"
 
     ######################## Definition End: __init__(self, targetDeviceCommInfo:tuple) ########################

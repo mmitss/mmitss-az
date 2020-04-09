@@ -77,7 +77,7 @@ def main():
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            print("Received CurrNextPhaseRequest")
+            print("Received CurrNextPhaseRequest: " + str(receivedMessage))
             asc.sendCurrentAndNextPhasesDict(address)
             print("Sent currNextPhaseStatus")
 

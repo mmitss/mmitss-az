@@ -46,7 +46,6 @@ public:
     std::string createSSMJsonString(SignalStatus signalStatus);
     std::string createJsonStringForPrioritySolver();
     void managingSignalRequestTable(SignalRequest signalRequest);
-    void findSplitPhase();
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
     void writeMAPPayloadInFile();
@@ -66,6 +65,7 @@ public:
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
     int getSignalGroup(SignalRequest signalRequest);
+    int getSplitPhase(int signalGroup);
     double getRequestTimedOutValue();
     bool acceptSignalRequest(SignalRequest signalRequest);
     bool addToActiveRequestTable(SignalRequest signalRequest);

@@ -205,6 +205,7 @@ class Scheduler:
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
+        print("Beginning to clear old schedule")
         # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
         clearOldSchedule(scheduleDataStructure)    
 

@@ -1,3 +1,74 @@
 {
-	"MsgType" : "ClearRequest"
+	"MsgType" : "PriorityRequest",
+	"PriorityRequestList" : 
+	{
+		"intersectionID" : 22391,
+		"minuteOfYear" : 141301,
+		"msOfMinute" : 20000,
+		"noOfRequest" : 6,
+		"regionalID" : 0,
+		"requestorInfo" : 
+		[
+			{
+				"ETA" : 1.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 13,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 3,
+				"vehicleID" : 19,
+				"vehicleType" : 2
+			},
+			{
+				"ETA" : 1.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 13,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 7,
+				"vehicleID" : 19,
+				"vehicleType" : 2
+			},
+			{
+				"ETA" : 1.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 18,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 2,
+				"vehicleID" : 7,
+				"vehicleType" : 2
+			},
+			{
+				"ETA" : 1.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 18,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 5,
+				"vehicleID" : 7,
+				"vehicleType" : 2
+			},
+			{
+				"ETA" : 5.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 17,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 2,
+				"vehicleID" : 36,
+				"vehicleType" : 2
+			},
+			{
+				"ETA" : 5.0,
+				"ETA_Duration" : 2.0,
+				"basicVehicleRole" : 13,
+				"inBoundLaneID" : 17,
+				"priorityRequestStatus" : 4,
+				"requestedSignalGroup" : 5,
+				"vehicleID" : 36,
+				"vehicleType" : 2
+			}
+		]
+	}
 }

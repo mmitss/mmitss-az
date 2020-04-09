@@ -219,6 +219,7 @@ class SignalController:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind(self.currPhaseListenerAddress)
         data, addr = s.recvfrom(1024)
+        print("Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
 
         currentPhasesDict = json.loads(data.decode())
 
@@ -233,6 +234,7 @@ class SignalController:
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
+        print("Sent curr and NextPhasestatus to solver: " + str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 

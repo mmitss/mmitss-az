@@ -296,124 +296,50 @@ bool PriorityRequestServer::findEVInRequest(SignalRequest signalRequest)
 
 /*
     - Obtain Split Phase information if EV is in List
-        - Copy the EV request object.
-		- Change the signal group with split phase
-		- Append that object in the ART
 */
-void PriorityRequestServer::findSplitPhase()
+int PriorityRequestServer::getSplitPhase(int signalGroup)
 {
 	std::vector<int>::iterator it;
-	std::vector<ActiveRequest> temporarySplitPriorityRequestList;
 	int temporarySplitPhase{};
-
-	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
+	switch (signalGroup)
 	{
-		if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::fire))
-		{
-			switch (ActiveRequestTable[i].signalGroup)
-			{
-			case 1:
-				temporarySplitPhase = 6;
-				// it = std::find(P21.begin(), P21.end(), temporarySplitPhase);
-				// if (it != P21.end())
-				// {
-				//     temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				//     temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 1:
+		temporarySplitPhase = 6;
+		break;
 
-			case 2:
-				temporarySplitPhase = 5;
-				// it = std::find(P21.begin(), P21.end(), temporarySplitPhase);
-				// if (it != P21.end())
-				// {
-				//     temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				//     temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 2:
+		temporarySplitPhase = 5;
+		break;
 
-			case 3:
-				temporarySplitPhase = 7;
-				// it = std::find(P22.begin(), P22.end(), temporarySplitPhase);
-				// if (it != P22.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 3:
+		temporarySplitPhase = 7;
+		break;
 
-			case 4:
-				temporarySplitPhase = 8;
-				// it = std::find(P22.begin(), P22.end(), temporarySplitPhase);
-				// if (it != P22.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 4:
+		temporarySplitPhase = 8;
+		break;
 
-			case 5:
-				temporarySplitPhase = 2;
-				// it = std::find(P11.begin(), P11.end(), temporarySplitPhase);
-				// if (it != P11.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 5:
+		temporarySplitPhase = 2;
+		break;
 
-			case 6:
-				temporarySplitPhase = 1;
-				// it = std::find(P11.begin(), P11.end(), temporarySplitPhase);
-				// if (it != P11.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 6:
+		temporarySplitPhase = 1;
+		break;
 
-			case 7:
-				temporarySplitPhase = 3;
-				// it = std::find(P12.begin(), P12.end(), temporarySplitPhase);
-				// if (it != P12.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 7:
+		temporarySplitPhase = 3;
+		break;
 
-			case 8:
-				temporarySplitPhase = 4;
-				// it = std::find(P12.begin(), P12.end(), temporarySplitPhase);
-				// if (it != P12.end())
-				// {
-				// 	temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				// 	temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				// }
-				temporarySplitPriorityRequestList.push_back(ActiveRequestTable[i]);
-				temporarySplitPriorityRequestList[i].signalGroup = temporarySplitPhase;
-				break;
+	case 8:
+		temporarySplitPhase = 4;
+		break;
 
-			default:
-				break;
-			}
-		}
+	default:
+		break;
 	}
-	ActiveRequestTable.insert(ActiveRequestTable.end(), temporarySplitPriorityRequestList.begin(), temporarySplitPriorityRequestList.end());
+
+	return temporarySplitPhase;
 }
 
 /*
@@ -429,6 +355,7 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 	ActiveRequest activeRequest;
 	activeRequest.reset();
 	int vehid{};
+	int temporarySignalGroup{};
 	// std::cout << "Add To ActiveRequesttable(True/False): " << addToActiveRequestTable(signalRequest) << std::endl;
 	if (acceptSignalRequest(signalRequest) == true)
 	{
@@ -436,6 +363,7 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 		{
 			setPRSUpdateCount();
 			setVehicleType(signalRequest);
+			temporarySignalGroup = getSignalGroup(signalRequest);
 			activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
 			activeRequest.requestID = signalRequest.getRequestID();
 			activeRequest.msgCount = signalRequest.getMsgCount();
@@ -446,11 +374,22 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-			activeRequest.signalGroup = getSignalGroup(signalRequest);
+			activeRequest.signalGroup = temporarySignalGroup;
 			ActiveRequestTable.push_back(activeRequest);
 			if (findEVInRequest(signalRequest) == true)
 			{
-				findSplitPhase();
+				activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
+				activeRequest.requestID = signalRequest.getRequestID();
+				activeRequest.msgCount = signalRequest.getMsgCount();
+				activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
+				activeRequest.vehicleType = vehicleType;
+				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
+				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+				activeRequest.minuteOfYear = getMinuteOfYear();
+				activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+				activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
+				ActiveRequestTable.push_back(activeRequest);
 			}
 			updateETAInActiveRequestTable();
 		}
@@ -469,6 +408,8 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 				}
 				setVehicleType(signalRequest);
+				temporarySignalGroup = getSignalGroup(signalRequest);
+
 				activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
 				activeRequest.requestID = signalRequest.getRequestID();
 				activeRequest.msgCount = signalRequest.getMsgCount();
@@ -477,15 +418,24 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
 				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
-				//activeRequest.prsStatus = getPriorityRequestStatus();
 				activeRequest.minuteOfYear = getMinuteOfYear();
 				activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-				activeRequest.signalGroup = getSignalGroup(signalRequest);
+				activeRequest.signalGroup = temporarySignalGroup;
 				ActiveRequestTable.push_back(activeRequest);
-				//setPriorityRequestStatus(signalRequest);
 				if (findEVInRequest(signalRequest) == true)
 				{
-					findSplitPhase();
+					activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
+					activeRequest.requestID = signalRequest.getRequestID();
+					activeRequest.msgCount = signalRequest.getMsgCount();
+					activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
+					activeRequest.vehicleType = vehicleType;
+					activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
+					activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+					activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+					activeRequest.minuteOfYear = getMinuteOfYear();
+					activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
+					activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
+					ActiveRequestTable.push_back(activeRequest);						
 				}
 			}
 
@@ -580,14 +530,16 @@ std::string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus
 {
 	std::string ssmJsonString{};
 	signalStatus.reset();
+	std::cout << "Will set few variables of SSM class" << std::endl;
 	signalStatus.setMinuteOfYear(getMinuteOfYear());
 	signalStatus.setMsOfMinute(getMsOfMinute());
 	signalStatus.setSequenceNumber(getPRSSequenceNumber());
 	signalStatus.setUpdateCount(getPRSUpdateCount());
 	signalStatus.setRegionalID(regionalID);
 	signalStatus.setIntersectionID(intersectionID);
+	std::cout << "Will go inside the signalStatus2Json Method" << std::endl;
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
-
+	std::cout << "Done with signalStatus2Json Method" << std::endl;
 	loggingData(ssmJsonString);
 
 	return ssmJsonString;
@@ -956,50 +908,48 @@ void PriorityRequestServer::deleteMapPayloadFile()
 	remove(deleteFileName.c_str());
 }
 
-
 bool PriorityRequestServer::logging()
 {
-    std::string logging{};
-    std::ofstream outputfile;
-    Json::Value jsonObject;
-    Json::Reader reader;
-    std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+	std::string logging{};
+	std::ofstream outputfile;
+	Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
-    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);
-    logging = (jsonObject["Logging"]).asString();
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+	logging = (jsonObject["Logging"]).asString();
 
-    if (logging == "True")
-    {
-        bLogging = true;
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        outputfile.open("/nojournal/bin/log/PRSLog.txt");
+	if (logging == "True")
+	{
+		bLogging = true;
+		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		outputfile.open("/nojournal/bin/log/PRSLog.txt");
 		outputfile << "File opened at time : " << timenow << std::endl;
-        outputfile.close();
-    }
-    else
-        bLogging = false;
+		outputfile.close();
+	}
+	else
+		bLogging = false;
 
-    return bLogging;
+	return bLogging;
 }
 
 void PriorityRequestServer::loggingData(std::string jsonString)
 {
-    std::ofstream outputfile;
-    std::ifstream infile;
+	std::ofstream outputfile;
+	std::ifstream infile;
 
-    if (bLogging == true)
-    {
-        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-        outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	if (bLogging == true)
+	{
+		// outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+		outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
+		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-        outputfile << "\nJsonString  : " << timenow << std::endl;
-		outputfile << jsonString   << timenow << std::endl;
-        outputfile.close();
-    }
+		outputfile << "\nJsonString  : " << timenow << std::endl;
+		outputfile << jsonString << timenow << std::endl;
+		outputfile.close();
+	}
 }
-
 
 PriorityRequestServer::~PriorityRequestServer()
 {
