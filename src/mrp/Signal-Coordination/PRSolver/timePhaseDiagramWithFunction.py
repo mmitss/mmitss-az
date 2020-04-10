@@ -270,7 +270,7 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
     for i in range(0,req_phase_length):
         x = ETA[i]
         y = requestedPhasePosition[i]
-        patches.append(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'red'))
+        patches.append(matplotlib.patches.Rectangle((x, y),15,10,angle=0.0,color = 'red'))
     ax1.add_collection(PatchCollection(patches))
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.grid()
@@ -389,7 +389,7 @@ def main():
     req_phase = [2, 2]
 
     # ETA = getPriorityRequest()
-    ETA = [20.0, 20.0, 140.0, 140.0]
+    ETA = [5.0, 5.0, 95.0, 95.0]
     print("ETA", ETA)
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information

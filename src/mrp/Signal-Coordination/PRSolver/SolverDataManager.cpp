@@ -281,6 +281,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
                     else
                         fs << priorityRequestList[i].vehicleETA - 2.0 << "\t";
                 }
+                else
                     fs << ".\t";
             }
             ReqSeq++;

@@ -2,14 +2,14 @@
     "currentPhases":
     [
         {
-            "Phase": 4,
+            "Phase": 2,
             "State": "green",
-            "ElapsedTime": 10
+            "ElapsedTime": 0
         },
         {
-            "Phase": 8,
+            "Phase": 6,
             "State": "green",
-            "ElapsedTime": 10
+            "ElapsedTime": 0
         }
     ],
     "nextPhases": 
