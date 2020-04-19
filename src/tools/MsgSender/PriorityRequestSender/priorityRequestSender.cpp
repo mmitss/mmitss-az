@@ -24,7 +24,7 @@ int main()
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     //With mulptiple EV
-    
+
     // vector<int>vehicleID{1201, 1205, 1205, 1240, 1250, 1250};
     // vector<int>vehicleType{6, 2, 2, 9, 2, 2};
     // vector<int>basicVehicleRole{16 ,13, 13, 9, 13, 13};
@@ -33,9 +33,14 @@ int main()
     // vector<double>ETADuration{5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
     // vector<int>requestedPhase{3, 8, 3, 4, 4, 7};
     // vector<int>requestStatus{5, 4, 4, 5, 4, 4};
+    // vector<double>vehicleLatitude{};
+    // vector<double>vehicleLongitude{};
+    // vector<double>vehicleElevation{};
+    // vector<double>vehicleHeading{};
+    // vector<double>vehicleSpeed{};
 
     //With mulptiple EV: no left turn phase
-    
+
     // vector<int>vehicleID{1201, 1205, 1240, 1250};
     // vector<int>vehicleType{6, 2, 9, 2};
     // vector<int>basicVehicleRole{16 ,13, 9, 13};
@@ -44,20 +49,30 @@ int main()
     // vector<double>ETADuration{5.0, 5.0, 5.0, 5.0};
     // vector<int>requestedPhase{3, 2, 4, 4};
     // vector<int>requestStatus{5, 4,  5, 4};
-        
+    // vector<double>vehicleLatitude{};
+    // vector<double>vehicleLongitude{};
+    // vector<double>vehicleElevation{};
+    // vector<double>vehicleHeading{};
+    // vector<double>vehicleSpeed{};
+
     //With single EV
-    
-    // vector<int>vehicleID{1201, 1205, 1205, 1240};
-    // vector<int>vehicleType{6, 2, 2, 9,};
-    // vector<int>basicVehicleRole{16 ,13, 13, 9};
-    // vector<int>laneID{2, 8, 9, 5};
-    // vector<double>ETA{24.0, 30.0, 30.0, 35.0};
-    // vector<double>ETADuration{5.0, 5.0, 5.0, 5.0};
-    // vector<int>requestedPhase{3, 2, 5, 4};
-    // vector<int>requestStatus{5, 4, 4, 5};
-    
+
+    vector<int> vehicleID{1201, 1205, 1205, 1240};
+    vector<int> vehicleType{6,2,2,9,};
+    vector<int> basicVehicleRole{16, 13, 13, 9};
+    vector<int> laneID{2, 8, 9, 5};
+    vector<double> ETA{24.0, 8.0, 8.0, 4.0};
+    vector<double> ETADuration{5.0, 5.0, 5.0, 3.0};
+    vector<int> requestedPhase{3, 2, 5, 8};
+    vector<int> requestStatus{5, 4, 4, 5};
+    vector<double>vehicleLatitude{32.1217, 32.2435, 32.1145, 32.1156};
+    vector<double>vehicleLongitude{-110.2456, -110.9624, -110.2456, -110.2340};
+    vector<double>vehicleElevation{720.0, 721.2,721.0, 724.6};
+    vector<double>vehicleHeading{89.0, 262.0, 262.0, 188.4};
+    vector<double>vehicleSpeed{15.65, 18.34, 18.34, 16.26};
+
     //Without EV: one transit, one truck
-    
+
     // vector<int>vehicleID{1201, 1240};
     // vector<int>vehicleType{6, 9};
     // vector<int>basicVehicleRole{16, 9};
@@ -66,6 +81,11 @@ int main()
     // vector<double>ETADuration{5.0, 5.0};
     // vector<int>requestedPhase{4, 3};
     // vector<int>requestStatus{ 4, 4};
+    // vector<double>vehicleLatitude{};
+    // vector<double>vehicleLongitude{};
+    // vector<double>vehicleElevation{};
+    // vector<double>vehicleHeading{};
+    // vector<double>vehicleSpeed{};
 
     //Without EV: two transit
 
@@ -77,42 +97,53 @@ int main()
     // vector<double>ETADuration{5.0, 5.0};
     // vector<int>requestedPhase{4, 3};
     // vector<int>requestStatus{ 4, 4};
+    // vector<double>vehicleLatitude{};
+    // vector<double>vehicleLongitude{};
+    // vector<double>vehicleElevation{};
+    // vector<double>vehicleHeading{};
+    // vector<double>vehicleSpeed{};
 
     //For Coordination: 4 request for two cycle
 
-    vector<int>vehicleID{1201, 1240, 1201, 1240};
-    vector<int>vehicleType{6, 6, 6, 6};
-    vector<int>basicVehicleRole{16, 16, 16, 16};
-    vector<int>laneID{2, 8, 2, 8};
-    vector<double>ETA{5.0, 95.0, 5.0, 95.0};
-    vector<double>ETADuration{15.0, 15.0, 15.0, 15.0};
-    vector<int>requestedPhase{2, 2, 6, 6};
-    vector<int>requestStatus{ 4, 4, 4 ,4};
-
-    
+    // vector<int>vehicleID{1201, 1240, 1201, 1240};
+    // vector<int>vehicleType{6, 6, 6, 6};
+    // vector<int>basicVehicleRole{16, 16, 16, 16};
+    // vector<int>laneID{2, 8, 2, 8};
+    // vector<double>ETA{5.0, 95.0, 5.0, 95.0};
+    // vector<double>ETADuration{15.0, 15.0, 15.0, 15.0};
+    // vector<int>requestedPhase{2, 2, 6, 6};
+    // vector<int>requestStatus{ 4, 4, 4 ,4};
+    // vector<double>vehicleLatitude{};
+    // vector<double>vehicleLongitude{};
+    // vector<double>vehicleElevation{};
+    // vector<double>vehicleHeading{};
+    // vector<double>vehicleSpeed{};
 
     noOfRequest = static_cast<int>(requestedPhase.size());
     jsonObject["MsgType"] = "PriorityRequest";
-    jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest;        //ActiveRequestTable.size();
-    jsonObject["PriorityRequestList"]["minuteOfYear"] = 22478;   //minuteOfYear;
-    jsonObject["PriorityRequestList"]["msOfMinute"] = 24;        //msOfMinute;
-    jsonObject["PriorityRequestList"]["regionalID"] = 0;         //regionalID;
-    jsonObject["PriorityRequestList"]["intersectionID"] = 23426; //intersectionID;
-    
+    jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest; //ActiveRequestTable.size();
+    jsonObject["PriorityRequestList"]["minuteOfYear"] = 22478;      //minuteOfYear;
+    jsonObject["PriorityRequestList"]["msOfMinute"] = 24;           //msOfMinute;
+    jsonObject["PriorityRequestList"]["regionalID"] = 0;            //regionalID;
+    jsonObject["PriorityRequestList"]["intersectionID"] = 23426;    //intersectionID;
+
     // for (unsigned int i = 0; i < ActiveRequestTable.size(); i++)
     for (unsigned int i = 0; i < noOfRequest; i++)
     {
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"] = vehicleID[i];               //ActiveRequestTable[i].vehicleID;
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"] = vehicleID[i]; //ActiveRequestTable[i].vehicleID;
         jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = vehicleType[i];
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = basicVehicleRole[i]; //ActiveRequestTable[i].basicVehicleRole;
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = laneID[i];       //ActiveRequestTable[i].vehicleLaneID;
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ETA[i];         //static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION)+ fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
-        //jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
-        //jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
-        //jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ETADuration[i]; //ETA_DURATION;
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = requestedPhase[i];  //ActiveRequestTable[i].signalGroup;
-        jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = requestStatus[i]; //ActiveRequestTable[i].prsStatus;
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = basicVehicleRole[i];   
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = laneID[i];                
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ETA[i];                             
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ETADuration[i];            
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = requestedPhase[i]; 
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = requestStatus[i]; 
+
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"] = vehicleLatitude[i];
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"] = vehicleLongitude[i];
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["elevation_Meter"] = vehicleElevation[i];
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = vehicleHeading[i];
+        jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = vehicleSpeed[i];
     }
 
     sendingJsonString = fastWriter.write(jsonObject);

@@ -370,11 +370,16 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 			activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
 			activeRequest.vehicleType = vehicleType;
 			activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
-			activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 			activeRequest.signalGroup = temporarySignalGroup;
+			activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+			activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
+			activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
+			activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
+			activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
+			activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 			ActiveRequestTable.push_back(activeRequest);
 			if (findEVInRequest(signalRequest) == true)
 			{
@@ -384,11 +389,16 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 				activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
 				activeRequest.vehicleType = vehicleType;
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
-				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 				activeRequest.minuteOfYear = getMinuteOfYear();
 				activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
+				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
+				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
+				activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
+				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
+				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
 			}
 			updateETAInActiveRequestTable();
@@ -416,11 +426,16 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 				activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
 				activeRequest.vehicleType = vehicleType;
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
-				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 				activeRequest.minuteOfYear = getMinuteOfYear();
 				activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				activeRequest.signalGroup = temporarySignalGroup;
+				activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
+				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
+				activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
+				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
+				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
 				if (findEVInRequest(signalRequest) == true)
 				{
@@ -430,12 +445,17 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 					activeRequest.basicVehicleRole = signalRequest.getBasicVehicleRole();
 					activeRequest.vehicleType = vehicleType;
 					activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
-					activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-					activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 					activeRequest.minuteOfYear = getMinuteOfYear();
 					activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 					activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
-					ActiveRequestTable.push_back(activeRequest);						
+					activeRequest.vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+					activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+					activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
+					activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
+					activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
+					activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
+					activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+					ActiveRequestTable.push_back(activeRequest);
 				}
 			}
 
@@ -449,12 +469,16 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 				findVehicleIDOnTable->msgCount = signalRequest.getMsgCount();
 				findVehicleIDOnTable->basicVehicleRole = signalRequest.getBasicVehicleRole();
 				findVehicleIDOnTable->vehicleLaneID = signalRequest.getInBoundLaneID();
-				findVehicleIDOnTable->vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
-				findVehicleIDOnTable->vehicleETADuration = signalRequest.getETA_Duration();
-				//findVehicleIDOnTable->prsStatus = signalRequest.getPriorityRequestType();
 				findVehicleIDOnTable->minuteOfYear = getMinuteOfYear();
 				findVehicleIDOnTable->secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
 				findVehicleIDOnTable->signalGroup = getSignalGroup(signalRequest);
+				findVehicleIDOnTable->vehicleETA = signalRequest.getETA_Minute() * SECONDSINAMINUTE + signalRequest.getETA_Second();
+				findVehicleIDOnTable->vehicleETADuration = signalRequest.getETA_Duration();
+				findVehicleIDOnTable->vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
+				findVehicleIDOnTable->vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
+				findVehicleIDOnTable->vehicleElevation = signalRequest.getElevation_Meter();
+				findVehicleIDOnTable->vehicleHeading = signalRequest.getHeading_Degree();
+				findVehicleIDOnTable->vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 			}
 			updateETAInActiveRequestTable();
 		}
@@ -572,13 +596,18 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = ActiveRequestTable[i].vehicleType;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
 			else
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLatitude;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLongitude;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["elevation_Meter"] = ActiveRequestTable[i].vehicleElevation;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = ActiveRequestTable[i].vehicleHeading;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
 	}
 

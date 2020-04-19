@@ -1,0 +1,138 @@
+{
+	"MsgType" : "Schedule",
+	"Schedule" : 
+	[
+		{
+			"commandEndTime" : 4.2999999999999998,
+			"commandPhase" : 3,
+			"commandStartTime" : 0.0,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 14.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 8.3000000000000007,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 30.000000000000004,
+			"commandPhase" : 3,
+			"commandStartTime" : 20.700000000000003,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 39.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 34.0,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 7.0,
+			"commandPhase" : 3,
+			"commandStartTime" : 6.0,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 108.3,
+			"commandPhase" : 2,
+			"commandStartTime" : 107.3,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 215.0,
+			"commandPhase" : 3,
+			"commandStartTime" : 214.0,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 224.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 223.0,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 14.0,
+			"commandPhase" : 2,
+			"commandStartTime" : 0.0,
+			"commandType" : "call_veh"
+		},
+		{
+			"commandEndTime" : 229.69999999999999,
+			"commandPhase" : 1,
+			"commandStartTime" : 0.0,
+			"commandType" : "omit_veh"
+		},
+		{
+			"commandEndTime" : 229.69999999999999,
+			"commandPhase" : 4,
+			"commandStartTime" : 0.0,
+			"commandType" : "omit_veh"
+		},
+		{
+			"commandEndTime" : 0.0,
+			"commandPhase" : 8,
+			"commandStartTime" : 0.0,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 16.700000000000003,
+			"commandPhase" : 5,
+			"commandStartTime" : 8.3000000000000007,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 25.700000000000003,
+			"commandPhase" : 8,
+			"commandStartTime" : 20.700000000000003,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 39.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 34.0,
+			"commandType" : "hold"
+		},
+		{
+			"commandEndTime" : 2.7000000000000002,
+			"commandPhase" : 8,
+			"commandStartTime" : 1.7,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 111.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 110.0,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 210.69999999999999,
+			"commandPhase" : 8,
+			"commandStartTime" : 209.69999999999999,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 224.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 223.0,
+			"commandType" : "forceoff"
+		},
+		{
+			"commandEndTime" : 14.0,
+			"commandPhase" : 5,
+			"commandStartTime" : 0.0,
+			"commandType" : "call_veh"
+		},
+		{
+			"commandEndTime" : 227.0,
+			"commandPhase" : 6,
+			"commandStartTime" : 0.0,
+			"commandType" : "omit_veh"
+		},
+		{
+			"commandEndTime" : 227.0,
+			"commandPhase" : 7,
+			"commandStartTime" : 0.0,
+			"commandType" : "omit_veh"
+		}
+	]
+}
