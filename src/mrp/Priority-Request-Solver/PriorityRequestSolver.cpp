@@ -201,12 +201,13 @@ void PriorityRequestSolver::modifyPriorityRequestList()
         - If ring group is missing, then check whether starting phases left turn phase is same or not
         - If they are not same remove left turn phases
     - For Multiple EV priority request from different approach:
-        - If EV is priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
+        - If EV is in priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
 */
 void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 {
     int temporaryPhase{};
-
+    int tempSignalGroup{};
+    vector<int>::iterator it;
     vector<int> requestedEV_P11;
     vector<int> requestedEV_P12;
     vector<int> requestedEV_P21;
@@ -227,7 +228,59 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             requestedEV_P22.push_back(requestedSignalGroup[i]);
     }
 
-    if (noOfEVInList > 0 && requestedSignalGroup.size() == 2)
+    if (!dilemmaZoneRequestList.empty())
+    {
+        for (size_t i = 0; i < requestedSignalGroup.size(); i++)
+        {
+            if (requestedSignalGroup.at(i) == trafficControllerStatus[0].startingPhase1)
+            {
+                if (trafficControllerStatus[0].startingPhase1 == 2)
+                    temporaryPhase = 5;
+
+                else if (trafficControllerStatus[0].startingPhase1 == 4)
+                    temporaryPhase = 7;
+
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j = j - 1;
+                    }
+                }
+                requestedSignalGroup.clear();
+                getRequestedSignalGroup();
+            }
+
+            else if (requestedSignalGroup.at(i) == trafficControllerStatus[0].startingPhase2)
+            {
+                if (trafficControllerStatus[0].startingPhase2 == 6)
+                    temporaryPhase = 1;
+
+                else if (trafficControllerStatus[0].startingPhase2 == 8)
+                    temporaryPhase = 3;
+
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j = j - 1;
+                    }
+                }
+                requestedSignalGroup.clear();
+                getRequestedSignalGroup();
+            }
+        }
+    }
+
+    if (noOfEVInList > 0 && requestedSignalGroup.size() <= 2)
     {
 
         for (size_t j = 0; j < trafficControllerStatus.size(); j++)
@@ -236,7 +289,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             if (trafficControllerStatus[j].startingPhase1 == 1 || trafficControllerStatus[j].startingPhase1 == 2)
                 requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (trafficControllerStatus[j].startingPhase1 || trafficControllerStatus[j].startingPhase1 == 4)
+            else if (trafficControllerStatus[j].startingPhase1 == 3 || trafficControllerStatus[j].startingPhase1 == 4)
                 requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase1);
 
             else if (trafficControllerStatus[j].startingPhase1 == 5 || trafficControllerStatus[j].startingPhase1 == 6)
@@ -245,10 +298,10 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             else if (trafficControllerStatus[j].startingPhase1 == 7 || trafficControllerStatus[j].startingPhase1 == 8)
                 requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (trafficControllerStatus[j].startingPhase2 == 1 || trafficControllerStatus[j].startingPhase2 == 2)
+            if (trafficControllerStatus[j].startingPhase2 == 1 || trafficControllerStatus[j].startingPhase2 == 2)
                 requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase2);
 
-            else if (trafficControllerStatus[j].startingPhase2 || trafficControllerStatus[j].startingPhase2 == 4)
+            else if (trafficControllerStatus[j].startingPhase2 == 3 || trafficControllerStatus[j].startingPhase2 == 4)
                 requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase2);
 
             else if (trafficControllerStatus[j].startingPhase2 == 5 || trafficControllerStatus[j].startingPhase2 == 6)
@@ -260,43 +313,93 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 
         if (requestedEV_P11.empty() && requestedEV_P21.empty())
         {
-            vector<int> LeftTurnPhases{3, 7};
-
-            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            if ((trafficControllerStatus[0].startingPhase1 != 3))
             {
-                temporaryPhase = LeftTurnPhases.at(i);
-                if ((trafficControllerStatus[0].startingPhase1 != temporaryPhase) || (trafficControllerStatus[0].startingPhase2 != temporaryPhase))
+                temporaryPhase = 3;
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
                                                                                        [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
+                    {
                         priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
                 }
+            }
 
-                requestedSignalGroup.clear();
-                getRequestedSignalGroup();
+            if ((trafficControllerStatus[0].startingPhase2 != 7))
+            {
+                temporaryPhase = 7;
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
+
+            vector<int> dummyPhases{2, 6};
+            for (size_t i = 0; i < dummyPhases.size(); i++)
+            {
+                tempSignalGroup = dummyPhases[i];
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), tempSignalGroup);
+                if (it == requestedSignalGroup.end())
+                    requestedSignalGroup.push_back(tempSignalGroup);
             }
         }
 
         else if (requestedEV_P12.empty() && requestedEV_P22.empty())
         {
-            vector<int> LeftTurnPhases{1, 5};
-
-            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            if ((trafficControllerStatus[0].startingPhase1 != 1))
             {
-                temporaryPhase = LeftTurnPhases.at(i);
-                if (trafficControllerStatus[0].startingPhase1 == temporaryPhase || (trafficControllerStatus[0].startingPhase2 != temporaryPhase))
+                temporaryPhase = 1;
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
                                                                                        [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
+                    {
                         priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
+            }
+
+            if ((trafficControllerStatus[0].startingPhase2 != 5))
+            {
+                temporaryPhase = 5;
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
                 }
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
+            vector<int> dummyPhases{4, 8};
+            for (size_t i = 0; i < dummyPhases.size(); i++)
+            {
+                tempSignalGroup = dummyPhases[i];
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), tempSignalGroup);
+                if (it == requestedSignalGroup.end())
+                    requestedSignalGroup.push_back(tempSignalGroup);
+            }
         }
     }
 
@@ -308,11 +411,17 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             for (size_t i = 0; i < LeftTurnPhases.size(); i++)
             {
                 temporaryPhase = LeftTurnPhases.at(i);
-                vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                   [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
-                if (findSignalGroupOnList != priorityRequestList.end())
-                    priorityRequestList.erase(findSignalGroupOnList);
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
@@ -324,11 +433,17 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             for (size_t i = 0; i < LeftTurnPhases.size(); i++)
             {
                 temporaryPhase = LeftTurnPhases.at(i);
-                vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                   [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
 
-                if (findSignalGroupOnList != priorityRequestList.end())
-                    priorityRequestList.erase(findSignalGroupOnList);
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
@@ -348,7 +463,7 @@ void PriorityRequestSolver::setOptimizationInput()
         getEVPhases();
         getEVTrafficSignalPlan();
         generateEVModFile();
-        SolverDataManager solverDataManager(dilemmaZoneRequestList,priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV);
         solverDataManager.generateDatFile(bEVStatus);
     }
 
@@ -492,17 +607,17 @@ void PriorityRequestSolver::getEVPhases()
             plannedEVPhases.push_back(tempSignalGroup);
     }
 
-    if (plannedEVPhases.size() <= 2)
-    {
-        vector<int> dummyPhases{2, 4, 6, 8};
-        for (size_t i = 0; i < dummyPhases.size(); i++)
-        {
-            tempSignalGroup = dummyPhases[i];
-            it = std::find(plannedEVPhases.begin(), plannedEVPhases.end(), tempSignalGroup);
-            if (it == plannedEVPhases.end())
-                plannedEVPhases.push_back(tempSignalGroup);
-        }
-    }
+    // if (plannedEVPhases.size() <= 2)
+    // {
+    //     vector<int> dummyPhases{2, 4, 6, 8};
+    //     for (size_t i = 0; i < dummyPhases.size(); i++)
+    //     {
+    //         tempSignalGroup = dummyPhases[i];
+    //         it = std::find(plannedEVPhases.begin(), plannedEVPhases.end(), tempSignalGroup);
+    //         if (it == plannedEVPhases.end())
+    //             plannedEVPhases.push_back(tempSignalGroup);
+    //     }
+    // }
 
     sort(plannedEVPhases.begin(), plannedEVPhases.end());
 }

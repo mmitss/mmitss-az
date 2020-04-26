@@ -1,8 +1,10 @@
 #include <algorithm>
 #include "SolverDataManager.h"
 
-const double transitWeight = 10.0;
-const double truckWeight = 10.0;
+const double TRANSIT_WEIGHT = 1.0;
+const double TRUCK_WEIGHT = 1.0;
+const double EV_WEIGHT = 1.0;
+const double EV_SPLIT_PHASE_WEIGHT = 0.1;
 const double DILEMMA_ZONE_REQUEST_WEIGHT = 20.0;
 const double MAXGREEN = 100.0;
 
@@ -134,11 +136,10 @@ void SolverDataManager::findMaximumETAofEV()
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-// void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
 void SolverDataManager::generateDatFile(bool bEVStatus)
 {
     vector<int>::iterator it;
-    int vehicleClass{}; 
+    int vehicleClass{};
     int numberOfRequest{};
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
@@ -184,7 +185,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         else
         {
             for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration;
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration + trafficSignalPlan[i].minGreen;
         }
     }
     else
@@ -196,7 +197,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     fs << "param priorityType:= ";
 
-    if (!priorityRequestList.empty())
+    if (!priorityRequestList.empty() && dilemmaZoneRequestList.empty())
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
@@ -205,7 +206,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
             if (priorityRequestList[i].basicVehicleRole == 13)
             {
-                // numberOfEVInList++;
+                numberOfEVInList++;
                 vehicleClass = 1;
             }
 
@@ -235,28 +236,82 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         fs << " ;  \n";
     }
 
-    else
+    else if (!priorityRequestList.empty() && !dilemmaZoneRequestList.empty())
     {
-        fs << " 1 0 2 0 3 5 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            vehicleClass = 0;
+            numberOfRequest++;
+
+            if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 == 0)
+            {
+                numberOfEVInList++;
+                vehicleClass = 1;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 != 0)
+            {
+                numberOfEVSplitRequestInList++;
+                vehicleClass = 4;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 16)
+            {
+                numberOfTransitInList++;
+                vehicleClass = 2;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 9)
+            {
+                numberOfTruckInList++;
+                vehicleClass = 3;
+            }
+        }
+        while (numberOfRequest < 10)
+        {
+            numberOfRequest++;
+            fs << numberOfRequest;
+            fs << " ";
+            fs << 0;
+            fs << " ";
+        }
+        fs << " ;  \n";
     }
 
-    fs << "param PrioWeigth:=  1 1 2 ";
-    if (numberOfTransitInList > 0)
-        fs << transitWeight;
-        // fs << transitWeight / numberOfTransitInList;
     else
-    {
+        fs << " 1 0 2 0 3 5 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+
+    fs << "param PrioWeigth:= ";
+
+    fs << " 1 ";
+    if (numberOfEVInList > 0)
+        fs << EV_WEIGHT;
+
+    else
         fs << 0;
-    }
+
+    fs << " 2 ";
+    if (numberOfTransitInList > 0)
+        fs << TRANSIT_WEIGHT;
+
+    else
+        fs << 0;
+
     fs << " 3 ";
     if (numberOfTruckInList > 0)
-        fs << truckWeight;
-        // fs << truckWeight / numberOfTruckInList;
+        fs << TRUCK_WEIGHT;
+
     else
-    {
         fs << 0;
-    }
-    fs << " 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+
+    fs << " 4 ";
+    if (numberOfEVSplitRequestInList > 0)
+        fs << EV_SPLIT_PHASE_WEIGHT;
+
+    else
+        fs << 0;
+
+    fs << " 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
 
     if (!dilemmaZoneRequestList.empty())
     {
@@ -308,10 +363,10 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             {
                 if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                 {
-                    if(priorityRequestList[i].vehicleETA <= 3.0)
-                        fs << 1.0  << "\t";
+                    if (priorityRequestList[i].vehicleETA <= 3.0)
+                        fs << 1.0 << "\t";
                     else
-                        fs << priorityRequestList[i].vehicleETA - 2.0 << "\t";
+                        fs << priorityRequestList[i].vehicleETA << "\t";
                 }
                 else
                     fs << ".\t";

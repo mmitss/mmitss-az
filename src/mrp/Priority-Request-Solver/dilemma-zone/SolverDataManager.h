@@ -17,6 +17,8 @@ class SolverDataManager
 private:
     int numberOfTransitInList{};
     int numberOfTruckInList{};
+    int numberOfEVInList{};
+    int numberOfEVSplitRequestInList{};
     double maxEV_ETA{};
     double maxEV_ETA_Duration{};
     vector<int> requestedSignalGroup;
