@@ -23,6 +23,16 @@
 #include <cmath>
 #include <UdpSocket.h>
 
+// const int transitWeight = 1;
+// const int truckWeight = 1;
+// const double MAXGREEN = 50.0;
+
+// #define OMIT_VEH_PHASES 2
+// #define OMIT_PED_PHASES 3
+// #define HOLD_PHASES 4
+// #define FORCEOFF_PHASES 5
+// #define CALL_VEH_PHASES 6
+// #define CALL_PED_PHASES 7
 
 PriorityRequestSolver::PriorityRequestSolver()
 {

@@ -1,26 +1,29 @@
 data;
-param SP1:=3;
+param SP1:=4;
 param SP2:=8;
 param init1:=0;
 param init2:=0;
-param Grn1 :=5;
+param Grn1 :=10;
 param Grn2 :=10;
-param y          	:=	2	3	3	3	4	3	5	3	7	3	8	3;
-param red          	:=	2	2	3	2	4	2	5	2	7	2	8	2;
-param gmin      	:=	2	10	3	5	4	10	5	5	7	5	8	10;
-param gmax      	:=	2	50	3	50	4	50	5	50	7	50	8	50;
-param priorityType:= 1 1 2 1 3 1 4 1 5 0 6 0 7 0 8 0 9 0 10 0  ;  
-param PrioWeigth:=  1 1 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param y          	:=	2	3	4	3	5	3	8	3;
+param red          	:=	2	2	4	2	5	2	8	2;
+param gmin      	:=	2	10	4	10	5	5	8	10;
+param gmax      	:=	2	50	4	50	5	50	8	50;
+param priorityType:= 1 1 2 4 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 1 2 0 3 0 4 0.1 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param DilemmaZoneWeight:= 5;
+param Dl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	4	.	.	.	.	
+;
+param Du (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	6	.	.	.	.	
+;
 param Rl (tr): 1 2 3 4 5 6 7 8:=
-1  .	.	.	10	.	.	.	.	
-2  .	.	.	.	.	.	10	.	
-3  .	15	.	.	.	.	.	.	
-4  .	.	.	.	15	.	.	.	
+1  .	10	.	.	.	.	.	.	
+2  .	.	.	.	10	.	.	.	
 ;
 param Ru (tr): 1 2 3 4 5 6 7 8:=
-1  .	.	.	13	.	.	.	.	
-2  .	.	.	.	.	.	13	.	
-3  .	18	.	.	.	.	.	.	
-4  .	.	.	.	18	.	.	.	
+1  .	13	.	.	.	.	.	.	
+2  .	.	.	.	13	.	.	.	
 ;
 end;

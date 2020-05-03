@@ -266,6 +266,8 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
                 numberOfTruckInList++;
                 vehicleClass = 3;
             }
+            fs << numberOfRequest;
+            fs << " " << vehicleClass << " ";
         }
         while (numberOfRequest < 10)
         {
@@ -341,7 +343,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             for (size_t j = 1; j < 9; j++)
             {
                 if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
-                    fs << dilemmaZoneRequestList[i].vehicleETA + 1.0 << "\t";
+                    fs << dilemmaZoneRequestList[i].vehicleETA + dilemmaZoneRequestList[i].vehicleETA_Duration << "\t";
 
                 else
                     fs << ".\t";

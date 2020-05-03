@@ -334,12 +334,12 @@ def main():
     cum_phaseInRing2 = []
 
     dilemmaZone_phases = [4]
-    dilemmaZone_ETA = [5.0,5.0]
+    dilemmaZone_ETA = [4.0, 4.0]
     ETA = []
-    req_phase = [ 6, 6]
+    req_phase = [2]
     
     # ETA = getPriorityRequest()
-    ETA = [10.0, 10.0, 15.0, 15.0]
+    ETA = [10.0, 10.0]
     print("ETA", ETA)
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information
@@ -351,13 +351,13 @@ def main():
     
     #Obtained planned signal phase of cycle1,2,3 for ring 1. There will be 8 phases.
     #phasesInRing1 = []
-    phasesInRing1 = [2,4,2,4]
+    phasesInRing1 = [4,2,4,2]
     # n = int(input("Enter no of Phases in Ring1: "))
     # phasesInRing1 = list(map(int,input("\nEnter the phase numbers following by space : ").strip().split()))[:n] 
     
     #Obtained planned signal phase of cycle1,2,3 for ring 2. There will be 8 phases
     # phasesInRing2 = []
-    phasesInRing2 = [6,8,6,8]
+    phasesInRing2 = [8,5,7,8]
     # n = int(input("Enter no of Phases in Ring2: "))
     # phasesInRing2 = list(map(int,input("\nEnter the phase numbers following by space : ").strip().split()))[:n]
     
