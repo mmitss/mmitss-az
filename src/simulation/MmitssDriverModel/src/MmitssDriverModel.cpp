@@ -73,7 +73,6 @@ Json::Value jsonObject;
 Json::FastWriter fastWriter;
 std::string jsonString;
 Json::StyledStreamWriter styledStreamWriter;
-std::ofstream outputter("output.json");
 Json::Value jsonObject_config;
 Json::Reader reader;
 std::ifstream configJson("MmitssDriverModelConfig.json");
@@ -126,6 +125,9 @@ geoCoord geoPoint;
 
 long veh_secmark = 0;
 int intTimestamp = 0;
+
+double length_cm = 0.0;
+double width_cm = 0.0;
 /*==========================================================================*/
 
 
@@ -181,7 +183,11 @@ DRIVERMODEL_API  int  DriverModelSetValue(long   type,
 		return 1;
 	case DRIVER_DATA_VEH_ACCELERATION:
 	case DRIVER_DATA_VEH_LENGTH:
+		length_cm = double_value * 100;
+		return 1;
 	case DRIVER_DATA_VEH_WIDTH:
+		width_cm = double_value * 100;
+		return 1;
 	case DRIVER_DATA_VEH_WEIGHT:
 	case DRIVER_DATA_VEH_MAX_ACCELERATION:
 		return 1;
@@ -235,14 +241,17 @@ DRIVERMODEL_API  int  DriverModelSetValue(long   type,
         /*Begin: Creation of JSON object using available information. This activity is done uder this (vehicle colour) case because, 
         all the required data is available before the execution of this case. This activity can be moved any where else, but it needs to be made sure that all the required data is 
         available prior to creation of json object.*/
-		jsonObject["MmitssBasicVehicle"]["temporaryID"] = veh_id;
-		jsonObject["MmitssBasicVehicle"]["secMark_Second"] = veh_secmark;
-		jsonObject["MmitssBasicVehicle"]["position"]["latitude_DecimalDegree"] = g_lat;
-		jsonObject["MmitssBasicVehicle"]["position"]["longitude_DecimalDegree"] = g_long;
-		jsonObject["MmitssBasicVehicle"]["position"]["elevation_Meter"] = g_elev;
-		jsonObject["MmitssBasicVehicle"]["speed_MeterPerSecond"] = veh_speed;
-		jsonObject["MmitssBasicVehicle"]["heading_Degree"] = veh_heading;
-		jsonObject["MmitssBasicVehicle"]["type"] = veh_type;
+		jsonObject["MsgType"] = "BSM";
+		jsonObject["BasicVehicle"]["temporaryID"] = veh_id;
+		jsonObject["BasicVehicle"]["secMark_Second"] = veh_secmark;
+		jsonObject["BasicVehicle"]["position"]["latitude_DecimalDegree"] = g_lat;
+		jsonObject["BasicVehicle"]["position"]["longitude_DecimalDegree"] = g_long;
+		jsonObject["BasicVehicle"]["position"]["elevation_Meter"] = g_elev;
+		jsonObject["BasicVehicle"]["speed_MeterPerSecond"] = veh_speed;
+		jsonObject["BasicVehicle"]["heading_Degree"] = veh_heading;
+		jsonObject["BasicVehicle"]["type"] = veh_type;
+		jsonObject["BasicVehicle"]["size"]["length_cm"] = length_cm;
+		jsonObject["BasicVehicle"]["size"]["width_cm"] = width_cm;
         //END: Creation of JSON object
 
         jsonString = fastWriter.write(jsonObject); // Information from JSON object is now stored in a c++ styled string jsonString.
