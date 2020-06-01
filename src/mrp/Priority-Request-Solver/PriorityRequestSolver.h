@@ -93,7 +93,8 @@ public:
   void getEVPhases();
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string receivedJsonString);
-  void loggingData(string tciJsonString);
+  void loggingData(string jsonString);
+  void loggingTCIData(string jsonString);
   string getScheduleforTCI();
   string getClearCommandScheduleforTCI();
   string getSignalTimingPlanRequestString();

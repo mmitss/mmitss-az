@@ -143,7 +143,8 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     int numberOfRequest{};
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
-
+    double ETA_Range {};
+    
     ofstream fs;
     fs.open("NewModelData.dat", ios::out);
     fs << "data;\n";
@@ -281,7 +282,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     }
 
     else
-        fs << " 1 0 2 0 3 5 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
 
     fs << "param PrioWeigth:= ";
 

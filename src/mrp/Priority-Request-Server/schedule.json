@@ -1,29 +1,3 @@
 {
-	"MsgType" : "PriorityRequest",
-	"PriorityRequestList" : 
-	{
-		"intersectionID" : 22391,
-		"minuteOfYear" : 156070,
-		"msOfMinute" : 14000,
-		"noOfRequest" : 1,
-		"regionalID" : 0,
-		"requestorInfo" : 
-		[
-			{
-				"ETA" : 1.0,
-				"ETA_Duration" : 2.0,
-				"basicVehicleRole" : 16,
-				"elevation_Meter" : 540.60000000000002,
-				"heading_Degree" : 28.0,
-				"inBoundLaneID" : 12,
-				"latitude_DecimalDegree" : 33.859466300000001,
-				"longitude_DecimalDegree" : -112.1121333,
-				"priorityRequestStatus" : 4,
-				"requestedSignalGroup" : 8,
-				"speed_MeterPerSecond" : 6.0,
-				"vehicleID" : 19,
-				"vehicleType" : 6
-			}
-		]
-	}
+	"MsgType" : "ClearRequest"
 }

@@ -63,19 +63,19 @@ int main()
 
     //With single EV
 
-    vector<int> vehicleID{1201, 1205, 1205, 1240};
-    vector<int> vehicleType{6,2,2,9,};
-    vector<int> basicVehicleRole{16, 13, 13, 9};
-    vector<int> laneID{2, 8, 9, 5};
-    vector<double> ETA{24.0, 10.0, 10.0, 4.0};
-    vector<double> ETADuration{5.0, 3.0, 3.0, 2.0};
-    vector<int> requestedPhase{3, 2, 5, 4};
-    vector<int> requestStatus{5, 4, 4, 5};
-    vector<double>vehicleLatitude{32.1217, 32.2435, 32.1145, 32.1156};
-    vector<double>vehicleLongitude{-110.2456, -110.9624, -110.2456, -110.2340};
-    vector<double>vehicleElevation{720.0, 721.2,721.0, 724.6};
-    vector<double>vehicleHeading{89.0, 262.0, 262.0, 188.4};
-    vector<double>vehicleSpeed{15.65, 18.34, 18.34, 15.7};
+    // vector<int> vehicleID{1201, 1205, 1205, 1240};
+    // vector<int> vehicleType{6,2,2,9,};
+    // vector<int> basicVehicleRole{16, 13, 13, 9};
+    // vector<int> laneID{2, 8, 9, 5};
+    // vector<double> ETA{24.0, 10.0, 10.0, 4.0};
+    // vector<double> ETADuration{5.0, 3.0, 3.0, 2.0};
+    // vector<int> requestedPhase{3, 2, 5, 4};
+    // vector<int> requestStatus{5, 4, 4, 5};
+    // vector<double>vehicleLatitude{32.1217, 32.2435, 32.1145, 32.1156};
+    // vector<double>vehicleLongitude{-110.2456, -110.9624, -110.2456, -110.2340};
+    // vector<double>vehicleElevation{720.0, 721.2,721.0, 724.6};
+    // vector<double>vehicleHeading{89.0, 262.0, 262.0, 188.4};
+    // vector<double>vehicleSpeed{15.65, 18.34, 18.34, 15.7};
 
     //Without EV: one transit, one truck
 
@@ -124,6 +124,23 @@ int main()
     // vector<double>vehicleElevation{720.0, 721.2,721.0, 724.6};
     // vector<double>vehicleHeading{89.0, 262.0, 262.0, 188.4};
     // vector<double>vehicleSpeed{15.65, 18.34, 18.34, 16.26};
+
+    
+    //Single vehicle
+    vector<int>vehicleID{1201};
+    vector<int>vehicleType{6};
+    vector<int>basicVehicleRole{16};
+    vector<int>laneID{8};
+    vector<double>ETA{25.0};
+    vector<double>ETADuration{2.0};
+    vector<int>requestedPhase{8};
+    vector<int>requestStatus{4};
+    vector<double>vehicleLatitude{32.1217};
+    vector<double>vehicleLongitude{-110.2456};
+    vector<double>vehicleElevation{720.0};
+    vector<double>vehicleHeading{89.0};
+    vector<double>vehicleSpeed{15.65};
+
 
     noOfRequest = static_cast<int>(requestedPhase.size());
     jsonObject["MsgType"] = "PriorityRequest";

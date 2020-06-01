@@ -118,3 +118,4 @@ if __name__ == "__main__":
     signalControllerCommInfo = (signalControllerIP, signalControllerPort)
     snmp = Snmp(signalControllerCommInfo)
     print(snmp.getBulk(["1.3.6.1.4.1.1206.3.5.2.1.2.1.19.1.1","1.3.6.1.4.1.1206.3.5.2.1.2.1.19.1.2"]))
+    snmp.setValue("1.3.6.1.4.1.1206.3.5.2.9.44.1.1",6)

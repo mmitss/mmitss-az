@@ -94,8 +94,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.vehicleDistanceFromStopBar = requestList.vehicleSpeed * 3.28084 * requestList.vehicleETA;
         priorityRequestList.push_back(requestList);
     }
-    modifyPriorityRequestList();
-
+    
     // setPhaseCallForRequestedSignalGroup();
     //This is optional. For priniting few attributes of the priority request list in the console
     for (size_t i = 0; i < priorityRequestList.size(); i++)
@@ -699,39 +698,16 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     int temporaryNextPhase{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
-    // string currentPhaseStatusRequestJsonString{};
-    // char receiveBuffer[5120];
+
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
 
-    // Json::Value jsonObject_config;
-    // Json::Reader reader;
-    // std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    // std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    // reader.parse(configJsonString.c_str(), jsonObject_config);
-
-    // Json::FastWriter fastWriter;
-    // Json::Value jsonObject;
-
-    // UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
-    // const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
-    // const string LOCALHOST = jsonObject_config["HostIp"].asString();
-
-    // jsonObject["MsgType"] = "CurrNextPhaseRequest";
-    // currentPhaseStatusRequestJsonString = fastWriter.write(jsonObject);
-    // cout << "Ask for Signal Status"  << currentPhaseStatusRequestJsonString << endl;
-    // priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), currentPhaseStatusRequestJsonString);
-    // cout << "Send Data to tci"  << endl;
-    // priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-
-    // std::string receivedJsonString(receiveBuffer);
-    // cout << "Received Signal Status"  << receivedJsonString << endl;
-    // if (getMessageType(receivedJsonString) == static_cast<int>(msgType::currentPhaseStatus))
-    // {
     Json::Value jsonObject_PhaseStatus;
     Json::Reader reader_PhaseStatus;
     reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
     const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
+
+    loggingTCIData(receivedJsonString);
     for (int i = 0; i < 2; i++)
     {
         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
@@ -820,9 +796,9 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     // priorityRequestSolver_To_TCI_Interface_Socket.closeSocket();
 }
 
-// /*
-//     - If new priority request is received this method will obtain the current traffic signal Status.
-// */
+/*
+    - If new priority request is received this method will obtain the current traffic signal Status.
+*/
 // void PriorityRequestSolver::getCurrentSignalStatus()
 // {
 //     int temporaryPhase{};
@@ -1692,7 +1668,7 @@ bool PriorityRequestSolver::logging()
     return bLogging;
 }
 
-void PriorityRequestSolver::loggingData(string tciJsonString)
+void PriorityRequestSolver::loggingData(string jsonString)
 {
     ofstream outputfile;
     ifstream infile;
@@ -1720,10 +1696,21 @@ void PriorityRequestSolver::loggingData(string tciJsonString)
         infile.close();
 
         outputfile << "\nFollowing Schedule will send to TCI for EV case at time " << timenow << endl;
-        outputfile << tciJsonString << endl;
+        outputfile << jsonString << endl;
 
         outputfile.close();
     }
+}
+
+void PriorityRequestSolver::loggingTCIData(string jsonString)
+{
+    ofstream outputfile;
+    outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    
+    outputfile << "\nFollowing current phase status data is received from TCI at time " << timenow << endl;
+    outputfile << jsonString << endl;
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
