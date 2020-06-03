@@ -1,13 +1,69 @@
 # include <iostream>
 # include <string>
-#include "SnmpEngine.h"
+# include <fstream>
+# include "./../../../include/common/json/json.h"
+# include "./../../../include/common/UdpSocket.h"
+# include "SnmpEngine.h"
+
 
 int main()
 {
-    SnmpEngine snmp("10.12.6.102", 501);
-    std::string oid = "1.3.6.1.4.1.1206.3.5.2.9.44.1.1";
-    std::cout << snmp.getValue(oid) << std::endl;
-    snmp.setValue(oid, 0);
-    std::cout << snmp.getValue(oid) << std::endl;
+    // Read configuration items:
+    Json::Value jsonObject_config;
+    Json::Reader reader;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject_config);
+    configJson.close();
+    
+    std::string ascIp = jsonObject_config["SignalController"]["IpAddress"].asString();
+    int ascNtcipPort = jsonObject_config["SignalController"]["NtcipPort"].asInt();
+
+    UdpSocket snmpEngineSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SnmpEngine"].asInt()));
+    char receiveBuffer[10240]{};
+    std::string msgType;
+    Json::Value receivedJson;
+    std:string receivedOid{};
+    int value{};
+
+    Json::Value sendingJson;
+    Json::FastWriter fastWriter;
+    std::string sendingJsonString{};
+
+    std::string senderIp{};
+    int senderPort{};
+
+    SnmpEngine snmp(ascIp, ascNtcipPort);
+
+    while(true)
+    {
+        snmpEngineSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
+        reader.parse(receiveBuffer, receivedJson);
+        msgType = receivedJson["MsgType"].asString();
+        receivedOid = receivedJson["OID"].asString();
+        if(msgType=="SnmpSetRequest")
+        {
+            value = receivedJson["Value"].asInt();
+            snmp.setValue(receivedOid, value);
+        }
+        else if(msgType=="SnmpGetRequest")
+        {
+            value = snmp.getValue(receivedOid);
+            senderIp = snmpEngineSocket.getSenderIP();
+            senderPort = snmpEngineSocket.getSenderPort();
+            sendingJson["MsgType"] = "SnmpGetResponse";
+            sendingJson["OID"] = receivedOid;
+            sendingJson["Value"] = value;
+            sendingJsonString = fastWriter.write(sendingJson);
+            snmpEngineSocket.sendData(senderIp, senderPort, sendingJsonString);
+        }
+    }
+
+    // SnmpEngine snmp(ascIp, ascNtcipPort);
+    // std::string inputOid = "1.3.6.1.4.1.1206.3.5.2.9.44.1.1";
+    // std::cout << snmp.getValue(inputOid) << std::endl;
+    // snmp.setValue(inputOid, 6);
+    // std::cout << snmp.getValue(inputOid) << std::endl;
+    snmpEngineSocket.closeSocket();
     return 0;
 }

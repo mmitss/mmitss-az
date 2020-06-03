@@ -16,7 +16,8 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     session.version = SNMP_VERSION_1;
    
     /* set the SNMPv1 community name used for authentication */
-    session.community = (u_char *)"public";
+    unsigned char comm[] = "public";
+    session.community = comm;
     session.community_len = strlen((const char *)session.community);  
     ss = snmp_open(&session);                     /* establish the session */
 
@@ -27,7 +28,7 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     }    
 }
 
-int SnmpEngine::getValue(std::string oid)
+int SnmpEngine::getValue(std::string inputOid)
 {
     pdu = snmp_pdu_create(SNMP_MSG_GET);
     anOID_len = MAX_OID_LEN;
@@ -39,7 +40,7 @@ int SnmpEngine::getValue(std::string oid)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-if (!snmp_parse_oid(oid.c_str(), anOID, &anOID_len))
+if (!snmp_parse_oid(inputOid.c_str(), anOID, &anOID_len))
     {
         std::cout << "No such OID exists!" << std::endl;
     }
@@ -71,8 +72,7 @@ if (!snmp_parse_oid(oid.c_str(), anOID, &anOID_len))
     else
     {
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet\nReason: %s\n",
-            snmp_errstring(response->errstat));
+            fprintf(stderr, "Error in packet");
         else if (status == STAT_TIMEOUT)
             fprintf(stderr, "Timeout: No response from the controller!\n");
         else
@@ -88,19 +88,15 @@ if (!snmp_parse_oid(oid.c_str(), anOID, &anOID_len))
         return out[0];
 }
 
-void SnmpEngine::setValue(std::string oid, int value)
+void SnmpEngine::setValue(std::string inputOid, int value)
 {
     pdu = snmp_pdu_create(SNMP_MSG_SET);
     anOID_len = MAX_OID_LEN;
-    int out[50]{};
-    int i =0;
-
-
     
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-if (!snmp_parse_oid(oid.c_str(), anOID, &anOID_len))
+if (!snmp_parse_oid(inputOid.c_str(), anOID, &anOID_len))
     {
         std::cout << "No such OID exists!" << std::endl;
     }
@@ -118,22 +114,11 @@ if (!snmp_parse_oid(oid.c_str(), anOID, &anOID_len))
     */
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-        /*
-        * SUCCESS: Print the result variables
-        */
-        for(vars = response->variables; vars; vars = vars->next_variable)
-        {
-            int *aa{};
-            aa =(int *)vars->val.integer;
-            out[i++] = *aa;
-        }  
-      
     }
     else
     {
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet\nReason: %s\n",
-            snmp_errstring(response->errstat));
+            fprintf(stderr, "Error in packet");
         else if (status == STAT_TIMEOUT)
             fprintf(stderr, "Timeout: No response from the controller!\n");
         else
