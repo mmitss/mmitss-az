@@ -143,7 +143,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     int numberOfRequest{};
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
-    double ETA_Range {};
+    double ETA_Range{};
     
     ofstream fs;
     fs.open("NewModelData.dat", ios::out);
@@ -359,6 +359,11 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     if (!priorityRequestList.empty())
     {
+        if (bEVStatus == true)
+            ETA_Range = 4.0;
+        else
+            ETA_Range = 2.0;
+
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
             fs << ReqSeq << "  ";
@@ -369,7 +374,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
                     if (priorityRequestList[i].vehicleETA <= 3.0)
                         fs << 1.0 << "\t";
                     else
-                        fs << priorityRequestList[i].vehicleETA << "\t";
+                        fs << priorityRequestList[i].vehicleETA- ETA_Range  << "\t";
                 }
                 else
                     fs << ".\t";
@@ -377,7 +382,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             ReqSeq++;
             fs << "\n";
         }
-    }
+    } 
 
     fs << ";\n";
     ReqSeq = 1;

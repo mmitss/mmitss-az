@@ -94,7 +94,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.vehicleDistanceFromStopBar = requestList.vehicleSpeed * 3.28084 * requestList.vehicleETA;
         priorityRequestList.push_back(requestList);
     }
-    
+
     // setPhaseCallForRequestedSignalGroup();
     //This is optional. For priniting few attributes of the priority request list in the console
     for (size_t i = 0; i < priorityRequestList.size(); i++)
@@ -968,6 +968,21 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
     // std::ifstream signalPlanJson("signalPlan.json");
     // std::string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
     // reader.parse(configJsonString.c_str(), jsonObject);
+    loggingTCIData(jsonString);
+    trafficSignalPlan.clear();
+    PhaseNumber.clear();
+    PedWalk.clear();
+    PedClear.clear();
+    MinGreen.clear();
+    Passage.clear();
+    MaxGreen.clear();
+    YellowChange.clear();
+    RedClear.clear();
+    PhaseRing.clear();
+    P11.clear();
+    P12.clear();
+    P21.clear();
+    P22.clear();
     reader.parse(jsonString.c_str(), jsonObject);
     const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
@@ -1005,12 +1020,12 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        YellowChange.push_back(((jsonObject["TimingPlan"]["YellowChange"][i]).asDouble()) / 10.0);
+        YellowChange.push_back(((jsonObject["TimingPlan"]["YellowChange"][i]).asDouble()));
     }
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        RedClear.push_back(((jsonObject["TimingPlan"]["RedClear"][i]).asDouble()) / 10.0);
+        RedClear.push_back(((jsonObject["TimingPlan"]["RedClear"][i]).asDouble()));
     }
 
     for (int i = 0; i < noOfPhase; i++)
@@ -1018,7 +1033,6 @@ void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
         PhaseRing.push_back((jsonObject["TimingPlan"]["PhaseRing"][i]).asInt());
     }
 
-    trafficSignalPlan.clear();
     for (int i = 0; i < noOfPhase; i++)
     {
         signalPlan.phaseNumber = PhaseNumber[i];
@@ -1687,6 +1701,19 @@ void PriorityRequestSolver::loggingData(string jsonString)
         }
         infile.close();
 
+        // outputfile << "\nCurrent Mod File at time : " << timenow << endl;
+        // if (bEVStatus == true)
+        //     infile.open("NewModel_EV.mod");
+
+        // else
+        //     infile.open("NewModel.mod");
+
+        // for (string line; getline(infile, line);)
+        // {
+        //     outputfile << line << endl;
+        // }
+        // infile.close();
+
         outputfile << "\nCurrent Results File at time : " << timenow << endl;
         infile.open("Results.txt");
         for (std::string line; getline(infile, line);)
@@ -1708,8 +1735,7 @@ void PriorityRequestSolver::loggingTCIData(string jsonString)
     outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
     auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    
-    outputfile << "\nFollowing current phase status data is received from TCI at time " << timenow << endl;
+    outputfile << "\nFollowing data is received from TCI at time " << timenow << endl;
     outputfile << jsonString << endl;
 }
 

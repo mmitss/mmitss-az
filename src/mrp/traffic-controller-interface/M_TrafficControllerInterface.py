@@ -86,6 +86,7 @@ def main():
             currentTimingPlan = asc.currentTimingPlanJson
             # Send the current timing plan to the requestor
             s.sendto(currentTimingPlan.encode(),address)
+            print(currentTimingPlan)
 
         else: print("Invalid message received!")
         

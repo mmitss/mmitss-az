@@ -318,23 +318,27 @@ class SignalController:
             return phaseParameter
 
         activeTimingPlanId = getActiveTimingPlanId()
-        activeTimingPlan =  dict({"TimingPlan":{
-                            "PhaseNumber": getPhaseParameterPhaseNumber(activeTimingPlanId),
-                            "PedWalk": getPhaseParameterPedWalk(activeTimingPlanId),
-                            "PedClear": getPhaseParameterPedClear(activeTimingPlanId),
-                            "MinGreen": getPhaseParameterMinGreen(activeTimingPlanId),
-                            "Passage": getPhaseParameterPassage(activeTimingPlanId),
-                            "MaxGreen": getPhaseParameterMaxGreen(activeTimingPlanId),
-                            "YellowChange": getPhaseParameterYellowChange(activeTimingPlanId),
-                            "RedClear": getPhaseParameterRedClear(activeTimingPlanId),
-                            "PhaseRing": getPhaseParameterRing(),
-        }})
-        self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind(self.timingPlanSenderAddress)
-        s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
-        s.close()
-        print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+        if activeTimingPlanId != self.currentTimingPlanId:
+            activeTimingPlan =  dict({
+                                "MsgType": "ActiveTimingPlan",
+                                "TimingPlan":{
+                                "NoOfPhase": 8,
+                                "PhaseNumber": getPhaseParameterPhaseNumber(activeTimingPlanId),
+                                "PedWalk": getPhaseParameterPedWalk(activeTimingPlanId),
+                                "PedClear": getPhaseParameterPedClear(activeTimingPlanId),
+                                "MinGreen": getPhaseParameterMinGreen(activeTimingPlanId),
+                                "Passage": getPhaseParameterPassage(activeTimingPlanId),
+                                "MaxGreen": getPhaseParameterMaxGreen(activeTimingPlanId),
+                                "YellowChange": getPhaseParameterYellowChange(activeTimingPlanId),
+                                "RedClear": getPhaseParameterRedClear(activeTimingPlanId),
+                                "PhaseRing": getPhaseParameterRing(),
+            }})
+            self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.bind(self.timingPlanSenderAddress)
+            s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+            s.close()
+            print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
 
