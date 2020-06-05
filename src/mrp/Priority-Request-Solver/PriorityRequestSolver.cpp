@@ -72,9 +72,12 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     RequestList requestList;
     Json::Value jsonObject;
     Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
 
     priorityRequestList.clear();
+    if(bLogging == true)
+        loggingPRSData(jsonString);
+
+    reader.parse(jsonString.c_str(), jsonObject);
     noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
     for (int i = 0; i < noOfRequest; i++)
     {
@@ -97,10 +100,10 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 
     // setPhaseCallForRequestedSignalGroup();
     //This is optional. For priniting few attributes of the priority request list in the console
-    for (size_t i = 0; i < priorityRequestList.size(); i++)
-    {
-        cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
-    }
+    // for (size_t i = 0; i < priorityRequestList.size(); i++)
+    // {
+    //     cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
+    // }
 }
 
 /*
@@ -707,7 +710,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
     const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
 
-    loggingTCIData(receivedJsonString);
+    if(bLogging==true)
+        loggingTCIData(receivedJsonString);
     for (int i = 0; i < 2; i++)
     {
         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
@@ -740,7 +744,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
         {
             temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
+                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
             if (temporaryNextPhase < 5)
             {
                 tcStatus.startingPhase1 = temporaryNextPhase;
@@ -759,7 +763,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
         {
             temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryNextPhase; });
+                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
             if (temporaryNextPhase < 5)
             {
                 tcStatus.startingPhase1 = temporaryNextPhase;
@@ -1737,6 +1741,17 @@ void PriorityRequestSolver::loggingTCIData(string jsonString)
 
     outputfile << "\nFollowing data is received from TCI at time " << timenow << endl;
     outputfile << jsonString << endl;
+}
+
+void PriorityRequestSolver::loggingPRSData(string jsonString)
+{
+    ofstream outputfile;
+    outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
+    outputfile << jsonString << endl;
+
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

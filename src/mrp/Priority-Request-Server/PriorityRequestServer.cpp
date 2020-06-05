@@ -525,7 +525,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehid{};
 
 	vehid = getRequestTimedOutVehicleID();
-	std::cout << "Need to delete the vehicleID " << vehid << std::endl;
+	// std::cout << "Need to delete the vehicleID " << vehid << std::endl;
 
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
@@ -554,17 +554,14 @@ std::string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus
 {
 	std::string ssmJsonString{};
 	signalStatus.reset();
-	std::cout << "Will set few variables of SSM class" << std::endl;
 	signalStatus.setMinuteOfYear(getMinuteOfYear());
 	signalStatus.setMsOfMinute(getMsOfMinute());
 	signalStatus.setSequenceNumber(getPRSSequenceNumber());
 	signalStatus.setUpdateCount(getPRSUpdateCount());
 	signalStatus.setRegionalID(regionalID);
 	signalStatus.setIntersectionID(intersectionID);
-	std::cout << "Will go inside the signalStatus2Json Method" << std::endl;
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
-	std::cout << "Done with signalStatus2Json Method" << std::endl;
-	loggingData(ssmJsonString);
+	// loggingData(ssmJsonString);
 
 	return ssmJsonString;
 }
@@ -619,7 +616,7 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 	solverJsonString = fastWriter.write(jsonObject);
 	styledStreamWriter.write(outputter, jsonObject);
 
-	loggingData(solverJsonString);
+	// loggingData(solverJsonString);
 
 	return solverJsonString;
 }
@@ -974,7 +971,7 @@ void PriorityRequestServer::loggingData(std::string jsonString)
 		outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
 		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-		outputfile << "\nJsonString  : " << timenow << std::endl;
+		outputfile << "\nJsonString is sent or received at time : " << timenow << std::endl;
 		outputfile << jsonString << timenow << std::endl;
 		outputfile.close();
 	}

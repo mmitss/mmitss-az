@@ -37,7 +37,7 @@ int main()
     char receiveBuffer[5120];
     char receivedSignalStatusBuffer[5120];
     int msgType{};
-    bool timedOutOccur{};
+    // bool timedOutOccur{};
     string tciJsonString{};
 
     priorityRequestSolver.logging();
@@ -47,14 +47,14 @@ int main()
     {
         priorityRequestSolverSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string receivedJsonString(receiveBuffer);
-        cout << "Received Json String " << receivedJsonString << endl;
+        // cout << "Received Json String " << receivedJsonString << endl;
         msgType = priorityRequestSolver.getMessageType(receivedJsonString);
 
         if (msgType == static_cast<int>(msgType::signalPlan))
         {
             cout << "Received Signal Timing Plan " << endl;
             priorityRequestSolver.readCurrentSignalTimingPlan(receivedJsonString);
-            priorityRequestSolver.printSignalPlan();
+            //priorityRequestSolver.printSignalPlan();
             priorityRequestSolver.generateModFile();
         }
 
@@ -71,7 +71,7 @@ int main()
             //     priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
             // }
             std::string receivedString(receivedSignalStatusBuffer);
-            cout << "Received Signal Status" << receivedString << endl;
+            cout << "Received Signal Status" << endl;
             if (priorityRequestSolver.getMessageType(receivedString) == static_cast<int>(msgType::currentPhaseStatus))
                 priorityRequestSolver.getCurrentSignalStatus(receivedString);
             // cout << "Received Current Signal Status " << endl;
