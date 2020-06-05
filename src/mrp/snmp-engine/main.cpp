@@ -17,13 +17,13 @@ int main()
     configJson.close();
     
     std::string ascIp = jsonObject_config["SignalController"]["IpAddress"].asString();
-    int ascNtcipPort = jsonObject_config["SignalController"]["NtcipPort"].asInt();
+    int ascNtcipPort = jsonObject_config["SignalController"]["NtcipPort"].asUInt();
 
     UdpSocket snmpEngineSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SnmpEngine"].asInt()));
     char receiveBuffer[10240]{};
     std::string msgType;
     Json::Value receivedJson;
-    std:string receivedOid{};
+    std::string receivedOid{};
     int value{};
 
     Json::Value sendingJson;
@@ -31,7 +31,7 @@ int main()
     std::string sendingJsonString{};
 
     std::string senderIp{};
-    int senderPort{};
+    short unsigned int senderPort{};
 
     SnmpEngine snmp(ascIp, ascNtcipPort);
 
@@ -58,12 +58,6 @@ int main()
             snmpEngineSocket.sendData(senderIp, senderPort, sendingJsonString);
         }
     }
-
-    // SnmpEngine snmp(ascIp, ascNtcipPort);
-    // std::string inputOid = "1.3.6.1.4.1.1206.3.5.2.9.44.1.1";
-    // std::cout << snmp.getValue(inputOid) << std::endl;
-    // snmp.setValue(inputOid, 6);
-    // std::cout << snmp.getValue(inputOid) << std::endl;
     snmpEngineSocket.closeSocket();
     return 0;
 }
