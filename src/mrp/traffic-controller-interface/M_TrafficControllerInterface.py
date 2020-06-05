@@ -73,11 +73,12 @@ def main():
                 scheduler.clearAllNtcipCommandsFromSignalController()
             else:
                 print("Received a new schedule at time:" + str(time.time())) 
+                print(receivedMessage)
                 scheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            print("Received CurrNextPhaseRequest: " + str(receivedMessage))
+            print("Received CurrNextPhaseRequest at time " + str(time.time()) + str(receivedMessage))
             asc.sendCurrentAndNextPhasesDict(address)
             print("Sent currNextPhaseStatus")
 

@@ -30,6 +30,7 @@ private:
 
   bool bgetActiveMap{false};      //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
   bool bRequestSendStatus{false}; //Required for HMI json
+  bool bLogging{false};
   std::string mapFileDirectory{};
   std::string mapFileName{};
   int messageType{};
@@ -46,9 +47,17 @@ private:
   int priorityRequestType{};
   int counter_VehicleInMap{};
   double time2go{};
-  double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
-  double tempSRMTimeStamp{};    //temporary store the time when last SRM has been sent
-  int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
+  double tempVehicleSpeed{};       //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
+  double tempSRMTimeStamp{};       //temporary store the time when last SRM has been sent
+  int tempVehicleSignalGroup{};    //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
+  
+  double VEHICLEMINSPEED{};
+  double VEHICLE_SPEED_DEVIATION_LIMIT{};
+  double ETA_DURATION_SECOND{};
+  double ALLOWED_ETA_DIFFERENCE{};
+  double MIN_ETA{};
+  double SRM_GAPOUT_TIME{};
+  double PRS_REQUEST_GAPOUT_TIME{};
 
 public:
   PriorityRequestGenerator();
@@ -56,9 +65,12 @@ public:
   std::vector<Map::AvailableMap> availableMapList;
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
   std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+  void loggingData(std::string jsonString);
+  void getParameters();
 
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
+  bool logging();
 
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);

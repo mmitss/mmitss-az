@@ -47,6 +47,8 @@ int main()
     std::string srmJsonString;
     std::string prgStatusJsonString;
 
+    PRG.getParameters();
+    PRG.logging();
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));

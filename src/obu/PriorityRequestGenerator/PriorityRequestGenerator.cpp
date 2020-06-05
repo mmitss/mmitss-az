@@ -50,19 +50,19 @@ using namespace GeoUtils;
 using namespace MsgEnum;
 
 const double DISTANCEUNITCONVERSION = 100; //cm to meter
-const double VEHICLEMINSPEED = 4;
-const double VEHICLE_SPEED_DEVIATION_LIMIT = 5.0;
-const double ETA_DURATION_SECOND = 2;
+//const double VEHICLEMINSPEED = 4.0;
+//const double VEHICLE_SPEED_DEVIATION_LIMIT = 5.0;
+//const double ETA_DURATION_SECOND = 2.0;
 const int HOURSINADAY = 24;
 const int MINUTESINAHOUR = 60;
 const double SECONDSINAMINUTE = 60.0;
 const int SECONDTOMILISECOND = 1000;
-const double ALLOWED_ETA_DIFFERENCE = 4;
+// const double ALLOWED_ETA_DIFFERENCE = 4;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
-const double MIN_ETA = 0.0;
-const double SRM_GAPOUT_TIME = 2.0;
-const double PRS_REQUEST_GAPOUT_TIME = 8.0;
+// const double MIN_ETA = 0.0;
+// const double SRM_GAPOUT_TIME = 2.0;
+// const double PRS_REQUEST_GAPOUT_TIME = 8.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
@@ -94,7 +94,7 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 
 		ActiveRequestTable.clear();
 		activeRequest.reset();
-		
+
 		for (int i = 0; i < signalStatus.getNoOfRequest(); i++)
 		{
 			activeRequest.vehicleID = vehicleID[i];
@@ -130,7 +130,7 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	signalRequest.setMsgCount(getMsgCount());
 	signalRequest.setRegionalID(getRegionalID());
 	signalRequest.setIntersectionID(getIntersectionID());
-	signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
+	signalRequest.setVehicleType(getVehicleType());
 	signalRequest.setPriorityRequestType(getPriorityRequestType(basicVehicle, mapManager));
 	signalRequest.setInBoundLaneIntersectionAccessPoint(getLaneID(), getApproachID());
 	signalRequest.setETA(vehExpectedTimeOfArrival_Minute, vehExpectedTimeOfArrival_Second * SECONDSINAMINUTE, vehDuration);
@@ -140,6 +140,9 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	signalRequest.setHeading_Degree(basicVehicle.getHeading_Degree());
 	signalRequest.setSpeed_MeterPerSecond(basicVehicle.getSpeed_MeterPerSecond());
 	srmJsonString = signalRequest.signalRequest2Json();
+
+	if (bLogging == true)
+		loggingData(srmJsonString);
 
 	return srmJsonString;
 }
@@ -163,6 +166,10 @@ bool PriorityRequestGenerator::addToActiveRequestTable(SignalStatus signalStatus
 */
 bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 {
+	std::ofstream outputfile;
+	outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
+	auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
 	bool bSendRequest = false;
 	double vehicleSpeed = basicVehicle.getSpeed_MeterPerSecond();
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
@@ -172,12 +179,14 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	{
 		bSendRequest = true;
 		std::cout << "SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
+		outputfile << "\nSRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection at time " << timenow << std::endl;
 	}
 
 	else if (bgetActiveMap == true && findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 		bSendRequest = true;
 		std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		outputfile << "\nSRM is sent since vehicle is leaving the Intersection at time" << timenow << std::endl;
 	}
 
 	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
@@ -187,48 +196,56 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since ART is empty" << std::endl;
+			outputfile << "\nSRM is sent since ART is empty at time " << timenow << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle is leaving the Intersection" << std::endl;
+			outputfile << "\nSRM is sent since vehicle is leaving the Intersection at time " << timenow << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup()) //If vehicle signal group changed it should send SRM. Vehicle signal group can be messed up when it is inside the intersectionBox, due to which it is required to check whether vehicle is on inBoundlane or not
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle signalGroup has been changed" << std::endl;
+			outputfile << "\nSRM is sent since vehicle signalGroup has been changed at time " << timenow << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= VEHICLE_SPEED_DEVIATION_LIMIT) //If vehicleID is in ART and vehicle speed changes by 5m/s, vehicle should send srm. tempVehicleSpeed store the vehicle speed of last send out srm.
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle speed has been changed" << std::endl;
+			outputfile << "\nSRM is sent since vehicle speed has been changed at time " << timenow << std::endl;
 		}
 
 		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->vehicleLaneID != getLaneID()) //If vehicleID is in ART and vehicle laneID changes, vehicle should send srm
 		// {
 		// 	bSendRequest = true;
 		// 	std::cout << "SRM is sent since vehicle laneID has been changed" << std::endl;
+		//outputfile << "\nSRM is sent since vehicle laneID has been changed at time " << timenow << std::endl;
 		// }
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= ALLOWED_ETA_DIFFERENCE) //If vehicleID is in ART and vehicle ETA doesn't match the ETA of ART, vehicle should send srm
 		{
 			bSendRequest = true;
-			std::cout << "SRM is sent since vehicle ETAhas been changed from" << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << std::endl;
+			std::cout << "SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << std::endl;
+			outputfile << "\nSRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << " at time " << timenow << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since msgCount doesn't match" << std::endl;
+			outputfile << "\nSRM is sent since msgCount doesn't match at time " << timenow << std::endl;
 		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= PRS_REQUEST_GAPOUT_TIME)
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent to avoid PRS timed out" << std::endl;
+			outputfile << "\nSRM is sent to avoid PRS timed out at time " << timenow << std::endl;
 		}
 	}
 
@@ -315,6 +332,8 @@ int PriorityRequestGenerator::getMessageType(std::string jsonString)
 	else if ((jsonObject["MsgType"]).asString() == "SSM")
 	{
 		messageType = MsgEnum::DSRCmsgID_ssm;
+		if (bLogging == true)
+			loggingData(jsonString);
 	}
 
 	return messageType;
@@ -485,13 +504,6 @@ int PriorityRequestGenerator::getVehicleIntersectionStatus()
 */
 int PriorityRequestGenerator::getVehicleType()
 {
-	Json::Value jsonObject_config;
-	Json::Reader reader;
-	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject_config);
-	vehicleType = (jsonObject_config["VehicleType"]).asInt();
-
 	return vehicleType;
 }
 
@@ -500,25 +512,18 @@ int PriorityRequestGenerator::getVehicleType()
 */
 int PriorityRequestGenerator::getBasicVehicleRole()
 {
-	if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::bus))
-	{
+	if (vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
 		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::transit);
-	}
 
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-	{
+	else if (vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
 		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::truck);
-	}
 
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::special))
-	{
+	else if (vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
 		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::fire);
-	}
 
-	else if (getVehicleType() == static_cast<int>(vehicleType::unavailable))
-	{
+	else if (vehicleType == static_cast<int>(vehicleType::unavailable))
 		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::unavailable);
-	}
+
 	return basicVehicleRole;
 }
 
@@ -775,6 +780,62 @@ void PriorityRequestGenerator::printART()
 	{
 		std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleLaneID << " " << ActiveRequestTable[i].vehicleETA << std::endl;
 	}
+}
+
+void PriorityRequestGenerator::getParameters()
+{
+	Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-parameter-configuration.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+
+	vehicleType = (jsonObject["PriorityRequestGenerator"]["VehicleType"]).asDouble();
+	SRM_GAPOUT_TIME = (jsonObject["PriorityRequestGenerator"]["SRMTimedOutTime"]).asDouble();
+	VEHICLEMINSPEED = (jsonObject["PriorityRequestGenerator"]["VEHICLEMINSPEED"]).asDouble();
+	VEHICLE_SPEED_DEVIATION_LIMIT = (jsonObject["PriorityRequestGenerator"]["VEHICLE_SPEED_DEVIATION_LIMIT"]).asDouble();
+	ETA_DURATION_SECOND = (jsonObject["PriorityRequestGenerator"]["ETA_DURATION_SECOND"]).asDouble();
+	ALLOWED_ETA_DIFFERENCE = (jsonObject["PriorityRequestGenerator"]["ALLOWED_ETA_DIFFERENCE"]).asDouble();
+	MIN_ETA = (jsonObject["PriorityRequestGenerator"]["MIN_ETA"]).asDouble();
+	SRM_GAPOUT_TIME = (jsonObject["PriorityRequestGenerator"]["SRM_GAPOUT_TIME"]).asDouble();
+	PRS_REQUEST_GAPOUT_TIME = (jsonObject["PriorityRequestGenerator"]["PRS_REQUEST_GAPOUT_TIME"]).asDouble();
+}
+
+void PriorityRequestGenerator::loggingData(std::string jsonString)
+{
+	std::ofstream outputfile;
+	outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
+	auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+	outputfile << "\nFollowing data is either sent or received at time " << timenow << std::endl;
+	outputfile << jsonString << std::endl;
+}
+
+bool PriorityRequestGenerator::logging()
+{
+	std::string logging{};
+	std::ofstream outputfile;
+	Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-parameter-configuration.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+	logging = (jsonObject["PriorityRequestGenerator"]["Logging"]).asString();
+
+	if (logging == "True")
+	{
+		bLogging = true;
+		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		outputfile.open("/nojournal/bin/log/PRGLog.txt");
+		outputfile << "File opened at time : " << timenow << std::endl;
+		outputfile.close();
+	}
+	else
+		bLogging = false;
+
+	return bLogging;
 }
 
 PriorityRequestGenerator::~PriorityRequestGenerator()

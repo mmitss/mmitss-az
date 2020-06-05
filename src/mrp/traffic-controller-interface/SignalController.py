@@ -223,7 +223,7 @@ class SignalController:
 
         currentPhasesDict = json.loads(data.decode())
 
-        if ((currentPhasesDict["currentPhases"][0]["State"]==6) and (currentPhasesDict["currentPhases"][1]["State"]==6)):
+        if ((currentPhasesDict["currentPhases"][0]["State"]=="green") and (currentPhasesDict["currentPhases"][1]["State"]=="green")):
             nextPhasesDict= {"nextPhases":[0]}
         else:
             nextPhasesDict = getNextPhasesDict()
@@ -234,7 +234,7 @@ class SignalController:
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        print("Sent curr and NextPhasestatus to solver: " + str(currentAneNextPhasesJson))
+        print("Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 

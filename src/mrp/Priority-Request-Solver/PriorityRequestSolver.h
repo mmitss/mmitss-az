@@ -95,6 +95,8 @@ public:
   void getCurrentSignalStatus(string receivedJsonString);
   void loggingData(string jsonString);
   void loggingTCIData(string jsonString);
+  void loggingPRSData(string jsonString);
+  void printSignalPlan();
   string getScheduleforTCI();
   string getClearCommandScheduleforTCI();
   string getSignalTimingPlanRequestString();
@@ -104,5 +106,5 @@ public:
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
   bool logging();
-  void printSignalPlan();
+  
 };
