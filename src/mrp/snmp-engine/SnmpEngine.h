@@ -1,6 +1,5 @@
 # pragma once
 
-# include <string>
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
 
@@ -14,7 +13,6 @@ class SnmpEngine
         size_t anOID_len = MAX_OID_LEN;
         oid anOID[MAX_OID_LEN];
         int status;
-
 
     public:
         SnmpEngine(std::string ip, int port);

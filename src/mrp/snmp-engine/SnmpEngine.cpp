@@ -115,7 +115,6 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
          snmp_free_pdu(response);
          anOID_len = MAX_OID_LEN;
      }
-    
     return value;
 }
 

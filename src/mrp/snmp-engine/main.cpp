@@ -1,8 +1,7 @@
 # include <iostream>
-# include <string>
 # include <fstream>
-# include "./../../../include/common/json/json.h"
-# include "./../../../include/common/UdpSocket.h"
+# include "json/json.h"
+# include "UdpSocket.h"
 # include "SnmpEngine.h"
 
 
