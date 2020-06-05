@@ -346,14 +346,14 @@ class SignalController:
                    Unit testing
 ##############################################'''
 if __name__ == "__main__":
-    # Define controller's communication Info
-    controllerIp = "10.12.6.17"
-    controllerPort = 501
-    controllerCommInfo = (controllerIp, controllerPort)
 
     # Create an object of SignalController class
     controller = SignalController()
+    
+    requestTime = time.time()
     controller.updateAndSendActiveTimingPlan()
+    leadTime = time.time()-requestTime
+    print("New timing plan acquired in:" + str(round(leadTime,4)) + " seconds")
     print(controller.currentTimingPlanJson)
     # Write more test cases - active timing plan
 

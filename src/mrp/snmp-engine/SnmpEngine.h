@@ -8,18 +8,16 @@ class SnmpEngine
 {
     private:
         struct snmp_session session, *ss;
+        struct variable_list *vars;
         struct snmp_pdu *pdu;
         struct snmp_pdu *response;
-
-        oid anOID[MAX_OID_LEN];
         size_t anOID_len = MAX_OID_LEN;
-
-        struct variable_list *vars;
+        oid anOID[MAX_OID_LEN];
         int status;
-   
+
+
     public:
         SnmpEngine(std::string ip, int port);
-        int getValue(std::string oid);
-        void setValue(std::string oid, int value);
+        int processSnmpRequest(std::string requestType, std::string inputOid, int value);
         ~SnmpEngine();
 };

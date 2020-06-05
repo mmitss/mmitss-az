@@ -25,6 +25,7 @@ int main()
     Json::Value receivedJson;
     std::string receivedOid{};
     int value{};
+    int snmpResponse{};
 
     Json::Value sendingJson;
     Json::FastWriter fastWriter;
@@ -44,18 +45,29 @@ int main()
         if(msgType=="SnmpSetRequest")
         {
             value = receivedJson["Value"].asInt();
-            snmp.setValue(receivedOid, value);
+            snmpResponse = snmp.processSnmpRequest("set", receivedOid, value);
+            if(snmpResponse == -1)
+            {
+                std::cout << "Unable to set value=" << value << " to OID=" << receivedOid << std::endl;
+            }
         }
         else if(msgType=="SnmpGetRequest")
         {
-            value = snmp.getValue(receivedOid);
+            value=0;
+            snmpResponse = snmp.processSnmpRequest("get", receivedOid, value);
+            
             senderIp = snmpEngineSocket.getSenderIP();
             senderPort = snmpEngineSocket.getSenderPort();
             sendingJson["MsgType"] = "SnmpGetResponse";
             sendingJson["OID"] = receivedOid;
-            sendingJson["Value"] = value;
+            sendingJson["Value"] = snmpResponse;
             sendingJsonString = fastWriter.write(sendingJson);
             snmpEngineSocket.sendData(senderIp, senderPort, sendingJsonString);
+
+            if (snmpResponse == -1)
+            {
+                std::cout << "Invalid response (-1) sent for OID=" << receivedOid << std::endl;
+            }
         }
     }
     snmpEngineSocket.closeSocket();

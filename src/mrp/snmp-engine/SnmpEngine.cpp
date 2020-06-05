@@ -1,10 +1,10 @@
 # include <iostream>
+# include <bits/stdc++.h> 
 # include "SnmpEngine.h"
 
 // The constructor of the SnmpEngine class establishes an SNMP session with the target SNMP device. 
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
-
     // Check if the target SNMP device is in the network by executing a ping test.
     std::cout << "Target device IP address: " << ip << std::endl;
     std::cout << "Target device NTCIP port: " << port << std::endl;
@@ -13,7 +13,7 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     int pingStatus = system(pingCommand.c_str());  
     if (-1 != pingStatus) 
     { 
-        bool ping_ret = WEXITSTATUS(status); 
+        bool ping_ret = WEXITSTATUS(pingStatus);
 
         if(ping_ret==0)
             std::cout << "\nSuccessfully verified the network connection with the target SNMP device!" << std::endl; 
@@ -58,109 +58,67 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     }
 }
 
-int SnmpEngine::getValue(std::string inputOid)
+int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid, int value)
 {
-    pdu = snmp_pdu_create(SNMP_MSG_GET);
-    anOID_len = MAX_OID_LEN;
-    int out[50]{};
-    int i =0;
-
-
     
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Transform the request type string to lowercase
+    std::transform(requestType.begin(), requestType.end(), requestType.begin(), ::tolower); 
+    
+    // Create an appropriate PDU based on the type of request:    
+    if (requestType == "get")
+        pdu = snmp_pdu_create(SNMP_MSG_GET);
+    else if (requestType == "set")
+        pdu = snmp_pdu_create(SNMP_MSG_SET);
 
+    // Read the input OID into the anOID variable:
+    read_objid(inputOid.c_str(), anOID, &anOID_len);
 
-if (!snmp_parse_oid(inputOid.c_str(), anOID, &anOID_len))
-    {
-        std::cout << "No such OID exists!" << std::endl;
-    }
+    // If this is a get request, add null variable, else add the appropriate value
+    if (requestType == "get")
+        snmp_add_null_var(pdu, anOID, anOID_len);
+    else if (requestType == "set")
+        snmp_add_var(pdu, anOID, anOID_len, 'i', (std::to_string(value)).c_str());
+    
+    // Now the request is ready. Send the request out:
+        status = snmp_synch_response(ss, pdu, &response);
 
-    snmp_add_null_var(pdu, anOID, anOID_len);
-
-
-    /*
-    * Send the Request out.
-    */
-    status = snmp_synch_response(ss, pdu, &response);
-
-    /*
-    * Process the response.
-    */
+    // Process the response
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-        /*
-        * SUCCESS: Print the result variables
-        */
-        for(vars = response->variables; vars; vars = vars->next_variable)
+        if (requestType == "get")
         {
-            int *aa{};
-            aa =(int *)vars->val.integer;
-            out[i++] = *aa;
-        }  
-      
+            int out[50]{};
+            int i{};
+            for(vars = response->variables; vars; vars = vars->next_variable)
+            {
+                int *aa{};
+                aa =(int *)vars->val.integer;
+                out[i++] = *aa;
+                value = out[0];
+            }  
+        }
     }
-    else
+    else // Identify the reason of failure
     {
+        value = -1;
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet");
+            fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(response->errstat));     
         else if (status == STAT_TIMEOUT)
-            fprintf(stderr, "Timeout: No response from the controller!\n");
+            fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
         else
-            snmp_sess_perror("Unknown SNMP Error!", ss);
+            snmp_sess_perror("Unknown SNMP Error!\n", ss);
     }
-    ////////////////////////////////////////////////////
-    // Free the response for further operations
-     if (response)
-         snmp_free_pdu(response);
-    ////////////////////////////////////////////////////
-
-
-        return out[0];
-}
-
-void SnmpEngine::setValue(std::string inputOid, int value)
-{
-    pdu = snmp_pdu_create(SNMP_MSG_SET);
-    anOID_len = MAX_OID_LEN;
     
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-if (!snmp_parse_oid(inputOid.c_str(), anOID, &anOID_len))
-    {
-        std::cout << "No such OID exists!" << std::endl;
-    }
-
-    snmp_add_var(pdu, anOID, anOID_len, 'i', (std::to_string(value)).c_str());
-
-
-    /*
-    * Send the Request out.
-    */
-    status = snmp_synch_response(ss, pdu, &response);
-
-    /*
-    * Process the response.
-    */
-    if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
-    {
-    }
-    else
-    {
-        if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet");
-        else if (status == STAT_TIMEOUT)
-            fprintf(stderr, "Timeout: No response from the controller!\n");
-        else
-            snmp_sess_perror("Unknown SNMP Error!", ss);
-    }
-    ////////////////////////////////////////////////////
     // Free the response for further operations
      if (response)
+     {
          snmp_free_pdu(response);
-    ////////////////////////////////////////////////////
-        
+         anOID_len = MAX_OID_LEN;
+     }
+    
+    return value;
 }
+
 
 SnmpEngine::~SnmpEngine()
 {
