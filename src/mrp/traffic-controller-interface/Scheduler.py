@@ -67,6 +67,8 @@ class Scheduler:
         # Ensure that the scheduler shuts down when the app is exited
         atexit.register(lambda: self.stopBackgroundScheduler())
 
+        self.scheduleReceiptTime = 0
+
       
 
     def processReceivedSchedule(self, scheduleJson:json):
@@ -85,7 +87,7 @@ class Scheduler:
 
         
         """
-        def clearOldSchedule(scheduleDataStructure:list):   
+        def clearOldSchedule(scheduleDataStructure:list, scheduleReceiptTime:float):   
             """
             clearOldSchedule function checks the received schedule for actions starting at time 0.0.
             If a hold, vehOmit, or pedOmit starts at time zero, this function checks if the corresponding action is already active in 
@@ -114,22 +116,22 @@ class Scheduler:
 
             # Clear Holds if its flag is True    
             if clearHolds == True:
-                self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)    
+                self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0, scheduleReceiptTime)    
             
             # Clear VehOmits if its flag is True    
             if clearVehOmit == True:
-                self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)    
+                self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0, scheduleReceiptTime)    
 
             # Clear PedOmits if its flag is True            
             if clearPedOmit == True:
-                self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)    
+                self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0, scheduleReceiptTime)    
 
             # Clear VehCalls
-            self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
+            self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0, scheduleReceiptTime)
             # Clear PedCalls
-            self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
+            self.signalController.setPhaseControl(command.CALL_PED_PHASES,0, scheduleReceiptTime)
             # Clear Forceoffs
-            self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)  
+            self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0, scheduleReceiptTime)  
         
         
         # Formulate group command:
@@ -188,6 +190,7 @@ class Scheduler:
     ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
         scheduleJson = scheduleJson["Schedule"]
+        self.scheduleReceiptTime = time.time()
 
         # Delete the commands with invalid combination of startTime and EndTime
         scheduleJson =  [command for command in scheduleJson if not 
@@ -200,14 +203,14 @@ class Scheduler:
                         ] 
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
-        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"]))
+        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandEndTime"]))
 
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
         print("Beginning to clear old schedule")
         # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
-        clearOldSchedule(scheduleDataStructure)    
+        clearOldSchedule(scheduleDataStructure, self.scheduleReceiptTime)    
 
         # Form action group
         index = 0
@@ -264,12 +267,12 @@ class Scheduler:
         # The BackgroundScheduler does not support the tasks that need to be done NOW, as for such tasks, there is no need of using a scheduler.
         # For such tasks, that is for commands with startTime = 0.0, a small delay needs to be added.
         if commandObject.startTime == 0.0:
-            commandObject.startTime = 0.001 
+            commandObject.startTime = 0.01 
 
         # If the phase control needs to be cleared (command.phases == 0), 
         # then add a single instance of a function call that clears the phase control.
         if commandObject.phases == 0: 
-            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases, self.scheduleReceiptTime], 
                     trigger = 'date', 
                     run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     id = str(self.commandId))
@@ -277,7 +280,7 @@ class Scheduler:
         
         else: # Then add a series of function calls starting at startTime, ending at endTime and separated by ntcipBackupTime.           
             
-            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases], 
+            self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases, self.scheduleReceiptTime], 
                     trigger = 'interval',
                     seconds = self.ntcipBackupTime_Sec-1, # ADD EXPLANATION -> NTCIP BACKUPTIME MUST NOT BE 1.
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
@@ -347,11 +350,11 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule1.json", "r")
+    scheduleFile = open("test/schedule3.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
 
     scheduler.processReceivedSchedule(scheduleJson)
 
     # Schedule a vehicle call on all phases after 10 seconds
     # scheduler.addCommandToSchedule(Command(255,10,10,6))
-    time.sleep(100)
+    time.sleep(300)

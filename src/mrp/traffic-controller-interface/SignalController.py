@@ -125,7 +125,7 @@ class SignalController:
         
         return value
 
-    def setPhaseControl(self, action:int, phases:int):
+    def setPhaseControl(self, action:int, phases:int, scheduleReceiptTime:float):
         """
         SignalController::setPhaseControl funtion is responsible for setting the NTCIP phase control
         in the signal controller. 
@@ -148,27 +148,27 @@ class SignalController:
         
         if action == command.CALL_VEH_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_VEHCALL, phases)
-            print("Veh-CALL " + str(phaseList) + " at time: " + str(time.time()))
+            print("Veh-CALL " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
         
         elif action == command.CALL_PED_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_PEDCALL, phases)
-            print("Ped-CALL " + str(phaseList) + " at time: " + str(time.time()))
+            print("Ped-CALL " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
 
         elif action == command.FORCEOFF_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_FORCEOFF, phases)
-            print("FORCEOFF " + str(phaseList) + " at time: " + str(time.time()))
+            print("FORCEOFF " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
 
         elif action == command.HOLD_VEH_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_HOLD, phases)
-            print("HOLD " + str(phaseList) + " at time: " + str(time.time()))
+            print("HOLD " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
 
         elif action == command.OMIT_VEH_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_VEH_OMIT, phases)
-            print("Veh-OMIT " + str(phaseList) + " at time: " + str(time.time()))
+            print("Veh-OMIT " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
 
         elif action == command.OMIT_PED_PHASES:
             self.snmp.setValue(StandardMib.PHASE_CONTROL_PED_OMIT, phases)
-            print("Ped-OMIT " + str(phaseList) + " at time: " + str(time.time()))                        
+            print("Ped-OMIT " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")                   
         else: 
             print("Invalid action requested")
     ######################## Definition End: phaseControl(self, action, phases) ########################
