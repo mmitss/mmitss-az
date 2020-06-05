@@ -12,12 +12,6 @@ MAINTAINER D Cunningham (pearson10m@gmail.com)
 # perform a sysupgrade and install some necessary packages 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential wget gdb ddd ssh libperl-dev libglpk-dev libssl-dev
 
-# Download and install pip managing python libraries
-RUN apt-get install python3-pip
-
-# Download and install required python libraries
-RUN pip3 install haversine && pip3 install apscheduler && pip3 install easysnmp && pip3 install sh
-
 # Add the shared libraries we need to run
 COPY ./3rdparty/net-snmp/lib/x86/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
 COPY ./3rdparty/glpk/lib/x86/libglpk.so.35.1.0 /usr/local/lib/mmitss/
