@@ -37,7 +37,7 @@ For installation and general help: https://apscheduler.readthedocs.io/en/v1.3.1/
 """
 
 import json
-import datetime
+import time, datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from Command import Command
@@ -316,17 +316,17 @@ class Scheduler:
     def clearAllNtcipCommandsFromSignalController(self):
         command = Command(0,0,0,0)
         # Clear VehCalls
-        self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0)
+        self.signalController.setPhaseControl(command.CALL_VEH_PHASES,0,time.time())
         # Clear PedCalls
-        self.signalController.setPhaseControl(command.CALL_PED_PHASES,0)
+        self.signalController.setPhaseControl(command.CALL_PED_PHASES,0,time.time())
         # Clear Forceoffs
-        self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0)
+        self.signalController.setPhaseControl(command.FORCEOFF_PHASES,0,time.time())
         # Clear Holds
-        self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0)
+        self.signalController.setPhaseControl(command.HOLD_VEH_PHASES,0,time.time())
         # Clear VehOmits
-        self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0)
+        self.signalController.setPhaseControl(command.OMIT_VEH_PHASES,0,time.time())
         # Clear PedOmits
-        self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0)
+        self.signalController.setPhaseControl(command.OMIT_PED_PHASES,0,time.time())
         
     def clearBackgroundScheduler(self, rescheduleTimingPlanUpdate:bool):
         """

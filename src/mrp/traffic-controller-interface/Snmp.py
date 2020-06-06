@@ -39,7 +39,7 @@ if __name__ == "__main__":
     print("Received in " + str(leadTime) + " Seconds" )
 
     time.sleep(0.1)
-    snmp.setValue("1.3.6.1.4.1.1206.4.2.1.3.3.1", 3)
+    snmp.setValue("1.3.6.1.4.1.1206.4.2.1.3.3.1", 300)
     time.sleep(0.1)
 
     requestTime = time.time()

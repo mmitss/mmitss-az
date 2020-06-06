@@ -128,14 +128,13 @@ class Ntcip1202v2Blob:
                 self.vehPhaseStatusGreens[i] = True
                 self.vehCurrState[i] = GREEN
         
-        # Identify FIRST current phase
-        for i in range(0,self.numVehPhases):
+        # Identify FIRST current phase (from ring 1)
+        for i in range(0,4): 
             if self.vehCurrState[i] == GREEN:
                 self.currentPhases[0] = (i+1)
-                break
         
-        # Identify SECOND current phase
-        for i in range(0,self.numVehPhases):
+        # Identify SECOND current phase (from ring 2)
+        for i in range(4,8):
             if self.vehCurrState[i] == GREEN:
                 self.currentPhases[1] = (i+1)
 

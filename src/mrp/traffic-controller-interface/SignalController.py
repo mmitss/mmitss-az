@@ -195,6 +195,8 @@ class SignalController:
             The function requires no arguments.
             """
             nextPhasesInt = int(self.snmp.getValue(StandardMib.PHASE_GROUP_STATUS_NEXT))
+            #_TODO_
+            print("Current next phases are" + str(nextPhasesInt))
             nextPhasesStr = str(f'{(nextPhasesInt):08b}')[::-1]
             
             nextPhasesList = [0,0]

@@ -767,13 +767,19 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
             if (temporaryNextPhase < 5)
             {
                 tcStatus.startingPhase1 = temporaryNextPhase;
-                tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
+                if((findSignalGroup->redClear - temporaryElaspedTime) < 0.0) //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
+                    tcStatus.initPhase1 = 0.5;
+                else
+                    tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
                 tcStatus.elapsedGreen1 = 0.0;
             }
             else if (temporaryNextPhase > 4)
             {
                 tcStatus.startingPhase2 = temporaryNextPhase;
-                tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
+                if((findSignalGroup->redClear - temporaryElaspedTime) < 0.0)
+                    tcStatus.initPhase1 = 0.5;
+                else    
+                    tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
                 tcStatus.elapsedGreen2 = 0.0;
             }
         }
