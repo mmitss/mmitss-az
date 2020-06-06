@@ -44,6 +44,7 @@ run_container () {
 run_all () {
 	# set -x
 
+    # for config dir in the command line arguments do
 	for config_dir in $@; do
 		cd $config_dir
 		config_dir=$PWD
@@ -62,6 +63,7 @@ run_all () {
 	# set +x
 }
 
+#if the number of command line arguments is less than 1
 if [ $# -lt 1 ]; then
 	echo "Usage: $0 <list_of_config_dirs>"
 	exit 1
