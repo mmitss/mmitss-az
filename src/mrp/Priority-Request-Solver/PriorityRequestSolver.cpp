@@ -74,7 +74,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     Json::Reader reader;
 
     priorityRequestList.clear();
-    if(bLogging == true)
+    if (bLogging == true)
         loggingPRSData(jsonString);
 
     reader.parse(jsonString.c_str(), jsonObject);
@@ -710,7 +710,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
     const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
 
-    if(bLogging==true)
+    if (bLogging == true)
         loggingTCIData(receivedJsonString);
     for (int i = 0; i < 2; i++)
     {
@@ -742,45 +742,51 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
 
         else if (temporaryPhaseState == "yellow")
         {
-            temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
-            if (temporaryNextPhase < 5)
+            for (int i = 0; i < 2; i++)
             {
-                tcStatus.startingPhase1 = temporaryNextPhase;
-                tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-                tcStatus.elapsedGreen1 = 0.0;
-            }
-            else if (temporaryNextPhase > 4)
-            {
-                tcStatus.startingPhase2 = temporaryNextPhase;
-                tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
-                tcStatus.elapsedGreen2 = 0.0;
+                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
+                if (temporaryNextPhase > 0 && temporaryNextPhase < 5)
+                {
+                    tcStatus.startingPhase1 = temporaryNextPhase;
+                    tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
+                    tcStatus.elapsedGreen1 = 0.0;
+                }
+                else if (temporaryNextPhase > 4 && temporaryNextPhase < 9)
+                {
+                    tcStatus.startingPhase2 = temporaryNextPhase;
+                    tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
+                    tcStatus.elapsedGreen2 = 0.0;
+                }
             }
         }
 
         else if (temporaryPhaseState == "red")
         {
-            temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
-            if (temporaryNextPhase < 5)
+            for (int i = 0; i < 2; i++)
             {
-                tcStatus.startingPhase1 = temporaryNextPhase;
-                if((findSignalGroup->redClear - temporaryElaspedTime) < 0.0) //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
-                    tcStatus.initPhase1 = 0.5;
-                else
-                    tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
-                tcStatus.elapsedGreen1 = 0.0;
-            }
-            else if (temporaryNextPhase > 4)
-            {
-                tcStatus.startingPhase2 = temporaryNextPhase;
-                if((findSignalGroup->redClear - temporaryElaspedTime) < 0.0)
-                    tcStatus.initPhase1 = 0.5;
-                else    
-                    tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
-                tcStatus.elapsedGreen2 = 0.0;
+                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
+                if (temporaryNextPhase > 0 && temporaryNextPhase < 5)
+                {
+                    tcStatus.startingPhase1 = temporaryNextPhase;
+                    if ((findSignalGroup->redClear - temporaryElaspedTime) < 0.0) //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
+                        tcStatus.initPhase1 = 0.5;
+                    else
+                        tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
+                    tcStatus.elapsedGreen1 = 0.0;
+                }
+                else if (temporaryNextPhase > 4 && temporaryNextPhase < 9)
+                {
+                    tcStatus.startingPhase2 = temporaryNextPhase;
+                    if ((findSignalGroup->redClear - temporaryElaspedTime) < 0.0)
+                        tcStatus.initPhase1 = 0.5;
+                    else
+                        tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
+                    tcStatus.elapsedGreen2 = 0.0;
+                }
             }
         }
     }
@@ -1757,7 +1763,6 @@ void PriorityRequestSolver::loggingPRSData(string jsonString)
 
     outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
     outputfile << jsonString << endl;
-
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
