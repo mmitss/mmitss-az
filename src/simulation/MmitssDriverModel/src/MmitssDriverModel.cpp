@@ -207,6 +207,9 @@ DRIVERMODEL_API  int  DriverModelSetValue(long   type,
 	case DRIVER_DATA_VEH_Y_COORDINATE:
 		veh_y = double_value;
 		return 1;
+	case DRIVER_DATA_VEH_TYPE:
+		veh_type = long_value;
+		return 1;
 	case DRIVER_DATA_VEH_Z_COORDINATE:
 	case DRIVER_DATA_VEH_REAR_X_COORDINATE:
 		veh_rear_x = double_value;
@@ -233,14 +236,9 @@ DRIVERMODEL_API  int  DriverModelSetValue(long   type,
         //End: Calculation of GPS co-ordinates. Now GPS coordinates are stored in g_long, g_lat, and g_elev.
 		return 1;
 	case DRIVER_DATA_VEH_REAR_Z_COORDINATE:
-	case DRIVER_DATA_VEH_TYPE:
-		veh_type = long_value;
-		return 1;
-	case DRIVER_DATA_VEH_COLOR:
-		vehicle_color = long_value; 
-        /*Begin: Creation of JSON object using available information. This activity is done uder this (vehicle colour) case because, 
-        all the required data is available before the execution of this case. This activity can be moved any where else, but it needs to be made sure that all the required data is 
-        available prior to creation of json object.*/
+		/*Begin: Creation of JSON object using available information. This activity is done uder this (vehicle colour) case because,
+		all the required data is available before the execution of this case. This activity can be moved any where else, but it needs to be made sure that all the required data is
+		available prior to creation of json object.*/
 		jsonObject["MsgType"] = "BSM";
 		jsonObject["BasicVehicle"]["temporaryID"] = veh_id;
 		jsonObject["BasicVehicle"]["secMark_Second"] = veh_secmark;
@@ -252,21 +250,22 @@ DRIVERMODEL_API  int  DriverModelSetValue(long   type,
 		jsonObject["BasicVehicle"]["type"] = veh_type;
 		jsonObject["BasicVehicle"]["size"]["length_cm"] = length_cm;
 		jsonObject["BasicVehicle"]["size"]["width_cm"] = width_cm;
-        //END: Creation of JSON object
+		//END: Creation of JSON object
 
-        jsonString = fastWriter.write(jsonObject); // Information from JSON object is now stored in a c++ styled string jsonString.
-        /* For once every second: (intTimestamp % 10 == 0)
-           For 10 times every second: (intTimestamp % 1 == 0)
-           in general, for 'n' times per second: (intTimestamp % (10/n) == 0) 
-        */		
-        if (intTimestamp % 5 == 0)// This sends msg twice every simulation second. 
-        {
-			WSAStartup(MAKEWORD(2, 2), &wsaData); // Startup WSA.
-			socketC = socket(AF_INET, SOCK_DGRAM, 0); // Create and open a udp socket
-			sendto(socketC, jsonString.c_str(), strlen(jsonString.c_str()), 0, (sockaddr*)&clientInfo, len); // Send message over created socket.
-			closesocket(socketC); // Close the socket.
-		}
+		jsonString = fastWriter.write(jsonObject); // Information from JSON object is now stored in a c++ styled string jsonString.
+		/* For once every second: (intTimestamp % 10 == 0)
+		   For 10 times every second: (intTimestamp % 1 == 0)
+		   in general, for 'n' times per second: (intTimestamp % (10/n) == 0)
+		*/
+	
+			
+		sendto(socketC, jsonString.c_str(), strlen(jsonString.c_str()), 0, (sockaddr*)&clientInfo, len); // Send message over created socket.
+		
+		
 		return 1;
+	case DRIVER_DATA_VEH_COLOR:
+		vehicle_color = long_value; 
+        return 1;
 	case DRIVER_DATA_VEH_CURRENT_LINK:
 		return 0; /* (To avoid getting sent lots of DRIVER_DATA_VEH_NEXT_LINKS messages) */
 				  /* Must return 1 if these messages are to be sent from VISSIM!         */
@@ -423,6 +422,10 @@ DRIVERMODEL_API  int  DriverModelExecuteCommand(long number)
         clientInfo.sin_family = AF_INET; // Fillup client information: family
 		clientInfo.sin_port = htons(clientComputerPort); // // Fillup client information: port
 		clientInfo.sin_addr.s_addr = inet_addr(clientComputerIP.c_str()); // // Fillup client information: IP_address
+
+		WSAStartup(MAKEWORD(2, 2), &wsaData); // Startup WSA.
+		socketC = socket(AF_INET, SOCK_DGRAM, 0); // Create and open a udp socket
+
     	return 1;
 	case DRIVER_COMMAND_CREATE_DRIVER:
 		return 1;
