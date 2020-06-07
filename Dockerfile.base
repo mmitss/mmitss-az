@@ -6,7 +6,7 @@
 #FROM ubuntu:18.04
 FROM alpine:3.12.0 AS mmitss-base
 
-MAINTAINER D Cunningham (pearson10m@gmail.com)
+MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 # perform a sysupgrade and install some necessary packages 
 #RUN apt-get update && apt-get upgrade -y && apt-get install -y build-essential wget gdb ddd ssh libperl-dev libglpk-dev libssl-dev
@@ -35,55 +35,3 @@ WORKDIR /mmitss
 # Environment variables
 ENV PATH $PATH:/mmitss
 
-# Expose ports to communicate with outside world
-# For SRM
-EXPOSE 4444/udp
-
-# For BSM
-EXPOSE 3333/udp
-
-# For SPaT/MAP
-EXPOSE 15030/udp
-
-# For ART
-EXPOSE 15040/udp
-
-# For VISSIM
-EXPOSE 30000/udp
-EXPOSE 20000/udp
-
-# For Controller
-EXPOSE 501/udp
-
-# MMITSS Phase-3 Applications
-
-# Transceivers
-EXPOSE 10001/udp
-EXPOSE 10002/udp
-EXPOSE 10003/udp
-EXPOSE 10004/udp
-EXPOSE 10005/udp
-EXPOSE 10006/udp
-
-# Applications
-EXPOSE 20001/udp
-EXPOSE 20002/udp
-EXPOSE 20003/udp
-EXPOSE 20004/udp
-EXPOSE 20005/udp
-EXPOSE 20006/udp
-EXPOSE 20007/udp
-EXPOSE 20008/udp
-EXPOSE 20009/udp
-EXPOSE 20010/udp
-EXPOSE 20011/udp
-
-# Data Collectors
-EXPOSE 30001/udp
-
-# Additional ports
-EXPOSE 50003/udp
-
-# Requirement specific ports
-EXPOSE 6053/udp
-EXPOSE 1516/udp

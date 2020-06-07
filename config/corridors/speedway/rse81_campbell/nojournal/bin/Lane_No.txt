@@ -1,0 +1,2 @@
+#This is the number of lanes of each phase at Speedway/Mountain which determines discharging rate. Sequence: phase 1-8 
+1 3 2 3 1 3 2 3

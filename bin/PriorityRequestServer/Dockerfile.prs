@@ -1,9 +1,8 @@
----------------------------------------------------------------------------#
-#    Dockerfile to build an image to run MMITSS applications natively         #
-#    The image can be used to spawn containers that can simulate each         #
-#         RSU that needs to be present in the simulated network               #
 #-----------------------------------------------------------------------------#
-
+#    Dockerfile to build an image for PriorityRequestServer                   #
+#-----------------------------------------------------------------------------#
 FROM mmitss-base:latest
+
+MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY M_PriorityRequestServer /mmitss
