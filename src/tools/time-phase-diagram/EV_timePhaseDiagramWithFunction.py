@@ -5,7 +5,7 @@ from matplotlib.collections import PatchCollection
 
 #Get the stating phase information
 def getStartingPhases():
-    with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+    with open('nojournal/bin/Results.txt') as f:
         first_line = f.readline()
     return first_line
 
@@ -35,7 +35,7 @@ def phaseGroupInRing(SP, ring_phases, phasesInRing):
 
 
 def getInitToPhasesAndElaspedGreenTime():
-    with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+    with open('nojournal/bin/Results.txt') as f:
 
         for i, line in enumerate(f):
             if i == 1:
@@ -45,7 +45,7 @@ def getInitToPhasesAndElaspedGreenTime():
 #Find the phase duration for all the planned phases.
 def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
     if(CP == 'Left'):
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 2:
                     break
@@ -62,7 +62,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
                 left_r2_k1_Phase_Times = left_r2_k1_Phase_Times[SP-5:]
 
         # For cycle2 Left CP
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 3:
                     break
@@ -77,7 +77,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
             left_r2_k1_Phase_Times.extend(left_r2_k2_Phase_Times)
 
         # For cycle3 Left CP
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 4:
                     break
@@ -98,7 +98,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
 
     # # # For cycle1 Right CP
     if(CP == 'Right'):
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 5:
                     break
@@ -117,7 +117,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
 
 
         # For cycle2 Right CP
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 6:
                     break
@@ -132,7 +132,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
             right_r2_k1_Phase_Times.extend(right_r2_k2_Phase_Times)
 
         # For cycle3 Right CP
-        with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+        with open('nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 7:
                     break
@@ -167,7 +167,7 @@ def getCummulativePhaseTimes(ring_Phase_Times):
 
 def getPriorityRequest():
     eta = []
-    with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+    with open('nojournal/bin/Results.txt') as f:
         for i, line in enumerate(f):
             if i == 14:
                 break
@@ -177,7 +177,7 @@ def getPriorityRequest():
     noOfReq = int(noOfReq)
     print("No of Request", noOfReq)
     reqInfoLineNo = 15+noOfReq
-    with open('../../mrp/Priority-Request-Solver/dilemma-zone/Results.txt') as f:
+    with open('nojournal/bin/Results.txt') as f:
         for i, line in enumerate(f):
             if i<15:
                 continue

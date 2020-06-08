@@ -85,7 +85,7 @@ public:
   void createDilemmaZoneRequestList();
   void deleteSplitPhasesFromPriorityRequestList();
   void GLPKSolver();
-  void readCurrentSignalTimingPlan(string jsonString);
+  void getCurrentSignalTimingPlan(string jsonString);
   void generateModFile();
   void generateEVModFile();
   void setOptimizationInput();
@@ -96,6 +96,7 @@ public:
   void loggingData(string jsonString);
   void loggingTCIData(string jsonString);
   void loggingPRSData(string jsonString);
+  void loggingClearRequestData(string jsonString);
   void printSignalPlan();
   string getScheduleforTCI();
   string getClearCommandScheduleforTCI();

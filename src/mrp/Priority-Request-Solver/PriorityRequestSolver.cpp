@@ -74,8 +74,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     Json::Reader reader;
 
     priorityRequestList.clear();
-    if (bLogging == true)
-        loggingPRSData(jsonString);
+    // loggingPRSData(jsonString);
 
     reader.parse(jsonString.c_str(), jsonObject);
     noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
@@ -487,7 +486,7 @@ void PriorityRequestSolver::getRequestedSignalGroup()
 }
 /*
     - Method of solving the request in the priority request list  based on mod and dat files
-    - Solution will be written in the Results.txt file
+    - Solution will be written in the /nojournal/bin/Results.txt file
 */
 // void PriorityRequestSolver::GLPKSolver(SolverDataManager solverDataManager)
 void PriorityRequestSolver::GLPKSolver()
@@ -495,14 +494,14 @@ void PriorityRequestSolver::GLPKSolver()
     double startOfSolve{};
     double endOfSolve{};
 
-    char modFile[128] = "NewModel.mod";
+    char modFile[128] = "/nojournal/bin/NewModel.mod";
     glp_prob *mip;
     glp_tran *tran;
     int ret{};
     int success = 1;
     if (bEVStatus == true)
     {
-        strcpy(modFile, "NewModel_EV.mod");
+        strcpy(modFile, "/nojournal/bin/NewModel_EV.mod");
     }
     mip = glp_create_prob();
     tran = glp_mpl_alloc_wksp();
@@ -515,7 +514,7 @@ void PriorityRequestSolver::GLPKSolver()
         goto skip;
     }
 
-    ret = glp_mpl_read_data(tran, "NewModelData.dat");
+    ret = glp_mpl_read_data(tran, "/nojournal/bin/NewModelData.dat");
 
     if (ret != 0)
     {
@@ -710,8 +709,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
     const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
 
-    if (bLogging == true)
-        loggingTCIData(receivedJsonString);
+    // loggingTCIData(receivedJsonString);
     for (int i = 0; i < 2; i++)
     {
         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
@@ -742,9 +740,9 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
 
         else if (temporaryPhaseState == "yellow")
         {
-            for (int i = 0; i < 2; i++)
+            for (int k = 0; k < 2; k++)
             {
-                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
+                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][k]).asInt();
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
                 if (temporaryNextPhase > 0 && temporaryNextPhase < 5)
@@ -764,9 +762,9 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
 
         else if (temporaryPhaseState == "red")
         {
-            for (int i = 0; i < 2; i++)
+            for (int k = 0; k < 2; k++)
             {
-                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][i]).asInt();
+                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][k]).asInt();
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
                 if (temporaryNextPhase > 0 && temporaryNextPhase < 5)
@@ -975,16 +973,14 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
-void PriorityRequestSolver::readCurrentSignalTimingPlan(string jsonString)
+void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
 
     Json::Value jsonObject;
     Json::Reader reader;
-    // std::ifstream signalPlanJson("signalPlan.json");
-    // std::string configJsonString((std::istreambuf_iterator<char>(signalPlanJson)), std::istreambuf_iterator<char>());
-    // reader.parse(configJsonString.c_str(), jsonObject);
-    loggingTCIData(jsonString);
+    
+    //loggingTCIData(jsonString);
     trafficSignalPlan.clear();
     PhaseNumber.clear();
     PedWalk.clear();
@@ -1099,7 +1095,7 @@ void PriorityRequestSolver::printSignalPlan()
 void PriorityRequestSolver::generateModFile()
 {
     ofstream FileMod;
-    FileMod.open("NewModel.mod", ios::out);
+    FileMod.open("/nojournal/bin/NewModel.mod", ios::out);
     // =================Defining the sets ======================
 
     if (P11.size() == 1)
@@ -1251,61 +1247,61 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
-    //=============================Writing the Optimal Output into the Results.txt file ==================================
+    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
     FileMod << "  \n";
     FileMod << "solve;  \n";
     FileMod << "  \n";
-    FileMod << "printf \" \" > \"Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"Results.txt\";  \n";
+    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"Results.txt\";  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"Results.txt\"; \n";
+    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
 
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"Results.txt\"; \n";
-    FileMod << "printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; \n";
+    FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();
@@ -1319,7 +1315,7 @@ void PriorityRequestSolver::generateEVModFile()
     int phasePosition{};
     ofstream FileMod;
 
-    FileMod.open("NewModel_EV.mod", ios::out);
+    FileMod.open("/nojournal/bin/NewModel_EV.mod", ios::out);
     // =================Defining the sets ======================
 
     if (EV_P11.size() == 1)
@@ -1571,61 +1567,61 @@ void PriorityRequestSolver::generateEVModFile()
 
     FileMod << "  minimize delay: PriorityDelay + DilemmaZoneDelay;     \n";
 
-    //=============================Writing the Optimal Output into the Results.txt file ==================================
+    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
     FileMod << "  \n";
     FileMod << "solve;  \n";
     FileMod << "  \n";
-    FileMod << "printf \" \" > \"Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"Results.txt\";  \n";
+    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"Results.txt\";  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"Results.txt\"; \n";
+    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
 
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"Results.txt\"; \n";
-    FileMod << "printf \" \\n \">>\"Results.txt\";\n";
+    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; \n";
+    FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();
@@ -1710,28 +1706,15 @@ void PriorityRequestSolver::loggingData(string jsonString)
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nCurrent Dat File at time : " << timenow << endl;
-        infile.open("NewModelData.dat");
+        infile.open("/nojournal/bin/NewModelData.dat");
         for (string line; getline(infile, line);)
         {
             outputfile << line << endl;
         }
         infile.close();
 
-        // outputfile << "\nCurrent Mod File at time : " << timenow << endl;
-        // if (bEVStatus == true)
-        //     infile.open("NewModel_EV.mod");
-
-        // else
-        //     infile.open("NewModel.mod");
-
-        // for (string line; getline(infile, line);)
-        // {
-        //     outputfile << line << endl;
-        // }
-        // infile.close();
-
         outputfile << "\nCurrent Results File at time : " << timenow << endl;
-        infile.open("Results.txt");
+        infile.open("/nojournal/bin/Results.txt");
         for (std::string line; getline(infile, line);)
         {
             outputfile << line << endl;
@@ -1747,22 +1730,44 @@ void PriorityRequestSolver::loggingData(string jsonString)
 
 void PriorityRequestSolver::loggingTCIData(string jsonString)
 {
-    ofstream outputfile;
-    outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    if (bLogging == true)
+    {
+        ofstream outputfile;
+        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    outputfile << "\nFollowing data is received from TCI at time " << timenow << endl;
-    outputfile << jsonString << endl;
+        outputfile << "\nFollowing data is received from TCI at time " << timenow << endl;
+        outputfile << jsonString << endl;
+        outputfile.close();
+    }
 }
 
 void PriorityRequestSolver::loggingPRSData(string jsonString)
 {
-    ofstream outputfile;
-    outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    if (bLogging == true)
+    {
+        ofstream outputfile;
+        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
-    outputfile << jsonString << endl;
+        outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
+        outputfile << jsonString << endl;
+        outputfile.close();
+    }
+}
+
+void PriorityRequestSolver::loggingClearRequestData(string jsonString)
+{
+    if (bLogging == true)
+    {
+        ofstream outputfile;
+        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        outputfile << "\nFollowing Clear Request is sent to TCI at time " << timenow << endl;
+        outputfile << jsonString << endl;
+        outputfile.close();
+    }
+
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()

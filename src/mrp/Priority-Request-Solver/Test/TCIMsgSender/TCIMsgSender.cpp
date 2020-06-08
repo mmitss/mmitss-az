@@ -14,6 +14,7 @@ enum msgType
 };
 
 int getMessageType(std::string jsonString);
+std::string getJsonString(std::string fileName);
 int main()
 {
     Json::Value jsonObject_config;
@@ -31,6 +32,9 @@ int main()
     int msgType{};
     std::string sendingJsonString{};
 
+    sendingJsonString = getJsonString("signalPlan.json");
+    tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo, sendingJsonString);
+    std::cout << "Sent Signal Plan to Solver " << sendingJsonString << std::endl;
     while (true)
     {
         tciMsgSenderSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -40,28 +44,21 @@ int main()
 
         if (msgType == static_cast<int>(msgType::signalPlanRequest))
         {
-            std::ifstream jsonfile("signalPlan.json");
-            std::string json_str((std::istreambuf_iterator<char>(jsonfile)),
-                                 std::istreambuf_iterator<char>());
-
-            //std::cout << "JsonString: " << json_str << std::endl;
-            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo, json_str);
+            sendingJsonString = getJsonString("signalPlan.json");
+        
+            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo,  sendingJsonString);
             std::cout << "Sent Signal Plan to Solver " << std::endl;
         }
 
         else if (msgType == static_cast<int>(msgType::currentPhaseRequest))
         {
-            std::ifstream jsonfile("currPhase.json");
-            std::string json_str((std::istreambuf_iterator<char>(jsonfile)),
-                                 std::istreambuf_iterator<char>());
-
-            //std::cout << "JsonString: " << json_str << std::endl;
-            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolver_To_TCI_Interface_PortNo, json_str);
+            sendingJsonString = getJsonString("currPhase.json");
+            
+            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolver_To_TCI_Interface_PortNo, sendingJsonString);
             std::cout << "Sent Current Phase Status to Solver" << std::endl;
         }
         else if (msgType == static_cast<int>(msgType::schedule))
             std::cout << "Received Schedule" << std::endl;
-        
     }
 }
 
@@ -86,4 +83,13 @@ int getMessageType(std::string jsonString)
     //std::cout << "Received Message" << jsonString << std::endl;
 
     return messageType;
+}
+
+std::string getJsonString(std::string fileName)
+{
+    std::ifstream jsonfile(fileName);
+    std::string json_str((std::istreambuf_iterator<char>(jsonfile)),
+                         std::istreambuf_iterator<char>());
+
+    return json_str;
 }

@@ -106,7 +106,7 @@ void ScheduleManager::readOptimalSignalPlan()
     vector<double> leftCriticalPoints_GreenTime;
     vector<double> rightCriticalPoints_GreenTime;
 
-    infile.open("Results.txt");
+    infile.open("/nojournal/bin/Results.txt");
     // getline(infile, lineread);
 
     if (infile.fail())
@@ -580,8 +580,8 @@ string ScheduleManager::createScheduleJsonString()
     string scheduleJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    Json::StyledStreamWriter styledStreamWriter;
-    ofstream outputter("schedule.json");
+    // Json::StyledStreamWriter styledStreamWriter;
+    // ofstream outputter("schedule.json");
     jsonObject["MsgType"] = "Schedule";
     // jsonObject["Schedule"]["Type"] = "clear";
     // jsonObject["Schedule"]["CommandType"] = "Event";
@@ -618,7 +618,7 @@ string ScheduleManager::createScheduleJsonString()
     }
 
     scheduleJsonString = fastWriter.write(jsonObject);
-    styledStreamWriter.write(outputter, jsonObject);
+    // styledStreamWriter.write(outputter, jsonObject);
 
     return scheduleJsonString;
 }

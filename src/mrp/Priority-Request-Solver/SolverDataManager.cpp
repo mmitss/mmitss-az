@@ -146,7 +146,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     double ETA_Range{};
     
     ofstream fs;
-    fs.open("NewModelData.dat", ios::out);
+    fs.open("/nojournal/bin/NewModelData.dat", ios::out);
     fs << "data;\n";
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
@@ -359,10 +359,12 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     if (!priorityRequestList.empty())
     {
-        if (bEVStatus == true)
-            ETA_Range = 4.0;
-        else
-            ETA_Range = 2.0;
+        // if (bEVStatus == true)
+        //     ETA_Range = 4.0;
+        // else
+        //     ETA_Range = 2.0;
+
+        ETA_Range = 4.0;
 
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
