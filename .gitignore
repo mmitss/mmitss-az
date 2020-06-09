@@ -9,6 +9,11 @@ docker/applictions/M_*
 
 .idea
 
+*.code-workspace
+
+/bin/*
+
+
 .vscode
 
 cmake*

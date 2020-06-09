@@ -1,5 +1,0 @@
-IntersectionID	0
-No_Approach	0
-No_Phase	8
-No_Ingress	0
-end_file

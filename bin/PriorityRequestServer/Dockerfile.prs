@@ -1,8 +1,0 @@
-#-----------------------------------------------------------------------------#
-#    Dockerfile to build an image for PriorityRequestServer                   #
-#-----------------------------------------------------------------------------#
-FROM mmitss-base:latest
-
-MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
-
-COPY M_PriorityRequestServer /mmitss
