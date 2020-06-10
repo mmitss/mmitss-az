@@ -163,7 +163,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_TrafficControllerInterface  ../../../bin/TrafficControlInterface
+    mv M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"

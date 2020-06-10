@@ -11,7 +11,7 @@ services:
             target: /nojournal
         networks:
             mmitss_br:
-                ipv4_address: 10.12.6.17
+                ipv4_address: 10.12.6.18
 
     dedication:
         build:
@@ -23,7 +23,7 @@ services:
             target: /nojournal
         networks:    
             mmitss_br:
-                ipv4_address: 10.12.6.5
+                ipv4_address: 10.12.6.6
 
     gavilan:
         build:
@@ -35,7 +35,7 @@ services:
             target: /nojournal
         networks:    
             mmitss_br:
-                ipv4_address: 10.12.6.2
+                ipv4_address: 10.12.6.3
 
     hastings:
         build:
@@ -47,7 +47,7 @@ services:
             target: /nojournal
         networks:    
             mmitss_br:
-                ipv4_address: 10.12.6.11
+                ipv4_address: 10.12.6.12
 
         
     memorial:
@@ -60,7 +60,7 @@ services:
             target: /nojournal
         networks:    
             mmitss_br:
-                ipv4_address: 10.12.6.14
+                ipv4_address: 10.12.6.15
         
     meridian:
         build:
@@ -72,7 +72,7 @@ services:
             target: /nojournal
         networks:    
             mmitss_br:
-                ipv4_address: 10.12.6.8
+                ipv4_address: 10.12.6.9
 
 networks:
     mmitss_br:
