@@ -1,0 +1,863 @@
+Controller IP Address is:	10.12.6.5
+Controller Port is:	501
+Current RSU ID daisy_dedication
+/nojournal/bin/ConfigInfo_Dedication.txt
+Current timing plan is:	32605
+Phase_Num 4Phase_Seq 0 2 0 4 5 6 0 0Gmin	0	15	0	8	4	15	0	0Yellow	0	4	0	3	3	4	0	0Red	0	2	0	4.2	1	2	0	0Gmax	0	55	0	35	8	47	0	0PedWalk	0	0	0	7	0	7	0	0PedClr	0	0	0	33	0	20	0	0 Cannot connect to RSU!!!!!  At time: 1591742114.32 
+ Cannot connect to RSU!!!!!  At time: 1591742120.73 
+ Cannot connect to RSU!!!!!  At time: 1591742127.14 
+ Cannot connect to RSU!!!!!  At time: 1591742133.55 
+ Cannot connect to RSU!!!!!  At time: 1591742139.96 
+ Cannot connect to RSU!!!!!  At time: 1591742146.37 
+ Cannot connect to RSU!!!!!  At time: 1591742152.77 
+ Cannot connect to RSU!!!!!  At time: 1591742159.18 
+ Cannot connect to RSU!!!!!  At time: 1591742165.59 
+ Cannot connect to RSU!!!!!  At time: 1591742172.00 
+ Cannot connect to RSU!!!!!  At time: 1591742178.41 
+ Cannot connect to RSU!!!!!  At time: 1591742184.81 
+ Cannot connect to RSU!!!!!  At time: 1591742191.22 
+ Cannot connect to RSU!!!!!  At time: 1591742197.63 
+ Cannot connect to RSU!!!!!  At time: 1591742204.04 
+ Cannot connect to RSU!!!!!  At time: 1591742210.45 
+ Cannot connect to RSU!!!!!  At time: 1591742216.85 
+ Cannot connect to RSU!!!!!  At time: 1591742223.26 
+ Cannot connect to RSU!!!!!  At time: 1591742229.67 
+ Cannot connect to RSU!!!!!  At time: 1591742236.08 
+ Cannot connect to RSU!!!!!  At time: 1591742242.48 
+ Cannot connect to RSU!!!!!  At time: 1591742248.89 
+ Cannot connect to RSU!!!!!  At time: 1591742255.30 
+ Cannot connect to RSU!!!!!  At time: 1591742261.71 
+ Cannot connect to RSU!!!!!  At time: 1591742268.12 
+ Cannot connect to RSU!!!!!  At time: 1591742274.53 
+ Cannot connect to RSU!!!!!  At time: 1591742280.93 
+ Cannot connect to RSU!!!!!  At time: 1591742287.34 
+ Cannot connect to RSU!!!!!  At time: 1591742293.75 
+ Cannot connect to RSU!!!!!  At time: 1591742300.16 
+ Cannot connect to RSU!!!!!  At time: 1591742306.57 
+ Cannot connect to RSU!!!!!  At time: 1591742312.97 
+ Cannot connect to RSU!!!!!  At time: 1591742319.38 
+ Cannot connect to RSU!!!!!  At time: 1591742325.79 
+ Cannot connect to RSU!!!!!  At time: 1591742332.20 
+ Cannot connect to RSU!!!!!  At time: 1591742338.61 
+ Cannot connect to RSU!!!!!  At time: 1591742345.02 
+ Cannot connect to RSU!!!!!  At time: 1591742351.42 
+ Cannot connect to RSU!!!!!  At time: 1591742357.83 
+ Cannot connect to RSU!!!!!  At time: 1591742364.24 
+ Cannot connect to RSU!!!!!  At time: 1591742370.65 
+ Cannot connect to RSU!!!!!  At time: 1591742377.06 
+ Cannot connect to RSU!!!!!  At time: 1591742383.46 
+ Cannot connect to RSU!!!!!  At time: 1591742389.87 
+ Cannot connect to RSU!!!!!  At time: 1591742396.28 
+ Cannot connect to RSU!!!!!  At time: 1591742402.69 
+ Cannot connect to RSU!!!!!  At time: 1591742409.09 
+ Cannot connect to RSU!!!!!  At time: 1591742415.50 
+ Cannot connect to RSU!!!!!  At time: 1591742421.91 
+ Cannot connect to RSU!!!!!  At time: 1591742428.32 
+ Cannot connect to RSU!!!!!  At time: 1591742434.73 
+ Cannot connect to RSU!!!!!  At time: 1591742441.13 
+ Cannot connect to RSU!!!!!  At time: 1591742447.54 
+ Cannot connect to RSU!!!!!  At time: 1591742453.95 
+ Cannot connect to RSU!!!!!  At time: 1591742460.36 
+ Cannot connect to RSU!!!!!  At time: 1591742466.76 
+ Cannot connect to RSU!!!!!  At time: 1591742473.17 
+ Cannot connect to RSU!!!!!  At time: 1591742479.58 
+ Cannot connect to RSU!!!!!  At time: 1591742485.99 
+ Cannot connect to RSU!!!!!  At time: 1591742492.40 
+ Cannot connect to RSU!!!!!  At time: 1591742498.80 
+ Cannot connect to RSU!!!!!  At time: 1591742505.21 
+ Cannot connect to RSU!!!!!  At time: 1591742511.62 
+ Cannot connect to RSU!!!!!  At time: 1591742518.03 
+ Cannot connect to RSU!!!!!  At time: 1591742524.44 
+ Cannot connect to RSU!!!!!  At time: 1591742530.85 
+ Cannot connect to RSU!!!!!  At time: 1591742537.26 
+ Cannot connect to RSU!!!!!  At time: 1591742543.66 
+ Cannot connect to RSU!!!!!  At time: 1591742550.07 
+ Cannot connect to RSU!!!!!  At time: 1591742556.48 
+ Cannot connect to RSU!!!!!  At time: 1591742562.89 
+ Cannot connect to RSU!!!!!  At time: 1591742569.30 
+ Cannot connect to RSU!!!!!  At time: 1591742575.70 
+ Cannot connect to RSU!!!!!  At time: 1591742582.11 
+ Cannot connect to RSU!!!!!  At time: 1591742588.51 
+ Cannot connect to RSU!!!!!  At time: 1591742594.92 
+ Cannot connect to RSU!!!!!  At time: 1591742601.33 
+ Cannot connect to RSU!!!!!  At time: 1591742607.74 
+ Cannot connect to RSU!!!!!  At time: 1591742614.14 
+ Cannot connect to RSU!!!!!  At time: 1591742620.55 
+ Cannot connect to RSU!!!!!  At time: 1591742626.96 
+ Cannot connect to RSU!!!!!  At time: 1591742633.37 
+ Cannot connect to RSU!!!!!  At time: 1591742639.78 
+ Cannot connect to RSU!!!!!  At time: 1591742646.18 
+ Cannot connect to RSU!!!!!  At time: 1591742652.59 
+ Cannot connect to RSU!!!!!  At time: 1591742659.00 
+ Cannot connect to RSU!!!!!  At time: 1591742665.41 
+ Cannot connect to RSU!!!!!  At time: 1591742671.82 
+ Cannot connect to RSU!!!!!  At time: 1591742678.23 
+ Cannot connect to RSU!!!!!  At time: 1591742684.64 
+ Cannot connect to RSU!!!!!  At time: 1591742691.05 
+ Cannot connect to RSU!!!!!  At time: 1591742697.46 
+ Cannot connect to RSU!!!!!  At time: 1591742703.86 
+ Cannot connect to RSU!!!!!  At time: 1591742710.27 
+ Cannot connect to RSU!!!!!  At time: 1591742716.68 
+ Cannot connect to RSU!!!!!  At time: 1591742723.09 
+ Cannot connect to RSU!!!!!  At time: 1591742729.49 
+ Cannot connect to RSU!!!!!  At time: 1591742735.90 
+ Cannot connect to RSU!!!!!  At time: 1591742742.31 
+ Cannot connect to RSU!!!!!  At time: 1591742748.72 
+ Cannot connect to RSU!!!!!  At time: 1591742755.13 
+ Cannot connect to RSU!!!!!  At time: 1591742761.54 
+ Cannot connect to RSU!!!!!  At time: 1591742767.94 
+ Cannot connect to RSU!!!!!  At time: 1591742774.35 
+ Cannot connect to RSU!!!!!  At time: 1591742780.76 
+ Cannot connect to RSU!!!!!  At time: 1591742787.17 
+ Cannot connect to RSU!!!!!  At time: 1591742793.58 
+ Cannot connect to RSU!!!!!  At time: 1591742799.99 
+ Cannot connect to RSU!!!!!  At time: 1591742806.40 
+ Cannot connect to RSU!!!!!  At time: 1591742812.80 
+ Cannot connect to RSU!!!!!  At time: 1591742819.21 
+ Cannot connect to RSU!!!!!  At time: 1591742825.62 
+ Cannot connect to RSU!!!!!  At time: 1591742832.03 
+ Cannot connect to RSU!!!!!  At time: 1591742838.44 
+ Cannot connect to RSU!!!!!  At time: 1591742844.84 
+ Cannot connect to RSU!!!!!  At time: 1591742851.25 
+ Cannot connect to RSU!!!!!  At time: 1591742857.66 
+ Cannot connect to RSU!!!!!  At time: 1591742864.07 
+ Cannot connect to RSU!!!!!  At time: 1591742870.48 
+ Cannot connect to RSU!!!!!  At time: 1591742875.88 
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0
+Num_req -1 0

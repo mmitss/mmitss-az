@@ -11,7 +11,7 @@ docker/applictions/M_*
 
 *.code-workspace
 
-/bin/*
+/bin/M_*
 
 
 .vscode

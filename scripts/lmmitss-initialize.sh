@@ -56,13 +56,13 @@ sleep 1s
 echo "Add the shared libraries we need to run"
 
 if [ "$arch" = "x86" ]; then
-sudo cp ./3rdparty/net-snmp/lib/x86/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/glpk/lib/x86/libglpk.so.35.1.0 /usr/local/lib/mmitss/
-sudo cp ./lib/x86/libmmitss-common.so /usr/local/lib/mmitss/
-sudo cp ./3rdparty/mapengine/lib/x86/liblocAware.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/asn1j2735/lib/x86/libasn.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/asn1j2735/lib/x86/libdsrc.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./lib/mmitss.conf /etc/ld.so.conf.d/
+sudo cp ../3rdparty/net-snmp/lib/x86/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/glpk/lib/x86/libglpk.so.35.1.0 /usr/local/lib/mmitss/
+sudo cp ../lib/x86/libmmitss-common.so /usr/local/lib/mmitss/
+sudo cp ../3rdparty/mapengine/lib/x86/liblocAware.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/asn1j2735/lib/x86/libasn.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/asn1j2735/lib/x86/libdsrc.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../lib/mmitss.conf /etc/ld.so.conf.d/
 echo "Create the symbolic links for the copied libraries."
 sudo ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35
 sudo ln -s /usr/local/lib/mmitss/libglpk.so.35.1.0 /usr/local/lib/mmitss/libglpk.so.35
@@ -72,14 +72,14 @@ sudo ln -s /usr/local/lib/mmitss/libdsrc.so.1.0 /usr/local/lib/mmitss/libdsrc.so
 fi
 
 if [ "$arch" = "arm" ]; then
-sudo cp ./3rdparty/net-snmp/lib/arm/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/glpk/lib/arm/libglpk.so.40.3.0 /usr/local/lib/mmitss/
-sudo cp ./lib/arm/libmmitss-common.so /usr/local/lib/mmitss/
-sudo cp ./3rdparty/mapengine/lib/arm/liblocAware.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/asn1j2735/lib/arm/libasn.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
-sudo cp ./lib/mmitss.conf /etc/ld.so.conf.d/
-sudo cp ./3rdparty/openssl/* /usr/local/lib
+sudo cp ../3rdparty/net-snmp/lib/arm/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/glpk/lib/arm/libglpk.so.40.3.0 /usr/local/lib/mmitss/
+sudo cp ../lib/arm/libmmitss-common.so /usr/local/lib/mmitss/
+sudo cp ../3rdparty/mapengine/lib/arm/liblocAware.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/asn1j2735/lib/arm/libasn.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
+sudo cp ../lib/mmitss.conf /etc/ld.so.conf.d/
+sudo cp ../3rdparty/openssl/* /usr/local/lib
 
 
 echo "Create the symbolic links for the copied libraries."

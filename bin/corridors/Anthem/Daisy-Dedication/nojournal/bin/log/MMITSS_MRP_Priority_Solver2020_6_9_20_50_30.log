@@ -1,0 +1,6 @@
+Controller IP Address is:	10.12.6.5
+Controller Port is:	501
+Current RSU ID daisy_dedication
+/nojournal/bin/ConfigInfo_Dedication.txt
+Current timing plan is:	32508
+Phase_Num 4Phase_Seq 0 2 0 4 5 6 0 0Gmin	0	15	0	8	4	15	0	0Yellow	0	4	0	3	3	4	0	0Red	0	2	0	4.2	1	2	0	0Gmax	0	55	0	35	8	47	0	0PedWalk	0	0	0	7	0	7	0	0PedClr	0	0	0	33	0	20	0	0

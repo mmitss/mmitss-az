@@ -1,0 +1,60 @@
+Code usage is for  simulation with no coordinated intersection 
+/nojournal/bin/log/MMITSS_MRP_TrafficControllerInterface_2018_10_28_17_3_38.log
+10.254.56.50
+501
+/nojournal/bin/ConfigInfo_campbell.txt
+Timeout: No response from 10.254.56.50:501.
+Timeout: No response from 10.254.56.50:501.
+Timeout: No response from 10.254.56.50:501.
+In Ring 1 The MissPhase is: 0  MP_Relate : 0  Ring -1
+In Ring 2 The MissPhase is: 0  MP_Relate : 0  Ring -1
+Ring 1 number are: 4  Details: 0	1	2	3	
+Ring 2 number are: 4  Details: 0	1	2	3	
+Yellow:  3	3	3	3	3	3	3	3	
+Red:     1	1	1	1	1	1	1	1	
+Gmin:    5	5	5	5	5	5	5	5	
+Gmax:    35	35	35	35	35	35	35	35	
+Timeout: No response from 10.254.56.50:501.
+ERROR POLL PHASE! Multiple color for this phase 1
+ERROR POLL PHASE! Multiple color for this phase 2
+ERROR POLL PHASE! Multiple color for this phase 3
+ERROR POLL PHASE! Multiple color for this phase 4
+ERROR POLL PHASE! Multiple color for this phase 5
+ERROR POLL PHASE! Multiple color for this phase 6
+ERROR POLL PHASE! Multiple color for this phase 7
+ERROR POLL PHASE! Multiple color for this phase 8
+Current phase: 4 & 8
+Current phase is: 4 8
+Timeout: No response from 10.254.56.50:501.
+ERROR POLL PHASE! Multiple color for this phase 1
+ERROR POLL PHASE! Multiple color for this phase 2
+ERROR POLL PHASE! Multiple color for this phase 3
+ERROR POLL PHASE! Multiple color for this phase 4
+ERROR POLL PHASE! Multiple color for this phase 5
+ERROR POLL PHASE! Multiple color for this phase 6
+ERROR POLL PHASE! Multiple color for this phase 7
+ERROR POLL PHASE! Multiple color for this phase 8
+Current phase: 4 & 8
+Current phase is: 4 8
+Timeout: No response from 10.254.56.50:501.
+ERROR POLL PHASE! Multiple color for this phase 1
+ERROR POLL PHASE! Multiple color for this phase 2
+ERROR POLL PHASE! Multiple color for this phase 3
+ERROR POLL PHASE! Multiple color for this phase 4
+ERROR POLL PHASE! Multiple color for this phase 5
+ERROR POLL PHASE! Multiple color for this phase 6
+ERROR POLL PHASE! Multiple color for this phase 7
+ERROR POLL PHASE! Multiple color for this phase 8
+Current phase: 4 & 8
+Current phase is: 4 8
+Timeout: No response from 10.254.56.50:501.
+ERROR POLL PHASE! Multiple color for this phase 1
+ERROR POLL PHASE! Multiple color for this phase 2
+ERROR POLL PHASE! Multiple color for this phase 3
+ERROR POLL PHASE! Multiple color for this phase 4
+ERROR POLL PHASE! Multiple color for this phase 5
+ERROR POLL PHASE! Multiple color for this phase 6
+ERROR POLL PHASE! Multiple color for this phase 7
+ERROR POLL PHASE! Multiple color for this phase 8
+Current phase: 4 & 8
+Current phase is: 4 8

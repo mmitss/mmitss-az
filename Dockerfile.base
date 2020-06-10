@@ -12,8 +12,8 @@ MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 # iputils-ping iproute2 gdb ddd  build-essential wget libperl-dev libglpk-dev gdb
 
-COPY ./libssl.so.1.1 /usr/lib/x86_64-linux-gnu/
-COPY ./libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/
+COPY ./lib/x86/system/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/
+COPY ./lib/x86/system/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/
 
 
 # Add the shared libraries mmitss needs in order to run

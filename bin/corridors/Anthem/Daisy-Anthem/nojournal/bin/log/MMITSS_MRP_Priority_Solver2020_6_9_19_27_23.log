@@ -1,0 +1,9 @@
+Controller IP Address is:	10.12.6.17
+Controller Port is:	501
+Current RSU ID daisy_anthem
+/nojournal/bin/ConfigInfo_Anthem.txt
+Current timing plan is:	32704
+Phase_Num 8Phase_Seq 1 2 3 4 5 6 7 8Gmin	4	15	4	8	4	15	4	8Yellow	3	3.6	3	4	3	3.6	3	4Red	1	3.1	1	4.3	1	3.1	1	4.3Gmax	16	49	29	26	34	31	17	38PedWalk	0	7	0	7	0	7	0	7PedClr	0	39	0	40	0	39	0	40 Cannot connect to RSU!!!!!  At time: 1591730880.65 
+ Cannot connect to RSU!!!!!  At time: 1591730887.06 
+ Cannot connect to RSU!!!!!  At time: 1591730893.46 
+ Cannot connect to RSU!!!!!  At time: 1591730899.87 

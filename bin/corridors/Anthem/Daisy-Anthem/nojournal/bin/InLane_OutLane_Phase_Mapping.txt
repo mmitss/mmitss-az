@@ -1,0 +1,29 @@
+IntersectionID	22391
+No_Approach	8
+No_Phase	8
+No_Ingress	4
+Approach	1
+No_Lane	4
+1.1 6.3 4
+1.2 6.2 4
+1.3 6.1 4
+1.4 4.1 7
+end_Approach
+Approach	3
+No_Lane	3
+3.1 2.1 6
+3.2 8.1 6
+3.3 6.1 1
+end_Approach
+Approach	5
+No_Lane	2
+5.2 2.1 8
+5.3 8.1 3
+end_Approach
+Approach	7
+No_Lane	3
+7.1 6.3 2
+7.2 4.1 2
+7.3 2.1 5
+end_Approach
+end_file

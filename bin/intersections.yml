@@ -1,0 +1,82 @@
+version: "3.8"
+services:
+    
+    anthem:
+        build:
+            context: ./PriorityRequestServer
+            dockerfile: Dockerfile.prserver
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:
+            mmitss_br:
+                ipv4_address: 10.12.6.17
+
+    dedication:
+        build:
+            context: ./PrioritySolver
+            dockerfile: Dockerfile.prsolver
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.5
+
+    gavilan:
+        build:
+            context: ./TrafficControllerInterface
+            dockerfile: Dockerfile.tci
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.2
+
+    hastings:
+        build:
+            context: ./HostBsmDecoder
+            dockerfile: Dockerfile.host_bsm_decoder
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.11
+
+        
+    memorial:
+        build:
+            context: ./WirelessMsgDecoder
+            dockerfile: Dockerfile.wmd
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.14
+        
+    meridian:
+        build:
+            context: ./MsgEncoder
+            dockerfile: Dockerfile.msg_encoder
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.8
+
+networks:
+    mmitss_br:
+        driver: bridge
+        ipam:
+         config:
+           - subnet: 10.12.6.0/24

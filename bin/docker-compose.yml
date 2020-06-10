@@ -1,0 +1,82 @@
+version: "3.8"
+services:
+    
+    anthem:
+        build:
+            context: ./
+        container_name: daisy-anthem
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+            target: /nojournal
+        networks:
+            mmitss_br:
+                ipv4_address: 10.12.6.17
+
+    dedication:
+        build:
+            context: ./
+        container_name: daisy-dedication
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.5
+
+    gavilan:
+        build:
+            context: ./
+        container_name: daisy-gavilan
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Gavilan/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.2
+
+    hastings:
+        build:
+            context: ./
+        container_name: daisy-hastings
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Hastings/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.11
+
+        
+    memorial:
+        build:
+            context: ./
+        container_name: daisy-memorial
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Memorial/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.14
+        
+    meridian:
+        build:
+            context: ./
+        container_name: daisy-meridian
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_br:
+                ipv4_address: 10.12.6.8
+
+networks:
+    mmitss_br:
+        driver: bridge
+        ipam:
+         config:
+           - subnet: 10.12.6.0/24

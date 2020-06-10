@@ -39,7 +39,7 @@ make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_MsgEncoder ../../../../bin
+    mv M_MsgEncoder ../../../../bin/MsgEncoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -59,7 +59,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_WirelessMsgDecoder ../../../../../bin
+    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -79,7 +79,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../bin
+    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -101,7 +101,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../bin
+    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -123,7 +123,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestServer ../../../bin
+    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer
     echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -143,7 +143,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PrioritySolver ../../../bin
+    mv M_PrioritySolver ../../../bin/PrioritySolver
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -163,7 +163,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_TrafficControllerInterface  ../../../bin
+    mv M_TrafficControllerInterface  ../../../bin/TrafficControlInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
