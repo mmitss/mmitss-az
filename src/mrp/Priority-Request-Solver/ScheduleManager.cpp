@@ -341,13 +341,13 @@ void ScheduleManager::readOptimalSignalPlan()
     */
 
     if (leftCriticalPoints_GreenTime_Ring1.size() != plannedSignalGroupInRing1.size())
-        leftCriticalPoints_GreenTime_Ring1.insert(leftCriticalPoints_GreenTime_Ring1.begin(), 0.01);
+        leftCriticalPoints_GreenTime_Ring1.insert(leftCriticalPoints_GreenTime_Ring1.begin(), 0.00);
 
     if (rightCriticalPoints_GreenTime_Ring1.size() != plannedSignalGroupInRing1.size())
         rightCriticalPoints_GreenTime_Ring1.insert(rightCriticalPoints_GreenTime_Ring1.begin(), 0.01);
 
     if (leftCriticalPoints_GreenTime_Ring2.size() != plannedSignalGroupInRing2.size())
-        leftCriticalPoints_GreenTime_Ring2.insert(leftCriticalPoints_GreenTime_Ring2.begin(), 0.01);
+        leftCriticalPoints_GreenTime_Ring2.insert(leftCriticalPoints_GreenTime_Ring2.begin(), 0.00);
 
     if (rightCriticalPoints_GreenTime_Ring2.size() != plannedSignalGroupInRing2.size())
         rightCriticalPoints_GreenTime_Ring2.insert(rightCriticalPoints_GreenTime_Ring2.begin(), 0.01);
