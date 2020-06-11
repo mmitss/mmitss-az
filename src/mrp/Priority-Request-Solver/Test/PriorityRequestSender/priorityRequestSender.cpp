@@ -33,7 +33,7 @@ int main()
     // vector<double>ETA{25.0, 8.0, 10.0, 10.0, 15.0, 15.0};
     // vector<double>ETADuration{3.0, 2.0, 3.0, 3.0, 3.0, 3.0};
 
-    // vector<int>requestedPhase{3, 4, 2, 5, 4, 7};
+    // vector<int>requestedPhase{3, 4, 2, 5, 6, 1};
 
     // vector<int>requestStatus{5, 5, 4, 4, 4, 4};
     // vector<double>vehicleLatitude{32.1217, 32.2435, 32.1145, 32.2435, 32.1145, 32.1156};

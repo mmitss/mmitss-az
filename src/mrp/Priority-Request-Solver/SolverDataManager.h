@@ -39,8 +39,10 @@ public:
     void removeDuplicateSignalGroup();
     void addAssociatedSignalGroup();
     void modifyGreenMax();
+    void modifyCurrentSignalStatus();
     void findMaximumETAofEV();
     void generateDatFile(bool bEVStatus);
+    bool findSignalGroupInList(int signalGroup);
 
 
     // void getRequestedSignalGroupFromPriorityRequestList(vector<RequestList> priorityRequestList);

@@ -426,6 +426,14 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
+            vector<int> dummyPhases{2, 6};
+            for (size_t i = 0; i < dummyPhases.size(); i++)
+            {
+                tempSignalGroup = dummyPhases[i];
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), tempSignalGroup);
+                if (it == requestedSignalGroup.end())
+                    requestedSignalGroup.push_back(tempSignalGroup);
+            }
         }
 
         else if (requestedEV_P12.empty() && requestedEV_P22.empty())
@@ -448,6 +456,14 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             }
             requestedSignalGroup.clear();
             getRequestedSignalGroup();
+            vector<int> dummyPhases{4, 8};
+            for (size_t i = 0; i < dummyPhases.size(); i++)
+            {
+                tempSignalGroup = dummyPhases[i];
+                it = std::find(requestedSignalGroup.begin(), requestedSignalGroup.end(), tempSignalGroup);
+                if (it == requestedSignalGroup.end())
+                    requestedSignalGroup.push_back(tempSignalGroup);
+            }
         }
     }
 }
@@ -790,7 +806,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     }
 
     trafficControllerStatus.push_back(tcStatus);
-    //If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
+    // If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
         temporaryPhase = trafficControllerStatus[i].startingPhase1;
@@ -805,10 +821,9 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
         if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
             trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
     }
-    // }
-
-    // priorityRequestSolver_To_TCI_Interface_Socket.closeSocket();
 }
+
+
 
 /*
     - If new priority request is received this method will obtain the current traffic signal Status.
@@ -979,7 +994,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 
     Json::Value jsonObject;
     Json::Reader reader;
-    
+
     //loggingTCIData(jsonString);
     trafficSignalPlan.clear();
     PhaseNumber.clear();
@@ -1767,7 +1782,6 @@ void PriorityRequestSolver::loggingClearRequestData(string jsonString)
         outputfile << jsonString << endl;
         outputfile.close();
     }
-
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
