@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     
-    anthem:
+    daisy-anthem:
         build:
             context: ./
         container_name: daisy-anthem
@@ -13,7 +13,7 @@ services:
             mmitss_br:
                 ipv4_address: 10.12.6.18
 
-    dedication:
+    daisy-dedication:
         build:
             context: ./
         container_name: daisy-dedication
@@ -25,7 +25,7 @@ services:
             mmitss_br:
                 ipv4_address: 10.12.6.6
 
-    gavilan:
+    daisy-gavilan:
         build:
             context: ./
         container_name: daisy-gavilan
@@ -37,7 +37,7 @@ services:
             mmitss_br:
                 ipv4_address: 10.12.6.3
 
-    hastings:
+    daisy-hastings:
         build:
             context: ./
         container_name: daisy-hastings
@@ -50,7 +50,7 @@ services:
                 ipv4_address: 10.12.6.12
 
         
-    memorial:
+    daisy-memorial:
         build:
             context: ./
         container_name: daisy-memorial
@@ -62,7 +62,7 @@ services:
             mmitss_br:
                 ipv4_address: 10.12.6.15
         
-    meridian:
+    daisy-meridian:
         build:
             context: ./
         container_name: daisy-meridian
