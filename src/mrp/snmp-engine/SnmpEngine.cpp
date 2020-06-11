@@ -86,6 +86,7 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     // Process the response
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if (requestType == "get")
         {
             int out[50]{};
@@ -97,7 +98,13 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
                 out[i++] = *aa;
                 value = out[0];
             }  
+            std::cout << "SUCCESS in GET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
         }
+        else
+        {
+            std::cout << "SUCCESS in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+        }
+        
     }
     else // Identify the reason of failure
     {
@@ -109,10 +116,10 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
             snmp_sess_perror("Unknown SNMP Error!\n", ss);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if(requestType == "get")
-            std::cout << "FAILED to GET the value of OID:" << inputOid << " at time:" << timenow << std::endl;
+            std::cout << "FAILURE in GET for OID:" << inputOid << " at time:" << timenow << std::endl;
         else
         {
-            std::cout << "FAILED to SET the value of OID:" << inputOid << " to: " << value << " at time:" << timenow << std::endl;
+            std::cout << "FAILURE in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
         }
         value = -1;
 
