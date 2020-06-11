@@ -12,6 +12,9 @@ MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 # iputils-ping iproute2 gdb ddd  build-essential wget libperl-dev libglpk-dev gdb
 
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+
 COPY ./lib/x86/system/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/
 COPY ./lib/x86/system/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/
 
