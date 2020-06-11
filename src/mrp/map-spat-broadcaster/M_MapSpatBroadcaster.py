@@ -64,8 +64,12 @@ def main():
     permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
     splitPhases = config["SignalController"]["SplitPhases"]
 
+    # Get inactive vehicle and ped phases from the configuration file
+    inactiveVehPhases = config["SignalController"]["InactiveVehPhases"]
+    inactivePedPhases = config["SignalController"]["InactivePedPhases"]
+
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
-    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases)
+    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases, inactiveVehPhases, inactivePedPhases)
     # NOTE: Think about V2 and V3. Encapsulation.
 
     # Create an object of Spat class filled with static information:

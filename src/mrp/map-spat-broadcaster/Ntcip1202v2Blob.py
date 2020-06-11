@@ -38,7 +38,7 @@ import datetime
 class Ntcip1202v2Blob:
 
 
-    def __init__(self, permissiveEnabled:dict, splitPhases:dict):
+    def __init__(self, permissiveEnabled:dict, splitPhases:dict, inactiveVehPhases:list, inactivePedPhases:list):
         ################################################# CONSTANTS #################################################
         numVehPhases = 8
         numPedPhases = 8
@@ -82,6 +82,10 @@ class Ntcip1202v2Blob:
         self.pedMaxEndTime = [0]*numPedPhases
         self.pedMinEndTimeByteMap = [[7,8],[20,21],[33,34],[46,47],[59,60],[72,73],[85,86],[98,99]]      
         self.pedMaxEndTimeByteMap = [[9,10],[22,23],[35,36],[48,49],[61,62],[74,75],[87,88],[100,101]]
+
+        ########### Inactive Phases ###########
+        self.inactiveVehPhases = inactiveVehPhases
+        self.inactivePedPhases = inactivePedPhases
 
         ########### Intersection Status ###########
         self.intersectionStatus = ''
@@ -147,7 +151,7 @@ class Ntcip1202v2Blob:
    
         # Time since change to current state - check inactive phases first:
         for i in range(0,self.numVehPhases):
-            if self.vehMinEndTime[i] == 0 and self.vehMaxEndTime[i] == 0:
+            if i+1 in self.inactiveVehPhases:
                 self.vehElapsedTime[i] = 0.0            
             else:
                 if self.vehCurrState[i] == self.vehPrevState[i]:
@@ -199,7 +203,7 @@ class Ntcip1202v2Blob:
         
         # Time since change to current state - check inactive phases first!:
         for i in range(0,self.numPedPhases):
-            if self.pedMinEndTime[i] == 0 and self.pedMaxEndTime[i] == 0:
+            if i in self.inactivePedPhases:
                 self.pedElapsedTime[i] = 0.0
             else:
                 if self.pedCurrState[i] == self.pedPrevState[i]:
