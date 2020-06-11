@@ -1,5 +1,6 @@
 # include <iostream>
 # include <bits/stdc++.h> 
+# include <chrono>
 # include "SnmpEngine.h"
 
 // The constructor of the SnmpEngine class establishes an SNMP session with the target SNMP device. 
@@ -100,13 +101,21 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     }
     else // Identify the reason of failure
     {
-        value = -1;
         if (status == STAT_SUCCESS)
             fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(response->errstat));     
         else if (status == STAT_TIMEOUT)
             fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
         else
             snmp_sess_perror("Unknown SNMP Error!\n", ss);
+        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        if(requestType == "get")
+            std::cout << "FAILED to GET the value of OID:" << inputOid << " at time:" << timenow << std::endl;
+        else
+        {
+            std::cout << "FAILED to SET the value of OID:" << inputOid << " to: " << value << " at time:" << timenow << std::endl;
+        }
+        value = -1;
+
     }
     
     // Free the response for further operations
