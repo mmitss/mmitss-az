@@ -321,6 +321,7 @@ class SignalController:
 
         activeTimingPlanId = getActiveTimingPlanId()
         if activeTimingPlanId != self.currentTimingPlanId:
+            self.currentTimingPlanId = activeTimingPlanId
             activeTimingPlan =  dict({
                                 "MsgType": "ActiveTimingPlan",
                                 "TimingPlan":{
