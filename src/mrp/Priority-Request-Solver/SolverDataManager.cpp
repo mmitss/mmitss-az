@@ -439,7 +439,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         // else
         //     ETA_Range = 2.0;
 
-        ETA_Range = 4.0;
+        ETA_Range = 5.0;
 
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
@@ -448,7 +448,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             {
                 if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                 {
-                    if (priorityRequestList[i].vehicleETA <= 5.0)
+                    if (priorityRequestList[i].vehicleETA <= 6.0)
                         fs << 1.0 << "\t";
                     else
                         fs << priorityRequestList[i].vehicleETA - ETA_Range << "\t";

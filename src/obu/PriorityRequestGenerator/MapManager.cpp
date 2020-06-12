@@ -331,7 +331,6 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
                 activeMapList.push_back(activeMap);
                 break;
             }
-            delete plocAwareLib;
         }
     }
 

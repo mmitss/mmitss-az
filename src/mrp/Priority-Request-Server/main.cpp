@@ -62,7 +62,7 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
-                // PRS.loggingData(receivedJsonString);
+                
                 // std::cout << "Received SRM" << receivedJsonString << std::endl;
                 // std::cout << "Received SRM" << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
@@ -71,11 +71,13 @@ int main()
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-                // PRS.loggingData(ssmJsonString);
+                
                 // std::cout << "SSM JsonString: " << ssmJsonString << std::endl;
                 // std::cout << "Sent SSM" << std::endl;
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+                // PRS.loggingData(receivedJsonString);
+                // PRS.loggingData(ssmJsonString);
                 // PRS.loggingData(solverJsonString);
                 // std::cout << "Solver JsonString: " << solverJsonString << std::endl;
             }
@@ -110,6 +112,7 @@ int main()
                 
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 // std::cout << "Sent is SSM after updating ETA" << std::endl;
+                // PRS.loggingData(ssmJsonString);
             }
         }
     }

@@ -44,11 +44,10 @@ int main()
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
     char receiveBuffer[5120];
-    std::string srmJsonString;
-    std::string prgStatusJsonString;
+    std::string srmJsonString{};
+    std::string prgStatusJsonString{};
 
-    PRG.getParameters();
-    PRG.logging();
+
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -86,7 +85,9 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            std::cout << "SSM is received" << std::endl;
+            std::cout << "SSM is received " << std::endl;
+            // auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            // std::cout << "SSM is received at time " << timenow << receivedJsonString << std::endl;
             signalStatus.reset();
         }
     }
