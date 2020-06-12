@@ -6,41 +6,42 @@
 class geoCoord {
 private:
 	//parameters for conversion
-		double a  ; //meters
-		double b  ; //meters
-		double f  ;
-		double inv_f ;
-		double e ;
-		double N ;
-		double pi  ;
+	double a{}; //meters
+	double b{}; //meters
+	double f{};
+	double inv_f{};
+	double e{};
+	double N{};
+	double pi{};
 
 		//longitude and latitude origin
 
-		double longitude_init ;
-		double latitude_init ;
-		double altitude_init ;
-		double ex_init ; 
-		double ey_init ;
-		double ez_init ;
-		double	R_sinLat ;
-		double	R_cosLat ;
-		double	R_sinLong ;
-		double	R_cosLong ;
+	double longitude_init{};
+	double latitude_init{};
+	double altitude_init{};
+	double ex_init{};
+	double ey_init{};
+	double ez_init{};
+	double	R_sinLat{};
+	double	R_cosLat{};
+	double	R_sinLong{};
+	double	R_cosLong{};
 
 
 	
 		//longutude and latitude in radians
-		double longitude_r, latitude_r ;
+	double longitude_r{};
+	double latitude_r{};
 
 public:
 	//longitude, latitude, and altitude 
 		//double longitude, latitude, altitude ; /* decimal representation */
-		double longitude_degrees ;
-		double longitude_minutes ;
-		double  longitude_seconds ;
-		int latitude_degrees ;
-		int latitude_minutes ;
-		double  latitude_seconds ;
+	double longitude_degrees{};
+	double longitude_minutes{};
+	double  longitude_seconds{};
+	int latitude_degrees{};
+	int latitude_minutes{};
+	double  latitude_seconds{};
 	
  geoCoord::geoCoord() {
 		a = 6378137.0 ; //meters
