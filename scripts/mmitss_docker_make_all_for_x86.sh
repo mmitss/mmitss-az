@@ -39,7 +39,7 @@ make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_MsgEncoder ../../../../bin/MsgEncoder
+    mv M_MsgEncoder ../../../../bin/MsgEncoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -59,7 +59,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder
+    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -79,7 +79,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder
+    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -101,7 +101,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator
+    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -123,7 +123,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer
+    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/x86
     echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -143,7 +143,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PrioritySolver ../../../bin/PrioritySolver
+    mv M_PrioritySolver ../../../bin/PrioritySolver/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -163,7 +163,7 @@ make clean &> /dev/null
 make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface
+    mv M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"

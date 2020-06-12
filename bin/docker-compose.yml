@@ -10,7 +10,7 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
             target: /nojournal
         networks:
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.18
 
     daisy-dedication:
@@ -22,7 +22,7 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
             target: /nojournal
         networks:    
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.6
 
     daisy-gavilan:
@@ -34,7 +34,7 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Gavilan/nojournal
             target: /nojournal
         networks:    
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.3
 
     daisy-hastings:
@@ -46,7 +46,7 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Hastings/nojournal
             target: /nojournal
         networks:    
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.12
 
         
@@ -59,7 +59,7 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Memorial/nojournal
             target: /nojournal
         networks:    
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.15
         
     daisy-meridian:
@@ -71,12 +71,16 @@ services:
             source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
             target: /nojournal
         networks:    
-            mmitss_br:
+            mmitss_vlan:
                 ipv4_address: 10.12.6.9
 
 networks:
-    mmitss_br:
-        driver: bridge
+    mmitss_vlan:
+        driver: macvlan
+        driver_opts:
+            parent: enp0s31f6 
         ipam:
-         config:
-           - subnet: 10.12.6.0/24
+            config:
+              - subnet: 10.12.6.0/27
+
+

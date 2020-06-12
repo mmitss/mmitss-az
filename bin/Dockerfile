@@ -1,16 +1,15 @@
 #-----------------------------------------------------------------------------#
-#    Dockerfile to build an rsu image for an intersection                     #
+#    Dockerfile to build an x86 platform image for an intersection            #
 #-----------------------------------------------------------------------------#
 FROM mmitssuarizona/mmitss-base:1.2
-MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
-COPY WirelessMsgDecoder/M_WirelessMsgDecoder /mmitss
-COPY TrafficControllerInterface/M_TrafficControllerInterface /mmitss
-COPY PrioritySolver/M_PrioritySolver /mmitss
-COPY PriorityRequestServer/M_PriorityRequestServer /mmitss
-COPY MsgEncoder/M_MsgEncoder /mmitss
-COPY HostBsmDecoder/M_HostBsmDecoder /mmitss
-COPY MapSpatBroadcaster/M_MapSpatBroadcaster /mmitss
+COPY WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
+COPY TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
+COPY PrioritySolver/x86/M_PrioritySolver /mmitss
+COPY PriorityRequestServer/x86/M_PriorityRequestServer /mmitss
+COPY MsgEncoder/x86/M_MsgEncoder /mmitss
+COPY HostBsmDecoder/x86/M_HostBsmDecoder /mmitss
+COPY MapSpatBroadcaster/x86/M_MapSpatBroadcaster /mmitss
 
 COPY supervisord.conf /mmitss
 CMD ["/usr/bin/supervisord"]
