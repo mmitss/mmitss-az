@@ -28,9 +28,19 @@ signal controller.
 # Need to add the last digit denoting the number of phase. 
 # For example, to get the ring of phase 2, the corresponding OID would be "1.3.6.1.4.1.1206.4.2.1.1.2.1.22.2"
 
+PHASE_PARAMETERS_PHASE_NUMBER   =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.1."
+PHASE_PARAMETERS_PEDWALK        =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.2."
+PHASE_PARAMETERS_PEDCLEAR       =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.3."
+PHASE_PARAMETERS_MIN_GRN        =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.4."   
+PHASE_PARAMETERS_PASSAGE        =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.5."
+PHASE_PARAMETERS_MAX_GRN        =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.6."
+PHASE_PARAMETERS_YELLOW_CHANGE  =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.8."
+PHASE_PARAMETERS_RED_CLR        =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.9."
+
 PHASE_PARAMETERS_RING           =   "1.3.6.1.4.1.1206.4.2.1.1.2.1.22."
 
 # Phase Group Statuses, which are not available in the SPAT blob: 
+
 PHASE_GROUP_STATUS_NEXT         =   "1.3.6.1.4.1.1206.4.2.1.1.4.1.11.1"
 
 # Phase Control Objects:

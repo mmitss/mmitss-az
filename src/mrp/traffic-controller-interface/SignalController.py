@@ -34,7 +34,7 @@ import time
 import socket
 import json
 import StandardMib
-import EconoliteMib
+import importlib.util
 from Command import Command
 from Snmp import Snmp
 
@@ -46,6 +46,7 @@ class SignalController:
     """
     def __init__(self): # Check if there exists an NTCIP object to read it through SNMP.
         
+                
         # Read the config file and store the configuration in an JSON object:
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
         config = (json.load(configFile))
@@ -57,6 +58,18 @@ class SignalController:
         signalControllerIp = config["SignalController"]["IpAddress"]
         signalControllerNtcipPort = config["SignalController"]["NtcipPort"]
         self.signalController_commInfo = (signalControllerIp, signalControllerNtcipPort)
+
+        self.vendor = config["SignalController"]["Vendor"].lower()
+
+        self.timingPlanMibName = (config["SignalController"]["TimingPlanMib"])
+        timingPlanMibFileName = self.timingPlanMibName + ".py"
+
+        if self.timingPlanMibName.lower() != "standardmib":
+            # Read the filename of the Mib that can be used to extract timing plan parameters.
+            spec = importlib.util.spec_from_file_location(self.timingPlanMibName, timingPlanMibFileName)
+            self.timingPlanMib = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(self.timingPlanMib)
+        else: self.timingPlanMib = StandardMib
 
         # Read the arguments into local variables:
         self.snmp = Snmp()
@@ -80,8 +93,11 @@ class SignalController:
         self.currentTimingPlanId = 0
         self.currentTimingPlanJson = ""
 
-        # Enable the broadcast of SPAT message in the signal controller       
-        self.enableSpatBroadcast()
+        # Enable the broadcast of SPAT message in the signal controller  if it is an Econolite signal controller:     
+        if self.vendor.lower() == "econolite":
+            import EconoliteMib
+            self.vendorMib = EconoliteMib
+            self.enableSpatBroadcast()
         
         # Read the currently active timing plan and store it into a JSON string
         self.updateAndSendActiveTimingPlan()
@@ -95,7 +111,7 @@ class SignalController:
         port (default 6053) of the set server IP. This configuration can be set in MM-1-5-1
         in the controller menu. This function requires no arguments.
         """
-        self.snmp.setValue(EconoliteMib.asc3ViiMessageEnable, 6) 
+        self.snmp.setValue(self.vendorMib.asc3ViiMessageEnable, 6) 
         print("SPAT Broadcast Set Successfully at time:" + str(time.time()))
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
@@ -252,88 +268,174 @@ class SignalController:
               Timing Plan Extraction Methods
     ##############################################'''
 
-        def getActiveTimingPlanId():
-            activeTimingPlanId = int(self.snmp.getValue(EconoliteMib.CUR_TIMING_PLAN))
-            return activeTimingPlanId
         
-        def getPhaseParameterPhaseNumber(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_PHASE_NUMBER) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+        if self.vendor.lower() == "econolite" and self.timingPlanMibName.lower()=="econolitemib": # This block is valid for Econolite only:
+            def getActiveTimingPlanId():
+                activeTimingPlanId = int(self.snmp.getValue(self.timingPlanMib.CUR_TIMING_PLAN))
+                return activeTimingPlanId
+            
+            def getPhaseParameterPhaseNumber(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PHASE_NUMBER) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        def getPhaseParameterPedWalk(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_PEDWALK) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+            def getPhaseParameterPedWalk(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PEDWALK) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        def getPhaseParameterPedClear(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_PEDCLEAR) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+            def getPhaseParameterPedClear(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PEDCLEAR) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        def getPhaseParameterMinGreen(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_MIN_GRN) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+            def getPhaseParameterMinGreen(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_MIN_GRN) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        def getPhaseParameterPassage(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_PASSAGE) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
-            return phaseParameter
+            def getPhaseParameterPassage(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PASSAGE) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
 
-        def getPhaseParameterMaxGreen(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_MAX_GRN) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+            def getPhaseParameterMaxGreen(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_MAX_GRN) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        def getPhaseParameterYellowChange(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_YELLOW_CHANGE) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
-            return phaseParameter
+            def getPhaseParameterYellowChange(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_YELLOW_CHANGE) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
 
-        def getPhaseParameterRedClear(activeTimingPlanId:int):
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (EconoliteMib.PHASE_PARAMETERS_RED_CLR) + '.' + str(activeTimingPlanId) + "." + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
-            return phaseParameter
+            def getPhaseParameterRedClear(activeTimingPlanId:int):
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_RED_CLR) + '.' + str(activeTimingPlanId) + "." + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
 
-        def getPhaseParameterRing():
-            phaseParameter = [0 for x in range (0,8)]
-            for i in range(0,8):
-                oid = (StandardMib.PHASE_PARAMETERS_RING) + str(i+1)
-                phaseParameter[i] = int(self.snmp.getValue(oid))
-            return phaseParameter
+            def getPhaseParameterRing():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (StandardMib.PHASE_PARAMETERS_RING) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
 
-        activeTimingPlanId = getActiveTimingPlanId()
-        if activeTimingPlanId != self.currentTimingPlanId:
-            self.currentTimingPlanId = activeTimingPlanId
+            activeTimingPlanId = getActiveTimingPlanId()
+            if activeTimingPlanId != self.currentTimingPlanId:
+                self.currentTimingPlanId = activeTimingPlanId
+                activeTimingPlan =  dict({
+                                    "MsgType": "ActiveTimingPlan",
+                                    "TimingPlan":{
+                                    "NoOfPhase": 8,
+                                    "PhaseNumber": getPhaseParameterPhaseNumber(activeTimingPlanId),
+                                    "PedWalk": getPhaseParameterPedWalk(activeTimingPlanId),
+                                    "PedClear": getPhaseParameterPedClear(activeTimingPlanId),
+                                    "MinGreen": getPhaseParameterMinGreen(activeTimingPlanId),
+                                    "Passage": getPhaseParameterPassage(activeTimingPlanId),
+                                    "MaxGreen": getPhaseParameterMaxGreen(activeTimingPlanId),
+                                    "YellowChange": getPhaseParameterYellowChange(activeTimingPlanId),
+                                    "RedClear": getPhaseParameterRedClear(activeTimingPlanId),
+                                    "PhaseRing": getPhaseParameterRing(),
+                }})
+                self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.bind(self.timingPlanSenderAddress)
+                s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+                s.close()
+                print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+        else:
+            def getPhaseParameterPhaseNumber():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PHASE_NUMBER) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
+            def getPhaseParameterPedWalk():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PEDWALK) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
+            def getPhaseParameterPedClear():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PEDCLEAR) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
+            def getPhaseParameterMinGreen():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_MIN_GRN) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
+            def getPhaseParameterPassage():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_PASSAGE) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
+
+            def getPhaseParameterMaxGreen():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_MAX_GRN) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
+            def getPhaseParameterYellowChange():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_YELLOW_CHANGE) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
+
+            def getPhaseParameterRedClear():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (self.timingPlanMib.PHASE_PARAMETERS_RED_CLR) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))*0.1
+                return phaseParameter
+
+            def getPhaseParameterRing():
+                phaseParameter = [0 for x in range (0,8)]
+                for i in range(0,8):
+                    oid = (StandardMib.PHASE_PARAMETERS_RING) + str(i+1)
+                    phaseParameter[i] = int(self.snmp.getValue(oid))
+                return phaseParameter
+
             activeTimingPlan =  dict({
                                 "MsgType": "ActiveTimingPlan",
                                 "TimingPlan":{
                                 "NoOfPhase": 8,
-                                "PhaseNumber": getPhaseParameterPhaseNumber(activeTimingPlanId),
-                                "PedWalk": getPhaseParameterPedWalk(activeTimingPlanId),
-                                "PedClear": getPhaseParameterPedClear(activeTimingPlanId),
-                                "MinGreen": getPhaseParameterMinGreen(activeTimingPlanId),
-                                "Passage": getPhaseParameterPassage(activeTimingPlanId),
-                                "MaxGreen": getPhaseParameterMaxGreen(activeTimingPlanId),
-                                "YellowChange": getPhaseParameterYellowChange(activeTimingPlanId),
-                                "RedClear": getPhaseParameterRedClear(activeTimingPlanId),
+                                "PhaseNumber": getPhaseParameterPhaseNumber(),
+                                "PedWalk": getPhaseParameterPedWalk(),
+                                "PedClear": getPhaseParameterPedClear(),
+                                "MinGreen": getPhaseParameterMinGreen(),
+                                "Passage": getPhaseParameterPassage(),
+                                "MaxGreen": getPhaseParameterMaxGreen(),
+                                "YellowChange": getPhaseParameterYellowChange(),
+                                "RedClear": getPhaseParameterRedClear(),
                                 "PhaseRing": getPhaseParameterRing(),
             }})
             self.currentTimingPlanJson =  json.dumps(activeTimingPlan)
@@ -342,6 +444,7 @@ class SignalController:
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
             s.close()
             print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+            
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
 
@@ -354,9 +457,9 @@ if __name__ == "__main__":
     controller = SignalController()
     
     requestTime = time.time()
-    controller.updateAndSendActiveTimingPlan()
-    leadTime = time.time()-requestTime
-    print("New timing plan acquired in:" + str(round(leadTime,4)) + " seconds")
-    print(controller.currentTimingPlanJson)
+    # controller.updateAndSendActiveTimingPlan()
+    # leadTime = time.time()-requestTime
+    # print("New timing plan acquired in:" + str(round(leadTime,4)) + " seconds")
+    # print(controller.currentTimingPlanJson)
     # Write more test cases - active timing plan
 
