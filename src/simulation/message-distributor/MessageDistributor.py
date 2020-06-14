@@ -26,7 +26,7 @@ class MessageDistributor():
         return message
     
     def distributeBsmToClients(self, timestampedBsm:json):
-        bsmVehicleType = timestampedBsm["type"]
+        bsmVehicleType = timestampedBsm["BasicVehicle"]["type"]
         clientList=[]
 
         if bsmVehicleType == "transit":
