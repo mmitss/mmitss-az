@@ -6,6 +6,7 @@
             "name": "DaisyMountain_GavilanPeak",
             "ip_address": "10.12.6.101",
             "bsm_client_port": 5001,
+            "srm_client_port": 6001,
             "dsrc_range_Meter": 300,
             "position": {
                 "latitude_DecimalDegree": 33.842932,
@@ -17,6 +18,7 @@
             "name": "DaisyMountain_DedicationTrail",
             "ip_address": "10.12.6.101",
             "bsm_client_port": 5002,
+            "srm_client_port": 6002,
             "dsrc_range_Meter": 300,
             "position": {
                 "latitude_DecimalDegree": 33.843238,
