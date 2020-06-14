@@ -16,8 +16,11 @@ constexpr auto PI = 3.14159265;
 // Define MMITSS DLL Parameters:
 /*==========================================================================*/
 
-#define VEHICLE_TYPE_STRING "test"
-#define CONFIG_FILE_NAME "mmitss_driver_models/test/M_DriverModelTest_config.json"
+/****************************************************************************/
+// REPLACE THIS WITH THE DESIRED VEHICLE TYPE
+/****************************************************************************/
+#define VEHICLE_TYPE_STRING "source" 
+#define CONFIG_FILE_NAME "mmitss_simulation/mmitss_driver_model_config.json"
 
 /*==========================================================================*/
 // These variables are required by Vissim. NOTE: Without these variables the
@@ -453,13 +456,13 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
   {
       reader.parse(configJsonString.c_str(), jsonObject_config); // Read the configuration file into jsonObject_config
 
-      double ref_lon_degree = (jsonObject_config["CorridorOrigin"]["Longitude"]["Degree"]).asDouble(); // Parse longitude (degrees part) of vissim (0,0) from the configuration file
-      double ref_lon_minutes = (jsonObject_config["CorridorOrigin"]["Longitude"]["Minute"]).asDouble(); // Parse longitude (minutes part)  of vissim (0,0) from the configuration file
-      double ref_lon_seconds = (jsonObject_config["CorridorOrigin"]["Longitude"]["Second"]).asDouble(); // Parse longitude (seconds part) of vissim (0,0) from the configuration file
-      double ref_lat_degree = (jsonObject_config["CorridorOrigin"]["Latitude"]["Degree"]).asDouble(); // Parse latiitude (degrees part) of vissim (0,0) from the configuration file
-      double ref_lat_minutes = (jsonObject_config["CorridorOrigin"]["Latitude"]["Minute"]).asDouble(); // Parse latitude (minutes part) of vissim (0,0) from the configuration file
-      double ref_lat_seconds = (jsonObject_config["CorridorOrigin"]["Latitude"]["Second"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
-      double ref_elevation_Meter = (jsonObject_config["CorridorOrigin"]["Elevation_Meter"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
+      double ref_lon_degree = (jsonObject_config["vissim_origin_position"]["longitude"]["Degree"]).asDouble(); // Parse longitude (degrees part) of vissim (0,0) from the configuration file
+      double ref_lon_minutes = (jsonObject_config["vissim_origin_position"]["longitude"]["Minute"]).asDouble(); // Parse longitude (minutes part)  of vissim (0,0) from the configuration file
+      double ref_lon_seconds = (jsonObject_config["vissim_origin_position"]["longitude"]["Second"]).asDouble(); // Parse longitude (seconds part) of vissim (0,0) from the configuration file
+      double ref_lat_degree = (jsonObject_config["vissim_origin_position"]["latitude"]["Degree"]).asDouble(); // Parse latiitude (degrees part) of vissim (0,0) from the configuration file
+      double ref_lat_minutes = (jsonObject_config["vissim_origin_position"]["latitude"]["Minute"]).asDouble(); // Parse latitude (minutes part) of vissim (0,0) from the configuration file
+      double ref_lat_seconds = (jsonObject_config["vissim_origin_position"]["latitude"]["Second"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
+      double ref_elevation_Meter = (jsonObject_config["vissim_origin_position"]["elevation_Meter"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
 
       double ref_longitude_DecimalDegree = geoPoint.dms2d(ref_lon_degree, ref_lon_minutes, ref_lon_seconds); // Convert the longitude of VISSIM (0,0) parsed from the configuration file into decimal format.
       double ref_latitude_DecimalDegree = geoPoint.dms2d(ref_lat_degree, ref_lat_minutes, ref_lat_seconds); // Convert the latitude of VISSIM (0,0) parsed from the configuration file into decimal format.
@@ -467,8 +470,8 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
 
       geoPoint.init(ref_longitude_DecimalDegree, ref_latitude_DecimalDegree, ref_elevation_Meter);                                         // Initialize a geo-point as VISSIM (0,0) point.
 
-      clientComputerIP = (jsonObject_config["ClientComputer"]["IP"]).asString(); // Parse client computer IP from the configuration file.
-      clientComputerPort = (jsonObject_config["ClientComputer"]["Port"]).asInt(); // Parse client computer IUSP port from the configuration file.
+      clientComputerIP = (jsonObject_config["msg_distributor_ip"]).asString(); // Parse client computer IP from the configuration file.
+      clientComputerPort = (jsonObject_config["msg_distributor_port"]).asInt(); // Parse client computer IUSP port from the configuration file.
 
       // Fill up client information:
       clientInfo.sin_family = AF_INET;                                  // Fillup client information: family

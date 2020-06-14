@@ -5716,8 +5716,8 @@
 		</ptLine>
 		<ptLine anmid="" color="ff00a800" desSpeedDistr="50" destLink="54" destPos="1014.182813918995" entTmOffset="0" entryLink="50" name="" no="2" sendTele="false" slackTmFrac="1" teleLine="0" teleManDir="0" telePrio="0" teleRout="0" teleVehLen="0" vehType="300">
 			<depTimes>
-				<departureTime dep="60" occup="2" teleCour="0"/>
-				<departureTime dep="180" occup="2" teleCour="0"/>
+				<departureTime dep="65" occup="2" teleCour="0"/>
+				<departureTime dep="190" occup="2" teleCour="0"/>
 				<departureTime dep="300" occup="2" teleCour="0"/>
 				<departureTime dep="450" occup="2" teleCour="0"/>
 			</depTimes>
@@ -7042,21 +7042,21 @@
 		</vehicleRoutingDecisionStatic>
 		<vehicleRoutingDecisionStatic allVehTypes="true" anmFlag="false" combineStaRoutDec="false" link="57" name="" no="21" pos="2.4913156421759948">
 			<vehRoutSta>
-				<vehicleRouteStatic destLink="54" destPos="13.736620558303182" name="" no="1" relFlow="">
+				<vehicleRouteStatic destLink="54" destPos="13.736620558303182" name="" no="1" relFlow="2 0:0.3">
 					<linkSeq>
 						<intObjectRef key="10071"/>
 						<intObjectRef key="60"/>
 						<intObjectRef key="10083"/>
 					</linkSeq>
 				</vehicleRouteStatic>
-				<vehicleRouteStatic destLink="41" destPos="15.321823808554846" name="" no="2" relFlow="">
+				<vehicleRouteStatic destLink="41" destPos="15.321823808554846" name="" no="2" relFlow="2 0:0.6">
 					<linkSeq>
 						<intObjectRef key="10072"/>
 						<intObjectRef key="58"/>
 						<intObjectRef key="10082"/>
 					</linkSeq>
 				</vehicleRouteStatic>
-				<vehicleRouteStatic destLink="51" destPos="18.441160278567533" name="" no="3" relFlow="">
+				<vehicleRouteStatic destLink="51" destPos="18.441160278567533" name="" no="3" relFlow="2 0:0.1">
 					<linkSeq>
 						<intObjectRef key="10074"/>
 						<intObjectRef key="59"/>
