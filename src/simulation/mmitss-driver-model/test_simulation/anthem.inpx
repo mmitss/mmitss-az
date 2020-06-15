@@ -2901,7 +2901,7 @@
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 2" localNo="0" name="" no="13" pos="344.97795724192872" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 1" localNo="0" name="" no="14" pos="344.978" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 	</signalHeads>
-	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="3600" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
+	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="1800" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
 	<stopSigns>
 		<stopSign anmFlag="false" lane="10 1" name="" no="1" pos="64.898110174619319" sg="1 8"/>
 		<stopSign anmFlag="false" lane="13 1" name="" no="2" pos="52.312491412610171" sg="1 6"/>
