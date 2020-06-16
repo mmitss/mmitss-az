@@ -25,7 +25,7 @@ int main()
     std::string msgToRsu{};
 
     const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
-    const int sourceDsrcDevicePort = 1516;
+    const int sourceDsrcDevicePort = jsonObject_config["PortNumber"]["DsrcImmediateForwarder"];
 
     while (true)
     {
@@ -45,6 +45,7 @@ int main()
                 messagePayload = encoder.BSMEncoder(jsonString);
                 msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
                 encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), messagePayload);
                 std::cout << "Encoded BSM and sent to RSU" << std::endl;
             }
 
@@ -53,6 +54,7 @@ int main()
                 messagePayload = encoder.SRMEncoder(jsonString);
                 msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
                 encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), messagePayload);
                 std::cout << "Encoded SRM and sent to RSU" << std::endl;
             }
 
@@ -61,6 +63,7 @@ int main()
                 messagePayload = encoder.SPaTEncoder(jsonString);
                 msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
                 encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), messagePayload);
                 std::cout << "Encoded SPAT and sent to RSU" << std::endl;
             }
 
@@ -69,6 +72,7 @@ int main()
                 messagePayload = encoder.SSMEncoder(jsonString);
                 msgToRsu = rsuMsgPacket.getMsgPacket(messagePayload);
                 encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+                encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), messagePayload);
                 std::cout << "Encoded SSM and sent to RSU" << std::endl;
             }
 
@@ -77,6 +81,7 @@ int main()
         {
             msgToRsu = rsuMsgPacket.getMsgPacket(jsonString);
             encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
+            encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), jsonString);
             std::cout << "Sent MAP to RSU" << std::endl;
         }
     }
