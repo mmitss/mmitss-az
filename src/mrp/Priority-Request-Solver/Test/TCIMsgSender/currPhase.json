@@ -1,0 +1,21 @@
+{
+    "MsgType": "CurrNextPhaseStatus",
+    "currentPhases":
+    [
+        {
+            "Phase": 3,
+            "State": "green",
+            "ElapsedTime": 269
+        },
+        {
+            "Phase": 8,
+            "State": "green",
+            "ElapsedTime": 269
+        }
+    ],
+    "nextPhases": 
+    [
+        0
+    ]
+}
+

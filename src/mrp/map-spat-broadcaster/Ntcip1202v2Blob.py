@@ -14,7 +14,7 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
 
-  Revision History:
+  Description:
   1. This is the initial revision. NTCIP1202v2Blob class does the following tasks:
     -> Read the NTCIP1202v2 blob received from a trafficController.
     -> Manually unpack the blob using byte-structure provided in Econolite SPAT Guide.
@@ -38,7 +38,7 @@ import datetime
 class Ntcip1202v2Blob:
 
 
-    def __init__(self, permissiveEnabled:dict, splitPhases:dict):
+    def __init__(self, permissiveEnabled:dict, splitPhases:dict, inactiveVehPhases:list, inactivePedPhases:list):
         ################################################# CONSTANTS #################################################
         numVehPhases = 8
         numPedPhases = 8
@@ -83,12 +83,19 @@ class Ntcip1202v2Blob:
         self.pedMinEndTimeByteMap = [[7,8],[20,21],[33,34],[46,47],[59,60],[72,73],[85,86],[98,99]]      
         self.pedMaxEndTimeByteMap = [[9,10],[22,23],[35,36],[48,49],[61,62],[74,75],[87,88],[100,101]]
 
+        ########### Inactive Phases ###########
+        self.inactiveVehPhases = inactiveVehPhases
+        self.inactivePedPhases = inactivePedPhases
+
         ########### Intersection Status ###########
         self.intersectionStatus = ''
 
         ########### Time parameters ###########
         self.minuteOfYear = 0
         self.msOfMinute = 0
+
+        ########### Current Phase Info ###########
+        self.currentPhases = [0,0]
 
     def processNewData(self, receivedBlob):
         # Derived from system time (Not controller's time)
@@ -99,10 +106,10 @@ class Ntcip1202v2Blob:
         self.msOfMinute = int((timeSinceStartOfTheYear.total_seconds() - (self.minuteOfYear * 60))*1000)
 ##################################### VEH INFORMATION ####################################################################
         # Phase status symbols: 
-        RED = 3
-        YELLOW = 8
-        GREEN = 6
-        PERMISSIVE = 7
+        RED = 'red'
+        YELLOW = 'yellow'
+        GREEN = 'green'
+        PERMISSIVE = 'permissive_yellow'
 
         # PhaseStatusRed:
         vehPhaseStatusRedStr = str(f'{receivedBlob[211]:08b}')[::-1]
@@ -125,6 +132,16 @@ class Ntcip1202v2Blob:
                 self.vehPhaseStatusGreens[i] = True
                 self.vehCurrState[i] = GREEN
         
+        # Identify FIRST current phase (from ring 1)
+        for i in range(0,4): 
+            if self.vehCurrState[i] == GREEN:
+                self.currentPhases[0] = (i+1)
+        
+        # Identify SECOND current phase (from ring 2)
+        for i in range(4,8):
+            if self.vehCurrState[i] == GREEN:
+                self.currentPhases[1] = (i+1)
+
         # PhaseStatusPermissive:
         leftTurns = [1,3,5,7]
         for leftTurn in leftTurns:
@@ -134,7 +151,7 @@ class Ntcip1202v2Blob:
    
         # Time since change to current state - check inactive phases first:
         for i in range(0,self.numVehPhases):
-            if self.vehMinEndTime[i] == 0 and self.vehMaxEndTime[i] == 0:
+            if i+1 in self.inactiveVehPhases:
                 self.vehElapsedTime[i] = 0.0            
             else:
                 if self.vehCurrState[i] == self.vehPrevState[i]:
@@ -157,10 +174,12 @@ class Ntcip1202v2Blob:
             secondByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][1]]:08b}')
             completeByte = firstByte+secondByte
             self.vehMaxEndTime[i] = int(completeByte, 2)
+
+        
 ##################################### PED INFORMATION ####################################################################
-        DONTWALK = 3
-        PEDCLEAR = 8
-        WALK = 6
+        DONTWALK = 'do_not_walk'
+        PEDCLEAR = 'ped_clear'
+        WALK = 'walk'
         # PhaseStatusDontWalk:
         pedPhaseStatusDontWalkStr = str(f'{receivedBlob[217]:08b}')[::-1]
         for i in range(0,self.numPedPhases):
@@ -184,7 +203,7 @@ class Ntcip1202v2Blob:
         
         # Time since change to current state - check inactive phases first!:
         for i in range(0,self.numPedPhases):
-            if self.pedMinEndTime[i] == 0 and self.pedMaxEndTime[i] == 0:
+            if i in self.inactivePedPhases:
                 self.pedElapsedTime[i] = 0.0
             else:
                 if self.pedCurrState[i] == self.pedPrevState[i]:
@@ -249,3 +268,21 @@ class Ntcip1202v2Blob:
 
     def getMsOfMinute(self):
         return self.msOfMinute
+
+    def getCurrentPhasesDict(self):
+        currentPhasesDict = {
+                                "currentPhases":
+                                    [ 
+                                        {   
+                                            "Phase": self.currentPhases[0],
+                                            "State": self.vehCurrState[self.currentPhases[0]-1],
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1] 
+                                        },
+                                        {   
+                                            "Phase": self.currentPhases[1],
+                                            "State": self.vehCurrState[self.currentPhases[1]-1],
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1] 
+                                        }
+                                    ]
+                            }
+        return currentPhasesDict

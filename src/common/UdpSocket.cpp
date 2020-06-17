@@ -167,7 +167,7 @@ std::string UdpSocket::receivePayloadHexString()
  * GETTERS 
  ************************************/
 
-int UdpSocket::getSenderPort()
+short unsigned int UdpSocket::getSenderPort()
 {
     return senderPort;
 }

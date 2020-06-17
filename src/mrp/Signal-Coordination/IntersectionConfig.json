@@ -1,0 +1,12 @@
+{
+    "CoordinationMasterClockTime" : 0.0,
+    "CoordinationStartingTimeOfADay": 8.0,
+    "CoordinationEndingTimeOfADay": 24.0,
+    "Offset": 0.0,
+    "CycleLength":120.0,
+    "CoordinatedPhase_Ring1": 2,
+    "CoordinatedPhase_Ring2": 6,
+    "CoordinatedPhaseStrartTimeOfACycle" : 90.0,
+    "CoordinatedPhaseEndTimeOfACycle" : 115.0
+    
+}
