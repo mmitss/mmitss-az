@@ -1,0 +1,35 @@
+{
+	"MsgType" : "SRM",
+	"SignalRequest" : 
+	{
+		"basicVehicleRole" : 16,
+		"expectedTimeOfArrival" : 
+		{
+			"ETA_Duration" : 5.0,
+			"ETA_Minute" : 0.0,
+			"ETA_Second" : 25.0
+		},
+		"heading_Degree" : 10.0,
+		"inBoundLane" : 
+		{
+			"LaneID" : 12
+		},
+		"intersectionID" : 22391,
+		"minuteOfYear" : 95640,
+		"msOfMinute" : 25000,
+		"msgCount" : 5,
+		"position" : 
+		{
+			"elevation_Meter" : 546.0,
+			"latitude_DecimalDegree" : 33.85685841,
+			"longitude_DecimalDegree" : -112.11388224
+		},
+		"priorityRequestType" : 1,
+		"regionalID" : 0,
+		"speed_MeterPerSecond" : 10.0,
+		"vehicleID" : 605,
+		"vehicleType" : 6
+	},
+	"Timestamp_posix" : 1583530838.0951719,
+	"Timestamp_verbose" : "2020-03-09 11:40:38.95"
+}

@@ -259,7 +259,7 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
         jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
         jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
         jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
-        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Duration"] = ETA_DURATION;
+        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
         jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
     }
 

@@ -27,13 +27,13 @@ from time import sleep
 
 def Main():
     # This is the IP address and port of the server sending messages to the source dsrc device (called 'server')
-    serverIP = '10.12.6.109'
-    serverPort = 5001
+    serverIP = '10.12.6.108'
+    serverPort = 5001 # This could be any available port on this computer
     server = (serverIP, serverPort)
 
     # This is the IP address and port of the source dsrc device
-    receiverIP = '10.12.6.115'
-    receiverPort = 1516
+    receiverIP = '10.12.6.116' # 
+    receiverPort = 1516 # Kun might give us other port.
     receiver = (receiverIP, receiverPort)
 
     # Create a socket
@@ -43,7 +43,7 @@ def Main():
 
     # Open and read the file containing the message for transmission. 
     messagePath = 'messages/' # Type the path of location where message is stored.
-    message = 'srm' # Type the name of file containing the message. This message must be formatted as per RSU4.1 Specifications.
+    message = 'spat' # Type the name of file containing the message. This message must be formatted as per RSU4.1 Specifications.
     f = open((messagePath + message), "rb")
     data = f.read(20480)
     print (data) # Print the message being transmitted to the console.
