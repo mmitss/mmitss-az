@@ -1,0 +1,46 @@
+{
+    "msg_distributor_ip": "10.12.6.101",
+    "msg_distributor_port": 5000,
+    "intersections": [
+        {
+            "name": "DaisyMountain_GavilanPeak",
+            "ip_address": "10.12.6.101",
+            "bsm_client_port": 5001,
+            "srm_client_port": 6001,
+            "dsrc_range_Meter": 300,
+            "position": {
+                "latitude_DecimalDegree": 33.842932,
+                "longitude_DecimalDegree": -112.135186,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_DedicationTrail",
+            "ip_address": "10.12.6.101",
+            "bsm_client_port": 5002,
+            "srm_client_port": 6002,
+            "dsrc_range_Meter": 300,
+            "position": {
+                "latitude_DecimalDegree": 33.843238,
+                "longitude_DecimalDegree": -112.131546,
+                "elevation_Meter": 540
+            }
+        }
+    ],
+    "bsm_additional_clients": 
+    {
+        "transit":[
+            {
+                "ip_address": "10.12.6.101",
+                "port":5003
+            }
+        ],
+        "truck":[
+        ],
+        "emergency":[
+        ],
+        "passenger":[
+
+        ]
+    }
+}
