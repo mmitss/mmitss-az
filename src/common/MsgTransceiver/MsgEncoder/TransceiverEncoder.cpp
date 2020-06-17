@@ -12,6 +12,14 @@
 
 const double MPS_TO_KPH_CONVERSION = 3.6;
 
+const int RED = 3;
+const int YELLOW = 8;
+const int GREEN = 6;
+const int PERMISSIVE = 7;
+const int DONOTWALK = 3;
+const int PEDCLEAR = 8;
+const int WALK = 6;
+
 TransceiverEncoder::TransceiverEncoder()
 {
 }
@@ -164,6 +172,9 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     std::stringstream payloadstream;
     std::string spatMessagePayload;
 
+    std::string phaseState{};
+    std::string pedPhaseState{};
+
     spatIn.regionalId = jsonObject["Spat"]["IntersectionState"]["regionalID"].asInt();
     spatIn.id = jsonObject["Spat"]["IntersectionState"]["intersectionID"].asInt();
     spatIn.msgCnt = jsonObject["Spat"]["msgCnt"].asInt();
@@ -176,16 +187,29 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 
     for (int i = 0; i < 8; i++)
     {
-        spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(jsonObject["Spat"]["phaseState"][i]["currState"].asInt());
         spatIn.phaseState[i].startTime = jsonObject["Spat"]["phaseState"][i]["startTime"].asInt();
         spatIn.phaseState[i].minEndTime = jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt();
         spatIn.phaseState[i].maxEndTime = jsonObject["Spat"]["phaseState"][i]["maxEndTime"].asInt();
+        phaseState = jsonObject["Spat"]["phaseState"][i]["currState"].asString();
+        if(phaseState=="red")
+            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(RED);
+        else if(phaseState=="yellow")
+            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(YELLOW);
+        else if(phaseState=="green")
+            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(GREEN);
+        else if(phaseState=="permissive_yellow")
+            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(PERMISSIVE);
 
-        spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(jsonObject["Spat"]["pedPhaseState"][i]["currState"].asInt());
         spatIn.pedPhaseState[i].startTime = jsonObject["Spat"]["pedPhaseState"][i]["startTime"].asInt();
-        ;
         spatIn.pedPhaseState[i].minEndTime = jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"].asInt();
         spatIn.pedPhaseState[i].maxEndTime = jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"].asInt();
+        pedPhaseState = jsonObject["Spat"]["pedPhaseState"][i]["currState"].asString();
+        if(pedPhaseState=="do_not_walk")
+            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(DONOTWALK);
+        else if(pedPhaseState=="ped_clear")
+            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(PEDCLEAR);
+        else if(pedPhaseState=="walk")
+            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(WALK);
     }
     size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
 
@@ -244,7 +268,7 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
         requestStatus.vehRole = static_cast<MsgEnum::basicRole>((basicVehicleRole[i]));
         requestStatus.inLaneId = static_cast<int8_t>(inBoundLaneID[i]);
         requestStatus.inApprochId = static_cast<int8_t>(inBoundApproachID[i]); //It is not present in TestDecoder
-        requestStatus.ETAminute = expectedTimeOfArrival_Minute[i];
+        requestStatus.ETAminute = static_cast<uint32_t>(expectedTimeOfArrival_Minute[i]);
         requestStatus.ETAsec = static_cast<int16_t>(expectedTimeOfArrival_Second[i]);
         requestStatus.duration = static_cast<int16_t>(expectedTimeOfArrival_Duration[i]);
         requestStatus.status = static_cast<MsgEnum::requestStatus>(priorityRequestStatus[i]);

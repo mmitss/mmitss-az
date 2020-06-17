@@ -22,25 +22,39 @@ struct ActiveRequest
     int requestID;
     int msgCount;
     int basicVehicleRole;
+    int vehicleType;
     int vehicleLaneID;
     int vehicleApproachID;
-    double vehicleETA;
     int prsStatus;
     int minuteOfYear;
     int secondOfMinute;
-    int signalGroup; 
+    int signalGroup;
+    double vehicleETA;
+    double vehicleETADuration;
+    double vehicleLatitude;
+    double vehicleLongitude;
+    double vehicleElevation;
+    double vehicleHeading;
+    double vehicleSpeed; 
     void reset()
     {
         vehicleID = 0;
         requestID = 0;
         msgCount = 0;
         basicVehicleRole = 0;
+        vehicleType  = 0;
         vehicleLaneID = 0;
         vehicleApproachID = 0;
-        vehicleETA = 0.0;
         prsStatus = 0;
         minuteOfYear = 0;
         secondOfMinute = 0;
         signalGroup = 0;
+        vehicleETA = 0.0;
+        vehicleETADuration = 0.0;
+        vehicleLatitude = 0.0;
+        vehicleLongitude = 0.0;
+        vehicleElevation = 0.0;
+        vehicleHeading = 0.0;
+        vehicleSpeed = 0.0;
     }
 };

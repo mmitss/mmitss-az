@@ -51,18 +51,26 @@ def main():
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
 
-    pedAppIp = '10.12.6.59'
-    pedAppPort = 6060
-    pedAppAddress = (pedAppIp, pedAppPort)
+    clientsJson = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
+    clients_spatBlob = clientsJson["spat"]["blob"]
+    clients_spatJson = clientsJson["spat"]["json"]
+
+    tci_currPhasePort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
+    tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
 
     # Store map payload in a string
     mapPayload = config["MapPayload"]
 
-    permissiveEnabled = config["PermissiveEnabled"]
-    splitPhases = config["SplitPhases"]
+    permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
+    splitPhases = config["SignalController"]["SplitPhases"]
+
+    # Get inactive vehicle and ped phases from the configuration file
+    inactiveVehPhases = config["SignalController"]["InactiveVehPhases"]
+    inactivePedPhases = config["SignalController"]["InactivePedPhases"]
 
     # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
-    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases)
+    currentBlob = Ntcip1202v2Blob.Ntcip1202v2Blob(permissiveEnabled, splitPhases, inactiveVehPhases, inactivePedPhases)
+    # NOTE: Think about V2 and V3. Encapsulation.
 
     # Create an object of Spat class filled with static information:
     spatObject = Spat.Spat()
@@ -70,15 +78,19 @@ def main():
     spatObject.setRegionalID(config["RegionalID"])
 
     # Read controllerIp from the config file and store it.
-    controllerIp = config["ControllerIp"]
+    controllerIp = config["SignalController"]["IpAddress"]
 
     msgCnt = 0
     spatMapMsgCount = 0
     while True:
         try:
-            spatBlob, addr = outerSocket.recvfrom(1024)            
+            spatBlob, addr = outerSocket.recvfrom(1024)     
+            # Send spat blob to external clients:       
             if addr[0] == controllerIp:
-                outerSocket.sendto(spatBlob, pedAppAddress)
+                for client in clients_spatBlob:
+                    address = (client["IP"], client["Port"])
+                    outerSocket.sendto(spatBlob, address)
+                        
                 currentBlob.processNewData(spatBlob)
                 if(msgCnt < 127):
                     msgCnt = msgCnt + 1
@@ -86,16 +98,32 @@ def main():
                 spatObject.setmsgCnt(msgCnt)
                 spatObject.fillSpatInformation(currentBlob)
                 spatJsonString = spatObject.Spat2Json()
-                
+                currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
                 outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
-                #print(spatJsonString)
-                print("Sent SPAT to MsgEncoder")
+                outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
+                #print(currentPhasesJson)
+                #print("Sent SPAT to MsgEncoder")
+                
+                # Send spat json to external clients:
+                for client in clients_spatJson:
+                    address = (client["IP"], client["Port"])
+                    outerSocket.sendto(spatJsonString.encode(), address)
+
                 spatMapMsgCount = spatMapMsgCount + 1
                 if spatMapMsgCount > 9:
                     outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
                     spatMapMsgCount = 0
-                    print("Sent MAP to MsgEncoder")
+                    #print("Sent MAP to MsgEncoder")
+                    
+                currentTime = str(time.time())
+                currentState = str(currentBlob.getVehCurrState())
+                currentElapsedTime = str(currentBlob.getVehElapsedTime())
+                currentMinimumEndTime = str(currentBlob.getVehMinEndTime())
+                currentMaximumEndTime = str(currentBlob.getVehMaxEndTime())
+
+                print(currentTime + "," + currentState + "," + currentElapsedTime + "," + currentMinimumEndTime + "," + currentMaximumEndTime)
+                
         except socket.timeout:
             print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
             print("Sent MAP to MsgEncoder")

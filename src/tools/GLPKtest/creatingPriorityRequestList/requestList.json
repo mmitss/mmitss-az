@@ -1,0 +1,18 @@
+{
+    "PriorityRequestList": 
+    {
+        "noOfRequest": 1,
+        "requestorInfo": 
+        [
+            {
+                "vehicleID": 1201,
+                "basicVehicleRole": 16,
+                "laneID": 2,
+                "vehicleETA": 25.0,
+                "vehicleETA_Duration" : 5.0,
+                "requestedPhase" : 2,
+                "prioritystatus": 4
+            }
+        ]
+    }
+}

@@ -1,0 +1,60 @@
+{
+    "TrafficControllerData": 
+    {
+        "TrafficControllerStatus": 
+        {
+            "SP1": 4,
+            "SP2": 8,
+            "init1": 0,
+            "init2": 0,
+            "Grn1": 8.0,
+            "Grn2": 8.0
+        },
+        "TtafficControllerConfiguration": 
+        {
+            "yellow": {
+                "phase1": 3,
+                "phase2": 3,
+                "phase3": 3,
+                "phase4": 3,
+                "phase5": 3,
+                "phase6": 3,
+                "phase7": 3,
+                "phase8": 3
+            },
+            "red": 
+            {
+                "phase1": 1,
+                "phase2": 1,
+                "phase3": 1,
+                "phase4": 1,
+                "phase5": 1,
+                "phase6": 1,
+                "phase7": 1,
+                "phase8": 1
+            },
+            "gmin": 
+            {
+                "phase1": 5,
+                "phase2": 5,
+                "phase3": 5,
+                "phase4": 5,
+                "phase5": 5,
+                "phase6": 5,
+                "phase7": 5,
+                "phase8": 5
+            },
+            "gmax": 
+            {
+                "phase1": 35,
+                "phase2": 35,
+                "phase3": 35,
+                "phase4": 35,
+                "phase5": 35,
+                "phase6": 35,
+                "phase7": 35,
+                "phase8": 35
+            }
+        }
+    }
+}

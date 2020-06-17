@@ -25,8 +25,8 @@ import datetime
 
 def Main():
     # This is the IP address and port of the server receiving messages from sink dsrc device (called 'server')
-	serverIP = '10.254.56.49'
-	serverPort = 4445
+	serverIP = '10.12.6.108'
+	serverPort = 10002 # This is what Kun should tell us. Which port on the remote computer will the messages be forwarded.
 	server = (serverIP, serverPort)
 
     # Create a socket

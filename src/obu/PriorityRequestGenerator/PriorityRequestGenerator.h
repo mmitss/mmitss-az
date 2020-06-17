@@ -16,6 +16,7 @@
 #pragma once
 #include <list>
 #include <string>
+#include <chrono>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
 #include "SignalRequest.h"
@@ -30,6 +31,7 @@ private:
 
   bool bgetActiveMap{false};      //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
   bool bRequestSendStatus{false}; //Required for HMI json
+  bool bLogging{false};
   std::string mapFileDirectory{};
   std::string mapFileName{};
   int messageType{};
@@ -59,7 +61,9 @@ public:
 
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
+  bool logging();
 
+  void loggingData(std::string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
   void setLaneID(int laneId);
