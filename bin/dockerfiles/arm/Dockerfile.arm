@@ -8,6 +8,7 @@ COPY WirelessMsgDecoder/arm/M_WirelessMsgDecoder /mmitss
 COPY TrafficControllerInterface/arm/M_TrafficControllerInterface /mmitss
 COPY PrioritySolver/arm/M_PrioritySolver /mmitss
 COPY PriorityRequestServer/arm/M_PriorityRequestServer /mmitss
+COPY SnmpEngine/arm/M_SnmpEngine /mmitss
 COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY HostBsmDecoder/arm/M_HostBsmDecoder /mmitss
 COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
