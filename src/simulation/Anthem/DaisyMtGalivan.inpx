@@ -7118,7 +7118,7 @@
 		</vehicleRoutingDecisionStatic>
 	</vehicleRoutingDecisionsStatic>
 	<vehicleTypes>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTm="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_driver_models\passenger\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="Car" no="100" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTm="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="Car" no="100" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -7126,7 +7126,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTm="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="#data#MmitssDriverModel_EV.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="HGV" no="200" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTm="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="HGV" no="200" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -7134,7 +7134,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTm="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="#data#MmitssDriverModel_Transit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="Bus" no="300" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTm="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTransit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="Bus" no="300" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
