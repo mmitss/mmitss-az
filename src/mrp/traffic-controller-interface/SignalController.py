@@ -62,7 +62,7 @@ class SignalController:
         self.vendor = config["SignalController"]["Vendor"].lower()
 
         self.timingPlanMibName = (config["SignalController"]["TimingPlanMib"])
-        timingPlanMibFileName = self.timingPlanMibName + ".py"
+        timingPlanMibFileName = self.timingPlanMibName
 
         if self.timingPlanMibName.lower() != "standardmib":
             # Read the filename of the Mib that can be used to extract timing plan parameters.

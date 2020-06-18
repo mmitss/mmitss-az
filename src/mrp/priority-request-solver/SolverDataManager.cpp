@@ -1,8 +1,11 @@
 #include <algorithm>
 #include "SolverDataManager.h"
 
-const double transitWeight = 10.0;
-const double truckWeight = 10.0;
+const double TRANSIT_WEIGHT = 1.0;
+const double TRUCK_WEIGHT = 1.0;
+const double EV_WEIGHT = 1.0;
+const double EV_SPLIT_PHASE_WEIGHT = 0.1;
+const double DILEMMA_ZONE_REQUEST_WEIGHT = 20.0;
 const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()
@@ -15,7 +18,7 @@ SolverDataManager::SolverDataManager(vector<RequestList> requestList)
         priorityRequestList = requestList;
 }
 
-SolverDataManager::SolverDataManager(vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
 {
     if (!requestList.empty())
         priorityRequestList = requestList;
@@ -25,6 +28,9 @@ SolverDataManager::SolverDataManager(vector<RequestList> requestList, vector<Tra
 
     if (!signalPlan.empty())
         trafficSignalPlan = signalPlan;
+
+    if (!dilemmaZoneList.empty())
+        dilemmaZoneRequestList = dilemmaZoneList;
 }
 
 /*
@@ -114,8 +120,8 @@ void SolverDataManager::modifyGreenMax()
 */
 void SolverDataManager::findMaximumETAofEV()
 {
-    vector<double> temporaryVehicleETA;
-    vector<double> temporaryVehicleETA_Duration;
+    vector<double> temporaryVehicleETA{};
+    vector<double> temporaryVehicleETA_Duration{};
     //Find the maximum ETA and ETA duration from among all the EV
     for (size_t k = 0; k < priorityRequestList.size(); k++)
     {
@@ -123,35 +129,89 @@ void SolverDataManager::findMaximumETAofEV()
         temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
     }
 
-    maxEV_ETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
-    maxEV_ETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
+    auto maxETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
+    auto maxETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
+    maxEV_ETA = static_cast<double>(maxETA);
+    maxEV_ETA_Duration = static_cast<double>(maxETA_Duration);
+}
+/*
+    -If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
+*/
+
+void SolverDataManager::modifyCurrentSignalStatus()
+{
+    int temporaryPhase{};
+    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+    {
+        temporaryPhase = trafficControllerStatus[i].startingPhase1;
+        
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (findSignalGroupInList(temporaryPhase) == true)
+        {
+            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+        }
+
+        else
+        {
+            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen-findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen-findSignalGroup1->minGreen;
+        }
+        
+
+        temporaryPhase = trafficControllerStatus[i].startingPhase2;
+        
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (findSignalGroupInList(temporaryPhase) == true)
+        {
+            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+        }
+        else
+        {
+            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen-findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen-findSignalGroup2->minGreen;
+        }
+        
+    }
+}
+
+bool SolverDataManager::findSignalGroupInList(int signalGroup)
+{
+    bool findSignalGroup{false};
+    for (size_t j = 0; j < priorityRequestList.size(); j++)
+    {
+        vector<RequestList>::iterator findSignalGroupInRequestList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                  [&](RequestList const &p) { return p.requestedPhase == signalGroup; });
+
+        if (findSignalGroupInRequestList != priorityRequestList.end())
+            findSignalGroup = true;
+        else
+            findSignalGroup = false;
+    }
+
+    return findSignalGroup;
 }
 
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-// void SolverDataManager::generateDatFile(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
 void SolverDataManager::generateDatFile(bool bEVStatus)
 {
-    // int temporaryPhase{};
-    // vector<int> temporaryPhaseNumber{};
-    // temporaryPhaseNumber = PhaseNumber;
     vector<int>::iterator it;
-    int vehicleClass{}; //to match the old PRSolver
+    int vehicleClass{};
     int numberOfRequest{};
     int ReqSeq = 1;
-
-    // getRequestedSignalGroupFromPriorityRequestList(priorityRequestList);
-    // removeDuplicateSignalGroup();
-    // addAssociatedSignalGroup(trafficSignalPlan);
-    // modifyGreenMax(trafficSignalPlan);
-    // getRequestedSignalGroupFromPriorityRequestList();
-    // removeDuplicateSignalGroup();
-    // addAssociatedSignalGroup();
-    // modifyGreenMax();
+    int dilemmaZoneReq = 1;
+    double ETA_Range{};
 
     ofstream fs;
-    fs.open("NewModelData.dat", ios::out);
+
+    // modifyCurrentSignalStatus();
+
+    fs.open("/nojournal/bin/NewModelData.dat", ios::out);
     fs << "data;\n";
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
@@ -185,13 +245,25 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         if (MAXGREEN > maxEV_ETA + maxEV_ETA_Duration)
         {
             for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+            {
+                if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
+                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+
+                else
+                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
+            }
         }
 
         else
         {
             for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration + trafficSignalPlan[i].minGreen;
+            {
+                if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
+                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration + trafficSignalPlan[i].minGreen;
+
+                else
+                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
+            }
         }
     }
     else
@@ -203,7 +275,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     fs << "param priorityType:= ";
 
-    if (!priorityRequestList.empty())
+    if (!priorityRequestList.empty() && dilemmaZoneRequestList.empty())
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
@@ -212,7 +284,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
             if (priorityRequestList[i].basicVehicleRole == 13)
             {
-                // numberOfEVInList++;
+                numberOfEVInList++;
                 vehicleClass = 1;
             }
 
@@ -242,33 +314,135 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
         fs << " ;  \n";
     }
 
-    else
+    else if (!priorityRequestList.empty() && !dilemmaZoneRequestList.empty())
     {
-        fs << " 1 0 2 0 3 5 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            vehicleClass = 0;
+            numberOfRequest++;
+
+            if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 == 0)
+            {
+                numberOfEVInList++;
+                vehicleClass = 1;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 != 0)
+            {
+                numberOfEVSplitRequestInList++;
+                vehicleClass = 4;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 16)
+            {
+                numberOfTransitInList++;
+                vehicleClass = 2;
+            }
+
+            else if (priorityRequestList[i].basicVehicleRole == 9)
+            {
+                numberOfTruckInList++;
+                vehicleClass = 3;
+            }
+            fs << numberOfRequest;
+            fs << " " << vehicleClass << " ";
+        }
+        while (numberOfRequest < 10)
+        {
+            numberOfRequest++;
+            fs << numberOfRequest;
+            fs << " ";
+            fs << 0;
+            fs << " ";
+        }
+        fs << " ;  \n";
     }
 
-    fs << "param PrioWeigth:=  1 1 2 ";
-    if (numberOfTransitInList > 0)
-        fs << transitWeight;
-        // fs << transitWeight / numberOfTransitInList;
     else
-    {
+        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+
+    fs << "param PrioWeigth:= ";
+
+    fs << " 1 ";
+    if (numberOfEVInList > 0)
+        fs << EV_WEIGHT;
+
+    else
         fs << 0;
-    }
+
+    fs << " 2 ";
+    if (numberOfTransitInList > 0)
+        fs << TRANSIT_WEIGHT;
+
+    else
+        fs << 0;
+
     fs << " 3 ";
     if (numberOfTruckInList > 0)
-        fs << truckWeight;
-        // fs << truckWeight / numberOfTruckInList;
+        fs << TRUCK_WEIGHT;
+
     else
-    {
         fs << 0;
+
+    fs << " 4 ";
+    if (numberOfEVSplitRequestInList > 0)
+        fs << EV_SPLIT_PHASE_WEIGHT;
+
+    else
+        fs << 0;
+
+    fs << " 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+
+    if (!dilemmaZoneRequestList.empty())
+    {
+        fs << "param DilemmaZoneWeight:= " << DILEMMA_ZONE_REQUEST_WEIGHT << ";\n";
+        fs << "param Dl (tr): 1 2 3 4 5 6 7 8:=\n";
+        for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
+        {
+            fs << dilemmaZoneReq << "  ";
+            for (size_t j = 1; j < 9; j++)
+            {
+                if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
+                    fs << dilemmaZoneRequestList[i].vehicleETA << "\t";
+
+                else
+                    fs << ".\t";
+            }
+            dilemmaZoneReq++;
+            fs << "\n";
+        }
+        fs << ";\n";
+        dilemmaZoneReq = 1;
+
+        fs << "param Du (tr): 1 2 3 4 5 6 7 8:=\n";
+        for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
+        {
+            fs << dilemmaZoneReq << "  ";
+            for (size_t j = 1; j < 9; j++)
+            {
+                if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
+                    fs << dilemmaZoneRequestList[i].vehicleETA + dilemmaZoneRequestList[i].vehicleETA_Duration << "\t";
+
+                else
+                    fs << ".\t";
+            }
+            dilemmaZoneReq++;
+            fs << "\n";
+        }
+        fs << ";\n";
     }
-    fs << " 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
 
     fs << "param Rl (tr): 1 2 3 4 5 6 7 8:=\n";
 
     if (!priorityRequestList.empty())
     {
+        // if (bEVStatus == true)
+        //     ETA_Range = 4.0;
+        // else
+        //     ETA_Range = 2.0;
+
+        ETA_Range = 5.0;
+
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
             fs << ReqSeq << "  ";
@@ -276,10 +450,10 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
             {
                 if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                 {
-                    if(priorityRequestList[i].vehicleETA <= 3.0)
-                        fs << 1.0  << "\t";
+                    if (priorityRequestList[i].vehicleETA <= 6.0)
+                        fs << 1.0 << "\t";
                     else
-                        fs << priorityRequestList[i].vehicleETA - 2.0 << "\t";
+                        fs << priorityRequestList[i].vehicleETA - ETA_Range << "\t";
                 }
                 else
                     fs << ".\t";

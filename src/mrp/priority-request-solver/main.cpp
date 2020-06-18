@@ -17,7 +17,7 @@
 #include <fstream>
 #include "PriorityRequestSolver.h"
 #include "SolverDataManager.h"
-#include <jsoncpp/json/json.h>
+#include <json/json.h>
 
 int main()
 {
