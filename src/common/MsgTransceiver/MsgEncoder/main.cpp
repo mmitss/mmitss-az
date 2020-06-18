@@ -25,7 +25,7 @@ int main()
     std::string msgToRsu{};
 
     const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
-    const int sourceDsrcDevicePort = jsonObject_config["PortNumber"]["DsrcImmediateForwarder"];
+    const int sourceDsrcDevicePort = jsonObject_config["PortNumber"]["DsrcImmediateForwarder"].asInt();
 
     while (true)
     {

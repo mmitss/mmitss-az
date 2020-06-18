@@ -72,7 +72,7 @@ void BasicVehicle::setHeading_Degree(double vehHeading_Degree)
     else
         cout << "Heading out of range!" << endl;
 }
-void BasicVehicle::setType(int vehType)
+void BasicVehicle::setType(std::string vehType)
 {
     type = vehType;
 }
@@ -120,7 +120,7 @@ double BasicVehicle::getHeading_Degree()
 {
     return heading_Degree;
 }
-int BasicVehicle::getType()
+std::string BasicVehicle::getType()
 {
     return type;
 }
@@ -160,7 +160,7 @@ void BasicVehicle::json2BasicVehicle(string jsonString)
     Json::Reader reader;
     reader.parse(jsonString.c_str(), jsonObject);
     temporaryID = (jsonObject["BasicVehicle"]["temporaryID"]).asInt();
-    type = (jsonObject["BasicVehicle"]["type"]).asInt();
+    type = (jsonObject["BasicVehicle"]["type"]).asString();
     speed_MeterPerSecond = (jsonObject["BasicVehicle"]["speed_MeterPerSecond"]).asDouble();
     secMark_Second = (jsonObject["BasicVehicle"]["secMark_Second"]).asDouble();
     heading_Degree  = (jsonObject["BasicVehicle"]["heading_Degree"]).asDouble();
