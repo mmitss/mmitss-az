@@ -1,1 +1,0 @@
-/nojournal/bin/ConfigInfo_campbell.txt

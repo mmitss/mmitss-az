@@ -5,7 +5,8 @@ FROM mmitssuarizona/mmitss-base:1.2
 
 COPY WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
 COPY TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
-COPY PrioritySolver/x86/M_PrioritySolver /mmitss
+COPY SnmpEngine/x86/SnmpEngine /mmitss
+COPY PrioritySolver/x86/M_PriorityRequestSolver /mmitss
 COPY PriorityRequestServer/x86/M_PriorityRequestServer /mmitss
 COPY MsgEncoder/x86/M_MsgEncoder /mmitss
 COPY HostBsmDecoder/x86/M_HostBsmDecoder /mmitss
