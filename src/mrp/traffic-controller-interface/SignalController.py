@@ -40,10 +40,9 @@ from Snmp import Snmp
 
 class SignalController:
     """
-    SignalController class encapsulates all methods that interact with the signal controller. 
-    Arguments: This class takes no arguments.
-    For example: asc = SignalController()
+    provides methods to interact with the signal controller.
     """
+
     def __init__(self): # Check if there exists an NTCIP object to read it through SNMP.
         
                 
@@ -106,21 +105,34 @@ class SignalController:
 
     def enableSpatBroadcast(self):
         """
-        SignalController::enableSpatBroadcast function enables the broadcasting of SPAT blob 
-        from the signal controller. Signal controller broadcasts the SPAT blob to a particular
-        port (default 6053) of the set server IP. This configuration can be set in MM-1-5-1
-        in the controller menu. This function requires no arguments.
+        enables the broadcasting of SPAT blob from the signal controller. 
+
+        Signal controller broadcasts the SPAT blob to a particular port (default 6053)
+        of the set server IP. This configuration can be set in MM-1-5-1 in the controller 
+        menu. This function requires no arguments.
         """
+        
         self.snmp.setValue(self.vendorMib.asc3ViiMessageEnable, 6) 
         print("SPAT Broadcast Set Successfully at time:" + str(time.time()))
     ######################## Definition End: enableSpatBroadcast(self) ########################
     
     
-    def getPhaseControl(self, action:int):
+    def getPhaseControl(self, action:int) -> int:
         """
-        SignalController::getPhaseControl function takes an action ID as an argument, and returns the integer representation of bit-string denoting 
-        which phases are currently executing the action.
-        Arguments: (1) Action
+        returns the integer representation of bit-string denoting which phases are currently executing 
+        the action.
+        
+        Arguments:
+        ----------
+            (1) Action ID:
+                    The action can be chosen from the command class. Available actions are:
+                    CALL_VEH_PHASES, CALL_PED_PHASES, FORCEOFF_PHASES, HOLD_VEH_PHASES, OMIT_VEH_PHASES, 
+                    OMIT_PED_PHASES. The mapping of actions to integer is available in Command class. 
+        
+        Returns:
+        --------
+            the value (representing the bit-string that denotes the phases that are executing the required action) 
+            obtained from the snmp.getValue(action:int) function.
         """
 
         # Create a dummy command to get the enumerations corresponding to each phase control action
@@ -143,17 +155,21 @@ class SignalController:
 
     def setPhaseControl(self, action:int, phases:int, scheduleReceiptTime:float):
         """
-        SignalController::setPhaseControl funtion is responsible for setting the NTCIP phase control
-        in the signal controller. 
-        Arguments: 
-        (1) Action:
-        The action can be chosen from the command class. Available actions are:
-        CALL_VEH_PHASES, CALL_PED_PHASES, FORCEOFF_PHASES, HOLD_VEH_PHASES, OMIT_VEH_PHASES, OMIT_PED_PHASES. 
-        The mapping of actions to integer is available in Command class. 
-        (2) Phases:
-        The phases parameter is an integer representation of a bitstring for which a phase control needs 
-        to be applied. For example, for placing a vehicle call on all phases, the bit string would be (11111111),
-        whose integer representation is 255.
+        sets the NTCIP phase control in the signal controller. 
+
+        Arguments:
+        ----------
+            (1) Action ID:
+                    The action can be chosen from the command class. Available actions are:
+                    CALL_VEH_PHASES, CALL_PED_PHASES, FORCEOFF_PHASES, HOLD_VEH_PHASES, OMIT_VEH_PHASES, 
+                    OMIT_PED_PHASES. The mapping of actions to integer is available in Command class. 
+            (2) Phases:
+                    The phases parameter is an integer representation of a bitstring for which a phase 
+                    control needs to be applied. For example, for placing a vehicle call on all phases, 
+                    the bit string would be (11111111), whose integer representation is 255.
+            (3) Schedule Receipt Time:
+                    The (epoch) time when the schedule was received from the Solver. The execution times will be 
+                    relative to this time.
         """
         command = Command(0,0,0,0)
         phasesStr = str(f'{phases:08b}')[::-1]
@@ -191,6 +207,8 @@ class SignalController:
 
     def sendCurrentAndNextPhasesDict(self, requesterAddress:tuple):
         """
+        sends a dictionary containing lists of current and next phases to the requestor
+
         This function does three tasks:
         (1) Open a UDP socket at a port where MapSpatBroadcaster sends the information about current phases.
         (2) If the current phase is not in Green state (i.e. either red or yellow), this function calls the 
@@ -199,19 +217,23 @@ class SignalController:
         to the requestor.
 
         Arguments:
-        (1) currPhaseListenerAddress:
-        This is a tuple containing IP address and port where MapSpatBroadcaster sends to information about current phases
-        (2) requestorAddress: 
-        This is a tuple containing IP address and port of the client who request the information about current and 
-        next phases.
+        ----------
+            (1) requestorAddress: 
+                    This is a tuple containing IP address and port of the client 
+                    who request the information about current and next phases.
         """
-        def getNextPhasesDict():
+
+
+        def getNextPhasesDict() -> dict:
             """
-            getNextPhaseDict funtion resquests the "next phases" in the controller through an Snmp::getValue method.
-            The function requires no arguments.
+            requests the "next phases" in the controller through an Snmp::getValue method.
+                        
+            Returns:
+            --------
+                A dictionary containing the list of next phases.
             """
+
             nextPhasesInt = int(self.snmp.getValue(StandardMib.PHASE_GROUP_STATUS_NEXT))
-            #_TODO_
             print("Current next phases are" + str(nextPhasesInt))
             nextPhasesStr = str(f'{(nextPhasesInt):08b}')[::-1]
             
@@ -258,16 +280,15 @@ class SignalController:
 
     def updateAndSendActiveTimingPlan(self):
         """
-        SignalController::updateActiveTimingPlan function first checks the ID of currently active timing plan, through Snmp::getValue function.
+        updates the active timing plan and sends the active timing plan to PriorityRequestSolver.
+
+        For Econolite signal controllers, this function first checks the ID of currently active timing plan, through Snmp::getValue function.
         If the ID does not match the ID of the timing plan currently stored in the class attribute, 
         the function updates the timing plan stored in the class attribute, via different calls to Snmp::getValue function.
-        This function requires no arguments.
+
+        For other signal controllers using the standard MIB, this function does the same task but with different OIDs. 
+        Note that for in the standard MIB, we can get information only about the timing plan # 1.
         """
-
-        '''##############################################
-              Timing Plan Extraction Methods
-    ##############################################'''
-
         
         if self.vendor.lower() == "econolite" and self.timingPlanMibName.lower()=="econolitemib": # This block is valid for Econolite only:
             def getActiveTimingPlanId():
