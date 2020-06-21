@@ -94,8 +94,7 @@ class SignalController:
 
         # Enable the broadcast of SPAT message in the signal controller  if it is an Econolite signal controller:     
         if self.vendor.lower() == "econolite":
-            import EconoliteMib
-            self.vendorMib = EconoliteMib
+            self.vendorMib = self.timingPlanMib
             self.enableSpatBroadcast()
         
         # Read the currently active timing plan and store it into a JSON string
