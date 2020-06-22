@@ -335,11 +335,11 @@ class Scheduler:
             return self.commandId
         
         else: # Then add a series of function calls starting at startTime, ending at endTime and separated by ntcipBackupTime.           
-            trigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1)
+            trigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1,
+                                                start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                                                end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)))
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases, self.scheduleReceiptTime], 
-                    trigger = trigger,
-                    start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
-                    end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
+                    trigger = trigger,                                       
                     id = str(self.commandId))
             return self.commandId
 
@@ -433,11 +433,11 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule3.json", "r")
+    scheduleFile = open("src/mrp/traffic-controller-interface/test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
 
     scheduler.processReceivedSchedule(scheduleJson)
 
     # Schedule a vehicle call on all phases after 10 seconds
     # scheduler.addCommandToSchedule(Command(255,10,10,6))
-    time.sleep(300)
+    time.sleep(20)
