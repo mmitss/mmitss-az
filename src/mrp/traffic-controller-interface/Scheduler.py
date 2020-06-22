@@ -40,6 +40,8 @@ import json
 import time, datetime
 import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers import interval
+from apscheduler.triggers import date
 from Command import Command
 from SignalController import SignalController
 
@@ -326,23 +328,22 @@ class Scheduler:
         # If the phase control needs to be cleared (command.phases == 0), 
         # then add a single instance of a function call that clears the phase control.
         if commandObject.phases == 0: 
+            trigger = date.DateTrigger(run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)))
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases, self.scheduleReceiptTime], 
-                    trigger = 'date', 
-                    run_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
+                    trigger = trigger, 
                     id = str(self.commandId))
             return self.commandId
         
         else: # Then add a series of function calls starting at startTime, ending at endTime and separated by ntcipBackupTime.           
-            
+            trigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1)
             self.backgroundScheduler.add_job(self.signalController.setPhaseControl, args = [commandObject.action, commandObject.phases, self.scheduleReceiptTime], 
-                    trigger = 'interval',
-                    seconds = self.ntcipBackupTime_Sec-1, # ADD EXPLANATION -> NTCIP BACKUPTIME MUST NOT BE 1.
+                    trigger = trigger,
                     start_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.startTime)), 
                     end_date=(datetime.datetime.now()+datetime.timedelta(seconds=commandObject.endTime)),                     
                     id = str(self.commandId))
             return self.commandId
 
-    def scheduleTimingPlanUpdate(self, interval:int) -> int:
+    def scheduleTimingPlanUpdate(self, update_interval:int) -> int:
         """
         scheduleTimingPlanUpdate takes in the interval as an argument, and for that interval, 
         schedules the update of active timing plan.
@@ -361,10 +362,9 @@ class Scheduler:
         if self.commandId > 65534:
             self.commandId = 0
         self.commandId = self.commandId + 1
-
+        trigger = interval.IntervalTrigger(seconds=update_interval)
         self.backgroundScheduler.add_job(self.signalController.updateAndSendActiveTimingPlan,
-                    trigger = 'interval',
-                    seconds = interval,
+                    trigger = trigger,
                     id = str(self.commandId))
         return self.commandId
 
