@@ -32,10 +32,10 @@ class MessageDistributor():
         self.intersectionList=config["intersections"]
 
         # BSM Clients:
-        self.transit_client_list=self.getBsmAdditionalClientsList("transit")
-        self.truck_client_list=self.getBsmAdditionalClientsList("truck")
-        self.emergency_client_list=self.getBsmAdditionalClientsList("emergency")
-        self.passenger_client_list=self.getBsmAdditionalClientsList("passenger")
+        self.transit_client_list=self.getBsmClientsList("transit")
+        self.truck_client_list=self.getBsmClientsList("truck")
+        self.emergency_client_list=self.getBsmClientsList("emergency")
+        self.passenger_client_list=self.getBsmClientsList("passenger")
 
         # MAP Clients:
         self.map_client_list=self.getMapClientsList()
@@ -47,7 +47,7 @@ class MessageDistributor():
             messages needs to be opened (and closed) in the wrapper module
         ''' 
         self.sendingSocket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    def getBsmAdditionalClientsList(self, vehicleType:str):
+    def getBsmClientsList(self, vehicleType:str):
         """
         reads the information of clients for the vehicle type specified in the argument,
         and returns the list of tuples having client information in form of 
@@ -57,7 +57,7 @@ class MessageDistributor():
         or "passenger"
         """
         clients_list = []
-        for client in self.config["bsm_additional_clients"][vehicleType]:
+        for client in self.config["bsm_clients"][vehicleType]:
             client_tuple = ((client["ip_address"]), client["port"])
             clients_list = clients_list + [client_tuple]
         return clients_list

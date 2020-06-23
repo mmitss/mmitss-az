@@ -17,11 +17,12 @@
   Revision History:
   1. This is the initial revision. MapSpatBroadcaster does the follwoing tasks: 
     -> Read configuration data: controllerIP, selfIP, mapPayload, regionalID, and IntersectionID.
-    -> Receive SPAT data from the ctraffic controller (currently NTCIP1202v2 Blob: defined in separate class)
-    -> Calculate the data required for trafficControllerObserver and J2735 SPAT message.
-    -> Formulate a json string and send it to trafficControllerObserver and msgEncoder.
-    -> Send the mapPayload as it is to msgEncoder.
-    -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be required to created which could be used in similar manner like NTCIP1202v2Blob class.
+    -> Receive SPAT data from the traffic controller (currently NTCIP1202v2 Blob: defined in separate class)
+    -> Calculate the data required for other mmitss components and J2735 SPAT message.
+    -> Formulate a json string and send it the data to trafficControllerInterface, MsgEncoder.
+    -> Send the MapPayload as it is to MsgEncoder. and send the Map Json string to the Message Distributor.
+    -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be 
+       required to created which could be used in similar manner like NTCIP1202v2Blob class.
 '''
 
 import socket
@@ -36,46 +37,40 @@ def main():
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
 
+
     # Establish a socket and bind it to IP and port
-    outerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
-    port = config["PortNumber"]["MapSPaTBroadcaster"]
-    MapSpatBroadcastAddress = (mrpIp, port)
-    outerSocket.bind(MapSpatBroadcastAddress)
-
-    msgEncoderPort = config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]
-    msgEncoderAddress = (mrpIp, msgEncoderPort)
-
-    dataCollectorIp = config["DataCollectorIP"]
-    dataCollectorPort = config["PortNumber"]["DataCollector"]
-    dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
+    MapSpatBroadcastAddress = (mrpIp, config["PortNumber"]["MapSPaTBroadcaster"])
+    s.bind(MapSpatBroadcastAddress)
     
-    msgDistributorIp = config["MessageDistributorIP"]
-    msgDistributorPort = config["PortNumber"]["MessageDistributor"]
-    msgDistributorAddress = (msgDistributorIp, msgDistributorPort)
+    snmpEngineAddress = (mrpIp, config["PortNumber"]["SnmpEngine"])
+    msgEncoderAddress = (mrpIp, config["PortNumber"]["MessageTransceiver"]["MessageEncoder"])
+    dataCollectorAddress = (config["DataCollectorIP"], config["PortNumber"]["DataCollector"])
+    msgDistributorAddress = (config["MessageDistributorIP"], config["PortNumber"]["MessageDistributor"])
+    tci_currPhaseAddress = (mrpIp, config["PortNumber"]["TrafficControllerCurrPhaseListener"])
+    
+    # Read controllerIp from the config file and store it.
+    controllerIp = config["SignalController"]["IpAddress"]
 
+
+    if ((config["SignalController"]["Vendor"]).lower() == "econolite"):
+        enableSpatJsonRequest = json.dumps({"MsgType": "SnmpSetRequest","OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1","Value": 6})
+        s.sendto(enableSpatJsonRequest.encode(),snmpEngineAddress)
+        
     clientsJson = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
     clients_spatBlob = clientsJson["spat"]["blob"]
     clients_spatJson = clientsJson["spat"]["json"]
-
-    tci_currPhasePort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
-    tci_currPhaseAddress = (mrpIp, tci_currPhasePort)
 
     # Store map payload in a string
     mapPayload = config["MapPayload"]
     intersectionID = config["IntersectionID"]
     intersectionName = config["IntersectionName"]
     regionalID = config["RegionalID"]
-
     
-    # Map Message formatted for MsgDistributor:
-    mapJson = json.dumps({
-        "MsgType": "MAP",
-        "IntersectionName": intersectionName,
-        "IntersectionID": intersectionID,
-        "MapPayload": mapPayload,
-        "RegionalID": regionalID
-    })
+    # Store Map Message Json:
+    mapJson = json.dumps({"MsgType": "MAP","IntersectionName": intersectionName,
+                            "IntersectionID": intersectionID,"MapPayload": mapPayload,"RegionalID": regionalID})
 
     permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
     splitPhases = config["SignalController"]["SplitPhases"]
@@ -93,22 +88,23 @@ def main():
     spatObject.setIntersectionID(intersectionID)
     spatObject.setRegionalID(regionalID)
 
-    # Read controllerIp from the config file and store it.
-    controllerIp = config["SignalController"]["IpAddress"]
-
     msgCnt = 0
     spatMapMsgCount = 0
 
     print("Waiting for packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
 
-    while True:
+    spatBroadcastSuccessFlag = False
 
-        spatBlob, addr = outerSocket.recvfrom(1024)     
+    while True:
+        spatBlob, addr = s.recvfrom(1024)
+        if spatBroadcastSuccessFlag == False:
+            print("\nSPAT Broadcast Set Successfully!")
+            spatBroadcastSuccessFlag = True
         # Send spat blob to external clients:       
         if addr[0] == controllerIp:
             for client in clients_spatBlob:
                 address = (client["IP"], client["Port"])
-                outerSocket.sendto(spatBlob, address)
+                s.sendto(spatBlob, address)
                     
             currentBlob.processNewData(spatBlob)
             if(msgCnt < 127):
@@ -118,23 +114,21 @@ def main():
             spatObject.fillSpatInformation(currentBlob)
             spatJsonString = spatObject.Spat2Json()
             currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
-            outerSocket.sendto(spatJsonString.encode(), msgEncoderAddress)
-            outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
-            outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
-        
-            print("Sent SPAT to MsgEncoder at:" + str(time.time()))
-            
+            s.sendto(spatJsonString.encode(), msgEncoderAddress)
+            s.sendto(spatJsonString.encode(), dataCollectorAddress)
+            s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
+                        
             # Send spat json to external clients:
             for client in clients_spatJson:
                 address = (client["IP"], client["Port"])
-                outerSocket.sendto(spatJsonString.encode(), address)
+                s.sendto(spatJsonString.encode(), address)
 
             spatMapMsgCount = spatMapMsgCount + 1
             if spatMapMsgCount > 9:
-                outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
-                outerSocket.sendto(mapJson.encode(), msgDistributorAddress)
+                s.sendto(mapPayload.encode(), msgEncoderAddress)
+                s.sendto(mapJson.encode(), msgDistributorAddress)
                 spatMapMsgCount = 0
-                print("Sent MAP to MsgEncoder and Msg Distributor at:" + str(time.time()))
+                
 
 if __name__ == "__main__":
     main()
