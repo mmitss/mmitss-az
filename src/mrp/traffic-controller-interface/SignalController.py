@@ -289,7 +289,7 @@ class SignalController:
         Note that for in the standard MIB, we can get information only about the timing plan # 1.
         """
         
-        if self.vendor.lower() == "econolite" and self.timingPlanMibName.lower()=="econolitemib": # This block is valid for Econolite only:
+        if self.vendor.lower() == "econolite" and self.timingPlanMibName.lower()=="/nojournal/bin/econolitemib.py": # This block is valid for Econolite only:
             def getActiveTimingPlanId():
                 activeTimingPlanId = int(self.snmp.getValue(self.timingPlanMib.CUR_TIMING_PLAN))
                 return activeTimingPlanId
