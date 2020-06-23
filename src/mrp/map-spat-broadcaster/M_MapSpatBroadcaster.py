@@ -53,7 +53,8 @@ def main():
     # Read controllerIp from the config file and store it.
     controllerIp = config["SignalController"]["IpAddress"]
 
-
+    # If the controller is Econolite, the broadcasting of SPAT needs to be enabled manually through SnmpSet request.
+    # In such cases, the M_SnmpEngine component needs to be running before running the MapSpatBroadcaster
     if ((config["SignalController"]["Vendor"]).lower() == "econolite"):
         enableSpatJsonRequest = json.dumps({"MsgType": "SnmpSetRequest","OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1","Value": 6})
         s.sendto(enableSpatJsonRequest.encode(),snmpEngineAddress)
@@ -91,7 +92,7 @@ def main():
     msgCnt = 0
     spatMapMsgCount = 0
 
-    print("Waiting for packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
+    print("Waiting for packets received from the Traffic Signal Controller. Check:\n1. Physical connection between the Host and the Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of the Host.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n")
 
     spatBroadcastSuccessFlag = False
 

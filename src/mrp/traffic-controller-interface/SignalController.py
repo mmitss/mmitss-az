@@ -91,31 +91,12 @@ class SignalController:
         # Initialize current timing plan ID and corresponding JSON string
         self.currentTimingPlanId = 0
         self.currentTimingPlanJson = ""
-
-        # Enable the broadcast of SPAT message in the signal controller  if it is an Econolite signal controller:     
-        if self.vendor.lower() == "econolite":
-            self.vendorMib = self.timingPlanMib
-            self.enableSpatBroadcast()
         
         # Read the currently active timing plan and store it into a JSON string
         self.updateAndSendActiveTimingPlan()
 
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
-    def enableSpatBroadcast(self):
-        """
-        enables the broadcasting of SPAT blob from the signal controller. 
-
-        Signal controller broadcasts the SPAT blob to a particular port (default 6053)
-        of the set server IP. This configuration can be set in MM-1-5-1 in the controller 
-        menu. This function requires no arguments.
-        """
-        
-        self.snmp.setValue(self.vendorMib.asc3ViiMessageEnable, 6) 
-        print("SPAT Broadcast Set Successfully at time:" + str(time.time()))
-    ######################## Definition End: enableSpatBroadcast(self) ########################
-    
-    
     def getPhaseControl(self, action:int) -> int:
         """
         returns the integer representation of bit-string denoting which phases are currently executing 
@@ -289,7 +270,7 @@ class SignalController:
         Note that for in the standard MIB, we can get information only about the timing plan # 1.
         """
         
-        if self.vendor.lower() == "econolite" and self.timingPlanMibName.lower()=="/nojournal/bin/econolitemib.py": # This block is valid for Econolite only:
+        if self.vendor.lower()=="econolite" and self.timingPlanMibName.lower()=="/nojournal/bin/econolitemib.py": # This block is valid for Econolite only:
             def getActiveTimingPlanId():
                 activeTimingPlanId = int(self.snmp.getValue(self.timingPlanMib.CUR_TIMING_PLAN))
                 return activeTimingPlanId
@@ -380,6 +361,8 @@ class SignalController:
                 s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
                 s.close()
                 print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+                print(self.currentTimingPlanJson)
+
         else:
             def getPhaseParameterPhaseNumber():
                 phaseParameter = [0 for x in range (0,8)]
@@ -464,6 +447,7 @@ class SignalController:
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
             s.close()
             print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+            print(self.currentTimingPlanJson)
             
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
