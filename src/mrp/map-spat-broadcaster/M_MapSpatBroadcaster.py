@@ -42,7 +42,6 @@ def main():
     port = 6053
     MapSpatBroadcastAddress = (mrpIp, port)
     outerSocket.bind(MapSpatBroadcastAddress)
-    outerSocket.settimeout(1)
 
     msgEncoderPort = config["PortNumber"]["MessageTransceiver"]["MessageEncoder"]
     msgEncoderAddress = (mrpIp, msgEncoderPort)
@@ -106,7 +105,7 @@ def main():
                 outerSocket.sendto(spatJsonString.encode(), dataCollectorAddress)
                 outerSocket.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
             
-                print("Sent SPAT to MsgEncoder")
+                print("Sent SPAT to MsgEncoder at:" + str(time.time()))
                 
                 # Send spat json to external clients:
                 for client in clients_spatJson:
@@ -117,7 +116,7 @@ def main():
                 if spatMapMsgCount > 9:
                     outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
                     spatMapMsgCount = 0
-                    print("Sent MAP to MsgEncoder")
+                    print("Sent MAP to MsgEncoder at:" + str(time.time()))
 
 if __name__ == "__main__":
     main()
