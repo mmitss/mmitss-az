@@ -42,5 +42,19 @@
         "passenger":[
 
         ]
-    }
+    },
+    "map_clients":
+    [
+        {
+            "ip_address": "10.12.6.101",
+            "port":5003
+        }
+    ],
+    "ssm_clients":
+    [
+        {
+            "ip_address": "10.12.6.101",
+            "port":5003
+        }
+    ]
 }

@@ -30,10 +30,18 @@ class MessageDistributor():
     def __init__(self, config:json):
         self.config = config
         self.intersectionList=config["intersections"]
+
+        # BSM Clients:
         self.transit_client_list=self.getBsmAdditionalClientsList("transit")
         self.truck_client_list=self.getBsmAdditionalClientsList("truck")
         self.emergency_client_list=self.getBsmAdditionalClientsList("emergency")
         self.passenger_client_list=self.getBsmAdditionalClientsList("passenger")
+
+        # MAP Clients:
+        self.map_client_list=self.getMapClientsList()
+
+        # SSM Clients:
+        self.ssm_client_list=self.getSsmClientsList()
         
         ''' This socket is used only for outgoing messages. The socket for incoming 
             messages needs to be opened (and closed) in the wrapper module
@@ -50,6 +58,22 @@ class MessageDistributor():
         """
         clients_list = []
         for client in self.config["bsm_additional_clients"][vehicleType]:
+            client_tuple = ((client["ip_address"]), client["port"])
+            clients_list = clients_list + [client_tuple]
+        return clients_list
+
+    def getSsmClientsList(self):
+
+        clients_list = []
+        for client in self.config["ssm_lients"][vehicleType]:
+            client_tuple = ((client["ip_address"]), client["port"])
+            clients_list = clients_list + [client_tuple]
+        return clients_list
+
+    def getMapClientsList(self):
+
+        clients_list = []
+        for client in self.config["map_clients"][vehicleType]:
             client_tuple = ((client["ip_address"]), client["port"])
             clients_list = clients_list + [client_tuple]
         return clients_list
@@ -91,6 +115,18 @@ class MessageDistributor():
             for client in clientList:
                 self.sendingSocket.sendto((json.dumps(timestampedBsm)).encode(), client)
 
+    def distributeMapToClients(self, timestampedMsg:json):
+        clientList = self.map_client_list
+        if len(clientList)>0:
+            for client in clientList:
+                self.sendingSocket.sendto((json.dumps(timestampedMsg)).encode(), client)
+
+    def distributeSsmToClients(self, timestampedMsg:json):
+        clientList = self.ssm_client_list
+        if len(clientList)>0:
+            for client in clientList:
+                self.sendingSocket.sendto((json.dumps(timestampedMsg)).encode(), client)
+
    
     def distributeMsgToInfrastructureAndGetType(self, timestampedMessage:json):
         """
@@ -103,7 +139,10 @@ class MessageDistributor():
         """
         messageType = timestampedMessage["MsgType"]
 
-        if messageType == "SRM":
+        if((messageType == "SSM") or (messageType == "MAP")):
+            return messageType
+
+        elif messageType == "SRM":
             position = timestampedMessage["SignalRequest"]["position"]
         elif messageType == "BSM":
             position = timestampedMessage["BasicVehicle"]["position"]
