@@ -95,17 +95,17 @@ if __name__ == "__main__":
     import time
 
     requestTime = time.time()
-    print("Original value: " + str(snmp.getValue("1.3.6.1.4.1.1206.4.2.1.3.3.1")))
+    print("Original value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
     deliveryTime = time.time()
     leadTime = deliveryTime - requestTime
     print("Received in " + str(leadTime) + " Seconds" )
 
     time.sleep(0.1)
-    snmp.setValue("1.3.6.1.4.1.1206.4.2.1.3.3.1", 300)
+    snmp.setValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1", 6)
     time.sleep(0.1)
 
     requestTime = time.time()
-    print("New value: " + str(snmp.getValue("1.3.6.1.4.1.1206.4.2.1.3.3.1")))
+    print("New value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
     deliveryTime = time.time()
     leadTime = deliveryTime - requestTime
     print("Received in " + str(leadTime) + " Seconds" )
