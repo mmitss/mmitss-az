@@ -4,10 +4,10 @@
     "intersections": [
         {
             "name": "DaisyMountain_GavilanPeak",
-            "ip_address": "10.12.6.108",
+            "ip_address": "10.12.6.56",
             "bsm_client_port": 5001,
-            "srm_client_port": 20004,
-            "dsrc_range_Meter": 300,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
             "position": {
                 "latitude_DecimalDegree": 33.842932,
                 "longitude_DecimalDegree": -112.135186,
@@ -18,10 +18,18 @@
     "bsm_additional_clients": 
     {
         "transit":[
+            {
+                "ip_address": "10.12.6.109",
+                "port":20004
+            }
         ],
         "truck":[
         ],
         "emergency":[
+            {
+                "ip_address": "10.12.6.112",
+                "port":20004
+            }
         ],
         "passenger":[
         ]

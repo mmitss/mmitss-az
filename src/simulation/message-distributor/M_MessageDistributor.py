@@ -31,16 +31,19 @@ receivingSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 receivingSocket.bind((config["msg_distributor_ip"], config["msg_distributor_port"]))
 
 while True:
-    data, addr = receivingSocket.recvfrom(1024)
+    data, addr = receivingSocket.recvfrom(4096)
     msg = json.loads(data.decode())
     msg = msgDist.timestampMessage(msg)
     messageType = msgDist.distributeMsgToInfrastructureAndGetType(msg)
     if messageType == "BSM":
         msgDist.distributeBsmToClients(msg)
+        print("BSM")
     elif messageType == "MAP":
         msgDist.distributeMapToClients(msg)
+        print("MAP")
     elif messageType == "SSM":
         msgDist.distributeSsmToClients(msg)
+        print("************SSM")
       
 
 receivingSocket.close()

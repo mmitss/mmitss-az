@@ -65,7 +65,7 @@ class MessageDistributor():
     def getSsmClientsList(self):
 
         clients_list = []
-        for client in self.config["ssm_lients"][vehicleType]:
+        for client in self.config["ssm_clients"]:
             client_tuple = ((client["ip_address"]), client["port"])
             clients_list = clients_list + [client_tuple]
         return clients_list
@@ -73,7 +73,7 @@ class MessageDistributor():
     def getMapClientsList(self):
 
         clients_list = []
-        for client in self.config["map_clients"][vehicleType]:
+        for client in self.config["map_clients"]:
             client_tuple = ((client["ip_address"]), client["port"])
             clients_list = clients_list + [client_tuple]
         return clients_list
@@ -88,8 +88,8 @@ class MessageDistributor():
 
         ``message`` is a JSON object of the message
         """
-        message["timestamp_posix"] = time.time()
-        message["timestamp_verbose"] = str(datetime.datetime.now())       
+        message["Timestamp_posix"] = time.time()
+        message["Timestamp_verbose"] = str(datetime.datetime.now())       
         return message
     
     def distributeBsmToClients(self, timestampedBsm:json):
@@ -143,6 +143,7 @@ class MessageDistributor():
             return messageType
 
         elif messageType == "SRM":
+            print("Received SRM")
             position = timestampedMessage["SignalRequest"]["position"]
         elif messageType == "BSM":
             position = timestampedMessage["BasicVehicle"]["position"]
@@ -163,8 +164,11 @@ class MessageDistributor():
             if msgDistance <= intersection["dsrc_range_Meter"]:
                 if messageType == "SRM":
                     self.sendingSocket.sendto((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["srm_client_port"]))
+                    print("Distributed SRM")
                 elif messageType == "BSM": 
                     self.sendingSocket.sendto((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["bsm_client_port"]))
+            else:
+                print("Message not forwarded - not in DSRC range! Distance=" + str(msgDistance))
                 
         return messageType
   
