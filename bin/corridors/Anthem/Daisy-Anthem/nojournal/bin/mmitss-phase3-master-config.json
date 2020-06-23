@@ -34,7 +34,7 @@
         "PrioritySolverToTCIInterface": 20010,
         "SignalCoordination": 20011,
 		"MapSPaTBroadcaster": 6053,
-		"RSUOBUImageForwarder": 1516,
+		"DsrcImmediateForwarder": 1516,
         "PriorityRequestServer_SendSSM": 50003,
         "DataCollector": 30006,
         "SnmpEngine": 20020,
