@@ -39,7 +39,7 @@ def main():
     # Establish a socket and bind it to IP and port
     outerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
-    port = 6053
+    port = config["PortNumber"]["MapSPaTBroadcaster"]
     MapSpatBroadcastAddress = (mrpIp, port)
     outerSocket.bind(MapSpatBroadcastAddress)
 
@@ -49,6 +49,10 @@ def main():
     dataCollectorIp = config["DataCollectorIP"]
     dataCollectorPort = config["PortNumber"]["DataCollector"]
     dataCollectorAddress = (dataCollectorIp, dataCollectorPort)
+    
+    msgDistributorIp = config["MessageDistributorIP"]
+    msgDistributorPort = config["PortNumber"]["MessageDistributor"]
+    msgDistributorAddress = (msgDistributorIp, msgDistributorPort)
 
     clientsJson = json.load(open('/nojournal/bin/mmitss-data-external-clients.json','r'))
     clients_spatBlob = clientsJson["spat"]["blob"]
@@ -59,6 +63,19 @@ def main():
 
     # Store map payload in a string
     mapPayload = config["MapPayload"]
+    intersectionID = config["IntersectionID"]
+    intersectionName = config["IntersectionName"]
+    regionalID = config["RegionalID"]
+
+    
+    # Map Message formatted for MsgDistributor:
+    mapJson = json.dumps({
+        "MsgType": "MAP",
+        "IntersectionName": intersectionName,
+        "IntersectionID": intersectionID,
+        "MapPayload": mapPayload,
+        "RegionalID": regionalID
+    })
 
     permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
     splitPhases = config["SignalController"]["SplitPhases"]
@@ -73,8 +90,8 @@ def main():
 
     # Create an object of Spat class filled with static information:
     spatObject = Spat.Spat()
-    spatObject.setIntersectionID(config["IntersectionID"])
-    spatObject.setRegionalID(config["RegionalID"])
+    spatObject.setIntersectionID(intersectionID)
+    spatObject.setRegionalID(regionalID)
 
     # Read controllerIp from the config file and store it.
     controllerIp = config["SignalController"]["IpAddress"]
@@ -115,8 +132,9 @@ def main():
             spatMapMsgCount = spatMapMsgCount + 1
             if spatMapMsgCount > 9:
                 outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
+                outerSocket.sendto(mapJson.encode(), msgDistributorAddress)
                 spatMapMsgCount = 0
-                print("Sent MAP to MsgEncoder at:" + str(time.time()))
+                print("Sent MAP to MsgEncoder and Msg Distributor at:" + str(time.time()))
 
 if __name__ == "__main__":
     main()
