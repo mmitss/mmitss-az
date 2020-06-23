@@ -37,5 +37,10 @@ while True:
     messageType = msgDist.distributeMsgToInfrastructureAndGetType(msg)
     if messageType == "BSM":
         msgDist.distributeBsmToClients(msg)
+    elif messageType == "MAP":
+        msgDist.distributeMapToClients(msg)
+    elif messageType == "SSM":
+        msgDist.distributeSsmToClients(msg)
+      
 
 receivingSocket.close()
