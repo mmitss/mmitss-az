@@ -82,6 +82,9 @@ def main():
 
     msgCnt = 0
     spatMapMsgCount = 0
+
+    print("Waiting for packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
+
     while True:
         try:
             spatBlob, addr = outerSocket.recvfrom(1024)     
@@ -115,16 +118,6 @@ def main():
                     outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
                     spatMapMsgCount = 0
                     print("Sent MAP to MsgEncoder")
-
-        except socket.timeout:
-            print("No packets received from the Traffic Signal Controller. Check:\n1. Physical connection between CVCP and Traffic Signal Controller.\n2. Server IP in MM-1-5-1 of the Signal Controller must match the IP address of CVCP.\n3. Address in MM-1-5-3 must be set to 6053.\n4. Controller must be power-cycled after changes in internal configuration.\n5. Controller must be set to broadcast spat blobs using SNMP interface. asc3ViiMessageEnable or '1.3.6.1.4.1.1206.3.5.2.9.44.1.1' must equal 6.")
-            print("Sent MAP to MsgEncoder")
-            try:
-                outerSocket.sendto(mapPayload.encode(), msgEncoderAddress)
-                spatMapMsgCount = 0
-            except Exception as e:
-                print(e)
-
 
 if __name__ == "__main__":
     main()
