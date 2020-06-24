@@ -32,6 +32,8 @@ receivingSocket.bind((config["msg_distributor_ip"], config["msg_distributor_port
 
 while True:
     data, addr = receivingSocket.recvfrom(4096)
+
+    
     msg = json.loads(data.decode())
     msg = msgDist.timestampMessage(msg)
     messageType = msgDist.distributeMsgToInfrastructureAndGetType(msg)
