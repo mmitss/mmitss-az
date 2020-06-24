@@ -167,8 +167,6 @@ class MessageDistributor():
                     print("Distributed SRM")
                 elif messageType == "BSM": 
                     self.sendingSocket.sendto((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["bsm_client_port"]))
-            else:
-                print("Message not forwarded - not in DSRC range! Distance=" + str(msgDistance))
                 
         return messageType
   
