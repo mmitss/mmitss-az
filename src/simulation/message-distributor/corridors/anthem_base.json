@@ -1,0 +1,115 @@
+{
+    "msg_distributor_ip": "10.12.6.57",
+    "msg_distributor_port": 5000,
+    "intersections": [
+        {
+            "name": "DaisyMountain_GavilanPeak",
+            "ip_address": "10.12.6.3",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.842932,
+                "longitude_DecimalDegree": -112.135186,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_DedicationTrail",
+            "ip_address": "10.12.6.6",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.843239,
+                "longitude_DecimalDegree": -112.131541,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_MeridianDrive",
+            "ip_address": "10.12.6.9",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.846958,
+                "longitude_DecimalDegree": -112.122117,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_HastingsWay",
+            "ip_address": "10.12.6.12",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.850359,
+                "longitude_DecimalDegree": -112.116549,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_MemorialDrive",
+            "ip_address": "10.12.6.15",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.856547,
+                "longitude_DecimalDegree": -112.114198,
+                "elevation_Meter": 539
+            }
+        },
+        {
+            "name": "DaisyMountain_AnthemWay",
+            "ip_address": "10.12.6.18",
+            "bsm_client_port": 5001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 500,
+            "position": {
+                "latitude_DecimalDegree": 33.859918,
+                "longitude_DecimalDegree": -112.111985,
+                "elevation_Meter": 539
+            }
+        }
+    ],
+    "bsm_clients": 
+    {
+        "transit":[
+            {
+                "ip_address": "10.12.6.56",
+                "port":20022
+            }
+        ],
+        "truck":[
+            {
+                "ip_address": "10.12.6.56",
+                "port":20022
+            }
+        ],
+        "emergency":[
+            {
+                "ip_address": "10.12.6.56",
+                "port":20022
+            }
+        ],
+        "passenger":[
+        ]
+    },
+    "map_clients":
+    [
+        {
+            "ip_address": "10.12.6.56",
+            "port":20022
+        }
+    ],
+    "ssm_clients":
+    [
+        {
+            "ip_address": "10.12.6.56",
+            "port":20022
+        }
+    ]
+}
