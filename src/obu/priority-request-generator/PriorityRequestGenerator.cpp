@@ -108,7 +108,7 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 		expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
 		expectedTimeOfArrival_Second = signalStatus.getETA_Second();
 		priorityRequestStatus = signalStatus.getPriorityRequestStatus();
-		
+
 		for (int i = 0; i < signalStatus.getNoOfRequest(); i++)
 		{
 			activeRequest.vehicleID = vehicleID[i];
@@ -133,10 +133,13 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 */
 std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
 {
-	std::string srmJsonString;
-	int vehExpectedTimeOfArrival_Minute;
-	double vehExpectedTimeOfArrival_Second = remquo((getTime2Go() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
-	double vehDuration = ETA_DURATION_SECOND;
+	std::string srmJsonString{};
+	int vehExpectedTimeOfArrival_Minute{};
+	double vehExpectedTimeOfArrival_Second{};
+	double vehDuration{};
+
+	vehExpectedTimeOfArrival_Second = remquo((getTime2Go() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
+	vehDuration = ETA_DURATION_SECOND;
 
 	tempVehicleSpeed = basicVehicle.getSpeed_MeterPerSecond(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
 	tempVehicleSignalGroup = getSignalGroup();
@@ -168,7 +171,7 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 */
 bool PriorityRequestGenerator::addToActiveRequestTable(SignalStatus signalStatus)
 {
-	bool matchIntersection = false;
+	bool matchIntersection{false};
 
 	if (getIntersectionID() == signalStatus.getIntersectionID() && getRegionalID() == signalStatus.getRegionalID())
 		matchIntersection = true;
@@ -290,8 +293,8 @@ void PriorityRequestGenerator::setSignalGroup(int phaseNo)
 */
 bool PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpeed)
 {
-	bool bETAValue = false;
-	double vehicleTime2Go;
+	bool bETAValue{false};
+	double vehicleTime2Go{};
 	if (vehicleSpeed > VEHICLEMINSPEED)
 	{
 		vehicleTime2Go = (distance2go / DISTANCEUNITCONVERSION) / vehicleSpeed; //distance2go is cm. DISTANCEUNITCONVERSION is used converst distance2go into meter
@@ -359,7 +362,8 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 
 	std::string fmap{};
 	std::string intersectionName{};
-
+	double distance2go{};
+	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 	//If active map list is empty, look for active map
 	if (activeMapList.empty())
 	{
@@ -374,14 +378,14 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		// std::cout << "Active Map List is not Empty" << std::endl;
 		fmap = activeMapList.front().activeMapFileDirectory;
 		intersectionName = activeMapList.front().activeMapFileName;
-		bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
+
 		//initialize mapengine library
 		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
 
 		uint32_t referenceId = plocAwareLib->getIntersectionIdByName(intersectionName);
 		uint16_t regionalId = static_cast<uint16_t>((referenceId >> 16) & 0xFFFF);
 		uint16_t intersectionId = static_cast<uint16_t>(referenceId & 0xFFFF);
-		double distance2go{};
+
 		//get the vehicle data from bsm
 		double vehicle_Latitude = basicVehicle.getLatitude_DecimalDegree();
 		double vehicle_Longitude = basicVehicle.getLongitude_DecimalDegree();
@@ -505,9 +509,9 @@ int PriorityRequestGenerator::getVehicleIntersectionStatus()
 }
 
 /*
-	- obtain vehicle type from VehicleConfiguration.json file
+	- set vehicle type from VehicleConfiguration.json file
 */
-int PriorityRequestGenerator::getVehicleType()
+void PriorityRequestGenerator::setVehicleType()
 {
 	Json::Value jsonObject_config;
 	Json::Reader reader;
@@ -515,7 +519,25 @@ int PriorityRequestGenerator::getVehicleType()
 	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject_config);
 	vehicleType = (jsonObject_config["VehicleType"]).asInt();
+}
 
+void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
+{
+	if(vehType == "transit")
+		vehicleType = 6;
+	
+	else if(vehType == "truck")
+		vehicleType = 9;
+
+	else if (vehType == "emergency")
+		vehicleType = 2;	
+}
+
+/*
+	- getters for vehicle type
+*/
+int PriorityRequestGenerator::getVehicleType()
+{
 	return vehicleType;
 }
 

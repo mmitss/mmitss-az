@@ -79,7 +79,7 @@ std::string MapManager::getTimedOutMapPayLoad()
 */
 bool MapManager::addToMapInList() //check_Map.h
 {
-    bool addInList = false;
+    bool addInList{false};
     std::vector<Map::AvailableMap>::iterator findVehicleMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                   [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
@@ -107,7 +107,7 @@ bool MapManager::addToMapInList() //check_Map.h
 */
 bool MapManager::updateMapPayLoadList()
 {
-    bool updateMapList = false;
+    bool updateMapList{false};
     std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                            [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
@@ -129,7 +129,7 @@ bool MapManager::updateMapPayLoadList()
 */
 bool MapManager::deleteMapPayLoadFromList()
 {
-    bool deleteMapPayload = false;
+    bool deleteMapPayload{false};
 
     if (!availableMapList.empty())
     {
@@ -289,8 +289,8 @@ void MapManager::printAvailableMapList()
 void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 {
     Map::ActiveMap activeMap;
-    std::string fmap;
-    std::string intersectionName;
+    std::string fmap{};
+    std::string intersectionName{};
 
     if (activeMapList.empty() && !availableMapList.empty())
     {
@@ -299,7 +299,7 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
         {
             fmap = availableMapList[i].availableMapFileDirectory;
             intersectionName = availableMapList[i].availableMapFileName;
-            bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
+            bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
             //Initialize mapengine library.
             LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
             //Obtain vehicle information from bsm
@@ -331,6 +331,7 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
                 activeMapList.push_back(activeMap);
                 break;
             }
+            delete plocAwareLib;
         }
     }
 
@@ -368,10 +369,60 @@ void MapManager::updateMapAge()
         }
     }
 }
+
 /*
-	- Getters for Active map List
+    - Method for obtaining reference point of the received Map using map engine library
 */
-std::vector<Map::ActiveMap> MapManager::getActiveMapList()
+void MapManager::getReferencePoint()
+{
+    std::string fmap{};
+    bool singleFrame{false};
+    // int ref_Latitude{};
+    // int ref_Longitude{};
+    // int ref_Elevation{};
+    int intersectionIndex{};
+    struct geoRefPoint_t geoRefPoint_t_1 = {0, 0, 0};
+    fmap = "./map/" + intersectionMapName + ".map.payload";
+
+    LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
+    intersectionIndex = plocAwareLib->getIndexByIntersectionId(static_cast<int16_t>(regionalID), static_cast<int16_t>(intersectinID));
+    geoRefPoint_t_1 = plocAwareLib->getIntersectionRefPoint(static_cast<int8_t>(intersectionIndex));
+    
+    delete plocAwareLib;
+    
+    mapReferenceLatitude = geoRefPoint_t_1.latitude / 10000000.0;
+    mapReferenceLongitude = geoRefPoint_t_1.longitude / 10000000.0;
+    mapReferenceElevation = geoRefPoint_t_1.elevation * 0.1;
+}
+
+/*
+    - Getters for reference point(latitude) of received Map
+*/
+double MapManager::getMapReferenceLatitude()
+{
+    return mapReferenceLatitude;
+}
+
+/*
+    - Getters for reference point(longitude) of received Map
+*/
+double MapManager::getMapReferenceLongitude()
+{
+    return mapReferenceLongitude;
+}
+
+/*
+    - Getters for reference point(elevation) of received Map
+*/
+double MapManager::getMapReferenceElevation()
+{
+    return mapReferenceElevation;
+}
+
+/*
+    - Getters for Active map List
+*/
+    std::vector<Map::ActiveMap> MapManager::getActiveMapList()
 {
     return activeMapList;
 }

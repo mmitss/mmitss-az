@@ -71,6 +71,8 @@ public:
   void setSignalGroup(int phaseNo);
   bool setTime2Go(double distance2go, double vehicleSpeed);
   void setVehicleIntersectionStatus(int vehIntersectionStatus);
+  void setVehicleType();
+  void setSimulationVehicleType(std::string vehType); //For PRGServer
   int getMessageType(std::string jsonString);
   std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
   // std::vector<Map::AvailableMap> getAvailableMapList(MapManager mapManager);

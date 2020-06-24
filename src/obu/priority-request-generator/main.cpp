@@ -40,14 +40,13 @@ int main()
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
-    const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
-    const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
     char receiveBuffer[5120];
     std::string srmJsonString{};
     std::string prgStatusJsonString{};
+    PRG.setVehicleType();
 
 
     while (true)
@@ -58,15 +57,12 @@ int main()
         if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_bsm)
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
-            // std::cout << "Received BSM" << std::endl;
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
             if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
-                priorityRequestGeneratorSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
-                
                 // std::cout << "SRM is sent" << std::endl;
             }
             mapManager.updateMapAge();
@@ -83,7 +79,7 @@ int main()
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
-            // std::cout << "Map is received" << std::endl;
+            //std::cout << "Map is received" << std::endl;
         }
 
         else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_ssm)

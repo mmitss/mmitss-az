@@ -29,6 +29,10 @@ private:
   std::string intersectionMapName{};
   std::string timedOutMapPayLoad{};
   int intersectinID{};
+  int regionalID{};
+  double mapReferenceLatitude{};
+  double mapReferenceLongitude{};
+  double mapReferenceElevation{};
 
 public:
   MapManager();
@@ -43,6 +47,10 @@ public:
   bool deleteMapPayLoadFromList();
   int getMapPayloadReceivedTime();
   int getMapPayloadReceivedSecondOfMinute();
+  void getReferencePoint();          //Required for PRGServer
+  double getMapReferenceLatitude();  //Required for PRGServer
+  double getMapReferenceLongitude(); //Required for PRGServer
+  double getMapReferenceElevation(); //Required for PRGServer
   void maintainAvailableMapList();
   void deleteMap();
   void printAvailableMapList();
