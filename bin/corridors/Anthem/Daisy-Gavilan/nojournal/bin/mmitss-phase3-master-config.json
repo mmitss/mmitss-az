@@ -1,5 +1,5 @@
 {
-	"HostIp": "10.12.6.108",
+	"HostIp": "10.12.6.3",
 	
     "SourceDsrcDeviceIp": "10.12.6.116",
     "IntersectionName": "daisy-gavilan",
@@ -9,7 +9,7 @@
     "DataCollectorIP": "172.3.1.91",
 	"HMIControllerIP": "10.12.6.56",
 	"MessageDistributorIP": "10.12.6.57",
-	"PriorityRequestGeneratorServerIP": "10.12.6.57",
+	"PriorityRequestGeneratorServerIP": "10.12.6.56",
     "VehicleType" : 6,
     "Logging" : "True",
     "SRMTimedOutTime" : 10.0,
@@ -68,7 +68,7 @@
 	"SignalController": 
 	{
 		"IpAddress": "10.12.6.104",
-		"NtcipPort": 501,
+		"NtcipPort": 502,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
         "Vendor": "Econolite",
