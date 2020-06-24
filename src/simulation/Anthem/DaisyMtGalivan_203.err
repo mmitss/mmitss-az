@@ -1,0 +1,2 @@
+                  Warning	Simulation second 656.0: Vehicle 682 (on Static Vehicle Route 2 - 2) arrived at the end of link 1 without having found the next link (10015) of its route.	Network object type: Vehicle	Network object keys: 682
+                  Warning	Simulation second 1158.0: Vehicle 1658 (on Static Vehicle Route 2 - 2) arrived at the end of link 1 without having found the next link (10015) of its route.	Network object type: Vehicle	Network object keys: 1658
