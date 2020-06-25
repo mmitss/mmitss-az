@@ -21,7 +21,7 @@ import socket
 import sys
 from MessageDistributor import MessageDistributor
 
-configFile = open(sys.argv[1], 'r')
+configFile = open("/nojournal/bin/msg_dist_config.json", 'r')
 config = json.load(configFile)
 configFile.close()
 

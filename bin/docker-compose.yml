@@ -72,7 +72,19 @@ services:
         networks:
             mmitss_vlan:
                 ipv4_address: 10.12.6.18
-
+                
+    message-distributor:
+        build:
+            context: ./
+            dockerfile: Dockerfile_msg_dist
+        container_name: message-distributor
+        volumes:
+            - type: bind
+                source: $MMITSS_ROOT/mmitss/bin/MessageDistributor/nojournal
+                target: /nojournal
+        networks:
+            mmitss_vlan:
+                ipv4_address: 10.12.6.19
 networks:
     mmitss_vlan:
         driver: macvlan
