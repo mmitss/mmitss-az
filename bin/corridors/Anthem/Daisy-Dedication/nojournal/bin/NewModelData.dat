@@ -3,8 +3,8 @@ param SP1:=2;
 param SP2:=6;
 param init1:=0;
 param init2:=0;
-param Grn1 :=8.3;
-param Grn2 :=8.3;
+param Grn1 :=10.1;
+param Grn2 :=10.1;
 param y          	:=	2	4	4	3	6	4	8	0;
 param red          	:=	2	2	4	4.2	6	2	8	0;
 param gmin      	:=	2	15	4	8	6	15	8	0;
@@ -15,6 +15,6 @@ param Rl (tr): 1 2 3 4 5 6 7 8:=
 1  .	1	.	.	.	.	.	.	
 ;
 param Ru (tr): 1 2 3 4 5 6 7 8:=
-1  .	7.3641	.	.	.	.	.	.	
+1  .	6.60206	.	.	.	.	.	.	
 ;
 end;

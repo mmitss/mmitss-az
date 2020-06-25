@@ -128,6 +128,7 @@ def main():
             if spatMapMsgCount > 9:
                 s.sendto(mapPayload.encode(), msgEncoderAddress)
                 s.sendto(mapJson.encode(), msgDistributorAddress)
+                print("MapSpatBroadcaster Sent Map")
                 spatMapMsgCount = 0
                 
 

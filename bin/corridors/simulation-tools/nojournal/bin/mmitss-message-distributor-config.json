@@ -1,6 +1,4 @@
 {
-    "msg_distributor_ip": "10.12.6.57",
-    "msg_distributor_port": 5000,
     "intersections": [
         {
             "name": "DaisyMountain_GavilanPeak",
@@ -79,19 +77,19 @@
     {
         "transit":[
             {
-                "ip_address": "10.12.6.56",
+                "ip_address": "10.12.6.20",
                 "port":20022
             }
         ],
         "truck":[
             {
-                "ip_address": "10.12.6.56",
+                "ip_address": "10.12.6.20",
                 "port":20022
             }
         ],
         "emergency":[
             {
-                "ip_address": "10.12.6.56",
+                "ip_address": "10.12.6.20",
                 "port":20022
             }
         ],
@@ -101,14 +99,14 @@
     "map_clients":
     [
         {
-            "ip_address": "10.12.6.56",
+            "ip_address": "10.12.6.20",
             "port":20022
         }
     ],
     "ssm_clients":
     [
         {
-            "ip_address": "10.12.6.56",
+            "ip_address": "10.12.6.20",
             "port":20022
         }
     ]

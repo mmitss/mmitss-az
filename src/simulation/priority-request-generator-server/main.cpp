@@ -54,7 +54,7 @@ int main()
             msgType = priorityRequestGeneratorServer.getMessageType(receivedJsonString);
             if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
-                cout << "Received BSM" << endl;
+                // cout << "Received BSM" << endl;
                 basicVehicle.json2BasicVehicle(receivedJsonString);
                 priorityRequestGeneratorServer.processBSM(basicVehicle);
                 if (priorityRequestGeneratorServer.checkSrmSendingFlag() == true)
@@ -63,7 +63,7 @@ int main()
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
-                    cout << "SRM is sent" << endl;
+                    cout << "PRGServer sent SRM to MsgDistributor" << endl;
                     // cout << "Following SRM is sent: \n" << srmJsonString << endl;
                 }
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
@@ -74,7 +74,7 @@ int main()
 
             else if (msgType == MsgEnum::DSRCmsgID_map)
             {
-                cout << "Received Map" << endl;
+                // cout << "Received Map" << endl;
                 priorityRequestGeneratorServer.processMap(receivedJsonString, mapManager);
             }
 

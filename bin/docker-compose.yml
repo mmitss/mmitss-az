@@ -73,6 +73,19 @@ services:
             mmitss_vlan:
                 ipv4_address: 10.12.6.18
 
+    simulation-tools:
+        build:
+            context: ./
+            dockerfile: Dockerfile_simulation-tools
+        container_name: simulation-tools
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/simulation-tools/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.20
+
 networks:
     mmitss_vlan:
         driver: macvlan
