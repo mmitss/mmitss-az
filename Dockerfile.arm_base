@@ -2,6 +2,9 @@
 #    Dockerfile to build an image to run MMITSS applications natively         #
 #    The image can be used to spawn containers that can simulate each         #
 #         RSU that needs to be present in the simulated network               #
+#
+#    ------------------ Version for ARM Builds ---------------------          # 
+#                                                                             #
 #-----------------------------------------------------------------------------#
 FROM ubuntu:18.04
 
@@ -14,8 +17,8 @@ MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 RUN apt-get update && apt-get install -y supervisor iputils-ping net-tools
 RUN mkdir -p /var/log/supervisor
 
-COPY ./lib/x86/system/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/
-COPY ./lib/x86/system/libcrypto.so.1.1 /usr/lib/x86_64-linux-gnu/
+COPY ./usr/lib/arm-linux-gnueabihf/libssl.so.1.1 /usr/lib/arm-linux-gnueabihf/
+COPY ./usr/lib/arm-linux-gnueabihf/libcrypto.so.1.1 /usr/lib/arm-linux-gnueabihf/
 
 
 # Add the shared libraries mmitss needs in order to run
@@ -28,10 +31,11 @@ COPY ./3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
 COPY ./lib/mmitss.conf /etc/ld.so.conf.d/
 
 # Create the symbolic links for the copied libraries."
+RUN ln -s /usr/lib/arm-linux-gnueabihf/libssl.so /usr/lib/arm-linux-gnueabihf/libssl.so.1.1 && /usr/lib/arm-linux-gnueabihf/libcrypto.so /usr/lib/arm-linux-gnueabihf/libcrypto.so.1.1
 RUN ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35 && ln -s /usr/local/lib/mmitss/libglpk.so.35.1.0 /usr/local/lib/mmitss/libglpk.so.35 
 RUN ln -s /usr/local/lib/mmitss/liblocAware.so.1.0 /usr/local/lib/mmitss/liblocAware.so && ln -s /usr/local/lib/mmitss/libasn.so.1.0 /usr/local/lib/mmitss/libasn.so 
 RUN ln -s /usr/local/lib/mmitss/libdsrc.so.1.0 /usr/local/lib/mmitss/libdsrc.so
-# Alpine - RUN ldconfig /etc/ld.so.conf.d/
+
 RUN ldconfig
 
 RUN mkdir /mmitss
