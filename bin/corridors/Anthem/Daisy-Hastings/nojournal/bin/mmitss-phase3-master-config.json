@@ -7,6 +7,8 @@
     "RegionalID" : 0,
 	"DataCollectorIP": "172.3.1.91",
     "HMIControllerIP": "10.12.6.56",
+    "MessageDistributorIP": "10.12.6.20",
+	"PriorityRequestGeneratorServerIP": "10.12.6.20",
     "VehicleType" : 6,
     "Logging" : "True",
     "SRMTimedOutTime" : 10.0,
@@ -19,6 +21,7 @@
 			"MessageEncoder": 10003,
 			"MessageDecoder": 10002
 		},
+		"MessageDistributor": 5000,
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
         "HostBsmDecoder": 10005,
@@ -34,11 +37,12 @@
         "PrioritySolverToTCIInterface": 20010,
         "SignalCoordination": 20011,
 		"MapSPaTBroadcaster": 6053,
-		"RSUOBUImageForwarder": 1516,
+		"DsrcImmediateForwarder": 1516,
         "PriorityRequestServer_SendSSM": 50003,
         "DataCollector": 30006,
         "SnmpEngine": 20020,
-        "SnmpEngineInterface": 20021
+		"SnmpEngineInterface": 20021,
+		"PriorityRequestGeneratorServer": 20022
 	},
     "psid":
         {
@@ -62,8 +66,8 @@
 		},
 	"SignalController": 
 	{
-		"IpAddress": "10.12.6.11",
-		"NtcipPort": 501,
+		"IpAddress": "10.12.6.104",
+		"NtcipPort": 505,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
         "Vendor": "Econolite",

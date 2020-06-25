@@ -21,21 +21,29 @@ import socket
 import sys
 from MessageDistributor import MessageDistributor
 
-configFile = open(sys.argv[1], 'r')
+configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+masterConfig = json.load(configFile)
+configFile.close()
+
+configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
 config = json.load(configFile)
 configFile.close()
 
 msgDist = MessageDistributor(config)
 
 receivingSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-receivingSocket.bind((config["msg_distributor_ip"], config["msg_distributor_port"]))
+receivingSocket.bind((masterConfig["MessageDistributorIP"], masterConfig["PortNumber"]["MessageDistributor"]))
 
 while True:
-    data, addr = receivingSocket.recvfrom(1024)
+    data, addr = receivingSocket.recvfrom(4096)
     msg = json.loads(data.decode())
     msg = msgDist.timestampMessage(msg)
     messageType = msgDist.distributeMsgToInfrastructureAndGetType(msg)
     if messageType == "BSM":
         msgDist.distributeBsmToClients(msg)
+    elif messageType == "MAP":
+        msgDist.distributeMapToClients(msg)
+    elif messageType == "SSM":
+        msgDist.distributeSsmToClients(msg)
 
 receivingSocket.close()

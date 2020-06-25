@@ -1,29 +1,5 @@
 version: "3.8"
 services:
-    
-    daisy-anthem:
-        build:
-            context: ./
-        container_name: daisy-anthem
-        volumes:
-          - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
-            target: /nojournal
-        networks:
-            mmitss_vlan:
-                ipv4_address: 10.12.6.18
-
-    daisy-dedication:
-        build:
-            context: ./
-        container_name: daisy-dedication
-        volumes:
-          - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
-            target: /nojournal
-        networks:    
-            mmitss_vlan:
-                ipv4_address: 10.12.6.6
 
     daisy-gavilan:
         build:
@@ -35,8 +11,32 @@ services:
             target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 10.12.6.3
+                ipv4_address: 10.12.6.3    
 
+    daisy-dedication:
+        build:
+            context: ./
+        container_name: daisy-dedication
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.6
+
+    daisy-meridian:
+        build:
+            context: ./
+        container_name: daisy-meridian
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.9
+        
     daisy-hastings:
         build:
             context: ./
@@ -48,7 +48,6 @@ services:
         networks:    
             mmitss_vlan:
                 ipv4_address: 10.12.6.12
-
         
     daisy-memorial:
         build:
@@ -62,25 +61,38 @@ services:
             mmitss_vlan:
                 ipv4_address: 10.12.6.15
         
-    daisy-meridian:
+    daisy-anthem:
         build:
             context: ./
-        container_name: daisy-meridian
+        container_name: daisy-anthem
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+              target: /nojournal
+        networks:
+            mmitss_vlan:
+                ipv4_address: 10.12.6.18
+
+    simulation-tools:
+        build:
+            context: ./
+            dockerfile: Dockerfile_simulation-tools
+        container_name: simulation-tools
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
+            source: $MMITSS_ROOT/mmitss/bin/corridors/simulation-tools/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 10.12.6.9
+                ipv4_address: 10.12.6.20
 
 networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: enp1s0 
+            parent: eno2 
         ipam:
             config:
-              - subnet: 10.12.6.0/27
+              - subnet: 10.12.6.0/24
 
 

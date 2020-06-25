@@ -1,0 +1,13 @@
+#-----------------------------------------------------------------------------#
+#    Dockerfile to build an x86 platform image for an intersection            #
+#-----------------------------------------------------------------------------#
+FROM mmitssuarizona/mmitss-base-x86:1.3
+
+COPY PriorityRequestGeneratorServer/x86/M_PriorityRequestGeneratorServer /mmitss
+COPY MessageDistributor/x86/M_MessageDistributor /mmitss
+
+RUN mkdir -p /mmitss/map
+
+COPY supervisord_simulation-tools.conf /mmitss/supervisord.conf
+CMD ["/usr/bin/supervisord"]
+

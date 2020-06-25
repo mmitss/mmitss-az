@@ -3,12 +3,10 @@
 #-----------------------------------------------------------------------------#
 FROM mmitssuarizona/mmitss-base-x86:1.3
 
-COPY WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
 COPY TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
 COPY SnmpEngine/x86/M_SnmpEngine /mmitss
 COPY PriorityRequestSolver/x86/M_PriorityRequestSolver /mmitss
 COPY PriorityRequestServer/x86/M_PriorityRequestServer /mmitss
-COPY MsgEncoder/x86/M_MsgEncoder /mmitss
 COPY MapSpatBroadcaster/x86/M_MapSpatBroadcaster /mmitss
 
 COPY supervisord.conf /mmitss
