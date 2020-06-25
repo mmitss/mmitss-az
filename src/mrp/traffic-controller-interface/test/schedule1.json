@@ -14,13 +14,13 @@
 			"commandType": "hold"
 		},
 		{
-			"commandEndTime": 40.0,
+			"commandEndTime": 15.0,
 			"commandPhase": 5,
 			"commandStartTime": 5.0,
 			"commandType": "forceoff"
 		},
 		{
-			"commandEndTime": 40.0,
+			"commandEndTime": 15.0,
 			"commandPhase": 6,
 			"commandStartTime": 5.0,
 			"commandType": "forceoff"

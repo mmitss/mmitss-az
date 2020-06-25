@@ -1,0 +1,6 @@
+                  Warning	Simulation second 179.5: After 60.0 seconds of waiting for lane change the vehicle 157 (on Static Vehicle Route 22 - 3) was removed from link 37 at position 116.5.	Network object type: Vehicle	Network object keys: 157
+                  Warning	Simulation second 399.2: After 60.0 seconds of waiting for lane change the vehicle 312 (on Static Vehicle Route 22 - 1) was removed from link 37 at position 161.1.	Network object type: Vehicle	Network object keys: 312
+                  Warning	Simulation second 445.6: After 60.0 seconds of waiting for lane change the vehicle 362 (on Static Vehicle Route 22 - 3) was removed from link 35 at position 147.2.	Network object type: Vehicle	Network object keys: 362
+                  Warning	Simulation second 547.0: After 60.0 seconds of waiting for lane change the vehicle 333 (on Static Vehicle Route 22 - 3) was removed from link 37 at position 116.5.	Network object type: Vehicle	Network object keys: 333
+                  Warning	Vehicle input 9: AnthemSouth could not be finished completely (remain: 348 vehicles).	Network object type: Vehicle Input	Network object keys: 9
+                  Warning	Vehicle input 11: AnthemNorth could not be finished completely (remain: 417 vehicles).	Network object type: Vehicle Input	Network object keys: 11

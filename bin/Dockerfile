@@ -1,15 +1,12 @@
 #-----------------------------------------------------------------------------#
 #    Dockerfile to build an x86 platform image for an intersection            #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-base:1.2
+FROM mmitssuarizona/mmitss-base-x86:1.3
 
-COPY WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
 COPY TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
-COPY SnmpEngine/x86/SnmpEngine /mmitss
-COPY PrioritySolver/x86/M_PriorityRequestSolver /mmitss
+COPY SnmpEngine/x86/M_SnmpEngine /mmitss
+COPY PriorityRequestSolver/x86/M_PriorityRequestSolver /mmitss
 COPY PriorityRequestServer/x86/M_PriorityRequestServer /mmitss
-COPY MsgEncoder/x86/M_MsgEncoder /mmitss
-COPY HostBsmDecoder/x86/M_HostBsmDecoder /mmitss
 COPY MapSpatBroadcaster/x86/M_MapSpatBroadcaster /mmitss
 
 COPY supervisord.conf /mmitss
