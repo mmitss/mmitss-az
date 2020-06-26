@@ -81,8 +81,9 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void modifyPriorityRequestList();
   void createDilemmaZoneRequestList();
+  void modifyPriorityRequestList();
+  void modifySignalTimingPlan();
   void deleteSplitPhasesFromPriorityRequestList();
   void GLPKSolver();
   void getCurrentSignalTimingPlan(string jsonString);
@@ -93,6 +94,7 @@ public:
   void getEVPhases();
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string receivedJsonString);
+  void validateTrafficControllerStatus();
   void loggingData(string jsonString);
   void loggingTCIData(string jsonString);
   void loggingPRSData(string jsonString);

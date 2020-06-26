@@ -55,6 +55,7 @@ int main()
             priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
             //priorityRequestSolver.printSignalPlan();
             priorityRequestSolver.generateModFile();
+            priorityRequestSolver.modifySignalTimingPlan();
             priorityRequestSolver.loggingTCIData(receivedJsonString);
         }
 
