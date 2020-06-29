@@ -196,7 +196,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(bool bEVStatus)
+void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -237,7 +237,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     fs << ";\n";
 
     fs << "param gmax      \t:=";
-    if (bEVStatus == true)
+    if (emergencyVehicleStatus == true)
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
         {
@@ -419,7 +419,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     if (!priorityRequestList.empty())
     {
-        // if (bEVStatus == true)
+        // if (emergencyVehicleStatus == true)
         //     ETA_Range = 4.0;
         // else
         //     ETA_Range = 2.0;

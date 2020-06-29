@@ -471,7 +471,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 void PriorityRequestSolver::setOptimizationInput()
 {
 
-    if (bEVStatus == true)
+    if (emergencyVehicleStatus == true)
     {
         createDilemmaZoneRequestList();
         modifyPriorityRequestList();
@@ -481,7 +481,7 @@ void PriorityRequestSolver::setOptimizationInput()
         getEVTrafficSignalPlan();
         generateEVModFile();
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV);
-        solverDataManager.generateDatFile(bEVStatus);
+        solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
     else
@@ -490,7 +490,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
-        solverDataManager.generateDatFile(bEVStatus);
+        solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 }
 
@@ -515,10 +515,9 @@ void PriorityRequestSolver::GLPKSolver()
     glp_tran *tran;
     int ret{};
     int success = 1;
-    if (bEVStatus == true)
-    {
+    if (emergencyVehicleStatus == true)
         strcpy(modFile, "/nojournal/bin/NewModel_EV.mod");
-    }
+
     mip = glp_create_prob();
     tran = glp_mpl_alloc_wksp();
 
@@ -562,9 +561,14 @@ skip:
 string PriorityRequestSolver::getScheduleforTCI()
 {
     string scheduleJsonString{};
-    if (bEVStatus == true)
+
+    findEVInList();
+    setOptimizationInput();
+    GLPKSolver();
+
+    if (emergencyVehicleStatus == true)
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, bEVStatus);
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, emergencyVehicleStatus);
 
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
@@ -574,7 +578,7 @@ string PriorityRequestSolver::getScheduleforTCI()
 
     else
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, bEVStatus);
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
 
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
@@ -585,6 +589,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
     trafficControllerStatus.clear();
+
     return scheduleJsonString;
 }
 
@@ -782,8 +787,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
             {
                 temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][k]).asInt();
                 if (temporaryCurrentPhase == temporaryNextPhase) //current phase and next phase can be same in case of T intersection.
-                                                                //Like the scenario when phase 4 is only yellow/red since phase 8 is missing. phase 2 and 6 was green before phase 4.
-                                                                //In this case current phase can be following :{"currentPhases": [{"Phase": 4, "State": "yellow", "ElapsedTime": 5}, {"Phase": 6, "State": "red", "ElapsedTime": 136}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
+                                                                 //Like the scenario when phase 4 is only yellow/red since phase 8 is missing. phase 2 and 6 was green before phase 4.
+                                                                 //In this case current phase can be following :{"currentPhases": [{"Phase": 4, "State": "yellow", "ElapsedTime": 5}, {"Phase": 6, "State": "red", "ElapsedTime": 136}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
                 {
                     cout << "Current Phase and next phase is same" << endl;
                     break;
@@ -858,7 +863,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     Json::Value jsonObject;
     Json::Reader reader;
 
-    //loggingTCIData(jsonString);
+    loggingSignalPlanData(jsonString);
     trafficSignalPlan.clear();
     PhaseNumber.clear();
     PedWalk.clear();
@@ -952,8 +957,8 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
             P22.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
-    noOfPhasesInRing1 = unsigned(P11.size() + P12.size());
-    noOfPhasesInRing2 = unsigned(P21.size() + P22.size());
+    generateModFile();
+    modifySignalTimingPlan();
 }
 
 /*
@@ -1549,23 +1554,23 @@ void PriorityRequestSolver::generateEVModFile()
 bool PriorityRequestSolver::findEVInList()
 {
     if (priorityRequestList.empty())
-        bEVStatus = false;
+        emergencyVehicleStatus = false;
     else
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
             if (priorityRequestList[i].vehicleType == 2)
             {
-                bEVStatus = true;
+                emergencyVehicleStatus = true;
                 break;
             }
 
             else
-                bEVStatus = false;
+                emergencyVehicleStatus = false;
         }
     }
 
-    return bEVStatus;
+    return emergencyVehicleStatus;
 }
 
 string PriorityRequestSolver::getSignalTimingPlanRequestString()
@@ -1588,7 +1593,6 @@ double PriorityRequestSolver::GetSeconds()
 
 bool PriorityRequestSolver::logging()
 {
-    // bool bLogging = false;
     string logging{};
     ofstream outputfile;
     Json::Value jsonObject;
@@ -1601,28 +1605,34 @@ bool PriorityRequestSolver::logging()
 
     if (logging == "True")
     {
-        bLogging = true;
+        loggingStatus = true;
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         outputfile.open("/nojournal/bin/log/PRSolverLog.txt");
         outputfile << "File opened at time : " << timenow << std::endl;
         outputfile.close();
     }
     else
-        bLogging = false;
+        loggingStatus = false;
 
-    return bLogging;
+    return loggingStatus;
 }
 
-void PriorityRequestSolver::loggingData(string jsonString)
+void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
 {
     ofstream outputfile;
     ifstream infile;
 
-    if (bLogging == true)
+    if (loggingStatus == true)
     {
         // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+        outputfile << "\nFollowing Priority Request is received from PRS at time " << timenow << endl;
+        outputfile << priorityRequestString << endl;
+
+        outputfile << "\nFollowing Signal Status is received from TCI at time " << timenow << endl;
+        outputfile << signalStatusString << endl;
 
         outputfile << "\nCurrent Dat File at time : " << timenow << endl;
         infile.open("/nojournal/bin/NewModelData.dat");
@@ -1640,44 +1650,78 @@ void PriorityRequestSolver::loggingData(string jsonString)
         }
         infile.close();
 
-        outputfile << "\nFollowing Schedule will send to TCI for EV case at time " << timenow << endl;
-        outputfile << jsonString << endl;
+        outputfile << "\nFollowing Schedule will send to TCI at time " << timenow << endl;
+        outputfile << scheduleString << endl;
 
         outputfile.close();
     }
 }
 
-void PriorityRequestSolver::loggingTCIData(string jsonString)
+// void PriorityRequestSolver::loggingData(string jsonString)
+// {
+//     ofstream outputfile;
+//     ifstream infile;
+
+//     if (loggingStatus == true)
+//     {
+//         // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+//         outputfile << "\nCurrent Dat File at time : " << timenow << endl;
+//         infile.open("/nojournal/bin/NewModelData.dat");
+//         for (string line; getline(infile, line);)
+//         {
+//             outputfile << line << endl;
+//         }
+//         infile.close();
+
+//         outputfile << "\nCurrent Results File at time : " << timenow << endl;
+//         infile.open("/nojournal/bin/Results.txt");
+//         for (std::string line; getline(infile, line);)
+//         {
+//             outputfile << line << endl;
+//         }
+//         infile.close();
+
+//         outputfile << "\nFollowing Schedule will send to TCI at time " << timenow << endl;
+//         outputfile << jsonString << endl;
+
+//         outputfile.close();
+//     }
+// }
+
+void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
 {
-    if (bLogging == true)
+    if (loggingStatus == true)
     {
         ofstream outputfile;
         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-        outputfile << "\nFollowing data is received from TCI at time " << timenow << endl;
+        outputfile << "\nFollowing Signal Plan is received from TCI at time " << timenow << endl;
         outputfile << jsonString << endl;
         outputfile.close();
     }
 }
 
-void PriorityRequestSolver::loggingPRSData(string jsonString)
-{
-    if (bLogging == true)
-    {
-        ofstream outputfile;
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+// void PriorityRequestSolver::loggingPRSData(string jsonString)
+// {
+//     if (loggingStatus == true)
+//     {
+//         ofstream outputfile;
+//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-        outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
-        outputfile << jsonString << endl;
-        outputfile.close();
-    }
-}
+//         outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
+//         outputfile << jsonString << endl;
+//         outputfile.close();
+//     }
+// }
 
 void PriorityRequestSolver::loggingClearRequestData(string jsonString)
 {
-    if (bLogging == true)
+    if (loggingStatus == true)
     {
         ofstream outputfile;
         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);

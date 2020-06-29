@@ -159,8 +159,8 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	signalRequest.setHeading_Degree(basicVehicle.getHeading_Degree());
 	signalRequest.setSpeed_MeterPerSecond(basicVehicle.getSpeed_MeterPerSecond());
 	srmJsonString = signalRequest.signalRequest2Json();
-	if (bLogging == true)
-		loggingData(srmJsonString);
+
+	loggingData(srmJsonString);
 
 	return srmJsonString;
 }
@@ -225,11 +225,11 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			std::cout << "SRM is sent since vehicle signalGroup has been changed at time " << timenow << std::endl;
 		}
 
-		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= VEHICLE_SPEED_DEVIATION_LIMIT) //If vehicleID is in ART and vehicle speed changes by 5m/s, vehicle should send srm. tempVehicleSpeed store the vehicle speed of last send out srm.
-		// {
-		// 	bSendRequest = true;
-		// 	std::cout << "SRM is sent since vehicle speed has been changed at time " << timenow << std::endl;
-		// }
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= VEHICLE_SPEED_DEVIATION_LIMIT) //If vehicleID is in ART and vehicle speed changes by 5m/s, vehicle should send srm. tempVehicleSpeed store the vehicle speed of last send out srm.
+		{
+			bSendRequest = true;
+			std::cout << "SRM is sent since vehicle speed has been changed at time " << timenow << std::endl;
+		}
 
 		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->vehicleLaneID != getLaneID()) //If vehicleID is in ART and vehicle laneID changes, vehicle should send srm
 		// {
@@ -241,14 +241,13 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		{
 			bSendRequest = true;
 			std::cout << "SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << getTime2Go() << " at time " << timenow << std::endl;
-			// printART();
 		}
 
-		// else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
-		// {
-		// 	bSendRequest = true;
-		// 	std::cout << "SRM is sent since msgCount doesn't match at time " << timenow << std::endl;
-		// }
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount) //If vehicleID is in ART and message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
+		{
+			bSendRequest = true;
+			std::cout << "SRM is sent since msgCount doesn't match at time " << timenow << std::endl;
+		}
 
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= PRS_REQUEST_GAPOUT_TIME)
 		{
@@ -340,8 +339,7 @@ int PriorityRequestGenerator::getMessageType(std::string jsonString)
 	else if ((jsonObject["MsgType"]).asString() == "SSM")
 	{
 		messageType = MsgEnum::DSRCmsgID_ssm;
-		if (bLogging == true)
-			loggingData(jsonString);
+		loggingData(jsonString);
 	}
 
 	return messageType;
@@ -523,14 +521,14 @@ void PriorityRequestGenerator::setVehicleType()
 
 void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
 {
-	if(vehType == "transit")
+	if (vehType == "transit")
 		vehicleType = 6;
-	
-	else if(vehType == "truck")
+
+	else if (vehType == "truck")
 		vehicleType = 9;
 
 	else if (vehType == "emergency")
-		vehicleType = 2;	
+		vehicleType = 2;
 }
 
 /*
@@ -588,7 +586,6 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
-		//setSignalGroup(0);
 		bgetActiveMap = false; //Required for HMI json
 		bRequestSendStatus = false;
 		tempSRMTimeStamp = 0.0;
@@ -601,7 +598,6 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
-		//setSignalGroup(0);
 		bgetActiveMap = false; //Required for HMI json
 		bRequestSendStatus = false;
 		tempSRMTimeStamp = 0.0;
@@ -612,18 +608,6 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityRequest);
 		bRequestSendStatus = true; //Required for HMI json
 	}
-
-	// else if (getVehicleIntersectionStatus() != static_cast<int>(MsgEnum::mapLocType::onInbound))
-	// {
-	// 	priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
-	// 	mapManager.deleteActiveMapfromList();
-	// 	activeMapList.clear();
-	// 	ActiveRequestTable.clear();
-	// 	setIntersectionID(0);
-	// 	//setSignalGroup(0);
-	// 	bgetActiveMap = false; //Required for HMI json
-	// 	bRequestSendStatus = false;
-	// }
 
 	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != signalGroup)
 	{
@@ -710,33 +694,6 @@ int PriorityRequestGenerator::getMsgCount()
 
 	return msgCount;
 }
-
-/*
-	- Get current signalgroup info of vehicle from MAP based on LaneID and AprroachID for HMI Controller
-*/
-// int PriorityRequestGenerator::getVehicleCurrentSignalGroup()
-// {
-// 	int signalGroup{};
-// 	int approachID{};
-// 	std::string fmap{};
-// 	std::string intersectionName{};
-// 	bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
-
-// 	if (!activeMapList.empty())
-// 	{
-// 		fmap = activeMapList.front().activeMapFileDirectory;
-// 		intersectionName = activeMapList.front().activeMapFileName;
-
-// 		//initialize mapengine library
-// 		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
-// 		approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(getRegionalID()), static_cast<uint8_t>(getIntersectionID()), static_cast<uint8_t>(getLaneID()));
-// 		signalGroup = plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(getRegionalID()), static_cast<uint16_t>(getIntersectionID()), approachID, static_cast<uint8_t>(getLaneID()));
-
-// 		delete plocAwareLib;
-// 	}
-
-// 	return signalGroup;
-// }
 
 /*
 	- Get vehicle status on current map (Whether on map or not) for HMI Controller
@@ -826,14 +783,18 @@ void PriorityRequestGenerator::printART()
 void PriorityRequestGenerator::loggingData(std::string jsonString)
 {
 	std::ofstream outputfile;
-	outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
-	auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-	outputfile << "\nFollowing data is either sent or received at time " << timenow << std::endl;
-	outputfile << jsonString << std::endl;
+	if (loggingStatus == true)
+	{
+		outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
+		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+		outputfile << "\nFollowing data is either sent or received at time " << timenow << std::endl;
+		outputfile << jsonString << std::endl;
+	}
 }
 
-bool PriorityRequestGenerator::logging()
+bool PriorityRequestGenerator::getLoggingStatus()
 {
 	std::string logging{};
 	std::ofstream outputfile;
@@ -847,16 +808,16 @@ bool PriorityRequestGenerator::logging()
 
 	if (logging == "True")
 	{
-		bLogging = true;
+		loggingStatus = true;
 		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		outputfile.open("/nojournal/bin/log/PRGLog.txt");
 		outputfile << "File opened at time : " << timenow << std::endl;
 		outputfile.close();
 	}
 	else
-		bLogging = false;
+		loggingStatus = false;
 
-	return bLogging;
+	return loggingStatus;
 }
 
 PriorityRequestGenerator::~PriorityRequestGenerator()

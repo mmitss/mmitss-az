@@ -31,7 +31,7 @@ private:
 
   bool bgetActiveMap{false};      //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
   bool bRequestSendStatus{false}; //Required for HMI json
-  bool bLogging{false};
+  bool loggingStatus{false};
   std::string mapFileDirectory{};
   std::string mapFileName{};
   int messageType{};
@@ -61,7 +61,7 @@ public:
 
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
-  bool logging();
+  bool getLoggingStatus();
 
   void loggingData(std::string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
@@ -75,7 +75,6 @@ public:
   void setSimulationVehicleType(std::string vehType); //For PRGServer
   int getMessageType(std::string jsonString);
   std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
-  // std::vector<Map::AvailableMap> getAvailableMapList(MapManager mapManager);
   void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
   int getIntersectionID();
   int getRegionalID();
@@ -91,11 +90,9 @@ public:
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();
-  // int getVehicleCurrentSignalGroup();
   std::string getVehicleMapStatus();
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();
-  // std::vector<Map::ActiveMap> getActiveMapListFORHMI();
   void printART();
   std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
 };
