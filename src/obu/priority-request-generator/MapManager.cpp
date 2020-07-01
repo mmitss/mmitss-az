@@ -236,22 +236,6 @@ void MapManager::maintainAvailableMapList() //check Map.h
         findMapPayLoad->mapAge = 1.0;
         findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
         findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
-
-        // if(getMapPayloadReceivedSecondOfMinute() >= findMapPayLoad->secondOfMinute)
-        // {
-        //     findMapPayLoad->availableMapPayload = mapPayload;
-        //     findMapPayLoad->mapAge = (abs(getMapPayloadReceivedTime() - findMapPayLoad->minuteOfYear)) * SECONDSINAMINUTE + (getMapPayloadReceivedSecondOfMinute() - findMapPayLoad->secondOfMinute);
-        //     findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
-        //     findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
-        // }
-
-        // else if(getMapPayloadReceivedSecondOfMinute() < findMapPayLoad->secondOfMinute)
-        // {
-        //     findMapPayLoad->availableMapPayload = mapPayload;
-        //     findMapPayLoad->mapAge = (abs(getMapPayloadReceivedTime() - findMapPayLoad->minuteOfYear)) * SECONDSINAMINUTE + (getMapPayloadReceivedSecondOfMinute() + SECONDSINAMINUTE  - findMapPayLoad->secondOfMinute);
-        //     findMapPayLoad->minuteOfYear = getMapPayloadReceivedTime();
-        //     findMapPayLoad->secondOfMinute = getMapPayloadReceivedSecondOfMinute();
-        // }
     }
 }
 
@@ -377,9 +361,6 @@ void MapManager::getReferencePoint()
 {
     std::string fmap{};
     bool singleFrame{false};
-    // int ref_Latitude{};
-    // int ref_Longitude{};
-    // int ref_Elevation{};
     int intersectionIndex{};
     struct geoRefPoint_t geoRefPoint_t_1 = {0, 0, 0};
     fmap = "./map/" + intersectionMapName + ".map.payload";

@@ -214,3 +214,43 @@ rm -r __pycache__ &> /dev/null
 cd - &> /dev/null
 sleep 1s
 #######################################################################################
+
+#######################################################################################
+echo "Building Priority Request Generator Server..."
+cd ./../src/simulation/priority-request-generator-server
+# Clean the folder and build for linux.
+make clean &> /dev/null
+make linux &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv M_PriorityRequestGeneratorServer ../../../bin/PriorityRequestGeneratorServer/x86
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm ./*.o &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Message Distributor..."
+cd ./../src/simulation/message-distributor
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MessageDistributor.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/M_MessageDistributor  ../../../bin/MessageDistributor/x86
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
