@@ -23,10 +23,10 @@ import os
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
-DEBUG = False
+DEBUG = True
 
-#controllerIP = '10.12.6.56' #actual configuraiton data (should be from global config)
-controllerIP = '127.0.0.1' #use for simulation testing
+controllerIP = '10.12.6.108' #actual configuraiton data (should be from global config)
+#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = 20009
 controller = (controllerIP, controllerPort)
 
@@ -212,9 +212,9 @@ while True:
     line = line.decode()
     sourceIP, sourcePort = addr
 
-    if sourcePort == 10004 :
+    if sourcePort == 10002 :
         # process the remote vehicle and SPaT data
-        #print('remote bsm and spat data', line)
+        print('remote bsm and spat data', line)
 
         # load the json
         remoteInterfacejson = json.loads(line)
@@ -285,7 +285,7 @@ while True:
 
     elif sourcePort == 20004 :
 
-        #print('host vehicle and infrastructure data', line)
+        print('host vehicle and infrastructure data', line)
         
         # load the json
         hostAndInfrastructureData = json.loads(line)
