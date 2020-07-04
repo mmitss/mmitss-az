@@ -22,12 +22,12 @@ import sys
 from MessageDistributor import MessageDistributor
 import datetime
 
-configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
 masterConfig = json.load(configFile)
 configFile.close()
 
 #configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
-configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-message-distributor-config.json", 'r')
+configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
 config = json.load(configFile)
 configFile.close()
 
