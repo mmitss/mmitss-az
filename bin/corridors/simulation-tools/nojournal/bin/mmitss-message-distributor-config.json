@@ -1,5 +1,6 @@
 {
-    "package_drop_probability": 0,    
+    "package_drop_probability": 0,
+    "raw_bsm_logging": true,   
     "intersections": [
         {
             "name": "DaisyMountain_GavilanPeak",

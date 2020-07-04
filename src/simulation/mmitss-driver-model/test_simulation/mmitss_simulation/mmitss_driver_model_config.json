@@ -1,5 +1,5 @@
 {
-    "msg_distributor_ip": "10.12.6.101",
+    "msg_distributor_ip": "127.0.0.1",
     "msg_distributor_port": 5000,
     "vissim_origin_position":
     {
