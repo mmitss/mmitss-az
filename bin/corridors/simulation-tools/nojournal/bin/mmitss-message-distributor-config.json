@@ -1,4 +1,5 @@
 {
+    "package_drop_probability": 0,    
     "intersections": [
         {
             "name": "DaisyMountain_GavilanPeak",
