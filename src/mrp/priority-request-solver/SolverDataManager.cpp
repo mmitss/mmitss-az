@@ -144,9 +144,9 @@ void SolverDataManager::modifyCurrentSignalStatus()
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
         temporaryPhase = trafficControllerStatus[i].startingPhase1;
-        
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
         if (findSignalGroupInList(temporaryPhase) == true)
         {
             if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
@@ -155,15 +155,14 @@ void SolverDataManager::modifyCurrentSignalStatus()
 
         else
         {
-            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen-findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen-findSignalGroup1->minGreen;
+            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen - findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - findSignalGroup1->minGreen;
         }
-        
 
         temporaryPhase = trafficControllerStatus[i].startingPhase2;
-        
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
         if (findSignalGroupInList(temporaryPhase) == true)
         {
             if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
@@ -171,10 +170,9 @@ void SolverDataManager::modifyCurrentSignalStatus()
         }
         else
         {
-            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen-findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen-findSignalGroup2->minGreen;
+            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen - findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - findSignalGroup2->minGreen;
         }
-        
     }
 }
 
@@ -198,7 +196,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(bool bEVStatus)
+void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -239,33 +237,18 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
     fs << ";\n";
 
     fs << "param gmax      \t:=";
-    if (bEVStatus == true)
+    if (emergencyVehicleStatus == true)
     {
-        findMaximumETAofEV();
-        if (MAXGREEN > maxEV_ETA + maxEV_ETA_Duration)
+        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
         {
-            for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            {
-                if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
-                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+            if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
 
-                else
-                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-            }
-        }
-
-        else
-        {
-            for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            {
-                if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
-                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << maxEV_ETA + maxEV_ETA_Duration + trafficSignalPlan[i].minGreen;
-
-                else
-                    fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-            }
+            else
+                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
         }
     }
+    
     else
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
@@ -436,7 +419,7 @@ void SolverDataManager::generateDatFile(bool bEVStatus)
 
     if (!priorityRequestList.empty())
     {
-        // if (bEVStatus == true)
+        // if (emergencyVehicleStatus == true)
         //     ETA_Range = 4.0;
         // else
         //     ETA_Range = 2.0;

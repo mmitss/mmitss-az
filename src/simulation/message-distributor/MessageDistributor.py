@@ -20,6 +20,7 @@ import time, datetime
 import json
 import socket
 import haversine
+import random
 
 class MessageDistributor():
     """
@@ -30,16 +31,30 @@ class MessageDistributor():
     def __init__(self, config:json):
         self.config = config
         self.intersectionList=config["intersections"]
-        self.transit_client_list=self.getBsmAdditionalClientsList("transit")
-        self.truck_client_list=self.getBsmAdditionalClientsList("truck")
-        self.emergency_client_list=self.getBsmAdditionalClientsList("emergency")
-        self.passenger_client_list=self.getBsmAdditionalClientsList("passenger")
+
+        # BSM Clients:
+        self.transit_client_list=self.getBsmClientsList("transit")
+        self.truck_client_list=self.getBsmClientsList("truck")
+        self.emergency_client_list=self.getBsmClientsList("emergency")
+        self.passenger_client_list=self.getBsmClientsList("passenger")
+
+        # MAP Clients:
+        self.map_client_list=self.getMapClientsList()
+
+        # SSM Clients:
+        self.ssm_client_list=self.getSsmClientsList()
         
         ''' This socket is used only for outgoing messages. The socket for incoming 
             messages needs to be opened (and closed) in the wrapper module
         ''' 
         self.sendingSocket=socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    def getBsmAdditionalClientsList(self, vehicleType:str):
+
+        # 
+        if config["package_drop_probability"] > 1 or config["package_drop_probability"] < 0:
+            print("Invalid package drop probability. Use a number between 0 and 1. Using default (=0) for this session!")
+            self.packageDropProbability = 0
+        else: self.packageDropProbability = config["package_drop_probability"]
+    def getBsmClientsList(self, vehicleType:str):
         """
         reads the information of clients for the vehicle type specified in the argument,
         and returns the list of tuples having client information in form of 
@@ -49,7 +64,23 @@ class MessageDistributor():
         or "passenger"
         """
         clients_list = []
-        for client in self.config["bsm_additional_clients"][vehicleType]:
+        for client in self.config["bsm_clients"][vehicleType]:
+            client_tuple = ((client["ip_address"]), client["port"])
+            clients_list = clients_list + [client_tuple]
+        return clients_list
+
+    def getSsmClientsList(self):
+
+        clients_list = []
+        for client in self.config["ssm_clients"]:
+            client_tuple = ((client["ip_address"]), client["port"])
+            clients_list = clients_list + [client_tuple]
+        return clients_list
+
+    def getMapClientsList(self):
+
+        clients_list = []
+        for client in self.config["map_clients"]:
             client_tuple = ((client["ip_address"]), client["port"])
             clients_list = clients_list + [client_tuple]
         return clients_list
@@ -64,8 +95,8 @@ class MessageDistributor():
 
         ``message`` is a JSON object of the message
         """
-        message["timestamp_posix"] = time.time()
-        message["timestamp_verbose"] = str(datetime.datetime.now())       
+        message["Timestamp_posix"] = time.time()
+        message["Timestamp_verbose"] = str(datetime.datetime.now())       
         return message
     
     def distributeBsmToClients(self, timestampedBsm:json):
@@ -89,7 +120,19 @@ class MessageDistributor():
         
         if len(clientList)>0:
             for client in clientList:
-                self.sendingSocket.sendto((json.dumps(timestampedBsm)).encode(), client)
+                self.send_message_to_client((json.dumps(timestampedBsm)).encode(), client)
+
+    def distributeMapToClients(self, timestampedMsg:json):
+        clientList = self.map_client_list
+        if len(clientList)>0:
+            for client in clientList:
+                self.send_message_to_client((json.dumps(timestampedMsg)).encode(), client)
+
+    def distributeSsmToClients(self, timestampedMsg:json):
+        clientList = self.ssm_client_list
+        if len(clientList)>0:
+            for client in clientList:
+                self.send_message_to_client((json.dumps(timestampedMsg)).encode(), client)
 
    
     def distributeMsgToInfrastructureAndGetType(self, timestampedMessage:json):
@@ -103,7 +146,11 @@ class MessageDistributor():
         """
         messageType = timestampedMessage["MsgType"]
 
-        if messageType == "SRM":
+        if((messageType == "SSM") or (messageType == "MAP")):
+            return messageType
+
+        elif messageType == "SRM":
+            print("Received SRM")
             position = timestampedMessage["SignalRequest"]["position"]
         elif messageType == "BSM":
             position = timestampedMessage["BasicVehicle"]["position"]
@@ -123,11 +170,19 @@ class MessageDistributor():
 
             if msgDistance <= intersection["dsrc_range_Meter"]:
                 if messageType == "SRM":
-                    self.sendingSocket.sendto((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["srm_client_port"]))
+                    self.send_message_to_client((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["srm_client_port"]))
+                    print("Distributed SRM")
                 elif messageType == "BSM": 
-                    self.sendingSocket.sendto((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["bsm_client_port"]))
+                    self.send_message_to_client((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["bsm_client_port"]))
                 
         return messageType
+    
+    def send_message_to_client(self, message:bytes, client:tuple):
+        rand = random.uniform(0,1)
+        if rand < self.packageDropProbability:
+            pass
+        else:
+            self.sendingSocket.sendto(message, client)
   
     def __del__(self):
         """

@@ -41,13 +41,6 @@ public:
     void modifyGreenMax();
     void modifyCurrentSignalStatus();
     void findMaximumETAofEV();
-    void generateDatFile(bool bEVStatus);
+    void generateDatFile(bool emergencyVehicleStatus);
     bool findSignalGroupInList(int signalGroup);
-
-
-    // void getRequestedSignalGroupFromPriorityRequestList(vector<RequestList> priorityRequestList);
-    // void removeDuplicateSignalGroup();
-    // void addAssociatedSignalGroup(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
-    // void modifyGreenMax(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
-    // void generateDatFile(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan);
 };

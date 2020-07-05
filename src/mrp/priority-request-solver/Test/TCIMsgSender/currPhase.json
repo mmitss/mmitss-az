@@ -1,21 +1,18 @@
 {
-    "MsgType": "CurrNextPhaseStatus",
-    "currentPhases":
-    [
+    "currentPhases": [
         {
-            "Phase": 3,
-            "State": "green",
-            "ElapsedTime": 269
+            "Phase": 4,
+            "State": "yellow",
+            "ElapsedTime": 5
         },
         {
-            "Phase": 8,
-            "State": "green",
-            "ElapsedTime": 269
+            "Phase": 6,
+            "State": "red",
+            "ElapsedTime": 136
         }
     ],
-    "nextPhases": 
-    [
-        0
+    "MsgType": "CurrNextPhaseStatus",
+    "nextPhases": [
+        6
     ]
 }
-

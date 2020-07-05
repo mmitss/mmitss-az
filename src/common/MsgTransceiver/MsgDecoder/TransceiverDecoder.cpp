@@ -147,7 +147,7 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
         basicVehicle.setPosition(DsrcConstants::damega2unit<int32_t>(bsmOut.latitude), DsrcConstants::damega2unit<int32_t>(bsmOut.longitude), DsrcConstants::deca2unit<int32_t>(bsmOut.elevation));
         basicVehicle.setSpeed_MeterPerSecond(round(DsrcConstants::unit2kph<uint16_t>(bsmOut.speed) * KPH_TO_MPS_CONVERSION));
         basicVehicle.setHeading_Degree(round(DsrcConstants::unit2heading<uint16_t>(bsmOut.heading)));
-        basicVehicle.setType(0);
+        basicVehicle.setType("0");
         basicVehicle.setLength_cm(bsmOut.vehLen);
         basicVehicle.setWidth_cm(bsmOut.vehWidth);
         jsonString = basicVehicle.basicVehicle2Json();

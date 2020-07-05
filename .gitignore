@@ -1,5 +1,5 @@
 #ignore binaries
-docker/applictions/M_*
+#docker/applications/M_*
 
 #unignore the shell script
 !docker/applictions/*.sh
@@ -11,7 +11,7 @@ docker/applictions/M_*
 
 *.code-workspace
 
-M_*
+#M_*
 
 
 .vscode

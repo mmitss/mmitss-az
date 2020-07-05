@@ -44,11 +44,9 @@ class PriorityRequestSolver
 {
 private:
   int noOfPhase{};
-  int noOfPhasesInRing1{};
-  int noOfPhasesInRing2{};
   int noOfEVInList{};
-  bool bEVStatus{};
-  bool bLogging{};
+  bool emergencyVehicleStatus{};
+  bool loggingStatus{};
 
   vector<RequestList> priorityRequestList;
   vector<RequestList> dilemmaZoneRequestList;
@@ -81,8 +79,9 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void modifyPriorityRequestList();
   void createDilemmaZoneRequestList();
+  void modifyPriorityRequestList();
+  void modifySignalTimingPlan();
   void deleteSplitPhasesFromPriorityRequestList();
   void GLPKSolver();
   void getCurrentSignalTimingPlan(string jsonString);
@@ -93,9 +92,11 @@ public:
   void getEVPhases();
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string receivedJsonString);
-  void loggingData(string jsonString);
-  void loggingTCIData(string jsonString);
-  void loggingPRSData(string jsonString);
+  void validateTrafficControllerStatus();
+  // void loggingData(string jsonString);
+  void loggingSignalPlanData(string jsonString);
+  // void loggingPRSData(string jsonString);
+  void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
   void loggingClearRequestData(string jsonString);
   void printSignalPlan();
   string getScheduleforTCI();

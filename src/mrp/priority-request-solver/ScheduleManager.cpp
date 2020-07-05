@@ -98,13 +98,13 @@ void ScheduleManager::readOptimalSignalPlan()
     string lineread{};
     int tempLine{};
     double temporaryLine{};
-    vector<int> SP;
-    vector<double> init;
-    vector<double> elapsedGrn;
-    vector<double> leftCriticalPoints;
-    vector<double> rightCriticalPoints;
-    vector<double> leftCriticalPoints_GreenTime;
-    vector<double> rightCriticalPoints_GreenTime;
+    vector<int> SP{};
+    vector<double> init{};
+    vector<double> elapsedGrn{};
+    vector<double> leftCriticalPoints{};
+    vector<double> rightCriticalPoints{};
+    vector<double> leftCriticalPoints_GreenTime{};
+    vector<double> rightCriticalPoints_GreenTime{};
 
     infile.open("/nojournal/bin/Results.txt");
     // getline(infile, lineread);
@@ -170,7 +170,7 @@ void ScheduleManager::readOptimalSignalPlan()
     rightCriticalPoints_PhaseDuration_Ring1.clear();
     leftCriticalPoints_PhaseDuration_Ring2.clear();
     rightCriticalPoints_PhaseDuration_Ring2.clear();
-
+    
     /*
     - We have 24 phase duration (3cycles). 
     - Holding ring wise total phase duration for each phase.
@@ -366,8 +366,11 @@ void ScheduleManager::createEventList()
     int temporaryPhase{};
     vector<int>::iterator it;
 
+    ring1Schedule.reset();
+    ring2Schedule.reset();
     ring1_TCISchedule.clear();
     ring2_TCISchedule.clear();
+
 
     for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
     {
