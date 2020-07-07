@@ -6,8 +6,9 @@ The [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Si
 The **Snmp-Engine** component of MMITSS builds upon the [Net-SNMP](http://www.net-snmp.org/wiki/index.php/Main_Page) library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers.
 
 ## Work-flow
-The Snmp-Engine component establishes and maintains a single SNMP session with the target SNMP device. This session is reused for all `get` and `set` requests.  
+The Snmp-Engine component establishes and maintains a single SNMP session with the target SNMP device. This session is reused for all `get` and `set` requests. Post opening the SNMP session, the components waits for UDP packets containing JSON formatted `get` or `set` requests.
 
+### Monitoring the target SNMP device through `get` requests
 To monitor a particular SNMP object (having a defined OID) in the target SNMP device, a JSON formatted SnmpGetRequest can be sent to the Snmp-Engine as a UDP packet. An example of such JSON formatted SnmpGetRequest is as follows:
 ```
 {
@@ -23,8 +24,8 @@ Upon receiving such request, the Snmp-Engine forwards this request to the target
     "Value": 6
 }
 ```
-
-Similarly, a particular SNMP object (again, having a defined OID) in the target SNMP device can be managed by formulating and sending a JSON formatted SnmpSet request to the SnmpEngine. An example of such JSON formatted SnmpGetRequest is as follows:
+### Managing the target SNMP device through `set` requests
+A particular SNMP object (again, having a defined OID) in the target SNMP device can be managed by formulating and sending a JSON formatted SnmpSet request to the SnmpEngine. An example of such JSON formatted SnmpGetRequest is as follows:
 ```
 {
     "MsgType": "SnmpSetRequest",
