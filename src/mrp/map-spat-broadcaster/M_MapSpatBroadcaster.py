@@ -21,8 +21,8 @@
     -> Calculate the data required for other mmitss components and J2735 SPAT message.
     -> Formulate a json string and send it the data to trafficControllerInterface, MsgEncoder.
     -> Send the MapPayload as it is to MsgEncoder. and send the Map Json string to the Message Distributor.
-    -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in future (for example, NTCIP1202v3), a new class will be 
-       required to created which could be used in similar manner like NTCIP1202v2Blob class.
+    -> ### IMPORTANT ### If the format of NTCIP1202 blob changes in the future (for example, NTCIP1202v3), a new class will be 
+       required to be created that could be used in similar manner like NTCIP1202v2Blob class.
 '''
 
 import socket
@@ -99,7 +99,7 @@ def main():
     while True:
         spatBlob, addr = s.recvfrom(1024)
         if spatBroadcastSuccessFlag == False:
-            print("\nSPAT Broadcast Set Successfully!")
+            print("\nStarted receiving packets from the Signal Controller. SPAT Broadcast Set Successfully!")
             spatBroadcastSuccessFlag = True
         # Send spat blob to external clients:       
         if addr[0] == controllerIp:
