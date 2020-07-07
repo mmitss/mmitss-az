@@ -159,7 +159,7 @@ The Map-Spat-Broadcaster receives the SPaT blobs streamed by the signal controll
     }
 }
 ```
-
+### Elapsed time
 As it can be seen from the above JSON string that in addition to the information required in the SPaT message, the Map-Spat-Broadcaster also maintains the elapsed time since each phase had entered its current status, as this information is required by other MMITSS components. For each received blob, the Map-Spat-Broadcaster generates a JSON string containing the information about current phases and their elapsed time in the current status. This information is streamed to Traffic-Controller-Interface for further handling and distribution. An example of such JSON string is as follows:
 ```
 {
