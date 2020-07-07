@@ -1,10 +1,11 @@
 # SNMP-ENGINE
-[Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) is one of widely accepted protocols to manage and monitor network elements. All NTCIP-1202 compliant traffic actuated signal controllers can be managed and monitored using the SNMP protocol.  
+The [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) is one of widely accepted protocols to manage and monitor network elements. All NTCIP-1202 compliant traffic actuated signal controllers can be managed and monitored using the SNMP protocol.  
 
 [Net-SNMP](http://www.net-snmp.org/) library provides C/C++ APIs that can be used to communicate with such devices over IPv4 or IPv6. A [tutorial](http://www.net-snmp.org/wiki/index.php/TUT:Simple_Application) on using the Net-SNMP libraries with C/C++ is available on the official website of Net-SNMP.  
 
 The **Snmp-Engine** application builds upon the Net-SNMP library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the NTCIP-1202 compliant traffic actuated signal controllers.
 
+## Work-flow
 To monitor a particular SNMP object (having a defined OID) in the target SNMP device, a JSON formatted SnmpGet request can be sent to the Snmp-Engine as a UDP packet. An example of such JSON formatted SnmpGet request is as follows:
 ```
 {
@@ -29,3 +30,15 @@ Similarly, a particular SNMP object (again, having a defined OID) in the target 
     "Value": 0
 }
 ```
+
+## Requirements
+- Physical network connection between the host machine (hosting the SnmpEngine) and the target SNMP device (traffic actuated signal controller)
+
+## Configuration
+- IPv4 address (string) of the signal controller needs to be defined in the following key in the mmitss-phase3-master-config.json (config) file:
+`config["SignalController"]["IpAddress"]`
+
+- NTCIP Port (int) of the signal controller needs to be defined in the following key in the MMITSS-Master-Configuration (config) file:
+`config["SignalController"]["NtcipPort"]`
+
+
