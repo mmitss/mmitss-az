@@ -87,6 +87,6 @@ Cannot find module (SNMPv2-TM): At line 0 in (none)
 Cannot find module (NET-SNMP-VACM-MIB): At line 0 in (none)
 ```
 
-These warnings do not affect the working of this component, as Snmp-Engine does not use any of the MIBs that are not available. If one wishes to suppress these warnings, the environment variable `MIBS` can be set to `ALL`. This can be accomplished by entering following command in the terminal before starting the application or by adding this line to the `~/.bashrc` file:  
+These warnings do not affect the working of this component, as Snmp-Engine does not use any of the MIBs that are not available. If one wishes to suppress these warnings, the environment variable `MIBS` can be set to `ALL`. For current session, this can be accomplished by entering the following command in the terminal before starting the application or for persistence the following line can be added to the `~/.bashrc` file:  
 ```export MIBS=ALL```
 
