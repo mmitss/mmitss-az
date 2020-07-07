@@ -43,5 +43,49 @@ In the mmitss-phase3-master-config.json (config) file following keys need to be 
 - `config["SignalController"]["NtcipPort"]`: NTCIP Port of the signal controller (integer)
 - `config["PortNumber"]["SnmpEngine"]`:  UDP port number on the host (integer). Note: Change only if the default (recommended) port number is already occupied on the host machine.
 
+## Known issues
 
+The MMITSS distribution is bundled with precompiled minimal Net-Snmp library, which excludes standard MIBs. Therefore, at the start of the application, following warnings are expected:
 
+```
+MIB search path: /home/nvaltekar/.snmp/mibs:/usr/local/share/snmp/mibs
+Cannot find module (SNMPv2-MIB): At line 0 in (none)
+Cannot find module (IF-MIB): At line 0 in (none)
+Cannot find module (IP-MIB): At line 0 in (none)
+Cannot find module (TCP-MIB): At line 0 in (none)
+Cannot find module (UDP-MIB): At line 0 in (none)
+Cannot find module (HOST-RESOURCES-MIB): At line 0 in (none)
+Cannot find module (NOTIFICATION-LOG-MIB): At line 0 in (none)
+Cannot find module (DISMAN-EVENT-MIB): At line 0 in (none)
+Cannot find module (DISMAN-SCHEDULE-MIB): At line 0 in (none)
+Cannot find module (UCD-SNMP-MIB): At line 0 in (none)
+Cannot find module (UCD-DEMO-MIB): At line 0 in (none)
+Cannot find module (SNMP-TARGET-MIB): At line 0 in (none)
+Cannot find module (NET-SNMP-AGENT-MIB): At line 0 in (none)
+Cannot find module (HOST-RESOURCES-TYPES): At line 0 in (none)
+Cannot find module (SNMP-FRAMEWORK-MIB): At line 0 in (none)
+Cannot find module (SNMP-MPD-MIB): At line 0 in (none)
+Cannot find module (SNMP-USER-BASED-SM-MIB): At line 0 in (none)
+Cannot find module (SNMP-VIEW-BASED-ACM-MIB): At line 0 in (none)
+Cannot find module (SNMP-COMMUNITY-MIB): At line 0 in (none)
+Cannot find module (IPV6-ICMP-MIB): At line 0 in (none)
+Cannot find module (IPV6-MIB): At line 0 in (none)
+Cannot find module (IPV6-TCP-MIB): At line 0 in (none)
+Cannot find module (IPV6-UDP-MIB): At line 0 in (none)
+Cannot find module (IP-FORWARD-MIB): At line 0 in (none)
+Cannot find module (NET-SNMP-PASS-MIB): At line 0 in (none)
+Cannot find module (NET-SNMP-EXTEND-MIB): At line 0 in (none)
+Cannot find module (UCD-DLMOD-MIB): At line 0 in (none)
+Cannot find module (SNMP-NOTIFICATION-MIB): At line 0 in (none)
+Cannot find module (SNMPv2-TM): At line 0 in (none)
+Cannot find module (NET-SNMP-VACM-MIB): At line 0 in (none)
+```
+
+These warnings do not affect the working of this component, as Snmp-Engine does not use any of the MIBs that are not available. If one wishes to suppress these warnings, the environment variable `MIBS` can be set to `ALL`. This can be accomplished by entering following command in the terminal before starting the application or adding this line to the `~/.bashrc` file:
+`export MIBS=ALL`
+
+## Console outputs and logging
+Snmp-Engine component does not generate any log files.  
+The console output provides the following information:
+- Status of network connection with the target SNMP device. If the target SNMP device is not reachable in the network, the Snmp-Engine component gracefully exits.
+- SUCCESS or FAILURE of each SnmpSetRequest and SnmpGetRequest with a unix timestamp of execution.
