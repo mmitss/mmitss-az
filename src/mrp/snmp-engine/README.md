@@ -6,14 +6,16 @@ The [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Si
 The **Snmp-Engine** component of MMITSS builds upon the [Net-SNMP](http://www.net-snmp.org/wiki/index.php/Main_Page) library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers.
 
 ## Work-flow
-To monitor a particular SNMP object (having a defined OID) in the target SNMP device, a JSON formatted SnmpGet request can be sent to the Snmp-Engine as a UDP packet. An example of such JSON formatted SnmpGet request is as follows:
+The Snmp-Engine component establishes and maintains a single SNMP session with the target SNMP device. This session is reused for all `get` and `set` requests.  
+
+To monitor a particular SNMP object (having a defined OID) in the target SNMP device, a JSON formatted SnmpGetRequest can be sent to the Snmp-Engine as a UDP packet. An example of such JSON formatted SnmpGetRequest is as follows:
 ```
 {
     "MsgType": "SnmpGetRequest",
     "OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1"
 }
 ```
-After receiving such request, the Snmp-Engine forwards this request to the target SNMP device. After target SNMP device responds with the value of that OID, SnmpEngine formulates a JSON string containing the value of the requested OID and sends it back to the requestor's UDP socket. An example of the SnmpGetResponse (corresponding to above SnmpGet request) is as follows:
+Upon receiving such request, the Snmp-Engine forwards this request to the target SNMP device. After the target SNMP device responds with the value corresponding to the questioned OID, Snmp-Engine formulates a JSON string containing the value of the requested OID and sends it back to the **requestor's UDP socket**. An example of the SnmpGetRequestResponse (corresponding to above SnmpGetRequest) is as follows:
 ```
 {
     "MsgType": "SnmpGetRequestResponse",
@@ -22,7 +24,7 @@ After receiving such request, the Snmp-Engine forwards this request to the targe
 }
 ```
 
-Similarly, a particular SNMP object (again, having a defined OID) in the target SNMP device can be managed by formulating and sending a JSON formatted SnmpSet request to the SnmpEngine. An example of such JSON formatted SnmpGet request is as follows:
+Similarly, a particular SNMP object (again, having a defined OID) in the target SNMP device can be managed by formulating and sending a JSON formatted SnmpSet request to the SnmpEngine. An example of such JSON formatted SnmpGetRequest is as follows:
 ```
 {
     "MsgType": "SnmpSetRequest",
@@ -36,7 +38,7 @@ Similarly, a particular SNMP object (again, having a defined OID) in the target 
 
 ## Configuration
 
-In the mmitss-phase3-master-config.json (config) file, configure the values of following keys:
+In the mmitss-phase3-master-config.json (config) file following keys need to be assigned with appropriate values:
 - `config["SignalController"]["IpAddress"]`: IPv4 address of the signal controller (string)
 - `config["SignalController"]["NtcipPort"]`: NTCIP Port of the signal controller (integer)
 - `config["PortNumber"]["SnmpEngine"]`:  UDP port number on the host (integer). Note: Change only if the default (recommended) port number is already occupied on the host machine.
