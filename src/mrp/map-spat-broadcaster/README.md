@@ -179,17 +179,17 @@ As it can be seen from the above JSON string that in addition to the information
 }
 ```
 ### Elapsed times of inactive phases
-For intersections that have one or more inactive phases (for example T-intersections), the raw spat blob indicates the current status of the inactive phases to be "red", at all times. Due to this, the elapsed time for such phases in the Map-Spat-Broadcaster can build up to really large numbers over the period of time, and may result into performance degradation. To deal with this, Map-Spat-Broadcaster allows to configure the inactive phases in the `mmitss-phase3-master-config.json` file. For such configured inactive phases, the Map-Spat-Broadcaster does not calculate or increment the elapsed time. The configuration is further explained in the dedicated section of this document.
+The calculation of the elapsed time is based on the current state of each phase in the blob. For intersections that have one or more inactive phases (for example T-intersections), the raw spat blob from the signal controller indicates the current status of the inactive phases as "red", at all times. Due to this, the elapsed time for such phases in the Map-Spat-Broadcaster can build up to really large numbers over the period of time, and may result into performance degradation. To deal with this, Map-Spat-Broadcaster allows to configure the list of inactive phases in the `mmitss-phase3-master-config.json` file. For such configured inactive phases, the Map-Spat-Broadcaster does not calculate or increment the elapsed time. The configuration is further explained in the configuration section of this document.
 
-### Permissive-yellow intervals
-
+### Permissive-left turn phases
+The raw SPaT blob from the signal controller does not contain any information about the status of permissive-left turn phases. This is generally configured by wiring in the intersection's signal controller cabinet. Map-Spat-Broadcaster allows to configure the permissive-left turn phases
 
 ## Console output and logging
 Map-Spat-Broadcaster component does not generate any log files. The console output displays if the broadcast of the Map and SPaT messages has started successfully.
 
 ## Requirements
 - Physical network connection between the host machine (hosting the Map-Spat-Broadcaster) and the target [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controller.
-- In case of Econolite signal controller, MapSpatBroadcaster sends an SnmpSetRequest to the MMITSS component Snmp-Engine that enables the streaming of raw SPaT blob from the signal controller. For this feature to function correctly, the MMITSS component Snmp-Engine needs to be running prior to the starting of Map-Spat-Broadcaster.
+- In case of Econolite signal controller, MapSpatBroadcaster sends an SnmpSetRequest to the MMITSS component Snmp-Engine that enables the streaming of raw SPaT blob from the signal controller. For this feature to function correctly, the MMITSS component Snmp-Engine needs to be in a running state before starting the Map-Spat-Broadcaster.
 
 ## Configuration
 1. In the signal controller:
@@ -216,4 +216,4 @@ Map-Spat-Broadcaster component does not generate any log files. The console outp
 - `clients["spat"]["json"]`
 
 ## Known issues
-some issues
+There are no currently known issues.
