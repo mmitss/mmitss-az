@@ -48,7 +48,7 @@ In the mmitss-phase3-master-config.json (config) file following keys need to be 
 The MMITSS distribution is bundled with precompiled minimal Net-Snmp library, which excludes standard MIBs. Therefore, at the start of the application, following warnings are expected:
 
 ```
-MIB search path: /home/nvaltekar/.snmp/mibs:/usr/local/share/snmp/mibs
+MIB search path: /home/<user>/.snmp/mibs:/usr/local/share/snmp/mibs
 Cannot find module (SNMPv2-MIB): At line 0 in (none)
 Cannot find module (IF-MIB): At line 0 in (none)
 Cannot find module (IP-MIB): At line 0 in (none)
