@@ -168,12 +168,12 @@ As it can be seen from the above JSON string that in addition to the information
             {   
                 "Phase": 2,
                 "State": "yellow",
-                "ElapsedTime": 30.0
+                "ElapsedTime": 0.0
             },
             {   
                 "Phase": 6,
                 "State": "yellow",
-                "ElapsedTime": 30.0 
+                "ElapsedTime": 0.0 
             }
         ]
 }
