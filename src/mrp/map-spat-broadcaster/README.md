@@ -1,6 +1,7 @@
 # MAP-SPAT-BROADCASTER
 
 ## Work-flow
+work flow
 
 ## Console output and logging
 Map-Spat-Broadcaster component does not generate any log files. The console output displays if the broadcast of the Map and SPaT messages has started successfully.
@@ -10,7 +11,6 @@ Map-Spat-Broadcaster component does not generate any log files. The console outp
 - In case of Econolite signal controller, MapSpatBroadcaster sends an SnmpSetRequest to the MMITSS component Snmp-Engine that enables the streaming of raw SPaT blob from the signal controller. For this feature to function correctly, the MMITSS component Snmp-Engine needs to be running prior to the starting of Map-Spat-Broadcaster.
 
 ## Configuration
-
 1. In the signal controller:
 - The server IP to which the signal controller streams the raw SPaT blob must be set to the IP address of the host where Map-Spat-Broadcaster is hosted.
 - Port where the signal controller streams the raw SPAT blob must match in both, the Map-Spat-Broadcaster configuration and the corresponding configuration in the signal controller.
@@ -35,3 +35,4 @@ Map-Spat-Broadcaster component does not generate any log files. The console outp
 - `clients["spat"]["json"]`
 
 ## Known issues
+some issues
