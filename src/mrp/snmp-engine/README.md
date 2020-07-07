@@ -34,6 +34,11 @@ A particular SNMP object (again, having a defined OID) in the target SNMP device
 }
 ```
 
+## Console output and logging
+Snmp-Engine component does not generate any log files. The console output provides the following information:
+- Status of network connection with the target SNMP device. If the target SNMP device is not reachable in the network, the Snmp-Engine component gracefully exits.
+- SUCCESS or FAILURE of each SnmpSetRequest and SnmpGetRequest with a unix timestamp of execution.
+
 ## Requirements
 - Physical network connection between the host machine (hosting the SnmpEngine) and the target SNMP device ([NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controller)
 
@@ -43,12 +48,6 @@ In the mmitss-phase3-master-config.json (config) file following keys need to be 
 - `config["SignalController"]["IpAddress"]`: IPv4 address of the signal controller (string)
 - `config["SignalController"]["NtcipPort"]`: NTCIP Port of the signal controller (integer)
 - `config["PortNumber"]["SnmpEngine"]`:  UDP port number on the host (integer). Note: Change only if the default (recommended) port number is already occupied on the host machine.
-
-
-## Console output and logging
-Snmp-Engine component does not generate any log files. The console output provides the following information:
-- Status of network connection with the target SNMP device. If the target SNMP device is not reachable in the network, the Snmp-Engine component gracefully exits.
-- SUCCESS or FAILURE of each SnmpSetRequest and SnmpGetRequest with a unix timestamp of execution.
 
 ## Known issues
 
