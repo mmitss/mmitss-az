@@ -85,7 +85,6 @@ These warnings do not affect the working of this component, as Snmp-Engine does 
 `export MIBS=ALL`
 
 ## Console outputs and logging
-Snmp-Engine component does not generate any log files.  
-The console output provides the following information:
+Snmp-Engine component does not generate any log files. The console output provides the following information:
 - Status of network connection with the target SNMP device. If the target SNMP device is not reachable in the network, the Snmp-Engine component gracefully exits.
 - SUCCESS or FAILURE of each SnmpSetRequest and SnmpGetRequest with a unix timestamp of execution.
