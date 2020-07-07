@@ -179,6 +179,7 @@ As it can be seen from the above JSON string that in addition to the information
 }
 ```
 ### Elapsed times of inactive phases
+For intersections that have one or more inactive phases (for example T-intersections), the raw spat blob indicates the current status of the inactive phases to be "red", at all times. Due to this, the elapsed time for such phases in the Map-Spat-Broadcaster can build up to really large numbers over the period of time, and may result into performance degradation. To deal with this, Map-Spat-Broadcaster allows to configure the inactive phases in the `mmitss-phase3-master-config.json` file. For such configured inactive phases, the Map-Spat-Broadcaster does not calculate or increment the elapsed time. The configuration is further explained in the dedicated section of this document.
 
 ### Permissive-yellow intervals
 
@@ -197,7 +198,7 @@ Map-Spat-Broadcaster component does not generate any log files. The console outp
 
 2. In the mmitss-phase3-master-config.json (config) file, following keys need to be assigned with appropriate values:
 - `config["SignalController"]["IpAddress"]`: IPv4 address of the signal controller (string)
-- `config["PortNumber"]["MapSPaTBroadcaster"]`:  UDP port number on the host (integer) where the signal controller pushes the raw SPaT blob. Note: Change only if the default (recommended) port number is already occupied on the host machine. In case of a change, corresponding change in the signal controller needs to be ensured. 
+- `config["PortNumber"]["MapSPaTBroadcaster"]`:  UDP port number on the host (integer) where the signal controller pushes the raw SPaT blob. Note: Change only if the default (6053) port number is already occupied on the host machine. In case of a change, corresponding change in the signal controller needs to be ensured. 
 - `config["SignalController"]["Vendor"]`: vendor of the signal-controller (string). (tested on Econolite Cobalt, Intellight MaxTime). For Econolite signal controllers, use "Econolite" here.
 - `config["signalController"]["InactiveVehPhases"]`
 - `config["signalController"]["InactivePedPhases"]`
