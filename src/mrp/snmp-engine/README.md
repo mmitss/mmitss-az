@@ -32,13 +32,14 @@ Similarly, a particular SNMP object (again, having a defined OID) in the target 
 ```
 
 ## Requirements
-- Physical network connection between the host machine (hosting the SnmpEngine) and the target SNMP device (traffic actuated signal controller)
+- Physical network connection between the host machine (hosting the SnmpEngine) and the target SNMP device (NTCIP-1202 compliant traffic actuated signal controller)
 
 ## Configuration
 
 In the mmitss-phase3-master-config.json (config) file, configure the values of following keys:
-- `config["SignalController"]["IpAddress"]` by the IPv4 address (string) of the signal controller
-- `config["SignalController"]["NtcipPort"]` by the NTCIP Port (int) of the signal controller
+- `config["SignalController"]["IpAddress"]`: IPv4 address of the signal controller (string)
+- `config["SignalController"]["NtcipPort"]`: NTCIP Port of the signal controller (integer)
+- `config["PortNumber"]["SnmpEngine"]`:  UDP port number on the host. Note: change only if default port number is already occupied on the host machine
 
 
 
