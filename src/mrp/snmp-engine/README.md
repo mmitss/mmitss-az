@@ -3,4 +3,29 @@
 
 [Net-SNMP](http://www.net-snmp.org/) library provides C/C++ APIs that can be used to communicate with such devices over IPv4 or IPv6. A [tutorial](http://www.net-snmp.org/wiki/index.php/TUT:Simple_Application) on using the Net-SNMP libraries with C/C++ is available on the official website of Net-SNMP.  
 
-The **Snmp-Engine** application builds upon the Net-SNMP library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the signal controllers complying to NTCIP-1202 standard.
+The **Snmp-Engine** application builds upon the Net-SNMP library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the NTCIP-1202 compliant traffic actuated signal controllers.
+
+To monitor a particular SNMP object (having a defined OID) in the target SNMP device, a JSON formatted SnmpGet request can be sent to the Snmp-Engine as a UDP packet. An example of such JSON formatted SnmpGet request is as follows:
+```
+{
+    "MsgType": "SnmpGetRequest",
+    "OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1"
+}
+```
+After receiving such request, the Snmp-Engine forwards this request to the target SNMP device. After target SNMP device responds with the value of that OID, SnmpEngine formulates a JSON string containing the value of the requested OID and sends it back to the requestor's UDP socket. An example of the SnmpGetResponse (corresponding to above SnmpGet request) is as follows:
+```
+{
+    "MsgType": "SnmpGetRequestResponse",
+    "OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1",
+    "Value": 6
+}
+```
+
+Similarly, a particular SNMP object (again, having a defined OID) in the target SNMP device can be managed by formulating and sending a JSON formatted SnmpSet request to the SnmpEngine. An example of such JSON formatted SnmpGet request is as follows:
+```
+{
+    "MsgType": "SnmpSetRequest",
+    "OID": "1.3.6.1.4.1.1206.3.5.2.9.44.1.1",
+    "Value": 0
+}
+```
