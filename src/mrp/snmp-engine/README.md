@@ -52,7 +52,7 @@ Snmp-Engine component does not generate any log files. The console output provid
 
 ## Known issues
 
-The MMITSS distribution is bundled with precompiled minimal Net-Snmp library, which excludes standard MIBs. Therefore, at the start of the application, following warnings are expected:
+The MMITSS distribution is bundled with precompiled minimal Net-Snmp library, which excludes standard MIBs. Therefore, at the start of the application, following warnings are generated at the runtime:
 
 ```
 MIB search path: /home/<user>/.snmp/mibs:/usr/local/share/snmp/mibs
