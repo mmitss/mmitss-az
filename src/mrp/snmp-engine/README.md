@@ -44,7 +44,7 @@ Snmp-Engine component does not generate any log files. The console output provid
 
 ## Configuration
 
-In the mmitss-phase3-master-config.json (config) file following keys need to be assigned with appropriate values:
+In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:
 - `config["SignalController"]["IpAddress"]`: IPv4 address of the signal controller (string)
 - `config["SignalController"]["NtcipPort"]`: NTCIP Port of the signal controller (integer)
 - `config["PortNumber"]["SnmpEngine"]`:  UDP port number on the host (integer). Note: Change only if the default (recommended) port number is already occupied on the host machine.
