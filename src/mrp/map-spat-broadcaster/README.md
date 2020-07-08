@@ -1,6 +1,6 @@
 # MAP-SPAT-BROADCASTER
 
-A SPaT (Signal Phase and Timing) message describes the current status of each vehicle and pedestrian phase of a signalized intersection along with the minimum and maximum residual time of the status of each vehicle and pedestrian phase with a frequency of 10 Hz. The information required to formulate a SPaT message can be obtained by placing SnmpGetRequest(s) to the signal controller with the same frequency. However, this generates an undesirable additional overhead on the signal controller to handle such high frequency SNMP calls.  
+A SPaT (Signal Phase and Timing) message describes the current status of each vehicle and pedestrian phase of a signalized intersection along with the minimum and maximum residual time of the status of each vehicle and pedestrian phase with a frequency of 10 Hz. The information required to formulate a SPaT message can be obtained by placing SnmpGetRequest(s) to the signal controller with the same frequency. However, this approach generates an undesirable additional overhead on the signal controller to handle such high frequency SNMP calls.  
 
 To avoid this additional overhead, [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers stream a blob containing the information required in the SPaT message with a frequency of 10 Hz. This blob is streamed to a network node (UDP socket) defined in the signal controller. 
 
@@ -181,8 +181,8 @@ As it can be seen from the above JSON string that in addition to the information
 ### Elapsed times of inactive phases
 The calculation of the elapsed time is based on the current state of each phase in the blob. For intersections that have one or more inactive phases (for example T-intersections), the raw spat blob from the signal controller indicates the current status of the inactive phases as "red", at all times. Due to this, the elapsed time for such phases in the Map-Spat-Broadcaster can build up to really large numbers over the period of time, and may result into performance degradation. To deal with this, Map-Spat-Broadcaster allows to configure the list of inactive phases in the `mmitss-phase3-master-config.json` file. For such configured inactive phases, the Map-Spat-Broadcaster does not calculate or increment the elapsed time. The configuration is further explained in the configuration section of this document.
 
-### Permissive-left turn phases
-The raw SPaT blob from the signal controller does not contain any information about the status of permissive-left turn phases. This is generally configured by wiring in the intersection's signal controller cabinet. Map-Spat-Broadcaster allows to configure the permissive-left turn phases
+### Permissive-yellow left-turn phases
+The raw SPaT blob from the signal controller does not contain any information about the status of permissive-left turn phases. This is generally configured by wiring in the intersection's signal controller cabinet. Map-Spat-Broadcaster allows to configure some or all left-turn phases to be in permissive-yellow state if the corresponding *through* phase is in the "green" interval. Permissive-yellow left-turn phases and their corresponding through phases can be configured in the `mmitss-phase3-master-config.json` file.
 
 ## Console output and logging
 Map-Spat-Broadcaster component does not generate any log files. The console output displays if the broadcast of the Map and SPaT messages has started successfully.
