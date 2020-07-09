@@ -1,3 +1,0 @@
-                  Warning	Simulation second 127.5: Vehicle 57 (on Static Vehicle Route 2 - 2) arrived at the end of link 1 without having found the next link (10015) of its route.	Network object type: Vehicle	Network object keys: 57
-                  Warning	Simulation second 286.6: Vehicle 325 (on Static Vehicle Route 2 - 2) arrived at the end of link 1 without having found the next link (10015) of its route.	Network object type: Vehicle	Network object keys: 325
-                  Warning	Simulation second 299.0: After 60.0 seconds of waiting for lane change the vehicle 571 (on Static Vehicle Route 2 - 3) was removed from link 1 at position 178.2.	Network object type: Vehicle	Network object keys: 571
