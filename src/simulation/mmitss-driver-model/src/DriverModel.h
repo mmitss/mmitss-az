@@ -1,10 +1,22 @@
-/*==========================================================================*/
-/*  DriverModel.h                                    DLL Module for VISSIM  */
-/*                                                                          */
-/*  Interface module for external driver models.                            */
-/*                                                                          */
-/*  Version of 2018-12-11                                   Lukas Kautzsch  */
-/*==========================================================================*/
+/***************************************************************************************
+
+ Â© 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+***************************************************************************************
+
+  DriverModel.h  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  This code is built upon the sample code for the DriverModel provided with VISSIM2020
+  distribution (version of 2018-12-11, developed by Lukas Kautzsch). 
+
+***************************************************************************************/
 
 #ifndef __DRIVERMODEL_H
 #define __DRIVERMODEL_H
@@ -77,7 +89,7 @@
 #define  DRIVER_DATA_VEH_VELOCITY            206
            /* double: current speed [m/s] */
 #define  DRIVER_DATA_VEH_ACCELERATION        207
-           /* double: current acceleration [m/s²] */
+           /* double: current acceleration [m/sï¿½] */
 #define  DRIVER_DATA_VEH_LENGTH              208
            /* double: vehicle length [m] */
 #define  DRIVER_DATA_VEH_WIDTH               209
@@ -85,7 +97,7 @@
 #define  DRIVER_DATA_VEH_WEIGHT              210
            /* double: vehicle weight [kg] */
 #define  DRIVER_DATA_VEH_MAX_ACCELERATION    211
-           /* double: maximum possible acceleration [m/s²] */
+           /* double: maximum possible acceleration [m/sï¿½] */
            /*         (depending on current speed)         */
 #define  DRIVER_DATA_VEH_TURNING_INDICATOR   212
            /* long:   left = 1, right = -1, none = 0, both = 2   */
@@ -185,7 +197,7 @@
 #define  DRIVER_DATA_NVEH_REL_VELOCITY       305
            /* double: speed difference [m/s] (veh. speed - nveh. speed) */
 #define  DRIVER_DATA_NVEH_ACCELERATION       306
-           /* double: current acceleration [m/s²] */
+           /* double: current acceleration [m/sï¿½] */
 #define  DRIVER_DATA_NVEH_LENGTH             307
            /* double: vehicle length [m] */
 #define  DRIVER_DATA_NVEH_WIDTH              308
@@ -384,7 +396,7 @@
            /* long:   flag: does driver model want behavior suggestion? */
            /*         (1 = yes, 0 = no) */
 #define  DRIVER_DATA_DESIRED_ACCELERATION    802
-           /* double: desired acceleration [m/s²] in next time step */
+           /* double: desired acceleration [m/sï¿½] in next time step */
 #define  DRIVER_DATA_DESIRED_LANE_ANGLE      803
            /* double: desired angle relative to the middle of the lane [rad] */
            /*         (positive = turning left) */

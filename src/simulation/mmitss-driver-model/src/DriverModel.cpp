@@ -1,3 +1,23 @@
+/***************************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+***************************************************************************************
+
+  DriverModel.cpp  
+  Created by: Niraj Vasant Altekar
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  This code is built upon the sample code for the DriverModel provided with VISSIM2020
+  distribution (version of 2018-12-11, developed by Lukas Kautzsch). 
+
+***************************************************************************************/
+
 #pragma comment(lib, "ws2_32.lib")
 
 #include <fstream>

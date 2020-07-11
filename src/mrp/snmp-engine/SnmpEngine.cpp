@@ -1,17 +1,54 @@
+/***************************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+***************************************************************************************
+SnmpEngine.cpp
+Created by: Niraj Vasant Altekar
+University of Arizona   
+College of Engineering
+
+This code was developed under the supervision of Professor Larry Head
+in the Systems and Industrial Engineering Department.
+
+***************************************************************************************
+
+Description:
+------------
+SnmpEngine utilizes the c++ net-snmp library that facilitates the interaction with 
+target Snmp devices. This class provides an API for the following:
+ (1) Establishing the SNMP session with the target SNMP device (in the constructor)
+ (2) Process and execute the SnmpSet or SnmpGet request.
+
+Complete official tutorial on building a C++ application for SnmpSet and SnmpGet
+requests is available at: 
+http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
+
+***************************************************************************************/
+
 # include <iostream>
 # include <bits/stdc++.h> 
 # include <chrono>
 # include "SnmpEngine.h"
 
-// The constructor of the SnmpEngine class establishes an SNMP session with the target SNMP device. 
+/* Instantiates an object of the SnmpEngine class and establishes an SNMP session 
+   with the target SNMP device. 
+ - arguments:
+    (1) IP address of the target SNMP device (std::string)
+    (2) NTCIP port of the target SNMP device. (int)
+*/
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
     // Check if the target SNMP device is in the network by executing a ping test.
     std::cout << "Target device IP address: " << ip << std::endl;
     std::cout << "Target device NTCIP port: " << port << std::endl;
     std::cout << "\nVerifying the network connection with the target SNMP device" << std::endl;
+    
     std::string pingCommand = "ping -c 1 " + ip;
     int pingStatus = system(pingCommand.c_str());  
+    
+    // If the target Snmp device is not reachable in the network, the ping test will return -1.
     if (-1 != pingStatus) 
     { 
         bool ping_ret = WEXITSTATUS(pingStatus);
@@ -59,6 +96,13 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     }
 }
 
+/* 
+    Processes the SnmpSet or SnmpGet request received in a JSON string.
+    - Arguments:
+        (1) Type of request. Supported requests: SnmpGet and SnmpSet
+        (2) OID for which a particular request needs to be processed
+        (3) A value that needs to be set for the OID. For SnmpGet request, value=1.
+*/
 int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid, int value)
 {
     
@@ -140,3 +184,4 @@ SnmpEngine::~SnmpEngine()
     // Close the opened session
     snmp_close(ss);
 }
+

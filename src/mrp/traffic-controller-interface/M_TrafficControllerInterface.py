@@ -6,7 +6,7 @@
 
 ***************************************************************************************
 
-M_TrafficControllerCommander.py
+M_TrafficControllerInterface.py
 Created by: Niraj Vasant Altekar
 University of Arizona   
 College of Engineering

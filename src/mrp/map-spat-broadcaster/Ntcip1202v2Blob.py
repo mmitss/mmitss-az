@@ -19,14 +19,14 @@
     -> Read the NTCIP1202v2 blob received from a trafficController.
     -> Manually unpack the blob using byte-structure provided in Econolite SPAT Guide.
     -> API (as a minimum) for following information is provided:
-        -> PhaseCurrentStatus: Required for MMITSS J2735SPAT and TrafficController Observer
-        -> PhaseStatusStartTime: Required for MMITSS J2735SPAT and TrafficController Observer
-        -> PhaseStatusMinEndTime: Required for MMITSS J2735SPAT and TrafficController Observer
-        -> PhaseStatusMaxEndTime: Required for MMITSS J2735SPAT and TrafficController Observer
-        -> PhaseStatusElapsedTime: Required for TrafficController Observer
-        -> Intersection status: Required in MMITSS J2735SPAT and TrafficController Observer
-        -> msOfMinute: Required for MMITSS J2735SPAT and TrafficController Observer
-        -> minuteOfYear: Required for MMITSS J2735SPAT and TrafficController Observer
+        -> PhaseCurrentStatus: Required for MMITSS J2735SPAT and TrafficControllerInterface
+        -> PhaseStatusStartTime: Required for MMITSS J2735SPAT and TrafficController
+        -> PhaseStatusMinEndTime: Required for MMITSS J2735SPAT and TrafficController
+        -> PhaseStatusMaxEndTime: Required for MMITSS J2735SPAT and TrafficController
+        -> PhaseStatusElapsedTime: Required for TrafficControllerInterface
+        -> Intersection status: Required in MMITSS J2735SPAT
+        -> msOfMinute: Required for MMITSS J2735SPAT
+        -> minuteOfYear: Required for MMITSS J2735SPAT
     -> minuteOfYear and msOfMinute is calculated from the MRP system time.
     -> Constructor requires no inputs. Just initializes the attributes.
     -> processNewData method needs to be called everytime a new blob is received. ReceivedBlob needs to be passed as a parameter for this method.
