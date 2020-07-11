@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------#
 #    Dockerfile to build an arm platform image for the vsp                    #
 #-----------------------------------------------------------------------------#
-FROM mmitss-arm-vsp-debug:0.1
+FROM mmitss-arm-vsp-base:1.0
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY WirelessMsgDecoder/arm/M_WirelessMsgDecoder /mmitss
