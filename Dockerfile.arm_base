@@ -38,6 +38,8 @@ RUN ldconfig
 
 RUN mkdir /mmitss
 
+RUN mkdir -p /mmitss/map
+
 WORKDIR /mmitss
 
 # Environment variables
