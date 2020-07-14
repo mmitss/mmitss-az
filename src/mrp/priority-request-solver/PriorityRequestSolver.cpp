@@ -97,7 +97,6 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         priorityRequestList.push_back(requestList);
     }
 
-    // setPhaseCallForRequestedSignalGroup();
     //This is optional. For priniting few attributes of the priority request list in the console
     // for (size_t i = 0; i < priorityRequestList.size(); i++)
     // {
@@ -147,7 +146,9 @@ double PriorityRequestSolver::getCoefficientOfFrictionValue(double vehicleSpeed)
 
     return coefficientOfFrictionValue;
 }
-
+/*
+    - The following method responsible for checking whether any heavy vehicle is in the dilemma zoe or not.
+*/
 void PriorityRequestSolver::createDilemmaZoneRequestList()
 {
     double initialVehicleSpeed{};
@@ -197,12 +198,16 @@ void PriorityRequestSolver::modifyPriorityRequestList()
 }
 
 /*
+    - This method check whether it is required to delete the split phase priority request.
     - For Single or Multiple EV priority request for same signal group:
-        - Append Starting phases into their respective ring barrier group
-        - If ring group is missing, then check whether starting phases left turn phase is same or not
-        - If they are not same remove left turn phases
+        - This method appends starting phases into their respective ring barrier group
+        - If ring barrier group is missing, then the method:
+            - check whether starting phases left turn phase are same or not
+            - if starting phases left turn phase are not same, remove left turn phases
+            - add dummy through phases to the missing ring barrier group. suppose Starting Phase is {4,8} and requested Phase is {4,7}. Then split phase{7} is deleted by the method and two Dummy phase {2,6} will be added to formulate the problem properly. 
     - For Multiple EV priority request from different approach:
-        - If EV is in priority request list and requested signal group are in same Barrier grup,delete all the left turn priority request from the list.
+        - If all the requested signal group are in same Barrier grup, delete all the left turn priority request from the list.
+        - If ring barrier group is missing, then the method adds dummy through phases to the missing ring barrier group.
 */
 void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 {
@@ -468,6 +473,10 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
     }
 }
 
+/*
+    - This method manage all the required input data for the GLPK solver.
+    - This function also calls SolverDataManager class to write the dat dile
+*/
 void PriorityRequestSolver::setOptimizationInput()
 {
 
@@ -494,17 +503,20 @@ void PriorityRequestSolver::setOptimizationInput()
     }
 }
 
+/*
+    - This method is getters for obtaining all the requested phase form the priority request list.
+*/
 void PriorityRequestSolver::getRequestedSignalGroup()
 {
     SolverDataManager solverDataManager(priorityRequestList);
     requestedSignalGroup.clear();
     requestedSignalGroup = solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
 }
+
 /*
     - Method of solving the request in the priority request list  based on mod and dat files
     - Solution will be written in the /nojournal/bin/Results.txt file
 */
-// void PriorityRequestSolver::GLPKSolver(SolverDataManager solverDataManager)
 void PriorityRequestSolver::GLPKSolver()
 {
     double startOfSolve{};
@@ -558,6 +570,11 @@ skip:
     glp_delete_prob(mip);
 }
 
+/*
+    - This method calls finEVInList() function to check whether emergency vehicle is in the list or not
+    - This method also calls setOptimizationInput() to process all the input data for the GLPK solver and GLPKSolver() method to solve the optimization problem.
+    - This function finally calls ScheduleManage class to process the schedule for the TCI in JSON string format.
+*/
 string PriorityRequestSolver::getScheduleforTCI()
 {
     string scheduleJsonString{};
@@ -593,6 +610,9 @@ string PriorityRequestSolver::getScheduleforTCI()
     return scheduleJsonString;
 }
 
+/*
+    - This method is reponsible for creating a JSON formatted string to clear the schedule for TCI.
+*/
 string PriorityRequestSolver::getClearCommandScheduleforTCI()
 {
     string clearScheduleJsonString{};
@@ -606,9 +626,6 @@ string PriorityRequestSolver::getClearCommandScheduleforTCI()
 /*
     - If here is EV in priority request list, Dat file will have information about EV requested phases and current phases.
     - A vector called plannedEVPhases will hold the required signal group for EV priority.
-    - If there is onlye two required signal groups then dummy signal group will be added for other ring barrier.
-        - Suppose Starting Phase is {4,8} and requested Phase is {4,7}. Then split phase{7} is deleted by deleteSplitPhasesFromPriorityRequestList() method.
-        - Two Dummy phase {2,6} will be added to formulate the problem properly. 
 */
 void PriorityRequestSolver::getEVPhases()
 {
@@ -629,23 +646,12 @@ void PriorityRequestSolver::getEVPhases()
             plannedEVPhases.push_back(tempSignalGroup);
     }
 
-    // if (plannedEVPhases.size() <= 2)
-    // {
-    //     vector<int> dummyPhases{2, 4, 6, 8};
-    //     for (size_t i = 0; i < dummyPhases.size(); i++)
-    //     {
-    //         tempSignalGroup = dummyPhases[i];
-    //         it = std::find(plannedEVPhases.begin(), plannedEVPhases.end(), tempSignalGroup);
-    //         if (it == plannedEVPhases.end())
-    //             plannedEVPhases.push_back(tempSignalGroup);
-    //     }
-    // }
-
     sort(plannedEVPhases.begin(), plannedEVPhases.end());
 }
 
 /*
-- This method is responsible for obtaining dynamic EV Traffic Signal Plan
+    - This method is responsible for obtaining dynamic EV Traffic Signal Plan
+    - EV Traffic Signal Plan doesn't contain the ommit phases information.
 */
 void PriorityRequestSolver::getEVTrafficSignalPlan()
 {
@@ -699,6 +705,10 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
     }
 }
 
+/*
+    - To get the current phase status a request message has to send to the TCI
+    - This method is responsible for creating that message as a JSON string. 
+*/
 string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 {
     string currentPhaseStatusRequestJsonString{};
@@ -713,6 +723,10 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 
 /*
     - If new priority request is received this method will obtain the current traffic signal Status.
+    - If the current phase is in yellow or red state in the json string, the method set next phase as starting phase.
+    - If the current phase is in yellow or red state, the method calculates the init (time to start starting phase) value.
+    - If red clearance time for both phases are not same, one phase can be in red rest. In that case init time can be negative. The method sets init time same as the init time of other starting phase..
+    - If starting phase is on rest or elapsed green time is more than gmax, the method sets the elapsed green time min green time.
 */
 void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
 {
@@ -836,6 +850,10 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     }
 }
 
+/*
+    - The method is responsible for avoiding edge condition. It checks whether starting phase1 is in ring 1 and starting phase2 is in ring 2
+    - For T-intersection starting phase can be zero. In that case, the method fills the the elapsed green time and the init time values with the elapsed green time and the init time values of other starting phase.
+*/
 void PriorityRequestSolver::validateTrafficControllerStatus()
 {
     if (trafficControllerStatus[0].startingPhase1 == 0)
@@ -1061,12 +1079,9 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "set P2 := {1..8};\n";
     FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
 
-    // at most 4 rcoordination requests may be considered, 2 phase * 2 cycles ahead. For example, if phases 2 and 6 are coordinated,
-    // then CP={2,6} and CP1={2} and CP2={6}. The values of Cl1 and Cu1 show the lower and upper bound of the arrival time of coordination request for phase p in CP1
-    // The values of Cl2 and Cu2 show the lower and upper bound of the arrival time of coordination request for phase p in CP2
     FileMod << "set E:={1,2};\n";
     FileMod << "\n";
-    // //========================Parameters=========================
+    //========================Parameters=========================
 
     FileMod << "param y    {p in P}, >=0,default 0;\n";
     FileMod << "param red  {p in P}, >=0,default 0;\n";
@@ -1079,12 +1094,9 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "param SP1,  integer,default 0;\n";
     FileMod << "param SP2,  integer,default 0;\n";
     FileMod << "param M:=9999,integer;\n";
-    // FileMod << "param alpha:=100,integer;\n";
     FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
     FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
 
-    // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
-    // FileMod << "param cycle, :=" << 100 << ";\n";
     FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
     FileMod << "param PrioWeigth { t in T}, >=0, default 0;  \n";
     FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
@@ -1095,7 +1107,7 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
     FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
 
-    // // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
+    // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
     FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
     FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
     FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
@@ -1106,7 +1118,7 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
 
     FileMod << "\n";
-    // // ==================== VARIABLES =======================
+    // ==================== VARIABLES =======================
     FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
@@ -1118,7 +1130,7 @@ void PriorityRequestSolver::generateModFile()
 
     FileMod << "\n";
 
-    // // ===================Constraints==============================
+    // ===================Constraints==============================
 
     FileMod << "s.t. initial{e in E,p in P:(p<SP1) or (p<SP2 and p>4)}: t[p,1,e]=0;  \n";
     FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
@@ -1133,9 +1145,9 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "s.t. Prec_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
     FileMod << "s.t. Prec_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
     FileMod << "s.t. Prec_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
-    // // #================ END of cycle 1======================#
+    // #================ END of cycle 1======================#
 
-    // // # constraints in the same cycle in same P??
+    // # constraints in the same cycle in same P??
     FileMod << "s.t. Prec_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     FileMod << "s.t. Prec_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     FileMod << "s.t. Prec_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
@@ -1283,9 +1295,6 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod << "set P2 := {1..8};\n";
     FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
 
-    // at most 4 rcoordination requests may be considered, 2 phase * 2 cycles ahead. For example, if phases 2 and 6 are coordinated,
-    // then CP={2,6} and CP1={2} and CP2={6}. The values of Cl1 and Cu1 show the lower and upper bound of the arrival time of coordination request for phase p in CP1
-    // The values of Cl2 and Cu2 show the lower and upper bound of the arrival time of coordination request for phase p in CP2
     FileMod << "set E:={1,2};\n";
     FileMod << "set DZ:={1,2};\n"; //For Dilemma Zone
 
@@ -1325,22 +1334,9 @@ void PriorityRequestSolver::generateEVModFile()
     // FileMod << "param DilemmaZoneExtention, default 0;\n";
     FileMod << "param active_dilemmazone_p{p in P, dz in DZ}, integer, :=(if Dl[p,dz]>0 then 1 else	0);\n";
 
-    // // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
-    // if (EV_P11.size() > 0)
-    //     FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
-    // if (EV_P12.size() > 0)
-    //     FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
-    // if (EV_P21.size() > 0)
-    //     FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
-    // if (EV_P22.size() > 0)
-    //     FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
-    // FileMod << "param barrier1GmaxSlack, := sumOfGMax11 - sumOfGMax21 ;\n";
-    // FileMod << "param barrier2GmaxSlack, := sumOfGMax12 - sumOfGMax22 ;\n";
-    // FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
-    // FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
     FileMod << "\n";
-    // // ==================== VARIABLES =======================
+    // ==================== VARIABLES =======================
     FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
@@ -1356,7 +1352,7 @@ void PriorityRequestSolver::generateEVModFile()
 
     FileMod << "\n";
 
-    // // ===================Constraints==============================
+    // ===================Constraints==============================
 
     FileMod << "s.t. initial{e in E,p in P:(p<SP1) or (p<SP2 and p>4)}: t[p,1,e]=0;  \n";
     FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
@@ -1474,7 +1470,7 @@ void PriorityRequestSolver::generateEVModFile()
 
     FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-    // FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) ); \n ";
+    
     /****************************************DilemmaZone Constraints ************************************/
     FileMod << "s.t. DilemmaZoneDelay1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
     FileMod << "s.t. DilemmaZoneDelay2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
@@ -1551,6 +1547,9 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod.close();
 }
 
+/*
+    - This method checks whether emergency vehicle priority request is in the list or not
+*/
 bool PriorityRequestSolver::findEVInList()
 {
     if (priorityRequestList.empty())
@@ -1573,6 +1572,10 @@ bool PriorityRequestSolver::findEVInList()
     return emergencyVehicleStatus;
 }
 
+/*
+    - PRSolver obtains the signal timing plan from the TCI. At the start of the program it asks TCI to send the static signal timing plan 
+    - This method creats that signal timing plan request string.
+*/
 string PriorityRequestSolver::getSignalTimingPlanRequestString()
 {
     std::string jsonString{};
@@ -1591,6 +1594,9 @@ double PriorityRequestSolver::GetSeconds()
     return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
 }
 
+/*
+    -Check whether to log data or not
+*/
 bool PriorityRequestSolver::logging()
 {
     string logging{};
@@ -1617,6 +1623,9 @@ bool PriorityRequestSolver::logging()
     return loggingStatus;
 }
 
+/*
+    - Loggers to log priority request string, signal status string, NewModelData.dat and results.txt files
+*/
 void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
 {
     ofstream outputfile;
@@ -1691,6 +1700,9 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 //     }
 // }
 
+/*
+    - Loggers to log static signal timing plan data
+*/
 void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
 {
     if (loggingStatus == true)
@@ -1719,6 +1731,9 @@ void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
 //     }
 // }
 
+/*
+    - Loggers to log clear request string
+*/
 void PriorityRequestSolver::loggingClearRequestData(string jsonString)
 {
     if (loggingStatus == true)

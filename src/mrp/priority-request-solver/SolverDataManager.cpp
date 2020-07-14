@@ -36,7 +36,6 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 /*
     - This method will obtain requested signal group information from the priority request list and store them in requestedSignalGroup list.
 */
-// void SolverDataManager::getRequestedSignalGroupFromPriorityRequestList(vector<RequestList> priorityRequestList)
 vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
     //vector<int>requestedSignalGroup;
@@ -62,14 +61,13 @@ void SolverDataManager::removeDuplicateSignalGroup()
 }
 
 /*
-- This function is responsible for finding associated signal group from another ring for requested signal group
-- At first all requested signal group information are stored in another temporary vector
-- Associated signal group is obtained by +/- 4. If requested phase is in ring 1 add 4. If equested phase is in ring 2 substract 4.
-- Check if the associated signal group is enabled for the intersection
-- Append associated signal group information in the orignal signal group list.
-- Remove the duplicate phase number
+    - This function is responsible for finding associated signal group from another ring for requested signal group
+    - At first all requested signal group information are stored in another temporary vector
+    - Associated signal group is obtained by +/- 4. If requested phase is in ring 1 add 4. If equested phase is in ring 2 substract 4.
+    - Check if the associated signal group is enabled for the intersection
+    - Append associated signal group information in the orignal signal group list.
+    - Remove the duplicate phase number
 */
-// void SolverDataManager::addAssociatedSignalGroup(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
 void SolverDataManager::addAssociatedSignalGroup()
 {
     vector<int> tempListOfRequestedSignalGroup = requestedSignalGroup;
@@ -103,7 +101,6 @@ void SolverDataManager::addAssociatedSignalGroup()
 /*
     - This function will increase the  value of green max by 15% if there is Transit or Truck in the priority request list.
 */
-// void SolverDataManager::modifyGreenMax(vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
 void SolverDataManager::modifyGreenMax()
 {
     for (auto i = requestedSignalGroup.begin(); i != requestedSignalGroup.end(); ++i)
@@ -137,7 +134,6 @@ void SolverDataManager::findMaximumETAofEV()
 /*
     -If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
 */
-
 void SolverDataManager::modifyCurrentSignalStatus()
 {
     int temporaryPhase{};
@@ -176,6 +172,9 @@ void SolverDataManager::modifyCurrentSignalStatus()
     }
 }
 
+/*
+    - If emergency vehicle sends priority request, this method checks whether signal group from signal plan is in the priority request list or not
+*/
 bool SolverDataManager::findSignalGroupInList(int signalGroup)
 {
     bool findSignalGroup{false};

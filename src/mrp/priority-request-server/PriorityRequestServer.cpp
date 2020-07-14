@@ -561,7 +561,7 @@ std::string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus
 	signalStatus.setRegionalID(regionalID);
 	signalStatus.setIntersectionID(intersectionID);
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
-	// loggingData(ssmJsonString);
+	loggingData(ssmJsonString);
 
 	return ssmJsonString;
 }
@@ -616,7 +616,7 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 	solverJsonString = fastWriter.write(jsonObject);
 	styledStreamWriter.write(outputter, jsonObject);
 
-	// loggingData(solverJsonString);
+	loggingData(solverJsonString);
 
 	return solverJsonString;
 }

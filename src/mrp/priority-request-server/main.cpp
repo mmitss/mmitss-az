@@ -75,9 +75,7 @@ int main()
                 // std::cout << "Sent SSM" << std::endl;
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                // PRS.loggingData(receivedJsonString);
-                // PRS.loggingData(ssmJsonString);
-                // PRS.loggingData(solverJsonString);
+                PRS.loggingData(receivedJsonString);
             }
         }
 
@@ -90,7 +88,7 @@ int main()
             if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
             {
                 PRS.deleteTimedOutRequestfromActiveRequestTable();
-                // std::cout << "Deleted Timed out request" << std::endl;
+
                 PRS.printvector();
                 if (PRS.sendClearRequest() == true)
                 {
@@ -102,15 +100,9 @@ int main()
             else if (PRS.updateETA() == true)
             {
                 PRS.updateETAInActiveRequestTable();
-                // PRS.printvector();
-                ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                // std::cout << "SSM JsonString after updating ETA: " << ssmJsonString << std::endl;
-                
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
-                
-                // std::cout << "Sent is SSM after updating ETA" << std::endl;
-                // PRS.loggingData(ssmJsonString);
             }
         }
     }
