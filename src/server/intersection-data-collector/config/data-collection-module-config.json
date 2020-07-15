@@ -1,0 +1,15 @@
+{
+    "DataCollectorIp" : "10.12.6.108",
+    "DataCollectorEmailServer":
+    {
+        "Port": 30000,
+        "EmailAccount": "iam.cyverse@gmail.com",
+        "Password": "mmitss123"
+    },
+    "EmailRecipients":[
+    "nvaltekar@email.arizona.edu",
+    "klhead@email.arizona.edu"
+    ]
+
+}
+

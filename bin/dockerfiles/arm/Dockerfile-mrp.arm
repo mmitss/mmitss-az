@@ -1,0 +1,17 @@
+#-----------------------------------------------------------------------------#
+#    Dockerfile to build an arm platform image for an intersection            #
+#-----------------------------------------------------------------------------#
+FROM mmitssuarizona/mmitss-arm-base:1.0
+MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
+
+COPY WirelessMsgDecoder/arm/M_WirelessMsgDecoder /mmitss
+COPY TrafficControllerInterface/arm/M_TrafficControllerInterface /mmitss
+COPY PrioritySolver/arm/M_PrioritySolver /mmitss
+COPY PriorityRequestServer/arm/M_PriorityRequestServer /mmitss
+COPY SnmpEngine/arm/M_SnmpEngine /mmitss
+COPY MsgEncoder/arm/M_MsgEncoder /mmitss
+COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
+
+COPY supervisord-mrp.conf /mmitss/supervisord.conf
+CMD ["/usr/bin/supervisord"]
+

@@ -1,0 +1,12 @@
+{
+    "IntersectionName": "DaisyMountain_HastingsWay",
+    "CyVerse_DirectoryPath":
+    {
+        "Spat": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_HastingsWay/spat",
+        "SurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_HastingsWay/surrounding_vehicle_data",
+        "PseudoSurroundingBsms": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_HastingsWay/pseudo_surrounding_vehicle_data",
+        "Srm": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_HastingsWay/srm",
+        "Ssm": "/iplant/home/nvaltekar/iam_prototype_data/infrastructure/DaisyMountain_HastingsWay/ssm"
+    },
+    "DataCollectorPort": 30004
+}

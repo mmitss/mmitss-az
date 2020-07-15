@@ -1,0 +1,62 @@
+RING1 Event List! Fri Feb 14 12:51:07 2020
+
+time 3.74278 phase 3 Hold until
+time 3.74278 phase 3 Force-Off at 
+time 15.7428 phase 4 Hold until
+time 15.7428 phase 4 Force-Off at 
+time 28.0428 phase 1 Hold until
+time 28.0428 phase 1 Force-Off at 
+time 47.0428 phase 2 Hold until
+time 88.3928 phase 2 Force-Off at 
+time 57.7428 phase 3 Hold until
+time 124.093 phase 3 Force-Off at 
+time 69.7428 phase 4 Hold until
+time 154.093 phase 4 Force-Off at 
+time 82.0428 phase 1 Hold until
+time 178.393 phase 1 Force-Off at 
+time 101.043 phase 2 Hold until
+time 238.743 phase 2 Force-Off at 
+time 0 phase 2 Call at
+time 1.1 phase 2 Call at
+time 2.2 phase 2 Call at
+time 3.3 phase 2 Call at
+time 4.4 phase 2 Call at
+time 5.5 phase 2 Call at
+time 6.6 phase 2 Call at
+time 7.7 phase 2 Call at
+time 8.8 phase 2 Call at
+time 9.9 phase 2 Call at
+time 11 phase 2 Call at
+time 12.1 phase 2 Call at
+time 13.2 phase 2 Call at
+time 14.3 phase 2 Call at
+time 15.4 phase 2 Call at
+time 16.5 phase 2 Call at
+time 17.6 phase 2 Call at
+time 18.7 phase 2 Call at
+time 19.8 phase 2 Call at
+time 20.9 phase 2 Call at
+time 22 phase 2 Call at
+time 23.1 phase 2 Call at
+time 24.2 phase 2 Call at
+time 25.3 phase 2 Call at
+
+RING2 Event List! Fri Feb 14 12:51:07 2020
+
+time 15.7428 phase 8 Hold until
+time 15.7428 phase 8 Force-Off at 
+time 28.0428 phase 5 Hold until
+time 58.0428 phase 5 Force-Off at 
+time 47.0428 phase 6 Hold until
+time 88.3928 phase 6 Force-Off at 
+time 57.7428 phase 7 Hold until
+time 112.093 phase 7 Force-Off at 
+time 69.7428 phase 8 Hold until
+time 154.093 phase 8 Force-Off at 
+time 82.0428 phase 5 Hold until
+time 196.393 phase 5 Force-Off at 
+time 101.043 phase 6 Hold until
+time 238.743 phase 6 Force-Off at 
+time 111.743 phase 7 Hold until
+time 249.443 phase 7 Force-Off at 
+

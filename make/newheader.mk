@@ -14,17 +14,26 @@ JSONCPP_DIR     := $(THIRDPARTY_ROOT)/jsoncpp
 MAPENGINE_DIR   := $(THIRDPARTY_ROOT)/mapengine
 NETSNMP_DIR     := $(THIRDPARTY_ROOT)/net-snmp
 GLPK_DIR        := $(THIRDPARTY_ROOT)/glpk
+COMMON_INCL     := $(BUILD_ROOT)/include/common
 JSONCPP_INCL    := $(JSONCPP_DIR)/include
 J2735_INCL      := $(J2735_DIR)/include
 MAPENGINE_INCL  := $(MAPENGINE_DIR)/include
 NETSNMP_INCL    := $(NETSNMP_DIR)
 GLPK_INCL       := $(GLPK_DIR)/include
-JSONCPP_LIB     := $(JSONCPP_DIR)/lib
-J2735_SO_DIR    := $(J2735_DIR)/lib
-MAPENGINE_LIB  := $(MAPENGINE_DIR)/lib
-NETSNMP_LIB    := $(NETSNMP_DIR)/lib
-GLPK_LIB       := $(GLPK_DIR)/lib
-
+#JSONCPP_LIB     := $(JSONCPP_DIR)/lib
+ifdef ARM
+MMITSS_COMMON_LIB := $(BUILD_ROOT)/lib/arm
+J2735_LIB      := $(J2735_DIR)/lib/arm
+MAPENGINE_LIB  := $(MAPENGINE_DIR)/lib/arm
+NETSNMP_LIB    := $(NETSNMP_DIR)/lib/arm
+GLPK_LIB       := $(GLPK_DIR)/lib/arm
+else
+MMITSS_COMMON_LIB := $(BUILD_ROOT)/lib/x86
+J2735_LIB      := $(J2735_DIR)/lib/x86
+MAPENGINE_LIB  := $(MAPENGINE_DIR)/lib/x86
+NETSNMP_LIB    := $(NETSNMP_DIR)/lib/x86
+GLPK_LIB       := $(GLPK_DIR)/lib/x86
+endif
 
 # compiler and linker options 
 CPP         := g++

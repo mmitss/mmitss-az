@@ -41,7 +41,8 @@ class UdpSocket
         UdpSocket(const short unsigned int port, int timeOutSec, int timeOutMicroSec);
         void sendData(const string receiverIP, const short unsigned int receiverPort, const string sendBuffer);
         bool receiveData(char *recvBuffer, size_t sizeofReceiveBuffer);
-        int getSenderPort();
+        std::string receivePayloadHexString();
+        short unsigned int getSenderPort();
         string getSenderIP();
         void closeSocket();
 };

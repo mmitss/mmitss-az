@@ -21,7 +21,6 @@
 
 #include <string>
 #include <cstdint>
-#include <json.h>
 #include <Position3D.h>
 
 const double VALID_HEADINGMINDEG = 0;
@@ -46,8 +45,10 @@ class BasicVehicle
         Position3D position;
         double speed_MeterPerSecond{}; // Meter per second
         double heading_Degree{}; // Degree
-        int type{}; // Enumeration
-	int lane{};
+        std::string type{}; // Enumeration
+		int lane{};
+        int length_cm{};
+        int width_cm{};
 
 
     public:
@@ -60,7 +61,9 @@ class BasicVehicle
         void setPosition(double vehLatitude_DecimalDegree, double vehLongitude_DecimalDegree, double vehElevation_Meter);
         void setSpeed_MeterPerSecond(double vehSpeed);
         void setHeading_Degree(double vehHeading_Degree);
-        void setType(int vehType);
+        void setType(std::string vehType);
+        void setLength_cm(int vehLength_cm);
+        void setWidth_cm(int vehWidth_cm);
         
         //Getters:
         int getTemporaryID();
@@ -71,7 +74,9 @@ class BasicVehicle
         double getElevation_Meter();
         double getSpeed_MeterPerSecond();
         double getHeading_Degree();
-        int getType();
+        std::string getType();
+        int getLength_cm();
+        int getWidth_cm();
 
         //JSON Handlers:
         std::string basicVehicle2Json();

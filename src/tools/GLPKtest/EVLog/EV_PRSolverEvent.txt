@@ -1,0 +1,43 @@
+RING1 Event List! Fri Feb 14 12:29:16 2020
+
+time 26 phase 1 Omit until
+time 4.24333 phase 3 Hold until
+time 4.24333 phase 4 Call at
+time 4.24333 phase 3 Force-Off at 
+time 16.2433 phase 4 Hold until
+time 16.2433 phase 2 Call at
+time 16.2433 phase 4 Force-Off at 
+time 50.5433 phase 2 Hold until
+time 50.5433 phase 3 Call at
+time 50.5433 phase 2 Force-Off at 
+time 61.2433 phase 3 Hold until
+time 61.2433 phase 4 Call at
+time 61.2433 phase 3 Force-Off at 
+time 73.2433 phase 4 Hold until
+time 73.2433 phase 2 Call at
+time 73.2433 phase 4 Force-Off at 
+time 96.5433 phase 2 Hold until
+time 96.5433 phase 2 Force-Off at 
+time 16.2433 phase 5 Call at
+time 31.5433 phase 6 Call at
+time 50.5433 phase 8 Call at
+time 73.2433 phase 5 Call at
+time 85.5433 phase 6 Call at
+
+RING2 Event List!
+time 26 phase 7 Omit until
+time 16.2433 phase 8 Hold until
+time 16.2433 phase 8 Force-Off at 
+time 31.5433 phase 5 Hold until
+time 31.5433 phase 5 Force-Off at 
+time 50.5433 phase 6 Hold until
+time 50.5433 phase 6 Force-Off at 
+time 73.2433 phase 8 Hold until
+time 73.2433 phase 8 Force-Off at 
+time 85.5433 phase 5 Hold until
+time 85.5433 phase 5 Force-Off at 
+time 104.543 phase 6 Hold until
+time 104.543 phase 6 Force-Off at 
+  omitPhase1
+  omitPhase7
+

@@ -1,0 +1,147 @@
+{
+    "MsgType": "SPaT",
+    "Timestamp_verbose": "2020-03-26 04:20:09.898820",
+    "Timestamp_posix": 1585221609.898842,
+    "Spat": {
+        "IntersectionState": {
+            "regionalID": 0,
+            "intersectionID": 44383
+        },
+        "msgCnt": 10,
+        "minuteOfYear": 122660,
+        "msOfMinute": 9897,
+        "status": "0000000000000000",
+        "phaseState": [
+            {
+                "phaseNo": 1,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 220,
+                "maxEndTime": 820,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 2,
+                "currState": 8,
+                "startTime": 0,
+                "minEndTime": 30,
+                "maxEndTime": 30,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 3,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 40,
+                "maxEndTime": 40,
+                "elapsedTime": 8
+            },
+            {
+                "phaseNo": 4,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 130,
+                "maxEndTime": 430,
+                "elapsedTime": 8
+            },
+            {
+                "phaseNo": 5,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 220,
+                "maxEndTime": 820,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 6,
+                "currState": 8,
+                "startTime": 0,
+                "minEndTime": 30,
+                "maxEndTime": 30,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 7,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 40,
+                "maxEndTime": 40,
+                "elapsedTime": 8
+            },
+            {
+                "phaseNo": 8,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 130,
+                "maxEndTime": 430,
+                "elapsedTime": 8
+            }
+        ],
+        "pedPhaseState": [
+            {
+                "phaseNo": 1,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 2,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 3,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 4,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 5,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 6,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 7,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            },
+            {
+                "phaseNo": 8,
+                "currState": 3,
+                "startTime": 0,
+                "minEndTime": 0,
+                "maxEndTime": 0,
+                "elapsedTime": 0.0
+            }
+        ]
+    }
+}

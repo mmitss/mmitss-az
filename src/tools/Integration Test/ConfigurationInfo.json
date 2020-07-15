@@ -1,0 +1,24 @@
+{
+    "IntersectionName": "campbell-speedway",
+    "PortNumber":
+	{
+		"MessageTransceiver":
+		{
+			"MessageSender": 10001,
+			"MessageReceiver": 10002,
+			"MessageEncoder": 10003,
+			"MessageDecoder": 10004
+		},
+        "OBUBSMReceiver": 10005,
+		"TrajectoryAware": 20001,
+		"PriorityRequestServer": 20002,
+		"PrioritySOlver": 20003,
+		"PriorityRequestGenerator": 20004,
+		"TrafficController": 20005,
+		"TrafficControllerObserver": 20006,
+		"PerformanceObserver": 20007,
+		"ISIG": 20008,
+		"MapSPaTBroadcaster": 6053,
+		"RSUOBUImageForwarder": 1516
+	}
+}

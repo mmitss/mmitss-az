@@ -1,0 +1,12 @@
+Version=0.7
+Type=BSM
+PSID=0x20
+Priority=7
+TxMode=CONT
+TxChannel=172
+TxInterval=
+DeliveryStart=
+DeliveryStop=
+Signature=False
+Encryption=False
+Payload=001425004000009670D465F99BB7113E3626083F7FFFFFFFF0F312C0FDFA1FA1007FFF8000962580

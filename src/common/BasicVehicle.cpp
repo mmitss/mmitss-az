@@ -19,8 +19,10 @@
 
 */
 
-#include <BasicVehicle.h>
 #include <iostream>
+#include <BasicVehicle.h>
+#include <json/json.h>
+#include "Timestamp.h"
 
 using std::cout;
 using std::endl;
@@ -70,9 +72,19 @@ void BasicVehicle::setHeading_Degree(double vehHeading_Degree)
     else
         cout << "Heading out of range!" << endl;
 }
-void BasicVehicle::setType(int vehType)
+void BasicVehicle::setType(std::string vehType)
 {
     type = vehType;
+}
+
+void BasicVehicle::setLength_cm(int vehLength)
+{
+    length_cm = vehLength;
+}
+
+void BasicVehicle::setWidth_cm(int vehWidth)
+{
+    width_cm = vehWidth;
 }
 
 //Getters:
@@ -108,14 +120,25 @@ double BasicVehicle::getHeading_Degree()
 {
     return heading_Degree;
 }
-int BasicVehicle::getType()
+std::string BasicVehicle::getType()
 {
     return type;
 }
+int BasicVehicle::getLength_cm()
+{
+    return length_cm;
+}
+int BasicVehicle::getWidth_cm()
+{
+    return width_cm;
+}
+
 
 string BasicVehicle::basicVehicle2Json()
 {
     Json::Value jsonObject;
+    jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+    jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "BSM";
     jsonObject["BasicVehicle"]["temporaryID"] = temporaryID;
     jsonObject["BasicVehicle"]["secMark_Second"] = secMark_Second;
@@ -125,6 +148,9 @@ string BasicVehicle::basicVehicle2Json()
     jsonObject["BasicVehicle"]["speed_MeterPerSecond"] = speed_MeterPerSecond;
     jsonObject["BasicVehicle"]["heading_Degree"] = heading_Degree;
     jsonObject["BasicVehicle"]["type"] = type;
+    jsonObject["BasicVehicle"]["size"]["length_cm"] = length_cm;
+    jsonObject["BasicVehicle"]["size"]["width_cm"] = width_cm;
+    
     Json::FastWriter fastWriter;
     return fastWriter.write(jsonObject);                                            
 }
@@ -134,13 +160,15 @@ void BasicVehicle::json2BasicVehicle(string jsonString)
     Json::Reader reader;
     reader.parse(jsonString.c_str(), jsonObject);
     temporaryID = (jsonObject["BasicVehicle"]["temporaryID"]).asInt();
-    type = (jsonObject["BasicVehicle"]["type"]).asInt();
+    type = (jsonObject["BasicVehicle"]["type"]).asString();
     speed_MeterPerSecond = (jsonObject["BasicVehicle"]["speed_MeterPerSecond"]).asDouble();
     secMark_Second = (jsonObject["BasicVehicle"]["secMark_Second"]).asDouble();
     heading_Degree  = (jsonObject["BasicVehicle"]["heading_Degree"]).asDouble();
     position.setLatitude_decimalDegree((jsonObject["BasicVehicle"]["position"]["latitude_DecimalDegree"]).asDouble());
     position.setLongitude_decimalDegree((jsonObject["BasicVehicle"]["position"]["longitude_DecimalDegree"]).asDouble());
     position.setElevation_meter((jsonObject["BasicVehicle"]["position"]["elevation_Meter"]).asDouble());
+    length_cm = (jsonObject["BasicVehicle"]["size"]["length_cm"]).asInt();
+    width_cm = (jsonObject["BasicVehicle"]["size"]["width_cm"]).asInt();
 }
 
 //Destructor:

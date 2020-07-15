@@ -17,7 +17,8 @@
 #include <iostream>
 #include <fstream>
 #include "SignalRequest.h"
-#include "json.h"
+#include "json/json.h"
+#include "Timestamp.h"
 
 const int SEQUENCE_NUMBER_MINLIMIT = 0;
 const int SEQUENCE_NUMBER_MAXLIMIT = 127;
@@ -257,7 +258,8 @@ std::string SignalRequest::signalRequest2Json()
 {
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-
+    jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
+    jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "SRM";
     jsonObject["SignalRequest"]["msgCount"] = msgCount;
     jsonObject["SignalRequest"]["minuteOfYear"] = minuteOfYear;

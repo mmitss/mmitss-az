@@ -1,0 +1,13 @@
+Version=0.7
+Type=SSM
+PSID=0xE000020
+Priority=7
+TxMode=ALT
+TxChannel=182
+TxInterval=0
+DeliveryStart=
+DeliveryStop=
+Signature=False
+Encryption=False
+Payload=001E1F61D4C1C35108000C00000FAC0F9000000964141200200F0EA61271083E8200
+

@@ -1,5 +1,5 @@
 #ignore binaries
-docker/applictions/M_*
+#docker/applications/M_*
 
 #unignore the shell script
 !docker/applictions/*.sh
@@ -9,6 +9,11 @@ docker/applictions/M_*
 
 .idea
 
+*.code-workspace
+
+#M_*
+
+
 .vscode
 
 cmake*
@@ -16,3 +21,5 @@ cmake*
 CMake*
 
 docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
+*.pyc
+.DS_Store

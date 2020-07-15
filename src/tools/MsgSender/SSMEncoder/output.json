@@ -1,0 +1,41 @@
+{
+	"MessageType" : "001E",
+	"noOfRequest" : 3,
+	"MmitssSignalStatus" : 
+	{
+		"intersectionID" : 1003,
+		"minuteOfYear" : 120005,
+		"msOfMinute" : 40001,
+		"regionalID" : 0,
+		"requestorInfo" : 
+		[
+			{
+				"basicVehicleRole" : 16,
+				"inBoundLaneID" : 8,
+				"msgCount" : 2,
+				"priorityRequestStatus" : 32517,
+				"requestID" : 5,
+				"vehicleETA" : 80.000999450683594,
+				"vehicleID" : 601
+			},
+			{
+				"basicVehicleRole" : 16,
+				"inBoundLaneID" : 12,
+				"msgCount" : 6,
+				"priorityRequestStatus" : 4,
+				"requestID" : 5,
+				"vehicleETA" : 82.000999450683594,
+				"vehicleID" : 605
+			},
+			{
+				"basicVehicleRole" : 9,
+				"inBoundLaneID" : 12,
+				"msgCount" : 6,
+				"priorityRequestStatus" : 4,
+				"requestID" : 5,
+				"vehicleETA" : 82.000999450683594,
+				"vehicleID" : 610
+			}
+		]
+	}
+}

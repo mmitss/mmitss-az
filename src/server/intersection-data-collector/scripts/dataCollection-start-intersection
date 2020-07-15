@@ -1,0 +1,33 @@
+#!/bin/bash
+
+cd .. # Go to root directory of Data Collection Module
+
+cd src # Go to src for running the python scripts locally
+
+#echo "Starting the email server"
+#python3 data-collector-email-server.py > /dev/null 2>&1 &
+#sleep 0.5s
+
+echo "Starting data collection for DaisyMountain_GavilanPeak"
+python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_GavilanPeak.json > /dev/null 2>&1 &
+sleep 0.5s
+
+#echo "Starting data collection for DaisyMountain_DedicationTrail"
+#python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_DedicationTrail.json > /dev/null 2>&1 &
+#sleep 0.5s
+
+#echo "Starting data collection for DaisyMountain_MeridianDrive"
+#python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_MeridianDrive.json > /dev/null 2>&1 &
+#sleep 0.5s
+
+#echo "Starting data collection for DaisyMountain_HastingsWay"
+#python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_HastingsWay.json > /dev/null 2>&1 &
+#sleep 0.5s
+
+#echo "Starting data collection for DaisyMountain_MemorialDrive"
+#python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_MemorialDrive.json > /dev/null 2>&1 &
+#sleep 0.5s
+
+#echo "Starting data collection for DaisyMountain_AnthemWay"
+#python3 data-collector-intersection.py ./../config/intersections/DaisyMountain_AnthemWay.json > /dev/null 2>&1 &
+#sleep 0.5s
