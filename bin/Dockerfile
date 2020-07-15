@@ -1,7 +1,7 @@
 #-----------------------------------------------------------------------------#
 #    Dockerfile to build an x86 platform image for an intersection            #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-base-x86:1.3
+FROM mmitssuarizona/mmitss-x86-base:1.0
 
 COPY TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
 COPY SnmpEngine/x86/M_SnmpEngine /mmitss
