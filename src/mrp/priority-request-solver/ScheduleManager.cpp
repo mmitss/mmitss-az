@@ -30,7 +30,11 @@ ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<Traffic
     bEVStatus = EVStatus;
 }
 
-//void ScheduleManager::obtainRequiredSignalGroup(vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
+/*
+    - The optimization model can be solved for three cycles (24 phases). But the schedule is created for two cyccles (16 phases) only  
+    - Method to find list of required signal phases from 24 signal phases.
+    - If starting phase is {3,7}, the planned signal group for ring1 will be {3,4,1,2,3,4,1,2} and for ring 2 {7,8,5,6,7,8,5,6}
+*/
 void ScheduleManager::obtainRequiredSignalGroup()
 {
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
@@ -76,6 +80,9 @@ void ScheduleManager::obtainRequiredSignalGroup()
     }
 }
 
+/*
+    - Method to find the phases to omitted in case of EV priority request
+*/
 void ScheduleManager::getOmitPhases()
 {
     omitPhases.clear();
@@ -92,6 +99,9 @@ void ScheduleManager::getOmitPhases()
     }
 }
 
+/*
+    - Method to read the results.txt file and store information like starting phases, phase duration, green time etc. in list.
+*/
 void ScheduleManager::readOptimalSignalPlan()
 {
     ifstream infile;
@@ -138,9 +148,6 @@ void ScheduleManager::readOptimalSignalPlan()
                 stringstream strToSplit(lineread.c_str());
                 while (strToSplit >> temporaryLine)
                     leftCriticalPoints.push_back(temporaryLine);
-
-                // double lcp1{}, lcp2{}, lcp3{}, lcp4{}, lcp5{}, lcp6{}, lcp7{}, lcp8{};
-                // strToSplit>> lcp1 >> lcp2 >> lcp3 >> lcp4 >> lcp5 >> lcp6 >> lcp7 >> lcp8;
             }
 
             else if (lineNo > 4 && lineNo < 8)
@@ -356,7 +363,6 @@ void ScheduleManager::readOptimalSignalPlan()
 /*
     - Following Method will compute ring wise cummilative sum of phase duration for left and right cricital points
 */
-// void ScheduleManager::createEventList(vector<RequestList> priorityRequestList, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan)
 void ScheduleManager::createEventList()
 {
     Schedule ring1Schedule;
@@ -574,10 +580,12 @@ void ScheduleManager::createEventList()
     }
 }
 
+/*
+    - Method to write the schedule in JSON format for TCI
+*/
 string ScheduleManager::createScheduleJsonString()
 {
     vector<Schedule> completeSchedule;
-    // ring1_TCISchedule.insert(ring1_TCISchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
     completeSchedule.insert(completeSchedule.end(), ring1_TCISchedule.begin(), ring1_TCISchedule.end());
     completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
     string scheduleJsonString{};
@@ -586,8 +594,7 @@ string ScheduleManager::createScheduleJsonString()
     // Json::StyledStreamWriter styledStreamWriter;
     // ofstream outputter("schedule.json");
     jsonObject["MsgType"] = "Schedule";
-    // jsonObject["Schedule"]["Type"] = "clear";
-    // jsonObject["Schedule"]["CommandType"] = "Event";
+
 
     if (ring1_TCISchedule.empty() && ring2_TCISchedule.empty())
     {
@@ -596,21 +603,6 @@ string ScheduleManager::createScheduleJsonString()
 
     else
     {
-        // for (unsigned int i = 0; i < ring1_TCISchedule.size(); i++)
-        // {
-        //     jsonObject["Schedule"]["Ring1"][i]["commandPhase"] = ring1_TCISchedule[i].commandPhase;
-        //     jsonObject["Schedule"]["Ring1"][i]["commandStartTime"] = ring1_TCISchedule[i].commandStartTime;
-        //     jsonObject["Schedule"]["Ring1"][i]["commandEndTime"] = ring1_TCISchedule[i].commandEndTime;
-        //     jsonObject["Schedule"]["Ring1"][i]["commandType"] = ring1_TCISchedule[i].commandType;
-        // }
-        // for (unsigned int i = 0; i < ring2_TCISchedule.size(); i++)
-        // {
-        //     jsonObject["Schedule"]["Ring2"][i]["commandPhase"] = ring2_TCISchedule[i].commandPhase;
-        //     jsonObject["Schedule"]["Ring2"][i]["commandStartTime"] = ring2_TCISchedule[i].commandStartTime;
-        //     jsonObject["Schedule"]["Ring2"][i]["commandEndTime"] = ring2_TCISchedule[i].commandEndTime;
-        //     jsonObject["Schedule"]["Ring2"][i]["commandType"] = ring2_TCISchedule[i].commandType;
-        // }
-
         for (unsigned int i = 0; i < completeSchedule.size(); i++)
         {
             jsonObject["Schedule"][i]["commandPhase"] = completeSchedule[i].commandPhase;
