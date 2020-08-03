@@ -80,6 +80,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
     for (int i = 0; i < noOfRequest; i++)
     {
+        requestList.reset();
         requestList.vehicleID = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
         requestList.vehicleType = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
         requestList.basicVehicleRole = jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
@@ -469,6 +470,51 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
                 if (it == requestedSignalGroup.end())
                     requestedSignalGroup.push_back(tempSignalGroup);
             }
+        }
+        // For T-intersection when EV are approaching from major and minor street simulatenously, Following logic is required.
+        // If minor street is already green then delete the split phase information.
+        else if (trafficControllerStatus[0].startingPhase1 == 4 && trafficControllerStatus[0].startingPhase2 == 8)
+        {
+            vector<int> LeftTurnPhases{3, 7};
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
+        }
+
+        else if (trafficControllerStatus[0].startingPhase1 == 2 && trafficControllerStatus[0].startingPhase2 == 6)
+        {
+            vector<int> LeftTurnPhases{1, 5};
+            for (size_t i = 0; i < LeftTurnPhases.size(); i++)
+            {
+                temporaryPhase = LeftTurnPhases.at(i);
+                for (size_t j = 0; j < priorityRequestList.size(); j++)
+                {
+                    vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+
+                    if (findSignalGroupOnList != priorityRequestList.end())
+                    {
+                        priorityRequestList.erase(findSignalGroupOnList);
+                        j--;
+                    }
+                }
+            }
+            requestedSignalGroup.clear();
+            getRequestedSignalGroup();
         }
     }
 }
@@ -899,7 +945,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     reader.parse(jsonString.c_str(), jsonObject);
     const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
-    cout << "Total Phase No: " << noOfPhase << endl;
+    // cout << "Total Phase No: " << noOfPhase << endl;
 
     for (int i = 0; i < noOfPhase; i++)
     {
@@ -1025,7 +1071,24 @@ void PriorityRequestSolver::modifySignalTimingPlan()
         }
 
         else if ((temporarySignalGroup % 2 != 0) && (trafficSignalPlan[i].minGreen == 0))
-            temporaryTrafficSignalPlan.erase(findSignalGroupOnList);
+        {
+            //temporaryTrafficSignalPlan.erase(findSignalGroupOnList);
+            if (temporarySignalGroup < 5)
+                temporaryCompitableSignalGroup = temporarySignalGroup + 5;
+            if (temporarySignalGroup > 5)
+                temporaryCompitableSignalGroup = temporarySignalGroup - 3;
+
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+
+            findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
+            findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
+            findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
+            findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
+            findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
+            findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
+            findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+        }
     }
     trafficSignalPlan.clear();
     trafficSignalPlan.insert(trafficSignalPlan.end(), temporaryTrafficSignalPlan.begin(), temporaryTrafficSignalPlan.end());
@@ -1470,7 +1533,7 @@ void PriorityRequestSolver::generateEVModFile()
 
     FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-    
+
     /****************************************DilemmaZone Constraints ************************************/
     FileMod << "s.t. DilemmaZoneDelay1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
     FileMod << "s.t. DilemmaZoneDelay2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";

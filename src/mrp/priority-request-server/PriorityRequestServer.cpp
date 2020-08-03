@@ -312,11 +312,11 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 		break;
 
 	case 3:
-		temporarySplitPhase = 7;
+		temporarySplitPhase = 8;
 		break;
 
 	case 4:
-		temporarySplitPhase = 8;
+		temporarySplitPhase = 7;
 		break;
 
 	case 5:
@@ -328,11 +328,11 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 		break;
 
 	case 7:
-		temporarySplitPhase = 3;
+		temporarySplitPhase = 4;
 		break;
 
 	case 8:
-		temporarySplitPhase = 4;
+		temporarySplitPhase = 3;
 		break;
 
 	default:
