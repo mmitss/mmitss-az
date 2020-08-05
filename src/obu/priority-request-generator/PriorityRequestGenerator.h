@@ -23,6 +23,11 @@
 #include "ActiveRequest.h"
 #include "MapManager.h"
 
+enum msgType
+{
+  lightSirenStatus = 1,
+};
+
 class PriorityRequestGenerator
 {
 private:
@@ -51,6 +56,7 @@ private:
   double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
   double tempSRMTimeStamp{};    //temporary store the time when last SRM has been sent
   int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
+  bool lightSirenStatus{true};
 
 public:
   PriorityRequestGenerator();
@@ -95,4 +101,6 @@ public:
   std::vector<ActiveRequest> getActiveRequestTable();
   void printART();
   std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
+  void setLightSirenStatus(std::string jsonString);
+  std::string getRequestStringForLightSirenStatus();
 };
