@@ -26,6 +26,8 @@ This class provides methods that interface with the SnmpEngine.
 import socket
 import json
 
+from bitstring import BitArray
+
 class Snmp:
     """
     provides methods to interface with the SnmpEngine
@@ -71,7 +73,19 @@ class Snmp:
         snmpGetResponseJson = json.loads(data.decode())
         
         return snmpGetResponseJson["Value"]
+    
+    def getPhaseListFromBitArray(self, bitArray:BitArray) -> list:   
+        
+        phaseList = []
 
+        for phase in range(8):
+            if bitArray[-phase]==True:
+                if phase==0: 
+                    phaseList = phaseList + [8]                    
+                else: phaseList = phaseList + [phase]
+
+        return sorted(phaseList)
+       
     def setValue(self, oid:str, value:int):
         """
         sends a "set" request to the SnmpEngine for the OID provided in argument
@@ -91,23 +105,20 @@ class Snmp:
 
 if __name__ == "__main__":
 
-    snmp = Snmp()
+    import StandardMib
     import time
+    
+    snmp = Snmp()
+    
+    phase = 8
 
-    requestTime = time.time()
-    print("Original value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    deliveryTime = time.time()
-    leadTime = deliveryTime - requestTime
-    print("Received in " + str(leadTime) + " Seconds" )
+    bitArray = BitArray([False,False,False,False,False,False,False,False])
+    
+    bitArray = bitArray[::-1]
+    bitArray[phase-1] = True
+    
 
-    time.sleep(0.1)
-    snmp.setValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1", 6)
-    time.sleep(0.1)
-
-    requestTime = time.time()
-    print("New value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    deliveryTime = time.time()
-    leadTime = deliveryTime - requestTime
-    print("Received in " + str(leadTime) + " Seconds" )
-
+    print(snmp.getPhaseListFromBitArray(bitArray))
+    groupInteger = bitArray.uint
+    snmp.setValue(StandardMib.PHASE_CONTROL_VEHCALL,groupInteger)
     

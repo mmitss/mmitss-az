@@ -26,6 +26,14 @@ This class has NO member functions
 ***************************************************************************************
 """
 
+# Define Command Actions (Used in phase controls):
+CALL_VEH_PHASES = 1
+CALL_PED_PHASES = 2
+FORCEOFF_PHASES = 3
+HOLD_VEH_PHASES = 4
+OMIT_VEH_PHASES = 5
+OMIT_PED_PHASES = 6
+
 class Command:
     """
     This class provides a data-structure to store the commands which can be sent to the 
@@ -39,20 +47,11 @@ class Command:
     from now until 21 seconds from now,
     - > command = Command(255, 1, 20, 21)
     """
-    def __init__(self, phases:int, action:int, startTime:float, endTime:float):
-
-        self.action = action
+    def __init__(self, phases, control:int, startTime:float, endTime:float):
+        self.control = control
         self.phases = phases
         self.startTime = startTime
         self.endTime = endTime
-
-        # Define Command Actions (Used in phase controls):
-        self.CALL_VEH_PHASES = "call_veh"
-        self.CALL_PED_PHASES = "call_ped"
-        self.FORCEOFF_PHASES = "forceoff"
-        self.HOLD_VEH_PHASES = "hold"
-        self.OMIT_VEH_PHASES = "omit_veh"
-        self.OMIT_PED_PHASES = "omit_ped"
 
 '''##############################################
                    Unit testing

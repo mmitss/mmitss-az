@@ -30,13 +30,15 @@ of calls to Snmp::getValue funtion and listening for information from MapSpatBro
 """
 
 import datetime
+from threading import current_thread
 import time
 import socket
 import json
 import StandardMib
 import importlib.util
-from Command import Command
+import Command
 from Snmp import Snmp
+from bitstring import BitArray
 
 class SignalController:
     """
@@ -70,6 +72,13 @@ class SignalController:
             spec.loader.exec_module(self.timingPlanMib)
         else: self.timingPlanMib = StandardMib
 
+        self.currentHolds = BitArray([False for phase in range(8)])
+        self.currentForceoffs = BitArray([False for phase in range(8)])
+        self.currentVehOmits = BitArray([False for phase in range(8)])
+        self.currentPedOmits = BitArray([False for phase in range(8)])
+        self.currentVehCalls = BitArray([False for phase in range(8)])
+        self.currentPedCalls = BitArray([False for phase in range(8)])
+
         # Read the arguments into local variables:
         self.snmp = Snmp()
         self.timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
@@ -95,9 +104,51 @@ class SignalController:
         # Read the currently active timing plan and store it into a JSON string
         self.updateAndSendActiveTimingPlan()
 
+        self.phaseControls = dict({
+                                        1:{
+                                            "name":"VEH_CALL",
+                                            "oid": StandardMib.PHASE_CONTROL_VEHCALL,
+                                            "status": self.currentVehCalls,
+                                        },
+                                        2:{
+                                            "name":"PED_CALL",
+                                            "oid": StandardMib.PHASE_CONTROL_PEDCALL,
+                                            "status": self.currentPedCalls
+                                        },
+                                        3:{
+                                            "name":"FORCEOFF",
+                                            "oid": StandardMib.PHASE_CONTROL_FORCEOFF,
+                                            "status": self.currentForceoffs
+                                        },
+                                        4:{
+                                            "name":"HOLD",
+                                            "oid": StandardMib.PHASE_CONTROL_HOLD,
+                                            "status": self.currentHolds
+                                        },
+                                        5:{
+                                            "name":"VEH_OMIT",
+                                            "oid": StandardMib.PHASE_CONTROL_VEH_OMIT,
+                                            "status": self.currentVehOmits
+                                        },
+                                        6:{
+                                            "name":"PED_OMIT",
+                                            "oid": StandardMib.PHASE_CONTROL_PED_OMIT,
+                                            "status": self.currentPedOmits
+                                        },
+                                    })
+
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
-    def getPhaseControl(self, action:int) -> int:
+    def resetAllPhaseControls(self):
+        
+        self.phaseControls.get(Command.CALL_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.CALL_PED_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.FORCEOFF_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.HOLD_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.OMIT_PED_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.OMIT_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
+
+    def getPhaseControl(self, control:int) -> int:
         """
         returns the integer representation of bit-string denoting which phases are currently executing 
         the action.
@@ -116,73 +167,45 @@ class SignalController:
         """
 
         # Create a dummy command to get the enumerations corresponding to each phase control action
-        command = Command(0,0,0,0)
+        
 
-        if action == command.CALL_VEH_PHASES:
+        if control == Command.CALL_VEH_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEHCALL))
-        elif action == command.CALL_PED_PHASES:
+        elif control == Command.CALL_PED_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_PEDCALL))
-        elif action == command.FORCEOFF_PHASES:
+        elif control == Command.FORCEOFF_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_FORCEOFF))
-        elif action == command.HOLD_VEH_PHASES:
+        elif control == Command.HOLD_VEH_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_HOLD))
-        elif action == command.OMIT_VEH_PHASES:
+        elif control == Command.OMIT_VEH_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_VEH_OMIT))
-        elif action == command.OMIT_PED_PHASES:
+        elif control == Command.OMIT_PED_PHASES:
             value = int(self.snmp.getValue(StandardMib.PHASE_CONTROL_PED_OMIT))
+        else: value = False
         
         return value
 
-    def setPhaseControl(self, action:int, phases:int, scheduleReceiptTime:float):
-        """
-        sets the NTCIP phase control in the signal controller. 
-
-        Arguments:
-        ----------
-            (1) Action ID:
-                    The action can be chosen from the command class. Available actions are:
-                    CALL_VEH_PHASES, CALL_PED_PHASES, FORCEOFF_PHASES, HOLD_VEH_PHASES, OMIT_VEH_PHASES, 
-                    OMIT_PED_PHASES. The mapping of actions to integer is available in Command class. 
-            (2) Phases:
-                    The phases parameter is an integer representation of a bitstring for which a phase 
-                    control needs to be applied. For example, for placing a vehicle call on all phases, 
-                    the bit string would be (11111111), whose integer representation is 255.
-            (3) Schedule Receipt Time:
-                    The (epoch) time when the schedule was received from the Solver. The execution times will be 
-                    relative to this time.
-        """
-        command = Command(0,0,0,0)
-        phasesStr = str(f'{phases:08b}')[::-1]
-        phaseList = []
-        for i in range(len(phasesStr)):
-            if phasesStr[i] == str(1):
-                phaseList = phaseList + [i+1]
+    def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int):
+        phaseControlDict = self.phaseControls.get(control)
+        if ((len(phases) == 0) or (len(phases) == 1 and phases[0] == 0)) :
+            phaseControlDict["status"] = BitArray(False for phase in range(8))
+            phaseList = []
+            groupInt = phaseControlDict["status"].uint
+            self.snmp.setValue(phaseControlDict["oid"], groupInt)
+            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
+            
         
-        if action == command.CALL_VEH_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_VEHCALL, phases)
-            print("Veh-CALL " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
-        
-        elif action == command.CALL_PED_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_PEDCALL, phases)
-            print("Ped-CALL " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
+        else:
+            currentStatus = phaseControlDict["status"]
+            for phase in phases:
+                phaseControlDict["status"][-phase] = action # What does "-" sign do?
+            
+            groupInt = phaseControlDict["status"].uint
+            self.snmp.setValue(phaseControlDict["oid"], groupInt)
+            phaseList = self.snmp.getPhaseListFromBitArray(phaseControlDict["status"])
+            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " "  + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds. Integer=" + str(groupInt))
+            
 
-        elif action == command.FORCEOFF_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_FORCEOFF, phases)
-            print("FORCEOFF " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
-
-        elif action == command.HOLD_VEH_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_HOLD, phases)
-            print("HOLD " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
-
-        elif action == command.OMIT_VEH_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_VEH_OMIT, phases)
-            print("Veh-OMIT " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")
-
-        elif action == command.OMIT_PED_PHASES:
-            self.snmp.setValue(StandardMib.PHASE_CONTROL_PED_OMIT, phases)
-            print("Ped-OMIT " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),2)) + " seconds")                   
-        else: 
-            print("Invalid action requested")
     ######################## Definition End: phaseControl(self, action, phases) ########################
 
     def sendCurrentAndNextPhasesDict(self, requesterAddress:tuple):
@@ -214,7 +237,7 @@ class SignalController:
             """
 
             nextPhasesInt = int(self.snmp.getValue(StandardMib.PHASE_GROUP_STATUS_NEXT))
-            print("Current next phases are" + str(nextPhasesInt))
+            print("[" + str(datetime.datetime.now()) + "] " + "Current next phases are" + str(nextPhasesInt))
             nextPhasesStr = str(f'{(nextPhasesInt):08b}')[::-1]
             
             nextPhasesList = [0,0]
@@ -239,7 +262,7 @@ class SignalController:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind(self.currPhaseListenerAddress)
         data, addr = s.recvfrom(1024)
-        print("Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
+        print("[" + str(datetime.datetime.now()) + "] " + "Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
 
         currentPhasesDict = json.loads(data.decode())
 
@@ -254,7 +277,7 @@ class SignalController:
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        print("Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
+        print("[" + str(datetime.datetime.now()) + "] " + "Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
@@ -360,7 +383,7 @@ class SignalController:
                 s.bind(self.timingPlanSenderAddress)
                 s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
                 s.close()
-                print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+                print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
                 print(self.currentTimingPlanJson)
 
         else:
@@ -446,7 +469,7 @@ class SignalController:
             s.bind(self.timingPlanSenderAddress)
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
             s.close()
-            print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+            print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
             print(self.currentTimingPlanJson)
             
     ######################## Definition End: updateActiveTimingPlan(self) ########################
@@ -460,10 +483,4 @@ if __name__ == "__main__":
     # Create an object of SignalController class
     controller = SignalController()
     
-    requestTime = time.time()
-    # controller.updateAndSendActiveTimingPlan()
-    # leadTime = time.time()-requestTime
-    # print("New timing plan acquired in:" + str(round(leadTime,4)) + " seconds")
-    # print(controller.currentTimingPlanJson)
-    # Write more test cases - active timing plan
-
+    controller.setPhaseControl(1,True,[],time.time())
