@@ -1,5 +1,6 @@
 {
-    "PlatformType": "vehicle",
-    "MsgType": "HostBSM", 
-    "MsgCount": 20
+    "MsgSource": "vehicle",
+    "MsgType": "HostBSMCount", 
+    "MsgCount": 20,
+    "MsgSendingTime":128356.5
 }
