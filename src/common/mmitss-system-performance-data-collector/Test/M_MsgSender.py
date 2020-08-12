@@ -1,8 +1,9 @@
 import socket
 import json
 import datetime
+import time
 
-fileName = "msgData.json"
+fileName = "intersectionLogData.json"
 
 # Read a config file into a json object:
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -20,7 +21,7 @@ communicationInfo = (hostIp, dataCollectorPort)
 f = open(fileName, 'r')
 data = f.read()
 s.sendto(data.encode(),communicationInfo)
-print (datetime.datetime.now())
+print (time.time())
 
 # data,address = s.recvfrom(10240)
 # print(data.decode())

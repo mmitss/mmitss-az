@@ -21,10 +21,8 @@ def main():
     dataCollectorSocket.bind(communicationInfo)
     
     applicationPlatform = config["ApplicationPlatform"]
+    #creating an instance of SystemPerformanceDataCollector class
     dataCollector = SystemPerformanceDataCollector(applicationPlatform)
-    # timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-    # fileName = "system-performance-data-Log-" + timestamp + ".csv"
-    
     
     while True:
         # Receive data on the MsgTransceiver
@@ -34,8 +32,11 @@ def main():
         receivedMsg = json.loads(data)
         
         # dataLog = open(fileName,'a+')
-        if receivedMsg["PlatformType"] == "vehicle":
-            dataCollector.vehicleLog(receivedMsg)
+        if receivedMsg["MsgType"] == "VehicleDataLog":
+            dataCollector.loggingVehicleSideData(receivedMsg)
+        
+        elif receivedMsg["MsgType"] == "IntersectionDataLog":
+            dataCollector.loggingRoadSideData(receivedMsg)
             
     dataCollectorSocket.close()
 
