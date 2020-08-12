@@ -1,9 +1,5 @@
 import socket
 import json
-
-import datetime 
-import csv
-import pandas as pd
 from SystemPerformanceDataCollector import SystemPerformanceDataCollector
 
 def main():
@@ -19,19 +15,18 @@ def main():
     # Open a socket and bind it to the IP and port dedicated for this application:
     dataCollectorSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     dataCollectorSocket.bind(communicationInfo)
-    
+    #check the platform (vehicle/intersection) on which applications are running
     applicationPlatform = config["ApplicationPlatform"]
     #creating an instance of SystemPerformanceDataCollector class
     dataCollector = SystemPerformanceDataCollector(applicationPlatform)
     
     while True:
-        # Receive data on the MsgTransceiver
+        # Receive data over the socket
         data, address = dataCollectorSocket.recvfrom(10240)
         data = data.decode()
         # Load the received data into a json object
         receivedMsg = json.loads(data)
-        
-        # dataLog = open(fileName,'a+')
+        # Based on the message type, call the corresponding function 
         if receivedMsg["MsgType"] == "VehicleDataLog":
             dataCollector.loggingVehicleSideData(receivedMsg)
         
