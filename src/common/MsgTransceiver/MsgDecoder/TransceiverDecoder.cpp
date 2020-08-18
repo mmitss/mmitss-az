@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include <cstring>
 #include <string.h>
-
+#include <chrono>
 #include "AsnJ2735Lib.h"
 #include "locAware.h"
 #include "dsrcConsts.h"
@@ -29,6 +29,20 @@ const int WALK = 6;
 
 TransceiverDecoder::TransceiverDecoder()
 {
+    std::ofstream outputfile;
+    Json::Value jsonObject;
+    Json::Reader reader;
+    std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader.parse(configJsonString.c_str(), jsonObject);
+    applicationPlatform = (jsonObject["ApplicationPlatform"]).asString();
+    intersectionName = jsonObject["IntersectionName"].asString();
+    // set the time interval for logging the system performance data
+    timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    msgSentTime = currentTime;
 }
 
 int TransceiverDecoder::getMessageType(std::string payload)
@@ -106,6 +120,8 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     remove(deleteFileName.c_str());
     delete plocAwareLib;
 
+    mapMsgCount = mapMsgCount + 1;
+
     return jsonString;
 }
 
@@ -152,6 +168,8 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
         basicVehicle.setWidth_cm(bsmOut.vehWidth);
         jsonString = basicVehicle.basicVehicle2Json();
     }
+
+    bsmMsgCount = bsmMsgCount+1;
 
     return jsonString;
 }
@@ -211,7 +229,7 @@ std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
 
         jsonString = signalRequest.signalRequest2Json();
     }
-
+    
     return jsonString;
 }
 
@@ -261,18 +279,6 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
         signalStatus.setIntersectionID(ssmOut.id);
         signalStatus.setNoOfRequest(unsigned(ssmOut.mpSignalRequetStatus.size()));
 
-        // for (const auto &RequetStatus : ssmOut.mpSignalRequetStatus)
-        // {
-        //     activeRequest.vehicleID = RequetStatus.vehId;
-        //     activeRequest.requestID = static_cast<unsigned int>(RequetStatus.reqId);
-        //     activeRequest.msgCount = static_cast<unsigned int>(RequetStatus.sequenceNumber);
-        //     activeRequest.basicVehicleRole = static_cast<unsigned int>(RequetStatus.vehRole);
-        //     activeRequest.vehicleLaneID = static_cast<unsigned int>(RequetStatus.inLaneId);
-        //     activeRequest.vehicleETA = RequetStatus.ETAminute * 60.0 + RequetStatus.ETAsec;
-        //     activeRequest.prsStatus = static_cast<unsigned int>(RequetStatus.status);
-        //     ActiveRequestTable.push_back(activeRequest);
-        //     activeRequest.reset();
-        // }
         for (int i=0; i < ssmOut.mpSignalRequetStatus.size(); i++)
         {
             activeRequest.vehicleID = ssmOut.mpSignalRequetStatus[i].vehId;
@@ -295,6 +301,9 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
 
         jsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
     }
+
+    ssmMsgCount = ssmMsgCount + 1;
+
     return jsonString;
 }
 
@@ -391,9 +400,80 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
         }
 
         jsonString = fastWriter.write(jsonObject);
+
+        spatMsgCount = spatMsgCount + 1;
+
         return jsonString;
     }
 }
+
+bool TransceiverDecoder::sendSystemPerformanceDataLog()
+{
+    bool sendData{false};
+    auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    if (currenTime - msgSentTime >= timeInterval)
+        sendData = true;
+
+    return sendData;
+}
+
+std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std::string msgCountType)
+{
+    std::string systemPerformanceDataLogJsonString{};
+    Json::Value jsonObject;
+    Json::FastWriter fastWriter;
+    Json::StyledStreamWriter styledStreamWriter;
+    std::ofstream outputter("systemPerformanceDataLog.json");
+    auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    if (applicationPlatform == "roadside")
+    {
+        jsonObject["MsgType"] = "IntersectionDataLog";
+        jsonObject["MsgInformation"]["MsgSource"] = intersectionName;
+    }
+
+    else if (applicationPlatform == "vehicle")
+    {
+        jsonObject["MsgType"] = "VehicleDataLog";
+        jsonObject["MsgInformation"]["MsgSource"] = "vehicle";
+    }
+
+    jsonObject["MsgInformation"]["MsgCountType"] = msgCountType;
+
+    if (msgCountType == "RemoteBSM")
+        jsonObject["MsgInformation"]["MsgCount"] = bsmMsgCount;
+    
+    else if (msgCountType == "SRM")
+        jsonObject["MsgInformation"]["MsgCount"] = srmMsgCount;
+    
+    else if (msgCountType == "SSM")
+        jsonObject["MsgInformation"]["MsgCount"] = ssmMsgCount;
+
+    else if (msgCountType == "MAP")
+        jsonObject["MsgInformation"]["MsgCount"] = mapMsgCount;
+
+    else if (msgCountType == "SPaT")
+        jsonObject["MsgInformation"]["MsgCount"] = spatMsgCount;    
+
+    jsonObject["MsgInformation"]["MsgServed"] = "NA";
+    jsonObject["MsgInformation"]["MsgRejected"] = "NA";
+    jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
+    jsonObject["MsgInformation"]["MsgSentTime"] = currenTime;
+
+    systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
+    styledStreamWriter.write(outputter, jsonObject);
+
+    msgSentTime = static_cast<int>(currenTime);
+
+    return systemPerformanceDataLogJsonString;
+}
+
+std::string TransceiverDecoder::getApplicationPlatform()
+{
+    return applicationPlatform;
+}
+
 
 TransceiverDecoder::~TransceiverDecoder()
 {

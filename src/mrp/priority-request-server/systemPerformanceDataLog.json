@@ -1,0 +1,13 @@
+{
+	"MsgInformation" : 
+	{
+		"MsgCount" : 27,
+		"MsgCountType" : "SRM",
+		"MsgRejected" : 7,
+		"MsgSentTime" : 1597717294,
+		"MsgServed" : 20,
+		"MsgSource" : "daisy-meridian",
+		"TimeInterval" : 10.0
+	},
+	"MsgType" : "IntersectionDataLog"
+}

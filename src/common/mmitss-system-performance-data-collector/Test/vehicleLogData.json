@@ -6,6 +6,6 @@
         "MsgCountType": "SSM",
         "MsgCount": 168,
         "TimeInterval": "60 minutes",
-        "MsgSendingTime": 1597212655.8668048
+        "MsgSentTime": 1597212655.8668048
     }
 }

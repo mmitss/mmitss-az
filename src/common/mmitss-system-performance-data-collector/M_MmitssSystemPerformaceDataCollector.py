@@ -26,6 +26,7 @@ def main():
         data = data.decode()
         # Load the received data into a json object
         receivedMsg = json.loads(data)
+        print(receivedMsg)
         # Based on the message type, call the corresponding function 
         if receivedMsg["MsgType"] == "VehicleDataLog":
             dataCollector.loggingVehicleSideData(receivedMsg)

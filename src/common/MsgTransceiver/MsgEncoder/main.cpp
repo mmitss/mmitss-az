@@ -26,6 +26,10 @@ int main()
 
     const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
     const int sourceDsrcDevicePort = jsonObject_config["PortNumber"]["DsrcImmediateForwarder"].asInt();
+    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
+   
+    int msgType{};
+    std::string applicationPlatform = encoder.getApplicationPlatform();
 
     while (true)
     {
@@ -39,7 +43,7 @@ int main()
 
         if(isMap == false)
         {
-            int msgType = encoder.getMessageType(jsonString);
+            msgType = encoder.getMessageType(jsonString);
             if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
                 messagePayload = encoder.BSMEncoder(jsonString);
@@ -77,13 +81,31 @@ int main()
             }
 
         }
-        else
+        else if (isMap == true)
         {
             msgToRsu = rsuMsgPacket.getMsgPacket(jsonString);
             encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
             encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), jsonString);
             std::cout << "Sent MAP to RSU" << std::endl;
         }
+
+        else if (encoder.sendSystemPerformanceDataLog()== true)
+        {
+            if (applicationPlatform == "roadside")
+            {
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SSM"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("MAP"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
+            }
+
+            else if (applicationPlatform == "vehicle")
+            {
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("HostBSM"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SRM"));
+            
+            }
+        }
+        
     }
     return 0;
 }

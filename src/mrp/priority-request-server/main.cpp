@@ -36,6 +36,7 @@ int main()
     const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
+    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
    
     char receiveBuffer[10240];
 
@@ -45,14 +46,9 @@ int main()
     bool timedOutOccur{};
     std::string ssmJsonString{};
     std::string solverJsonString{};
+    std::string systemPerformanceDataCollectorJsonString{};
 
-    //Read the configuration file and obtain MAP information and payload
-    PRS.deleteMapPayloadFile();
-    PRS.writeMAPPayloadInFile();
-    PRS.getIntersectionID();
-    PRS.getRegionalID();
-    PRS.getRequestTimedOutValue();
-    PRS.logging();
+
 
     while (true)
     {
@@ -66,13 +62,11 @@ int main()
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
                 
-                // std::cout << "Received SRM" << std::endl;
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.managingSignalRequestTable(signalRequest); 
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
-                // std::cout << "Sent SSM" << std::endl;
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.loggingData(receivedJsonString);
@@ -96,14 +90,22 @@ int main()
                     PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 }
             }
+            
+            if(PRS.sendSystemPerformanceDataLog()== true)
+            {
+                systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), systemPerformanceDataCollectorJsonString);
+                std::cout << "System Performance Data Log" << systemPerformanceDataCollectorJsonString << std::endl;
+            }
 
-            else if (PRS.updateETA() == true)
+            if (PRS.updateETA() == true)
             {
                 PRS.updateETAInActiveRequestTable();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
             }
+
         }
     }
 

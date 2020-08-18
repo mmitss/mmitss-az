@@ -8,6 +8,7 @@
         "MsgServed":"NA",
         "MsgRejected": "NA",
         "TimeInterval": "60 minutes",
-        "MsgSendingTime": 1597213889.3949163
+        "MsgSentTime": 1597213889.3949163
     }
+    
 }
