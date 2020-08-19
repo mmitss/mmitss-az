@@ -1,11 +1,11 @@
 {
 	"MsgInformation" : 
 	{
-		"MsgCount" : 0,
-		"MsgCountType" : "SRM",
-		"MsgRejected" : 0,
-		"MsgSentTime" : 1597827818,
-		"MsgServed" : 0,
+		"MsgCount" : 1930,
+		"MsgCountType" : "SPaT",
+		"MsgRejected" : "NA",
+		"MsgSentTime" : 1597827796,
+		"MsgServed" : "NA",
 		"MsgSource" : "daisy-meridian",
 		"TimeInterval" : 15.0
 	},

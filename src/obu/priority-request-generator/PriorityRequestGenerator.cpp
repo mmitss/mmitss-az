@@ -516,7 +516,15 @@ void PriorityRequestGenerator::setVehicleType()
 	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
 	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject_config);
-	vehicleType = (jsonObject_config["VehicleType"]).asInt();
+
+	if (jsonObject_config["VehicleType"].asString() == "Transit")
+		vehicleType = 6;
+
+	else if (jsonObject_config["VehicleType"].asString() == "Truck")
+		vehicleType = 9;
+	
+	else if (jsonObject_config["VehicleType"].asString() == "EmergencyVehicle")
+		vehicleType = 2;
 }
 
 void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
