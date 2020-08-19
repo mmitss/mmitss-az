@@ -22,3 +22,10 @@
 
         sudo apt-get install chrony
 8) Docker: required to containerize MMITSS applications. Follow the instructions provided in [official documentation](https://docs.docker.com/engine/install/ubuntu/) of Docker.
+9) apscheduler: a background scheduler required to build M_TrafficControllerInterface
+        
+        sudo pip3 install apscheduler
+9) sh: required for MMITSS data-collection-module
+
+        sudo pip3 install sh
+10) CyVerse iCommands: required for MMITSS data-collection-module. Follow the instructions provided in [official documentation](https://learning.cyverse.org/projects/data_store_guide/en/latest/step2.html) of CyVerse iCommands.
