@@ -36,7 +36,7 @@ TransceiverEncoder::TransceiverEncoder()
     timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    msgSentTime = currentTime;
+    msgSentTime = static_cast<int>(currentTime);
 }
 
 int TransceiverEncoder::getMessageType(std::string jsonString)
@@ -329,12 +329,14 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
     Json::FastWriter fastWriter;
     Json::StyledStreamWriter styledStreamWriter;
     std::ofstream outputter("systemPerformanceDataLog.json");
-    auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
     if (applicationPlatform == "roadside")
     {
         jsonObject["MsgType"] = "IntersectionDataLog";
         jsonObject["MsgInformation"]["MsgSource"] = intersectionName;
+        jsonObject["MsgInformation"]["MsgServed"] = "NA";
+        jsonObject["MsgInformation"]["MsgRejected"] = "NA";
     }
 
     else if (applicationPlatform == "vehicle")
@@ -347,10 +349,10 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
 
     if (msgCountType == "HostBSM")
         jsonObject["MsgInformation"]["MsgCount"] = bsmMsgCount;
-    
+
     else if (msgCountType == "SRM")
         jsonObject["MsgInformation"]["MsgCount"] = srmMsgCount;
-    
+
     else if (msgCountType == "SSM")
         jsonObject["MsgInformation"]["MsgCount"] = ssmMsgCount;
 
@@ -358,17 +360,15 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
         jsonObject["MsgInformation"]["MsgCount"] = mapMsgCount;
 
     else if (msgCountType == "SPaT")
-        jsonObject["MsgInformation"]["MsgCount"] = spatMsgCount;    
+        jsonObject["MsgInformation"]["MsgCount"] = spatMsgCount;
 
-    jsonObject["MsgInformation"]["MsgServed"] = "NA";
-    jsonObject["MsgInformation"]["MsgRejected"] = "NA";
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
-    jsonObject["MsgInformation"]["MsgSentTime"] = currenTime;
+    jsonObject["MsgInformation"]["MsgSentTime"] = static_cast<int>(currentTime);
 
     systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
     styledStreamWriter.write(outputter, jsonObject);
 
-    msgSentTime = static_cast<int>(currenTime);
+    msgSentTime = static_cast<int>(currentTime);
 
     return systemPerformanceDataLogJsonString;
 }

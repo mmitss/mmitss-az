@@ -89,7 +89,7 @@ int main()
             std::cout << "Sent MAP to RSU" << std::endl;
         }
 
-        else if (encoder.sendSystemPerformanceDataLog()== true)
+        if (encoder.sendSystemPerformanceDataLog()== true)
         {
             if (applicationPlatform == "roadside")
             {

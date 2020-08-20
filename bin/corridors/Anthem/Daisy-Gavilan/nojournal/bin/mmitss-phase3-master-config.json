@@ -10,9 +10,11 @@
 	"HMIControllerIP": "10.12.6.56",
 	"MessageDistributorIP": "10.12.6.20",
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
-    "VehicleType" : 6,
-    "Logging" : "True",
+    "VehicleType" : "Transit",
+    "Logging" : "False",
     "SRMTimedOutTime" : 10.0,
+    "SystemPerformanceTimeInterval": 15.0,
+    "ApplicationPlatform": "roadside",
     "PortNumber":
 	{
 		"MessageTransceiver":
@@ -43,7 +45,12 @@
         "DataCollector": 30006,
         "SnmpEngine": 20020,
 		"SnmpEngineInterface": 20021,
-		"PriorityRequestGeneratorServer": 20022
+		"PriorityRequestGeneratorServer": 20022,
+        "TrajectoryAware_MapEngineInterface": 20023,
+        "MapEngine":20024,
+        "LightSirenStatusManager": 20025,
+        "PeerToPeerPriority":20026,
+        "SystemPerformanceDataCollector": 20027 
 	},
     "psid":
         {

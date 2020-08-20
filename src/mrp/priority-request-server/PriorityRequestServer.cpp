@@ -90,18 +90,18 @@ PriorityRequestServer::PriorityRequestServer()
 	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
 	//Check the logging requirement
 	logging = (jsonObject["Logging"]).asString();
-	auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	if (logging == "True")
 	{
 		bLogging = true;
 		outputfile.open("/nojournal/bin/log/PRSLog.txt");
-		outputfile << "File opened at time : " << timenow << std::endl;
+		outputfile << "File opened at time : " << currentTime << std::endl;
 		outputfile.close();
 	}
 	else
 		bLogging = false;
 
-	msgSentTime = timenow;
+	msgSentTime = static_cast<int>(currentTime);
 }
 
 /*
@@ -979,12 +979,12 @@ void PriorityRequestServer::loggingData(std::string jsonString)
 
 	if (bLogging == true)
 	{
-		// outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+		// outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(currentTime) + ".txt");
 		outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
-		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-		outputfile << "\nJsonString is sent or received at time : " << timenow << std::endl;
-		outputfile << jsonString << timenow << std::endl;
+		outputfile << "\nJsonString is sent or received at time : " << currentTime << std::endl;
+		outputfile << jsonString << currentTime << std::endl;
 		outputfile.close();
 	}
 }
@@ -1016,7 +1016,7 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
     jsonObject["MsgInformation"]["MsgServed"] = msgServed;
     jsonObject["MsgInformation"]["MsgRejected"] = msgRejected;
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
-    jsonObject["MsgInformation"]["MsgSentTime"]= currenTime;
+    jsonObject["MsgInformation"]["MsgSentTime"]= static_cast<int>(currenTime);
 
 	systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
 	styledStreamWriter.write(outputter, jsonObject);
