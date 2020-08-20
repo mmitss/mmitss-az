@@ -1,5 +1,6 @@
 import socket
 import json
+import time
 from SystemPerformanceDataCollector import SystemPerformanceDataCollector
 
 def main():
@@ -17,8 +18,20 @@ def main():
     dataCollectorSocket.bind(communicationInfo)
     #check the platform (vehicle/intersection) on which applications are running
     applicationPlatform = config["ApplicationPlatform"]
+    timeInterval = config["SystemPerformanceTimeInterval"]+ 10.0
+    timeElapsed = 0.0
+    tempTime = 0.0
+    
     #creating an instance of SystemPerformanceDataCollector class
     dataCollector = SystemPerformanceDataCollector(applicationPlatform)
+    if applicationPlatform == "vehicle":
+        logFile = open("/nojournal/bin/log/mmitss-system-performance-vehicleside-log-data.csv", 'a+')
+        fileName = "/nojournal/bin/log/mmitss-system-performance-vehicleside-log-data.csv"
+            
+    elif applicationPlatform == "roadside":
+        logFile = open("/nojournal/bin/log/mmitss-system-performance-roadside-log-data.csv", 'a+')
+        fileName = "/nojournal/bin/log/mmitss-system-performance-roadside-log-data.csv"
+            
     
     while True:
         # Receive data over the socket
@@ -29,11 +42,18 @@ def main():
         print(receivedMsg)
         # Based on the message type, call the corresponding function 
         if receivedMsg["MsgType"] == "VehicleDataLog":
-            dataCollector.loggingVehicleSideData(receivedMsg)
+            dataCollector.loggingVehicleSideData(receivedMsg, logFile)
         
         elif receivedMsg["MsgType"] == "IntersectionDataLog":
-            dataCollector.loggingRoadSideData(receivedMsg)
-            
+            dataCollector.loggingRoadSideData(receivedMsg, logFile)
+        
+        timeElapsed = time.time()-tempTime
+        if timeElapsed>=timeInterval:
+            logFile = dataCollector.closeAndOpenFile(logFile,fileName)
+            timeElapsed = 0.0
+            tempTime = time.time()
+                    
+    logFile.close()        
     dataCollectorSocket.close()
 
 if __name__ == "__main__":

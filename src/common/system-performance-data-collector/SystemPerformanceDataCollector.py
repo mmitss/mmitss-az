@@ -18,8 +18,8 @@ class SystemPerformanceDataCollector:
             csvwriter.writerow(fields)
             roadsideLogFileName.close()
         
-    def loggingVehicleSideData(self, receivedMsg):
-        fileName = "/nojournal/bin/log/mmitss-system-performance-vehicleside-log-data.csv"
+    def loggingVehicleSideData(self, receivedMsg, fileName):
+        # fileName = "/nojournal/bin/log/mmitss-system-performance-vehicleside-log-data.csv"
 
         msgSource = receivedMsg["MsgInformation"]["MsgSource"]
         msgType = receivedMsg["MsgInformation"]["MsgCountType"]
@@ -29,13 +29,16 @@ class SystemPerformanceDataCollector:
         msgLoggingTime = time.time()
         msgLoggingDateTime = datetime.datetime.now()
         dataList = [msgSource, msgType, msgCount, timeInterval, msgSendingTime, msgLoggingTime, msgLoggingDateTime]
-        with open(fileName, 'a+') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(dataList)
-            csvfile.close()
+        csvwriter = csv.writer(fileName)
+        csvwriter.writerow(dataList)
         
-    def loggingRoadSideData(self, receivedMsg):
-        fileName = "/nojournal/bin/log/mmitss-system-performance-roadside-log-data.csv"
+        # with open(fileName, 'a+') as csvfile:
+        #     csvwriter = csv.writer(csvfile)
+        #     csvwriter.writerow(dataList)
+        #     csvfile.close()
+        
+    def loggingRoadSideData(self, receivedMsg, fileName):
+        # fileName = "/nojournal/bin/log/mmitss-system-performance-roadside-log-data.csv"
         
         msgSource = receivedMsg["MsgInformation"]["MsgSource"]
         msgType = receivedMsg["MsgInformation"]["MsgCountType"]
@@ -47,7 +50,14 @@ class SystemPerformanceDataCollector:
         msgLoggingTime = time.time()
         msgLoggingDateTime = datetime.datetime.now()
         dataList = [msgSource, msgType, msgCount, msgServed, msgRejected, timeInterval, msgSendingTime, msgLoggingTime, msgLoggingDateTime]
-        with open(fileName, 'a+') as csvfile:
-            csvwriter = csv.writer(csvfile)
-            csvwriter.writerow(dataList)
-            csvfile.close()
+        csvwriter = csv.writer(fileName)
+        csvwriter.writerow(dataList)
+        # with open(fileName, 'a+') as csvfile:
+        #     csvwriter = csv.writer(csvfile)
+        #     csvwriter.writerow(dataList)
+        #     csvfile.close()
+    def closeAndOpenFile(self, logFile, fileName):
+        logFile.close()
+        logFile = open(fileName, 'a+')
+        return logFile
+            
