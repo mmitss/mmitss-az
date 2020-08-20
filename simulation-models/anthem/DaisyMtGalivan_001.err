@@ -1,3 +1,0 @@
-                    Error	Loading DriverModel dll 'C:\Users\debashisdas\Desktop\mmitss\simulation-models\anthem\MmitssDriverModel_Truck.dll' failed. Windows error message: The specified module could not be found. The specified module could not be found. 
-           critical error	Error in initialization of the external driver model DLL!
-           critical error	Simulation run 1 cannot be started due to errors. Please see the window "Messages" for details.
