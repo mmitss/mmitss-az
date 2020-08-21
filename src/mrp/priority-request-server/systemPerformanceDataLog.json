@@ -1,11 +1,11 @@
 {
 	"MsgInformation" : 
 	{
-		"MsgCount" : 25,
+		"MsgCount" : 0,
 		"MsgCountType" : "SRM",
 		"MsgRejected" : 0,
-		"MsgSentTime" : 1597972139,
-		"MsgServed" : 25,
+		"MsgSentTime" : 1597981969,
+		"MsgServed" : 0,
 		"MsgSource" : "daisy-gavilan",
 		"TimeInterval" : 15.0
 	},
