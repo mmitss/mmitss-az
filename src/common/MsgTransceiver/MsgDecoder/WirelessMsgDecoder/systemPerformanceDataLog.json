@@ -1,10 +1,10 @@
 {
 	"MsgInformation" : 
 	{
-		"MsgCount" : 19288,
-		"MsgCountType" : "SPaT",
+		"MsgCount" : 14797,
+		"MsgCountType" : "RemoteBSM",
 		"MsgRejected" : "NA",
-		"MsgSentTime" : 1597972129,
+		"MsgSentTime" : 1597972132,
 		"MsgServed" : "NA",
 		"MsgSource" : "daisy-gavilan",
 		"TimeInterval" : 15.0

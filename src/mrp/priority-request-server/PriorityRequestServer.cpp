@@ -1022,6 +1022,9 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	styledStreamWriter.write(outputter, jsonObject);
 
 	msgSentTime = static_cast<int>(currenTime);
+	msgReceived = 0;
+	msgServed = 0;
+	msgRejected = 0;
 
 	return  systemPerformanceDataLogJsonString;
 }

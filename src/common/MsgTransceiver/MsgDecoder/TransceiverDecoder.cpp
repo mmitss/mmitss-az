@@ -444,20 +444,35 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     jsonObject["MsgInformation"]["MsgCountType"] = msgCountType;
 
     if (msgCountType == "RemoteBSM")
+    {
         jsonObject["MsgInformation"]["MsgCount"] = bsmMsgCount;
+        bsmMsgCount = 0;
+    }
 
     else if (msgCountType == "SRM")
+    {
         jsonObject["MsgInformation"]["MsgCount"] = srmMsgCount;
+        srmMsgCount = 0;
+    }
 
     else if (msgCountType == "SSM")
+    {
         jsonObject["MsgInformation"]["MsgCount"] = ssmMsgCount;
+        ssmMsgCount = 0;
+    }
 
     else if (msgCountType == "MAP")
+    {
         jsonObject["MsgInformation"]["MsgCount"] = mapMsgCount;
+        mapMsgCount = 0;
+    }
 
     else if (msgCountType == "SPaT")
+    {
         jsonObject["MsgInformation"]["MsgCount"] = spatMsgCount;
-
+        spatMsgCount = 0;
+    }
+    
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
     jsonObject["MsgInformation"]["MsgSentTime"] = static_cast<int>(currentTime);
 

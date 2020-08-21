@@ -1,0 +1,21 @@
+{
+    "MsgType": "LocateVehicleOnMapStatus",
+    "Vehicle": 
+    {
+        "InboundStatus": {
+            "ApproachId": 5,
+            "DistanceToStopBar_Meter": 14.99,
+            "InQueueStatus": true,
+            "LaneId": 17,
+            "SignalGroup": 2,
+            "TimeToStopBar_Seconds": false
+        },
+        "LocalCoordinates": {
+            "x": -43.498201250919934,
+            "y": 4.7955361258844658,
+            "z": 0.00014983915762556421
+        },
+        "OnMap": true,
+        "PositionOnMap": "inbound"
+    }
+}

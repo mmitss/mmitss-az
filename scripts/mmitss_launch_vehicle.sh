@@ -60,7 +60,7 @@ sleep 1s
 
 #######################################################################################
 echo "Starting Priority Request Generator..."
-cd ./../src/obu/PriorityRequestGenerator
+cd ./../src/obu/priority-request-generator
 ./M_PriorityRequestGenerator > /dev/null 2>&1 &
 
 # Return back to original directory to go over the process again for another one
