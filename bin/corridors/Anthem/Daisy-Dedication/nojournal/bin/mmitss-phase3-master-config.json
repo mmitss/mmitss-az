@@ -93,6 +93,11 @@
             "5": true,
             "7": true
         }
-
+	},
+    "IntersectionReferencePoint": 
+    {
+		"Latitude_DecimalDegree": 33.84323189165419,
+		"Longitude_DecimalDegree": -112.13155401642219,
+		"Elevation_Meter": 508
 	}
 }
