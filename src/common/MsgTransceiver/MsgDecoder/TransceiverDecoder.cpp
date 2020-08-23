@@ -449,6 +449,12 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
         bsmMsgCount = 0;
     }
 
+    else if (msgCountType == "HostBSM")
+    {
+        jsonObject["MsgInformation"]["MsgCount"] = bsmMsgCount;
+        bsmMsgCount = 0;
+    }
+
     else if (msgCountType == "SRM")
     {
         jsonObject["MsgInformation"]["MsgCount"] = srmMsgCount;

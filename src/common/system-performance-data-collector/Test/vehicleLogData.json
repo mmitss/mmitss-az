@@ -3,7 +3,7 @@
     "MsgInformation": 
     {
         "MsgSource": "vehicle",
-        "MsgCountType": "SSM",
+        "MsgCountType": "BSM",
         "MsgCount": 168,
         "TimeInterval": "60 minutes",
         "MsgSentTime": 1597212655.8668048

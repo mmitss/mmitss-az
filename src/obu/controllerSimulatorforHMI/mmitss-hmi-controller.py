@@ -25,9 +25,11 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = True
 
-controllerIP = '10.12.6.108' #actual configuraiton data (should be from global config)
+configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+config = json.load(configfile)
+controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
 #controllerIP = '127.0.0.1' #use for simulation testing
-controllerPort = 20009
+controllerPort = config["PortNumber"]["HMIController"]
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
@@ -214,7 +216,7 @@ while True:
 
     if sourcePort == 10002 :
         # process the remote vehicle and SPaT data
-        print('remote bsm and spat data', line)
+        # print('remote bsm and spat data', line)
 
         # load the json
         remoteInterfacejson = json.loads(line)
@@ -285,7 +287,7 @@ while True:
 
     elif sourcePort == 20004 :
 
-        print('host vehicle and infrastructure data', line)
+        # print('host vehicle and infrastructure data', line)
         
         # load the json
         hostAndInfrastructureData = json.loads(line)
@@ -400,7 +402,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        #print('update hmi: ', interfaceJsonString)
+        # print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')

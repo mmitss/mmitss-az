@@ -20,6 +20,7 @@ int main()
     char receiveBuffer[5120];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     bool isMap = false;
+    int mapMsgCount{};
 
     RsuMsgPacket rsuMsgPacket;
     std::string msgToRsu{};
@@ -87,22 +88,23 @@ int main()
             encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
             encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), jsonString);
             std::cout << "Sent MAP to RSU" << std::endl;
+            mapMsgCount = mapMsgCount + 1;
         }
 
         if (encoder.sendSystemPerformanceDataLog()== true)
         {
             if (applicationPlatform == "roadside")
             {
+                encoder.setMapMsgCount(mapMsgCount);
                 encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SSM"));
                 encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("MAP"));
                 encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
+                mapMsgCount = 0;
             }
 
             else if (applicationPlatform == "vehicle")
             {
-                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("HostBSM"));
                 encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SRM"));
-            
             }
         }
         

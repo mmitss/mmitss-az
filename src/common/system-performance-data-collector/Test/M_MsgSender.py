@@ -3,7 +3,7 @@ import json
 import datetime
 import time
 
-fileName = "intersectionLogData.json"
+fileName = "vehicleLogData.json"
 
 # Read a config file into a json object:
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
