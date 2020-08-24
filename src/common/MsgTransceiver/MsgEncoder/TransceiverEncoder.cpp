@@ -393,6 +393,12 @@ std::string TransceiverEncoder::getApplicationPlatform()
     return applicationPlatform;
 }
 
+void TransceiverEncoder::setMapMsgCount(int msgCount)
+{
+    mapMsgCount = msgCount;
+}
+
+
 TransceiverEncoder::~TransceiverEncoder()
 {
 }

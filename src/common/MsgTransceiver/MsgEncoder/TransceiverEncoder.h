@@ -27,7 +27,5 @@ class TransceiverEncoder
         std::string createJsonStringForSystemPerformanceDataLog(std::string msgCountType);
         std::string getApplicationPlatform();
         bool sendSystemPerformanceDataLog();
-
-        
-
+        void setMapMsgCount(int msgCount);  
 };
