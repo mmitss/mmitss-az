@@ -41,13 +41,16 @@ spat_map_ID = -1 # map ID's are positive integers, so if no map is active set th
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
               1 : "dark", 
               2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
-              3 : "stop-And-Remain", # red light (Red ball) [Don't walk]
+              "red" : "stop-And-Remain", # red light (Red ball) [Don't walk]
               4 : "pre-Movement", # not used in US
               5 : "permissive-Movement-Allowed", # permissive green (Green ball)
-              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
-              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
-              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
+              "green" : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
+              "permissive_yellow" : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
+              "yellow" : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
+              "do_not_walk": "stop-And-Remain",
+              "ped_clear": "protected-clearance",
+              "walk": "protected-Movement-Allowed"
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
     "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",
