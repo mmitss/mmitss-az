@@ -385,11 +385,11 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
             {
                 const auto &phaseState = spatOut.pedPhaseState[i];
                 jsonObject["Spat"]["pedPhaseState"][i]["phaseNo"] = (i + 1);
-                jsonObject["Spat"]["pedPhaseState"][i]["currState"] = static_cast<unsigned int>(phaseState.currState);
                 jsonObject["Spat"]["pedPhaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["elapsedTime"] = 0;
+                currPedPhaseState = static_cast<unsigned int>(phaseState.currState);
                 if (currPedPhaseState == DONOTWALK)
                     jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "do_not_walk";
                 else if (currPedPhaseState == PEDCLEAR)
