@@ -13,7 +13,7 @@
     "VehicleType" : "Transit",
     "Logging" : "False",
     "SRMTimedOutTime" : 60.0,
-    "SystemPerformanceTimeInterval": 60.0,
+    "SystemPerformanceTimeInterval": 300.0,
     "ApplicationPlatform": "vehicle",
     "PortNumber":
 	{
