@@ -1,0 +1,21 @@
+{
+    "MsgType": "LocateVehicleOnMapStatus",
+    "Vehicle": 
+    {
+        "InboundStatus": {
+            "ApproachId": false,
+            "DistanceToStopBar_Meter": false,
+            "InQueueStatus": false,
+            "LaneId": false,
+            "SignalGroup": false,
+            "TimeToStopBar_Seconds": false
+        },
+        "LocalCoordinates": {
+            "x": false,
+            "y": false,
+            "z": false
+        },
+        "OnMap": false,
+        "PositionOnMap": false
+    }
+}

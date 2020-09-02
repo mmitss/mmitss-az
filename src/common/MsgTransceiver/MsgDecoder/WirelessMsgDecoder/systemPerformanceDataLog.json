@@ -1,0 +1,13 @@
+{
+	"MsgInformation" : 
+	{
+		"MsgCount" : 147,
+		"MsgCountType" : "RemoteBSM",
+		"MsgRejected" : "NA",
+		"MsgSentTime" : 1597981960,
+		"MsgServed" : "NA",
+		"MsgSource" : "daisy-gavilan",
+		"TimeInterval" : 15.0
+	},
+	"MsgType" : "IntersectionDataLog"
+}

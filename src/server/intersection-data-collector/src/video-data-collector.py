@@ -21,7 +21,9 @@ import time
 import datetime
 import sys
 import json
+import cv2
 import DataCollectorMethods as DCM
+from VideoSpatRecorder import VideoSpatRecorder
 
 cameraConfigFile = open(sys.argv[1], 'r')    
 cameraConfig = (json.load(cameraConfigFile))
@@ -30,21 +32,57 @@ cameraDirection = cameraConfig["CameraDirection"]
 url = cameraConfig["URL"]
 localStorageDirectory = cameraConfig["LocalStorageDirectory"]
 cyverseDirectory = cameraConfig["CyVerse_DirectoryPath"]
+leftTurnPhase = cameraConfig["LeftTurnPhase"]
+throughPhase = cameraConfig["ThroughPhase"]
 
 configFile = open('./../config/video-data-collection-module-config.json', 'r')
 config = json.load(configFile)
 
+signalStatusFileName = ('./../datalogs/signal_status/' + intersectionName + ".json")
+
 totalLength_sec = config["TotalLength_Sec"]
 sliceLength_sec = config["SliceLength_Sec"]
-startTime = time.time()
+totalStartTime = time.time()
 
 FileName = localStorageDirectory + "/" + intersectionName + "_" + cameraDirection
 
-while True:
-    currentTime = time.time()
-    if currentTime-startTime < totalLength_sec:
-        currentFileName = FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".mpg"
-        os.system("cvlc " + url + " --sout=file/ts:" + currentFileName + " --stop-time " + str(sliceLength_sec) + " vlc://quit")
-        print ("Transferred to CyVerse!")
-        #DCM.transferToCyVerseAndDeleteLocal(cyverseDirectory, currentFileName)
-    else: break
+
+vsr = VideoSpatRecorder(signalStatusFileName, leftTurnPhase, throughPhase)
+
+cap = cv2.VideoCapture(url)
+
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+
+
+
+while(cap.isOpened()):
+    
+    if time.time()-totalStartTime < totalLength_sec:
+    
+        currentVideoFileName = FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".avi"
+        currentMetadataFilename = currentVideoFileName.replace(".avi", "_meta.json")
+        out = cv2.VideoWriter(currentVideoFileName, fourcc, 30, (1920,1080))
+        metadataFile = open(currentMetadataFilename, 'w')
+        sliceStartTime = time.time()
+        metadata = {
+            "Metadata_per_frame":[]
+        }
+
+        metadata_frame = []
+
+        while time.time()-sliceStartTime < sliceLength_sec:
+            
+            ret, frame = cap.read()  
+            if ret == True:
+                vsr.drawBlankSignalHeads(frame)
+                vsr.fillSignalHeads(frame)
+                out.write(frame)
+                metadata_frame = metadata_frame + [vsr.getMetadataJson()]
+
+        
+        metadata["Metadata_per_frame"] = metadata_frame
+        metadataFile.write(json.dumps(metadata))
+        metadataFile.close()
+        out.release()    
+    
+    else: cap.release()

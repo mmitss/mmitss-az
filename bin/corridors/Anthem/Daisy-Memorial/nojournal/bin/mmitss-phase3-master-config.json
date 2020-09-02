@@ -6,12 +6,14 @@
     "IntersectionID" : 13710,
     "RegionalID" : 0,
 	"DataCollectorIP": "172.3.1.91",
-    "HMIControllerIP": "10.12.6.56",
+    "HMIControllerIP": "10.12.7.3",
     "MessageDistributorIP": "10.12.6.20",
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
-    "VehicleType" : 6,
-    "Logging" : "True",
+    "VehicleType" : "Transit",
+    "Logging" : "False",
     "SRMTimedOutTime" : 10.0,
+    "SystemPerformanceTimeInterval": 300.0,
+    "ApplicationPlatform": "roadside",
     "PortNumber":
 	{
 		"MessageTransceiver":
@@ -39,18 +41,23 @@
 		"MapSPaTBroadcaster": 6053,
 		"DsrcImmediateForwarder": 1516,
         "PriorityRequestServer_SendSSM": 50003,
-        "DataCollector": 30006,
+        "DataCollector": 30005,
         "SnmpEngine": 20020,
 		"SnmpEngineInterface": 20021,
-		"PriorityRequestGeneratorServer": 20022
+		"PriorityRequestGeneratorServer": 20022,
+        "TrajectoryAware_MapEngineInterface": 20023,
+        "MapEngine":20024,
+        "LightSirenStatusManager": 20025,
+        "PeerToPeerPriority":20026,
+        "SystemPerformanceDataCollector": 20027 
 	},
     "psid":
         {
-			"map": "E0000017",
+			"map": "8002",
 			"spat": "8002",
-			"rsm": "8003",
-			"srm": "E0000019",
-			"ssm": "E0000020",
+			"rsm": "8002",
+			"srm": "8002",
+			"ssm": "8002",
 			"bsm": "20"
 		},
 	"msgId":
@@ -66,8 +73,8 @@
 		},
 	"SignalController": 
 	{
-		"IpAddress": "10.12.6.104",
-		"NtcipPort": 506,
+		"IpAddress": "10.12.6.14",
+		"NtcipPort": 501,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
         "Vendor": "Econolite",
@@ -88,6 +95,11 @@
             "5": true,
             "7": true
         }
-
+	},
+    "IntersectionReferencePoint": 
+    {
+		"Latitude_DecimalDegree": 33.856549513795656,
+		"Longitude_DecimalDegree": -112.11421627029603,
+		"Elevation_Meter": 544
 	}
 }

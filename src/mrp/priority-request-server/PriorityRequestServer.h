@@ -33,11 +33,18 @@ private:
     int updateCount{};
     int vehicleType{};
     int priorityRequestStatus{};
-    double expectedTimeOfArrivalToStopBar{0.0};
-    double requestTimedOutValue{0.0};
     int requestTimedOutVehicleID{};
     int tempLastTimeETAUpdated{};
+    int msgReceived{};
+    int msgServed{};
+    int msgRejected{};
+    int msgSentTime{};
+    double expectedTimeOfArrivalToStopBar{0.0};
+    double requestTimedOutValue{0.0};
+    double timeInterval{0.0};
     bool bLogging{};
+    bool emergencyVehicleStatus{false};
+    std::string intersectionName{};
 
 public:
     PriorityRequestServer();
@@ -45,6 +52,7 @@ public:
 
     std::string createSSMJsonString(SignalStatus signalStatus);
     std::string createJsonStringForPrioritySolver();
+    std::string createJsonStringForSystemPerformanceDataLog();
     void managingSignalRequestTable(SignalRequest signalRequest);
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
@@ -55,6 +63,7 @@ public:
     void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
+    void setSrmMessageStatus(SignalRequest signalRequest);
     void loggingData(std::string jsonString);
     int getMessageType(std::string jsonString);
     int getIntersectionID();
@@ -76,5 +85,5 @@ public:
     bool sendClearRequest();
     bool findEVInList();
     bool findEVInRequest(SignalRequest signalRequest);
-    bool logging();
+    bool sendSystemPerformanceDataLog();
 };

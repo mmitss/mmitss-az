@@ -1,0 +1,9 @@
+{
+    "IntersectionName": "DaisyMountain_GavilanPeak",
+    "CameraDirection": "Eastbound",
+    "URL": "sample.mp4",
+    "LocalStorageDirectory": "/home/nvaltekar/Desktop/repo/mmitss/src/server/intersection-data-collector/datalogs",
+    "CyVerse_DirectoryPath": "/iplant/shared/InstituteofAutomatedMobility/datastore/infrastructure/DaisyMountain_GavilanPeak/videos",
+    "LeftTurnPhase": 1,
+    "ThroughPhase": 6
+}

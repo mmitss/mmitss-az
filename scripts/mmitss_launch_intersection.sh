@@ -68,6 +68,18 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
+
+############################### INTERSECTION APPLICATIONS #############################
+
+#######################################################################################
+echo "Starting System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+python3 M_SystemPerformanceDataCollector.py > /dev/null 2>&1 &
+
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
 echo "Starting Priority Solver..."
 cd ./../src/rsu/priority-solver
 ./M_PrioritySolver > /dev/null 2>&1 &
@@ -81,6 +93,25 @@ sleep 1s
 echo "Starting Traffic Controller Interface..."
 cd ./../src/rsu/traffic-control-interface
 ./M_TrafficControllerInterface > /dev/null 2>&1 &
+
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Starting System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+python3 M_SystemPerformanceDataCollector.py > /dev/null 2>&1 &
+
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+#######################################################################################
+echo "Starting System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+python3 M_SystemPerformanceDataCollector.py > /dev/null 2>&1 &
 
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null

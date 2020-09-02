@@ -10,9 +10,9 @@ unsigned int microseconds = 1000000;
 int main()
 {
     //Socket Communication
-    UdpSocket bsmSenderSocket(20020);
-    const string LOCALHOST = "10.12.6.103";
-    const int receiverPortNo = 10001;
+    UdpSocket srmSenderSocket(20020);
+    const string LOCALHOST = "10.12.6.108";
+    const int receiverPortNo = 20002;
     std::string sendingJsonString;
 
     std::ifstream infile;
@@ -28,7 +28,7 @@ int main()
         for (std::string line; getline(infile, line);)
         {
 
-            bsmSenderSocket.sendData(LOCALHOST, receiverPortNo, line);
+            srmSenderSocket.sendData(LOCALHOST, receiverPortNo, line);
             std::cout << "sent" << count << std::endl;
             count++;
             usleep(microseconds);

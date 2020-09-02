@@ -1,0 +1,13 @@
+{
+	"MsgInformation" : 
+	{
+		"MsgCount" : 149,
+		"MsgCountType" : "SPaT",
+		"MsgRejected" : "NA",
+		"MsgSentTime" : 1597981953,
+		"MsgServed" : "NA",
+		"MsgSource" : "daisy-gavilan",
+		"TimeInterval" : 15.0
+	},
+	"MsgType" : "IntersectionDataLog"
+}
