@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+
+{% block title %}MMITSS System Interface{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Local Configuration</h1>
+        <h1> </h1>
+    </div>
+    <div class="page-header">
+        <h2> {{ data['IntersectionName'] }}</h2>
+    </div>
+
+    <form method="post">
+
+        <div class="form-field">
+            <label class="form-hostIP" for="hostIP"> Host IP  <small><i>    (IP Address of the MRP or VSP)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="hostIP" value={{ data['HostIp'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-SourceDsrcDeviceIP" for="SourceDsrcDeviceIP">Source DSRC Device IP <small><i>    (IP address of DSRC Device)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="SourceDsrcDeviceIP" value={{ data['SourceDsrcDeviceIp'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-IntersectionName" for="IntersectionName">Intersection Name <small><i>    (Name of the intersection)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="IntersectionName" value={{ data['IntersectionName'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-IntersectionID" for="IntersectionID">Intersection ID <small><i>    (Unique regional identifier for an intersection)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="IntersectionID" value={{ data['IntersectionID'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-RegionalID" for="RegionalID">Regional ID <small><i>    (Unique regional identifier for an intersection)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="RegionalID" value={{ data['RegionalID'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-DataCollectorIP" for="DataCollectorIP">Data Collector IP <small><i>    (IP address of the data collection server)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="DataCollectorIP" value={{ data['DataCollectorIP'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-HMIControllerIP" for="HMIControllerIP">HMI Controller IP <small><i>    (IP address of the external computer on which MMITSS HMI will run)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="HMIControllerIP" value={{ data['HMIControllerIP'] }}>
+        </div>
+
+        <div class="form-field">
+            <label class="form-MessageDistributorIP" for="MessageDistributorIP">MessageDistributor IP <small><i>    (IP Address of the Message Distributor)</i></small></label>
+        </div>
+        <div>
+            <input type="StringField" id="MessageDistributorIP" value={{ data['MessageDistributorIP'] }}>
+        </div>
+
+        <div> </div>
+        <div>
+            <input type="submit" value="Cancel" onclick="window.location='/configuration';" />
+	        <input type="submit" value="Save" onclick="window.location='/configuration';" />
+        </div>
+  </form>
+
+{% endblock %}
