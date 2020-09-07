@@ -67,13 +67,21 @@
 		"ssm_upper": "001E",
 		"bsm": "0014"
 	},
-	"BroadcastChannel": {
+	"TxChannel": {
 		"map": 172,
 		"spat": 172,
 		"rsm": 172,
 		"srm": 182,
 		"ssm": 182,
 		"bsm": 172
+	},
+	"TxMode": {
+		"map": "CONT",
+		"spat": "CONT",
+		"rsm": "CONT",
+		"srm": "ALT",
+		"ssm": "ALT",
+		"bsm": "CONT"
 	},
 	"SignalController": {
 		"IpAddress": "10.12.6.17",
