@@ -26,6 +26,12 @@ RsuMsgPacket::RsuMsgPacket()
     spatPsid = jsonObject_config["psid"]["spat"].asString();
     mapPsid = jsonObject_config["psid"]["map"].asString();
     ssmPsid = jsonObject_config["psid"]["ssm"].asString();
+
+    bsmChannel = jsonObject_config["BroadcastChannel"]["bsm"].asInt();
+    srmChannel = jsonObject_config["BroadcastChannel"]["srm"].asInt();
+    mapChannel = jsonObject_config["BroadcastChannel"]["map"].asInt();
+    spatChannel = jsonObject_config["BroadcastChannel"]["spat"].asInt();
+    ssmChannel = jsonObject_config["BroadcastChannel"]["ssm"].asInt();
 }
 
 void RsuMsgPacket::setMsgType(std::string msgId)
@@ -73,15 +79,15 @@ void RsuMsgPacket::setTxMode(std::string msgType)
 void RsuMsgPacket::setTxChannel(std::string msgType)
 {
     if(msgType == "MAP")
-        txChannel = 172;
+        txChannel = mapChannel;
     if(msgType == "SPAT")
-        txChannel = 172;
+        txChannel = spatChannel;
     if(msgType == "SSM")
-        txChannel = 182;
+        txChannel = ssmChannel;
     if(msgType == "BSM")
-        txChannel = 172;
+        txChannel = bsmChannel;
     if(msgType == "SRM")
-        txChannel = 182;
+        txChannel = srmChannel;
 }
 
 std::string RsuMsgPacket::getMsgPacket(std::string msgPayload)

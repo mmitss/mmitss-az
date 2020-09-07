@@ -31,6 +31,12 @@ class RsuMsgPacket
         std::string mapPsid{};
         std::string ssmPsid{};
 
+        int bsmChannel{};
+        int srmChannel{};
+        int mapChannel{};
+        int spatChannel{};
+        int ssmChannel{};
+
         void setMsgType(std::string msgPayload);
         void setPsid(std::string msgType);
         void setTxMode(std::string msgType);
