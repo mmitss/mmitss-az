@@ -27,11 +27,19 @@ RsuMsgPacket::RsuMsgPacket()
     mapPsid = jsonObject_config["psid"]["map"].asString();
     ssmPsid = jsonObject_config["psid"]["ssm"].asString();
 
-    bsmChannel = jsonObject_config["BroadcastChannel"]["bsm"].asInt();
-    srmChannel = jsonObject_config["BroadcastChannel"]["srm"].asInt();
-    mapChannel = jsonObject_config["BroadcastChannel"]["map"].asInt();
-    spatChannel = jsonObject_config["BroadcastChannel"]["spat"].asInt();
-    ssmChannel = jsonObject_config["BroadcastChannel"]["ssm"].asInt();
+    bsmTxChannel = jsonObject_config["TxChannel"]["bsm"].asInt();
+    srmTxChannel = jsonObject_config["TxChannel"]["srm"].asInt();
+    mapTxChannel = jsonObject_config["TxChannel"]["map"].asInt();
+    spatTxChannel = jsonObject_config["TxChannel"]["spat"].asInt();
+    ssmTxChannel = jsonObject_config["TxChannel"]["ssm"].asInt();
+
+    bsmTxMode = jsonObject_config["TxMode"]["bsm"].asString();
+    srmTxMode = jsonObject_config["TxMode"]["srm"].asString();
+    spatTxMode = jsonObject_config["TxMode"]["spat"].asString();
+    mapTxMode = jsonObject_config["TxMode"]["map"].asString();
+    ssmTxMode = jsonObject_config["TxMode"]["ssm"].asString();
+
+
 }
 
 void RsuMsgPacket::setMsgType(std::string msgId)
@@ -65,29 +73,29 @@ void RsuMsgPacket::setPsid(std::string msgType)
 void RsuMsgPacket::setTxMode(std::string msgType)
 {
     if(msgType == "MAP")
-        txMode = "CONT";
+        txMode = mapTxMode;
     if(msgType == "SPAT")
-        txMode = "CONT";
+        txMode = spatTxMode;
     if(msgType == "SSM")
-        txMode = "ALT";
+        txMode = ssmTxMode;
     if(msgType == "BSM")
-        txMode = "CONT";
+        txMode = bsmTxMode;
     if(msgType == "SRM")
-        txMode = "ALT";
+        txMode = srmTxMode;
 }
 
 void RsuMsgPacket::setTxChannel(std::string msgType)
 {
     if(msgType == "MAP")
-        txChannel = mapChannel;
+        txChannel = mapTxChannel;
     if(msgType == "SPAT")
-        txChannel = spatChannel;
+        txChannel = spatTxChannel;
     if(msgType == "SSM")
-        txChannel = ssmChannel;
+        txChannel = ssmTxChannel;
     if(msgType == "BSM")
-        txChannel = bsmChannel;
+        txChannel = bsmTxChannel;
     if(msgType == "SRM")
-        txChannel = srmChannel;
+        txChannel = srmTxChannel;
 }
 
 std::string RsuMsgPacket::getMsgPacket(std::string msgPayload)
