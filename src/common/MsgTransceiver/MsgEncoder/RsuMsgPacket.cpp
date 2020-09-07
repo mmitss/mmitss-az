@@ -26,6 +26,20 @@ RsuMsgPacket::RsuMsgPacket()
     spatPsid = jsonObject_config["psid"]["spat"].asString();
     mapPsid = jsonObject_config["psid"]["map"].asString();
     ssmPsid = jsonObject_config["psid"]["ssm"].asString();
+
+    bsmTxChannel = jsonObject_config["TxChannel"]["bsm"].asInt();
+    srmTxChannel = jsonObject_config["TxChannel"]["srm"].asInt();
+    mapTxChannel = jsonObject_config["TxChannel"]["map"].asInt();
+    spatTxChannel = jsonObject_config["TxChannel"]["spat"].asInt();
+    ssmTxChannel = jsonObject_config["TxChannel"]["ssm"].asInt();
+
+    bsmTxMode = jsonObject_config["TxMode"]["bsm"].asString();
+    srmTxMode = jsonObject_config["TxMode"]["srm"].asString();
+    spatTxMode = jsonObject_config["TxMode"]["spat"].asString();
+    mapTxMode = jsonObject_config["TxMode"]["map"].asString();
+    ssmTxMode = jsonObject_config["TxMode"]["ssm"].asString();
+
+
 }
 
 void RsuMsgPacket::setMsgType(std::string msgId)
@@ -59,29 +73,29 @@ void RsuMsgPacket::setPsid(std::string msgType)
 void RsuMsgPacket::setTxMode(std::string msgType)
 {
     if(msgType == "MAP")
-        txMode = "CONT";
+        txMode = mapTxMode;
     if(msgType == "SPAT")
-        txMode = "CONT";
+        txMode = spatTxMode;
     if(msgType == "SSM")
-        txMode = "ALT";
+        txMode = ssmTxMode;
     if(msgType == "BSM")
-        txMode = "CONT";
+        txMode = bsmTxMode;
     if(msgType == "SRM")
-        txMode = "ALT";
+        txMode = srmTxMode;
 }
 
 void RsuMsgPacket::setTxChannel(std::string msgType)
 {
     if(msgType == "MAP")
-        txChannel = 172;
+        txChannel = mapTxChannel;
     if(msgType == "SPAT")
-        txChannel = 172;
+        txChannel = spatTxChannel;
     if(msgType == "SSM")
-        txChannel = 182;
+        txChannel = ssmTxChannel;
     if(msgType == "BSM")
-        txChannel = 172;
+        txChannel = bsmTxChannel;
     if(msgType == "SRM")
-        txChannel = 182;
+        txChannel = srmTxChannel;
 }
 
 std::string RsuMsgPacket::getMsgPacket(std::string msgPayload)
