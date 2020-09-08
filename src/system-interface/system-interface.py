@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, validators
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 
@@ -34,7 +34,7 @@ class ConfigurationForm(FlaskForm):
     sourceDsrcDeviceIp = StringField(validators=[ip_address()])
     intersectionName = StringField()
     intersectionID = StringField()
-    regionalID = StringField()
+    regionalID = StringField([validators.Length(min=2, max=5)])
     dataCollectorIP = StringField()
     hmiControllerIP = StringField()
     messageDistributorIP = StringField()
@@ -50,6 +50,16 @@ class SysConfig:
         self.hmiControllerIP = data['HMIControllerIP']
         self.messageDistributorIP = data['MessageDistributorIP']
 
+def prepareJSONData(data, form):
+    data['HostIp']              = form.hostIp.data
+    data['SourceDsrcDeviceIp']  = form.sourceDsrcDeviceIp.data
+    data['IntersectionName']    = form.intersectionName.data
+    data['IntersectionID']      = form.intersectionID.data
+    data['RegionalID']          = form.regionalID.data
+    data['DataCollectorIP']     = form.dataCollectorIP.data
+    data['HMIControllerIP']     = form.hmiControllerIP.data
+    data['MessageDistributorIP']= form.messageDistributorIP.data
+
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])
 @app.route('/configuration/<ip_address>')
@@ -61,6 +71,17 @@ def configuration():
 
     sysConfig = SysConfig(data)    
     form = ConfigurationForm(obj=sysConfig)
+
+    #if request.method == 'POST' and form.validate():
+    if request.method == 'POST':
+        # Serialize the edited data
+        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+            prepareJSONData(data, form)
+            dataResult = json.dump(data, json_file) 
+            #user = User(form.username.data, form.email.data,
+            #            form.password.data)
+            #db_session.add(user)
+            flash('Configuration Updated')  
     
     return render_template('configuration.html', data=data, form=form)
 
