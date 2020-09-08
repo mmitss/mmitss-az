@@ -91,6 +91,119 @@ This is an html file that contains the presentation for:
             {{ form.messageDistributorIP }}
         </div>
         <div>
+            {{ form.priorityRequestGeneratorServerIP.label }}  
+        </div>
+        <div>
+            {{ form.priorityRequestGeneratorServerIP }}
+        </div>
+        <div>
+            {{ form.vehicleType.label }}  
+        </div>
+        <div>
+            {{ form.vehicleType }}
+        </div>
+        <div>
+            {{ form.logging.label }}  
+        </div>
+        <div>
+            {{ form.logging }}
+        </div>
+        <div>
+            {{ form.srmTimedOutTime.label }}  
+        </div>
+        <div>
+            {{ form.srmTimedOutTime }}
+        </div>
+        <div>
+            {{ form.portNumberMTMessageSender.label }}  
+        </div>
+        <div>
+            {{ form.portNumberMTMessageSender }}
+        </div>
+        <div>
+            {{ form.portNumberMTMessageReceiver.label }}  
+        </div>
+        <div>
+            {{ form.portNumberMTMessageReceiver }}
+        </div>
+        <div>
+            {{ form.portNumberMTMessageEncoder.label }}  
+        </div>
+        <div>
+            {{ form.portNumberMTMessageEncoder }}
+        </div>
+        <div>
+            {{ form.portNumberMTMessageDecoder.label }}  
+        </div>
+        <div>
+            {{ form.portNumberMTMessageDecoder }}
+        <div>
+            {{ form.portNumberMessageDistributor.label }}  
+        </div>
+        <div>
+            {{ form.portNumberMessageDistributor }}
+        </div>
+        <div>
+            {{ form.portNumberRSMDecoder.label }}  
+        </div>
+        <div>
+            {{ form.portNumberRSMDecoder }}
+        </div>
+        <div>
+            {{ form.portNumberOBUBSMReceiver.label }}  
+        </div>
+        <div>
+            {{ form.portNumberOBUBSMReceiver }}
+        </div>
+        <div>
+            {{ form.portNumberHostBsmDecoder.label }}  
+        </div>
+        <div>
+            {{ form.portNumberHostBsmDecoder }}
+        </div>
+        <div>
+            {{ form.portNumberTrajectoryAware.label }}  
+        </div>
+        <div>
+            {{ form.portNumberTrajectoryAware }}
+        </div>
+        <div>
+            {{ form.portNumberPriorityRequestServer.label }}  
+        </div>
+        <div>
+            {{ form.portNumberPriorityRequestServer }}
+        </div>
+        <div>
+            {{ form.portNumberPrioritySolver.label }}  
+        </div>
+        <div>
+            {{ form.portNumberPrioritySolver }}
+        </div>
+        <div>
+            {{ form.portNumberPriorityRequestGenerator.label }}  
+        </div>
+        <div>
+            {{ form.portNumberPriorityRequestGenerator }}
+        </div>
+        <div>
+            {{ form.portNumberTrafficControllerInterface.label }}  
+        </div>
+        <div>
+            {{ form.portNumberTrafficControllerInterface }}
+        </div>
+        <div>
+            {{ form.portNumberTrafficControllerCurrPhaseListener.label }}  
+        </div>
+        <div>
+            {{ form.portNumberTrafficControllerCurrPhaseListener }}
+        </div>
+        <div>
+            {{ form.portNumberPerformanceObserver.label }}  
+        </div>
+        <div>
+            {{ form.portNumberPerformanceObserver }}
+        </div>
+        <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}

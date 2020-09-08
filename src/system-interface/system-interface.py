@@ -60,6 +60,26 @@ class ConfigurationForm(FlaskForm):
     dataCollectorIP = StringField()
     hmiControllerIP = StringField()
     messageDistributorIP = StringField()
+    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
+    vehicleType = StringField('Vehicle Type')
+    logging = StringField('Logging')
+    srmTimedOutTime = StringField('SRM Timed Out Time')
+    portNumberMTMessageSender = StringField('Port Number: Message Transceiver / Message Sender')
+    portNumberMTMessageReceiver = StringField('Port Number: Message Transceiver / Message Receiver')
+    portNumberMTMessageEncoder = StringField('Port Number: Message Transceiver / Message Encoder')
+    portNumberMTMessageDecoder = StringField('Port Number: Message Transceiver / Message Decoder')
+    portNumberMessageDistributor = StringField('Port Number: Message Distributor')
+    portNumberRSMDecoder        = StringField('Port Number: RSM Decoder')
+    portNumberOBUBSMReceiver = StringField('Port Number: OBU BSM Receiver')
+    portNumberHostBsmDecoder = StringField('Port Number: Host BSM Decoder')
+    portNumberTrajectoryAware = StringField('Port Number: Trajectory Aware')
+    portNumberPriorityRequestServer = StringField('Port Number: Priority Request Server')
+    portNumberPrioritySolver = StringField('Port Number: Priority Solver')
+    portNumberPriorityRequestGenerator = StringField('Port Number: Priority Request Generator')
+    portNumberTrafficControllerInterface = StringField('Port Number: Traffic Controller Interface')
+    portNumberTrafficControllerCurrPhaseListener = StringField('Port Number: Traffic Controller Current Phase Listener')
+    portNumberTrafficControllerTimingPlanSender = StringField('Port Number: Traffic Controller Timing Plan Sender')
+    portNumberPerformanceObserver = StringField('Port Number: Performance Observer')
 
 # System Configuration data object
 class SysConfig:
@@ -72,6 +92,25 @@ class SysConfig:
         self.dataCollectorIP = data['DataCollectorIP']
         self.hmiControllerIP = data['HMIControllerIP']
         self.messageDistributorIP = data['MessageDistributorIP']
+        self.priorityRequestGeneratorServerIP = data['PriorityRequestGeneratorServerIP']
+        self.vehicleType = data['VehicleType']
+        self.logging = data['Logging']
+        self.srmTimedOutTime = data['SRMTimedOutTime']
+        self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
+        self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
+        self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
+        self.portNumberMTMessageDecoder = data['PortNumber']['MessageTransceiver']['MessageDecoder']
+        self.portNumberMessageDistributor = data['PortNumber']['MessageDistributor']
+        self.portNumberRSMDecoder = data['PortNumber']['RsmDecoder']
+        self.portNumberOBUBSMReceiver = data['PortNumber']['OBUBSMReceiver']
+        self.portNumberHostBsmDecoder = data['PortNumber']['HostBsmDecoder']
+        self.portNumberTrajectoryAware = data['PortNumber']['TrajectoryAware']
+        self.portNumberPriorityRequestServer = data['PortNumber']['PriorityRequestServer']
+        self.portNumberPrioritySolver = data['PortNumber']['PrioritySolver']
+        self.portNumberPriorityRequestGenerator = data['PortNumber']['PriorityRequestGenerator']
+        self.portNumberTrafficControllerInterface = data['PortNumber']['TrafficControllerInterface']
+        self.portNumberTrafficControllerCurrPhaseListener = data['PortNumber']['TrafficControllerCurrPhaseListener']
+        self.portNumberPerformanceObserver = data['PortNumber']['PerformanceObserver']
 
 def prepareJSONData(data, form):
     data['HostIp']              = form.hostIp.data
@@ -82,6 +121,25 @@ def prepareJSONData(data, form):
     data['DataCollectorIP']     = form.dataCollectorIP.data
     data['HMIControllerIP']     = form.hmiControllerIP.data
     data['MessageDistributorIP']= form.messageDistributorIP.data
+    data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
+    data['VehicleType']= form.vehicleType.data
+    data['Logging']= form.logging.data
+    data['SRMTimedOutTime']= form.srmTimedOutTime.data
+    data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
+    data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
+    data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
+    data['PortNumber']['MessageTransceiver']['MessageDecoder']= form.portNumberMTMessageDecoder.data
+    data['PortNumber']['MessageDistributor']    = form.portNumberMessageDistributor.data
+    data['PortNumber']['RsmDecoder']    = form.portNumberRSMDecoder.data
+    data['PortNumber']['OBUBSMReceiver']    = form.portNumberOBUBSMReceiver.data
+    data['PortNumber']['HostBsmDecoder']    = form.portNumberHostBsmDecoder.data
+    data['PortNumber']['TrajectoryAware']    = form.portNumberTrajectoryAware.data
+    data['PortNumber']['PriorityRequestServer']    = form.portNumberPriorityRequestServer.data
+    data['PortNumber']['PrioritySolver']    = form.portNumberPrioritySolver.data
+    data['PortNumber']['PriorityRequestGenerator']    = form.portNumberPriorityRequestGenerator.data
+    data['PortNumber']['TrafficControllerInterface']    = form.portNumberTrafficControllerInterface.data
+    data['PortNumber']['TrafficControllerCurrPhaseListener']    = form.portNumberTrafficControllerCurrPhaseListener.data
+    data['PortNumber']['PerformanceObserver']    = form.portNumberPerformanceObserver.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])
