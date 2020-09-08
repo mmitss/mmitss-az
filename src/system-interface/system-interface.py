@@ -80,6 +80,16 @@ class ConfigurationForm(FlaskForm):
     portNumberTrafficControllerCurrPhaseListener = StringField('Port Number: Traffic Controller Current Phase Listener')
     portNumberTrafficControllerTimingPlanSender = StringField('Port Number: Traffic Controller Timing Plan Sender')
     portNumberPerformanceObserver = StringField('Port Number: Performance Observer')
+    portNumberHMIController = StringField('Port Number: HMI Controller')
+    portNumberPrioritySolverToTCIInterface = StringField('Port Number: Priority Solver To TCI Interface')
+    portNumberSignalCoordination = StringField('Port Number: Signal Coordination')
+    portNumberMapSPaTBroadcaster = StringField('Port Number: Map SPaT Broadcaster')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
 
 # System Configuration data object
 class SysConfig:
@@ -111,6 +121,16 @@ class SysConfig:
         self.portNumberTrafficControllerInterface = data['PortNumber']['TrafficControllerInterface']
         self.portNumberTrafficControllerCurrPhaseListener = data['PortNumber']['TrafficControllerCurrPhaseListener']
         self.portNumberPerformanceObserver = data['PortNumber']['PerformanceObserver']
+        self.portNumberHMIController = data['PortNumber']['HMIController']
+        self.portNumberPrioritySolverToTCIInterface = data['PortNumber']['PrioritySolverToTCIInterface']
+        self.portNumberSignalCoordination = data['PortNumber']['SignalCoordination']
+        self.portNumberMapSPaTBroadcaster = data['PortNumber']['MapSPaTBroadcaster']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
 
 def prepareJSONData(data, form):
     data['HostIp']              = form.hostIp.data
@@ -140,6 +160,16 @@ def prepareJSONData(data, form):
     data['PortNumber']['TrafficControllerInterface']    = form.portNumberTrafficControllerInterface.data
     data['PortNumber']['TrafficControllerCurrPhaseListener']    = form.portNumberTrafficControllerCurrPhaseListener.data
     data['PortNumber']['PerformanceObserver']    = form.portNumberPerformanceObserver.data
+    data['PortNumber']['HMIController']    = form.portNumberHMIController.data
+    data['PortNumber']['PrioritySolverToTCIInterface']    = form.portNumberPrioritySolverToTCIInterface.data
+    data['PortNumber']['SignalCoordination']    = form.portNumberSignalCoordination.data
+    data['PortNumber']['MapSPaTBroadcaster']    = form.portNumberMapSPaTBroadcaster.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])

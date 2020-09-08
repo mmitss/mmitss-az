@@ -17,6 +17,7 @@ This is an html file that contains the presentation for:
 ***************************************************************************************
 -->
 
+{% from "_renderfield.html" import renderfield %}
 
 {% extends "base.html" %}
 
@@ -197,12 +198,13 @@ This is an html file that contains the presentation for:
         <div>
             {{ form.portNumberTrafficControllerCurrPhaseListener }}
         </div>
-        <div>
-            {{ form.portNumberPerformanceObserver.label }}  
-        </div>
-        <div>
-            {{ form.portNumberPerformanceObserver }}
-        </div>
+        {{ renderfield(form.portNumberPerformanceObserver)}}
+        {{ renderfield(form.portNumberHMIController)}}
+        {{ renderfield(form.portNumberPrioritySolverToTCIInterface)}}
+        {{ renderfield(form.portNumberSignalCoordination)}}
+        {{ renderfield(form.portNumberMapSPaTBroadcaster)}}
+        {{ renderfield(form.portNumberDsrcImmediateForwarder)}}
+
         <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
