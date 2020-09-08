@@ -204,7 +204,26 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.portNumberSignalCoordination)}}
         {{ renderfield(form.portNumberMapSPaTBroadcaster)}}
         {{ renderfield(form.portNumberDsrcImmediateForwarder)}}
-
+        {{ renderfield(form.portNumberPriorityRequestServer_SendSSM)}}
+        {{ renderfield(form.portNumberDataCollector)}}
+        {{ renderfield(form.portNumberSnmpEngine)}}
+        {{ renderfield(form.portNumberSnmpEngineInterface)}}
+        {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
+        {{ renderfield(form.psidMap)}}
+        {{ renderfield(form.psidSPaT)}}
+        {{ renderfield(form.psidRSM)}}
+        {{ renderfield(form.psidSRM)}}
+        {{ renderfield(form.psidSSM)}}
+        {{ renderfield(form.psidBSM)}}
+        {{ renderfield(form.msgIdMap)}}
+        {{ renderfield(form.msgIdSPat)}}
+        {{ renderfield(form.msgIdRSM)}}
+        {{ renderfield(form.msgIdSRMLower)}}
+        {{ renderfield(form.msgIdSRMUpper)}}
+        {{ renderfield(form.msgIdSSMLower)}}
+        {{ renderfield(form.msgIdSSMUpper)}}
+        {{ renderfield(form.msgIdBSM)}}
+        
         <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

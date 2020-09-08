@@ -84,12 +84,26 @@ class ConfigurationForm(FlaskForm):
     portNumberPrioritySolverToTCIInterface = StringField('Port Number: Priority Solver To TCI Interface')
     portNumberSignalCoordination = StringField('Port Number: Signal Coordination')
     portNumberMapSPaTBroadcaster = StringField('Port Number: Map SPaT Broadcaster')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarderr')
+    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarder')
+    portNumberPriorityRequestServer_SendSSM = StringField('Port Number: PriorityRequestServer_SendSSM')
+    portNumberDataCollector = StringField('Port Number: Data Collector')
+    portNumberSnmpEngine = StringField('Port Number: SNMP Engine')
+    portNumberSnmpEngineInterface = StringField('Port Number: SNMP Engine Interface')
+    portNumberPriorityRequestGeneratorServer = StringField('Port Number: Priority Request Generator Server')
+    psidMap = StringField('PSID: Map')
+    psidSPaT = StringField('PSID: SPaT')    
+    psidRSM = StringField('PSID: RSM')    
+    psidSRM = StringField('PSID: SRM')    
+    psidSSM = StringField('PSID: SSM')    
+    psidBSM = StringField('PSID: BSM')
+    msgIdMap = StringField('Msg ID: map')
+    msgIdSPat = StringField('Msg ID: SPat')
+    msgIdRSM = StringField('Msg ID: RSM')
+    msgIdSRMLower = StringField('Msg ID: SRM Lower')
+    msgIdSRMUpper = StringField('Msg ID: SRM Upper')
+    msgIdSSMLower = StringField('Msg ID: SSM Lower')
+    msgIdSSMUpper = StringField('Msg ID: SSM Upper')
+    msgIdBSM = StringField('Msg ID: BSM')
 
 # System Configuration data object
 class SysConfig:
@@ -126,11 +140,26 @@ class SysConfig:
         self.portNumberSignalCoordination = data['PortNumber']['SignalCoordination']
         self.portNumberMapSPaTBroadcaster = data['PortNumber']['MapSPaTBroadcaster']
         self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
-        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
-        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
-        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
-        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
-        self.portNumberDsrcImmediateForwarder = data['PortNumber']['DsrcImmediateForwarder']
+        self.portNumberPriorityRequestServer_SendSSM = data['PortNumber']['PriorityRequestServer_SendSSM']
+        self.portNumberDataCollector = data['PortNumber']['DataCollector']
+        self.portNumberSnmpEngine = data['PortNumber']['SnmpEngine']
+        self.portNumberSnmpEngineInterface = data['PortNumber']['SnmpEngineInterface']
+        self.portNumberPriorityRequestGeneratorServer = data['PortNumber']['PriorityRequestGeneratorServer']
+        self.psidMap = data['psid']['map']
+        self.psidSPaT = data['psid']['spat']
+        self.psidRSM = data['psid']['rsm']
+        self.psidSRM = data['psid']['srm']
+        self.psidSSM = data['psid']['ssm']
+        self.psidBSM = data['psid']['bsm']
+        self.msgIdMap = data['msgId']['map']
+        self.msgIdSPaT = data['msgId']['spat']
+        self.msgIdRSM = data['msgId']['rsm']
+        self.msgIdSRMLower = data['msgId']['srm_lower']
+        self.msgIdSRMUpper = data['msgId']['srm_upper']
+        self.msgIdSSMLower = data['msgId']['ssm_lower']
+        self.msgIdSSMUpper = data['msgId']['ssm_upper']
+        self.msgIdBSM = data['msgId']['bsm']
+
 
 def prepareJSONData(data, form):
     data['HostIp']              = form.hostIp.data
@@ -165,11 +194,25 @@ def prepareJSONData(data, form):
     data['PortNumber']['SignalCoordination']    = form.portNumberSignalCoordination.data
     data['PortNumber']['MapSPaTBroadcaster']    = form.portNumberMapSPaTBroadcaster.data
     data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
-    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
-    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
-    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
-    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
-    data['PortNumber']['DsrcImmediateForwarder']    = form.portNumberDsrcImmediateForwarder.data
+    data['PortNumber']['PriorityRequestServer_SendSSM']    = form.portNumberPriorityRequestServer_SendSSM.data
+    data['PortNumber']['DataCollector']    = form.portNumberDataCollector.data
+    data['PortNumber']['SnmpEngine']    = form.portNumberSnmpEngine.data
+    data['PortNumber']['SnmpEngineInterface']    = form.portNumberSnmpEngineInterface.data
+    data['PortNumber']['PriorityRequestGeneratorServer']    = form.portNumberPriorityRequestGeneratorServer.data
+    data['psid']['map']    = form.psidMap.data
+    data['psid']['spat']    = form.psidSPat.data
+    data['psid']['rsm']    = form.psidRSM.data
+    data['psid']['srm']    = form.psidSRM.data
+    data['psid']['ssm']    = form.psidSSM.data
+    data['psid']['bsm']    = form.psidBSM.data
+    data['msgId']['map']    = form.msgIdMap.data
+    data['msgId']['map']    = form.msgIdSPaT.data
+    data['msgId']['map']    = form.msgIdRSM.data
+    data['msgId']['map']    = form.msgIdSRMLower.data
+    data['msgId']['map']    = form.msgIdSRMUpper.data
+    data['msgId']['map']    = form.msgIdSSMLower.data
+    data['msgId']['map']    = form.msgIdSSMUpper.data
+    data['msgId']['map']    = form.msgIdBSM.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])
