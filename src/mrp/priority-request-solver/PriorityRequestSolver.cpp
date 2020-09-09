@@ -1035,27 +1035,26 @@ void PriorityRequestSolver::printSignalPlan()
         cout << trafficSignalPlan[i].phaseNumber << " " << trafficSignalPlan[i].phaseRing << " " << trafficSignalPlan[i].minGreen << endl;
     }
 }
-
+/*
+    -If Phase information is missing (for example T-intersection), the following method will fill the information based on through or associated phases
+*/
 void PriorityRequestSolver::modifySignalTimingPlan()
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
-    vector<TrafficControllerData::TrafficSignalPlan> temporaryTrafficSignalPlan;
-
-    temporaryTrafficSignalPlan.insert(temporaryTrafficSignalPlan.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
-
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
         temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
 
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(temporaryTrafficSignalPlan), std::end(temporaryTrafficSignalPlan),
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
+        //Calculation for the even numbered phases {2,4,6,8}
         if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < 5)
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;
-            if (temporarySignalGroup > 5)
+            if (temporarySignalGroup > 4)
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
@@ -1070,35 +1069,60 @@ void PriorityRequestSolver::modifySignalTimingPlan()
             findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
         }
 
+        //Calculation for the odd numbered phases {1,3,5,7}
         else if ((temporarySignalGroup % 2 != 0) && (trafficSignalPlan[i].minGreen == 0))
         {
-            //temporaryTrafficSignalPlan.erase(findSignalGroupOnList);
             if (temporarySignalGroup < 5)
-                temporaryCompitableSignalGroup = temporarySignalGroup + 5;
-            if (temporarySignalGroup > 5)
-                temporaryCompitableSignalGroup = temporarySignalGroup - 3;
+                temporaryCompitableSignalGroup = temporarySignalGroup + 4;
+            else if (temporarySignalGroup > 4)
+                temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+            //Atfirst, try to fill the missing information with the compitable signal group. 
+            //For example if phase 3 data is missing, then try to filled the information with phase 7 data (if available)
+            if (findCompitableSignalGroupOnList->minGreen != 0)
+            {
+                findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
+                findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
+                findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
+                findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
+                findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
+                findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
+                findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+            }
 
-            findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
-            findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
-            findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
-            findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
-            findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
-            findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
-            findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+            //If compitable signal group data is missing, fill the information with the through phases data. 
+            //For example if phase 3 data is missing, then try to filled the information with phase 8 data
+            else if (findCompitableSignalGroupOnList->minGreen == 0)
+            {
+                if (temporarySignalGroup < 5)
+                    temporaryCompitableSignalGroup = temporarySignalGroup + 5;
+                else if (temporarySignalGroup > 4)
+                    temporaryCompitableSignalGroup = temporarySignalGroup - 3;
+
+                findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+
+                findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
+                findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
+                findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
+                findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
+                findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
+                findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
+                findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+            }
         }
     }
-    trafficSignalPlan.clear();
-    trafficSignalPlan.insert(trafficSignalPlan.end(), temporaryTrafficSignalPlan.begin(), temporaryTrafficSignalPlan.end());
 }
+
 
 /*
     - Method for generating Mod File for transit and truck
 */
 void PriorityRequestSolver::generateModFile()
 {
+    // modifySignalTimingPlan();
     ofstream FileMod;
     FileMod.open("/nojournal/bin/NewModel.mod", ios::out);
     // =================Defining the sets ======================
