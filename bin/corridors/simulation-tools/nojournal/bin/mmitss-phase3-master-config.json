@@ -12,6 +12,7 @@
 	"VehicleType": 6,
 	"Logging": "True",
 	"SRMTimedOutTime": 10.0,
+	"ScheduleExecutionBuffer": 1.0,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,
