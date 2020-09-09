@@ -25,9 +25,11 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = True
 
-controllerIP = '10.12.6.108' #actual configuraiton data (should be from global config)
+configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+config = json.load(configfile)
+controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
 #controllerIP = '127.0.0.1' #use for simulation testing
-controllerPort = 20009
+controllerPort = config["PortNumber"]["HMIController"]
 controller = (controllerIP, controllerPort)
 
 hmiIP = '127.0.0.1'
@@ -41,13 +43,16 @@ spat_map_ID = -1 # map ID's are positive integers, so if no map is active set th
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
               1 : "dark", 
               2 : "stop-Then-Proceed", # flashing red (flashing Red ball)
-              3 : "stop-And-Remain", # red light (Red ball) [Don't walk]
+              "red" : "stop-And-Remain", # red light (Red ball) [Don't walk]
               4 : "pre-Movement", # not used in US
               5 : "permissive-Movement-Allowed", # permissive green (Green ball)
-              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
-              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
-              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
+              "green" : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
+              "permissive_yellow" : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
+              "yellow" : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
+              "do_not_walk": "stop-And-Remain",
+              "ped_clear": "protected-clearance",
+              "walk": "protected-Movement-Allowed"
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
     "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",
@@ -214,7 +219,7 @@ while True:
 
     if sourcePort == 10002 :
         # process the remote vehicle and SPaT data
-        print('remote bsm and spat data', line)
+        # print('remote bsm and spat data', line)
 
         # load the json
         remoteInterfacejson = json.loads(line)
@@ -285,7 +290,7 @@ while True:
 
     elif sourcePort == 20004 :
 
-        print('host vehicle and infrastructure data', line)
+        # print('host vehicle and infrastructure data', line)
         
         # load the json
         hostAndInfrastructureData = json.loads(line)
@@ -400,7 +405,7 @@ while True:
         }
         })
         s.sendto(interfaceJsonString.encode(),hmi)
-        #print('update hmi: ', interfaceJsonString)
+        # print('update hmi: ', interfaceJsonString)
 
     else :
         print('ERROR: data received from unknown source')

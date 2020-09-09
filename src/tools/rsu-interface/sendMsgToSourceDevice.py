@@ -27,12 +27,12 @@ from time import sleep
 
 def Main():
     # This is the IP address and port of the server sending messages to the source dsrc device (called 'server')
-    serverIP = '10.12.6.108'
+    serverIP = '10.12.6.56'
     serverPort = 5001 # This could be any available port on this computer
     server = (serverIP, serverPort)
 
     # This is the IP address and port of the source dsrc device
-    receiverIP = '10.12.6.116' # 
+    receiverIP = '10.12.6.16' # 
     receiverPort = 1516 # Kun might give us other port.
     receiver = (receiverIP, receiverPort)
 

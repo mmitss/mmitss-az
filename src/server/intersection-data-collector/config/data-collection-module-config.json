@@ -1,5 +1,5 @@
 {
-    "DataCollectorIp" : "10.12.6.108",
+    "DataCollectorIp" : "10.12.6.57",
     "DataCollectorEmailServer":
     {
         "Port": 30000,

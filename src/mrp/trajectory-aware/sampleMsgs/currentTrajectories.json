@@ -1,0 +1,98 @@
+{
+    "MsgType": "CurrentTrajectories",
+    "Timestamp_posix": 1586882518.1697357,
+    "Trajectories": [
+        {
+            "TimePersistentAttributes": {
+                "temporaryID": 5822735,
+                "type": "transit",
+                "length_cm": 400,
+                "width_cm": 300,
+                "initialApproachID": 5,
+                "initialLaneID": 18
+            },
+            "TimeVaryingAttributes": [
+                {
+                    "timestamp_posix": 302223140.0,
+                    "latitude_DecimalDegree": 33.842811,
+                    "longitude_DecimalDegree": -112.1361,
+                    "elevation_Meter": 587,
+                    "speed_MeterPerSecond": 10.5,
+                    "heading_Degree": 90.0,
+                    "positionOnMap": "inbound",
+                    "inQueueStatus": false,
+                    "approachId": 5,
+                    "laneId": 18,
+                    "signalGroup": 2,
+                    "distanceToStopBar_meter": 63.49,
+                    "timeToStopBar_seconds": 6.046666666666667,
+                    "distanceTravelledAlongTrajectory_Meter": 0.0
+                },
+                {
+                    "timestamp_posix": 302223145.0,
+                    "latitude_DecimalDegree": 33.842807,
+                    "longitude_DecimalDegree": -112.135813,
+                    "elevation_Meter": 587,
+                    "speed_MeterPerSecond": 10.5,
+                    "heading_Degree": 90.0,
+                    "positionOnMap": "inbound",
+                    "inQueueStatus": false,
+                    "approachId": 5,
+                    "laneId": 17,
+                    "signalGroup": 2,
+                    "distanceToStopBar_meter": 37.38,
+                    "timeToStopBar_seconds": 3.56,
+                    "distanceTravelledAlongTrajectory_Meter": 26.509657215051558
+                }
+            ],
+            "TimeOfLastUpdate": 302223145.0,
+            "OnMap": false
+        },
+        {
+            "TimePersistentAttributes": {
+                "temporaryID": 5822736,
+                "type": "transit",
+                "length_cm": 400,
+                "width_cm": 300,
+                "initialApproachID": 5,
+                "initialLaneID": 16
+            },
+            "TimeVaryingAttributes": [
+                {
+                    "timestamp_posix": 302223150.0,
+                    "latitude_DecimalDegree": 33.842684,
+                    "longitude_DecimalDegree": -112.137057,
+                    "elevation_Meter": 587,
+                    "speed_MeterPerSecond": 10.5,
+                    "heading_Degree": 90.0,
+                    "positionOnMap": "inbound",
+                    "inQueueStatus": false,
+                    "approachId": 5,
+                    "laneId": 16,
+                    "signalGroup": 2,
+                    "distanceToStopBar_meter": 152.45,
+                    "timeToStopBar_seconds": 14.519047619047617,
+                    "distanceTravelledAlongTrajectory_Meter": 0.0
+                },
+                {
+                    "timestamp_posix": 302223155.0,
+                    "latitude_DecimalDegree": 33.842684,
+                    "longitude_DecimalDegree": -112.137057,
+                    "elevation_Meter": 587,
+                    "speed_MeterPerSecond": 10.5,
+                    "heading_Degree": 90.0,
+                    "positionOnMap": "inbound",
+                    "inQueueStatus": false,
+                    "approachId": 5,
+                    "laneId": 16,
+                    "signalGroup": 2,
+                    "distanceToStopBar_meter": 152.45,
+                    "timeToStopBar_seconds": 14.519047619047617,
+                    "distanceTravelledAlongTrajectory_Meter": 0.0
+                }
+            ],
+            "TimeOfLastUpdate": 302223155.0,
+            "OnMap": true
+        }
+    ]
+}

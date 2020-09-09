@@ -92,7 +92,7 @@ sleep 1s
 
 #######################################################################################
 echo "Building Priority Request Generator..."
-cd ./../src/obu/PriorityRequestGenerator
+cd ./../src/obu/priority-request-generator
 # Clean the folder and build for linux.
 make clean &> /dev/null
 make linux &> /dev/null

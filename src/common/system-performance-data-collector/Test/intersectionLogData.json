@@ -1,0 +1,14 @@
+{   
+    "MsgType":"IntersectionDataLog",
+    "MsgInformation": 
+    {
+        "MsgSource": "Daisy-Gavilan",
+        "MsgCountType": "RemoteBSM",
+        "MsgCount": 912,
+        "MsgServed":"NA",
+        "MsgRejected": "NA",
+        "TimeInterval": "60 minutes",
+        "MsgSentTime": 1597213889.3949163
+    }
+    
+}
