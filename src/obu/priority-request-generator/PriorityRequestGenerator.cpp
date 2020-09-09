@@ -535,6 +535,7 @@ void PriorityRequestGenerator::setVehicleType()
 
 void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
 {
+	lightSirenStatus = true;
 	if (vehType == "transit")
 		vehicleType = 6;
 
