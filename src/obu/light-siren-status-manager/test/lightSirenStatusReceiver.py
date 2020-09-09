@@ -13,7 +13,7 @@ s.bind((hostIp,priorityRequestGeneratorPort))
 
 while True:
     data,address = s.recvfrom(4096)
-    print(data.decode())
+    # print(data.decode())
     # Load the received data into a json object
     receivedMsg = json.loads(data)
     print(receivedMsg)

@@ -154,9 +154,9 @@ void MapManager::writeMAPPayloadInFile()
 {
 
     const char *path = "./map";
-    std::stringstream ss;
+    std::stringstream ss{};
     ss << path;
-    std::string s;
+    std::string s{};
     ss >> s;
     std::ofstream outputfile;
 

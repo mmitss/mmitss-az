@@ -43,7 +43,7 @@ int main()
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
-    const int LightSirenStatusManagerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["LightSirenStatusManager"].asInt());
+    // const int LightSirenStatusManagerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["LightSirenStatusManager"].asInt());
 
     char receiveBuffer[40960];
     std::string srmJsonString{};
@@ -52,13 +52,6 @@ int main()
     PRG.getLoggingStatus();
     PRG.setVehicleType();
 
-    if (PRG.getVehicleType() == 2)
-    {
-        priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(LightSirenStatusManagerPortNo), PRG.getRequestStringForLightSirenStatus());
-        priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedJsonString(receiveBuffer);
-        PRG.setLightSirenStatus(receivedJsonString);
-    }
 
     while (true)
     {
@@ -66,7 +59,10 @@ int main()
         std::string receivedJsonString(receiveBuffer);
         msgType = PRG.getMessageType(receivedJsonString);
 
-        if (msgType == MsgEnum::DSRCmsgID_bsm)
+        if (msgType == static_cast<int>(msgType::lightSirenStatus))
+            PRG.setLightSirenStatus(receivedJsonString);
+
+        else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
@@ -78,7 +74,7 @@ int main()
             }
             mapManager.updateMapAge();
             mapManager.deleteMap();
-            PRG.changeMapStatusInAvailableMapList(mapManager);
+            PRG.manageMapStatusInAvailableMapList(mapManager);
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
         }
@@ -96,8 +92,5 @@ int main()
             std::cout << "SSM is received " << std::endl;
             signalStatus.reset();
         }
-
-        else if (msgType == static_cast<int>(msgType::lightSirenStatus))
-            PRG.setLightSirenStatus(receivedJsonString);
     }
 }

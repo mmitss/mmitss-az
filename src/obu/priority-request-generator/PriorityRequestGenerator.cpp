@@ -59,12 +59,21 @@ const int SECONDTOMILISECOND = 1000;
 const double ALLOWED_ETA_DIFFERENCE = 6.0;
 const int MAXMSGCOUNT = 127;
 const int MINMSGCOUNT = 1;
-const double MIN_ETA = 0.0;
+const double MIN_ETA = 1.0;
 const double SRM_GAPOUT_TIME = 2.0;
-const double PRS_REQUEST_GAPOUT_TIME = 8.0;
+// const double requestTimedOutValue = 8.0;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
+	Json::Value jsonObject;
+	Json::Reader reader;
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader.parse(configJsonString.c_str(), jsonObject);
+
+	// set the request timed out value to avoid clearing the old request in PRS
+	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_GAPOUT_TIME;
 }
 
 /*
@@ -121,8 +130,6 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			ActiveRequestTable.push_back(activeRequest);
 		}
-		// std::cout << "ART after receiving SSM is following: " << std::endl;
-		// printART();
 	}
 
 	return ActiveRequestTable;
@@ -249,7 +256,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			std::cout << "SRM is sent since msgCount doesn't match at time " << timenow << std::endl;
 		}
 
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= PRS_REQUEST_GAPOUT_TIME)
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= requestTimedOutValue)
 		{
 			sendRequestStatus = true;
 			std::cout << "SRM is sent to avoid PRS timed out at time " << timenow << std::endl;
@@ -290,23 +297,13 @@ void PriorityRequestGenerator::setSignalGroup(int phaseNo)
 /*
 	-calculation for ETA. Units will be second
 */
-bool PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpeed)
+void PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpeed)
 {
-	bool bETAValue{false};
-	double vehicleTime2Go{};
-	if (vehicleSpeed > VEHICLEMINSPEED)
-	{
-		vehicleTime2Go = (distance2go / DISTANCEUNITCONVERSION) / vehicleSpeed; //distance2go is cm. DISTANCEUNITCONVERSION is used converst distance2go into meter
-		time2go = vehicleTime2Go;
-		bETAValue = true;
-	}
-	else
-	{
-		bETAValue = false;
-		time2go = MIN_ETA;
-	}
+	if (vehicleSpeed >= VEHICLEMINSPEED)
+		time2go = static_cast<double>((distance2go / DISTANCEUNITCONVERSION) / vehicleSpeed); //distance2go is cm. DISTANCEUNITCONVERSION is used converst distance2go into meter
 
-	return bETAValue;
+	else
+		time2go = MIN_ETA;
 }
 
 /*
@@ -338,7 +335,7 @@ int PriorityRequestGenerator::getMessageType(std::string jsonString)
 		loggingData(jsonString);
 	}
 
-	else if ((jsonObject["MsgType"]).asString() == "LightSiren")
+	else if ((jsonObject["MsgType"]).asString() == "LightSirenStatusMessage")
 		messageType = static_cast<int>(msgType::lightSirenStatus);
 
 	return messageType;
@@ -518,13 +515,22 @@ void PriorityRequestGenerator::setVehicleType()
 	reader.parse(configJsonString.c_str(), jsonObject_config);
 
 	if (jsonObject_config["VehicleType"].asString() == "Transit")
+	{
 		vehicleType = 6;
+		lightSirenStatus = true;
+	}
 
 	else if (jsonObject_config["VehicleType"].asString() == "Truck")
+	{
 		vehicleType = 9;
+		lightSirenStatus = true;
+	}
 	
 	else if (jsonObject_config["VehicleType"].asString() == "EmergencyVehicle")
+	{
 		vehicleType = 2;
+		lightSirenStatus = false;
+	}
 }
 
 void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
@@ -641,7 +647,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		bRequestSendStatus = true;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= PRS_REQUEST_GAPOUT_TIME)
+	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= requestTimedOutValue)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		bRequestSendStatus = true;
@@ -734,11 +740,6 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 	return vehicleSRMStatus;
 }
 
-// std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapListFORHMI()
-// {
-// 	return activeMapList;
-// }
-
 /*
 	- Getters for ART table
 */
@@ -752,7 +753,7 @@ std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
 	-If vehicle in on Map then for the active map, activeMapStatus will be true for the active map
 	-If vehicle is leaving the map (either leaving the intersection or going to parking lot) then activeMapStatus will be false for all available map
 */
-std::vector<Map::AvailableMap> PriorityRequestGenerator::changeMapStatusInAvailableMapList(MapManager mapManager)
+std::vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvailableMapList(MapManager mapManager)
 {
 
 	if (!activeMapList.empty())
@@ -788,6 +789,9 @@ void PriorityRequestGenerator::printART()
 	}
 }
 
+/*
+	- This method will open the log file and store the data in the file based on the logging requirements.
+*/
 void PriorityRequestGenerator::loggingData(std::string jsonString)
 {
 	std::ofstream outputfile;
@@ -802,6 +806,10 @@ void PriorityRequestGenerator::loggingData(std::string jsonString)
 	}
 }
 
+/*
+	- Check the logging requirement from the confid file.
+	- If it is required to log the data, the following method will the open log file
+*/
 bool PriorityRequestGenerator::getLoggingStatus()
 {
 	std::string logging{};
@@ -828,27 +836,22 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	return loggingStatus;
 }
 
+/*
+	- Method to set the light-siren status based on the received message
+	- If the vehicle type is emergencyVehicle(2), the following method will not change the lightSirenStatus value.
+*/
 void PriorityRequestGenerator::setLightSirenStatus(std::string jsonString)
 {
 	Json::Value jsonObject;
 	Json::Reader reader;
 	reader.parse(jsonString.c_str(), jsonObject);
-	if ((jsonObject["LightSiren"]).asString() == "ON")
+
+	if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == 2)
 		lightSirenStatus = true;
-	else if ((jsonObject["LightSirenStatus"]).asString() == "OFF")
+	else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == 2)
 		lightSirenStatus = false;
-}
-
-std::string PriorityRequestGenerator::getRequestStringForLightSirenStatus()
-{
-	std::string lightSirenStatusRequestJsonString{};
-    Json::FastWriter fastWriter;
-    Json::Value jsonObject;
-
-    jsonObject["MsgType"] = "LightSirenStatusRequest";
-    lightSirenStatusRequestJsonString = fastWriter.write(jsonObject);
-
-    return lightSirenStatusRequestJsonString;
+	
+	// std::cout << "Received Json String from LightSirenStatusManager" << jsonString << std::endl;
 }
 
 PriorityRequestGenerator::~PriorityRequestGenerator()

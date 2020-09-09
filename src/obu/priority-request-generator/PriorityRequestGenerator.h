@@ -37,6 +37,7 @@ private:
   bool bgetActiveMap{false};      //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
   bool bRequestSendStatus{false}; //Required for HMI json
   bool loggingStatus{false};
+  bool lightSirenStatus{false};
   std::string mapFileDirectory{};
   std::string mapFileName{};
   int messageType{};
@@ -52,11 +53,11 @@ private:
   int basicVehicleRole{};
   int priorityRequestType{};
   int counter_VehicleInMap{};
+  int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
   double time2go{};
   double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
   double tempSRMTimeStamp{};    //temporary store the time when last SRM has been sent
-  int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
-  bool lightSirenStatus{true};
+  double requestTimedOutValue{};
 
 public:
   PriorityRequestGenerator();
@@ -75,7 +76,7 @@ public:
   void setLaneID(int laneId);
   void setApproachID(int approachID);
   void setSignalGroup(int phaseNo);
-  bool setTime2Go(double distance2go, double vehicleSpeed);
+  void setTime2Go(double distance2go, double vehicleSpeed);
   void setVehicleIntersectionStatus(int vehIntersectionStatus);
   void setVehicleType();
   void setSimulationVehicleType(std::string vehType); //For PRGServer
@@ -100,7 +101,6 @@ public:
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();
   void printART();
-  std::vector<Map::AvailableMap> changeMapStatusInAvailableMapList(MapManager mapManager);
+  std::vector<Map::AvailableMap> manageMapStatusInAvailableMapList(MapManager mapManager);
   void setLightSirenStatus(std::string jsonString);
-  std::string getRequestStringForLightSirenStatus();
 };
