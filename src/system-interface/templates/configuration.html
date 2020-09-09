@@ -216,13 +216,28 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.psidSSM)}}
         {{ renderfield(form.psidBSM)}}
         {{ renderfield(form.msgIdMap)}}
-        {{ renderfield(form.msgIdSPat)}}
+        {{ renderfield(form.msgIdSPaT)}}
         {{ renderfield(form.msgIdRSM)}}
         {{ renderfield(form.msgIdSRMLower)}}
         {{ renderfield(form.msgIdSRMUpper)}}
         {{ renderfield(form.msgIdSSMLower)}}
         {{ renderfield(form.msgIdSSMUpper)}}
-        {{ renderfield(form.msgIdBSM)}}
+        {{ renderfield(form.signalControllerIP)}}
+        {{ renderfield(form.signalControllerNTCIPPort)}}
+        {{ renderfield(form.signalControllerUpdateInterval)}}
+        {{ renderfield(form.signalControllerNtcipBackupTime_sec)}}
+        {{ renderfield(form.signalControllerVendor)}}
+        {{ renderfield(form.signalControllerTimingPlanMib)}}
+        {{ renderfield(form.signalControllerInactiveVehPhases)}}
+        {{ renderfield(form.signalControllerInactivePedPhases)}}
+        {{ renderfield(form.signalControllerSplitPhases1)}}
+        {{ renderfield(form.signalControllerSplitPhases3)}}
+        {{ renderfield(form.signalControllerSplitPhases5)}}
+        {{ renderfield(form.signalControllerSplitPhases7)}}
+        {{ renderfield(form.signalControllerPermissiveEnabled1)}}
+        {{ renderfield(form.signalControllerPermissiveEnabled3)}}
+        {{ renderfield(form.signalControllerPermissiveEnabled5)}}
+        {{ renderfield(form.signalControllerPermissiveEnabled7)}}
         
         <div>
         {% with messages = get_flashed_messages() %}

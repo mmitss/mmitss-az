@@ -44,7 +44,7 @@ def console():
 def local_console():
     import json
 
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         pageTitle = data['IntersectionName']
     
@@ -97,13 +97,29 @@ class ConfigurationForm(FlaskForm):
     psidSSM = StringField('PSID: SSM')    
     psidBSM = StringField('PSID: BSM')
     msgIdMap = StringField('Msg ID: map')
-    msgIdSPat = StringField('Msg ID: SPat')
+    msgIdSPaT = StringField('Msg ID: SPaT')
     msgIdRSM = StringField('Msg ID: RSM')
     msgIdSRMLower = StringField('Msg ID: SRM Lower')
     msgIdSRMUpper = StringField('Msg ID: SRM Upper')
     msgIdSSMLower = StringField('Msg ID: SSM Lower')
     msgIdSSMUpper = StringField('Msg ID: SSM Upper')
     msgIdBSM = StringField('Msg ID: BSM')
+    signalControllerIP = StringField('Signal Controller IP Address')
+    signalControllerNTCIPPort = StringField('Signal Controller NTCIP Address')
+    signalControllerUpdateInterval = StringField('Signal Controller Timing Plan Update Interval')
+    signalControllerNtcipBackupTime_sec = StringField('Signal Controller NTCIP Backup Time')
+    signalControllerVendor = StringField('Signal Controller Vendor')
+    signalControllerTimingPlanMib = StringField('Signal Controller Timing Plan MIB')
+    signalControllerInactiveVehPhases = StringField('Signal Controller Inactive Vehicle Phases')
+    signalControllerInactivePedPhases = StringField('Signal Controller Inactive Pedestrian Phases')
+    signalControllerSplitPhases1 = StringField('Signal Controller Split Phases 1')
+    signalControllerSplitPhases3 = StringField('Signal Controller Split Phases 3')
+    signalControllerSplitPhases5 = StringField('Signal Controller Split Phases 5')
+    signalControllerSplitPhases7 = StringField('Signal Controller Split Phases 7')
+    signalControllerPermissiveEnabled1 = StringField('Signal Controller Permissive Enabled 1')
+    signalControllerPermissiveEnabled3 = StringField('Signal Controller Permissive Enabled 3')
+    signalControllerPermissiveEnabled5 = StringField('Signal Controller Permissive Enabled 5')
+    signalControllerPermissiveEnabled7 = StringField('Signal Controller Permissive Enabled 7')
 
 # System Configuration data object
 class SysConfig:
@@ -159,6 +175,23 @@ class SysConfig:
         self.msgIdSSMLower = data['msgId']['ssm_lower']
         self.msgIdSSMUpper = data['msgId']['ssm_upper']
         self.msgIdBSM = data['msgId']['bsm']
+        self.signalControllerIP = data['SignalController']['IpAddress']
+        self.signalControllerNTCIPPort = data['SignalController']['NtcipPort']
+        self.signalControllerUpdateInterval = data['SignalController']['TimingPlanUpdateInterval_sec']
+        self.signalControllerNtcipBackupTime_sec = data['SignalController']['NtcipBackupTime_sec']
+        self.signalControllerVendor = data['SignalController']['Vendor']
+        self.signalControllerTimingPlanMib = data['SignalController']['TimingPlanMib']
+        self.signalControllerInactiveVehPhases = data['SignalController']['InactiveVehPhases']
+        self.signalControllerInactivePedPhases = data['SignalController']['InactivePedPhases']
+        self.signalControllerSplitPhases1 = data['SignalController']['SplitPhases']['1']
+        self.signalControllerSplitPhases3 = data['SignalController']['SplitPhases']['3']
+        self.signalControllerSplitPhases5 = data['SignalController']['SplitPhases']['5']
+        self.signalControllerSplitPhases7 = data['SignalController']['SplitPhases']['7']
+        self.signalControllerPermissiveEnabled1 = data['SignalController']['PermissiveEnabled']['1']
+        self.signalControllerPermissiveEnabled3 = data['SignalController']['PermissiveEnabled']['3']
+        self.signalControllerPermissiveEnabled5 = data['SignalController']['PermissiveEnabled']['5']
+        self.signalControllerPermissiveEnabled7 = data['SignalController']['PermissiveEnabled']['7']
+
 
 
 def prepareJSONData(data, form):
@@ -200,26 +233,43 @@ def prepareJSONData(data, form):
     data['PortNumber']['SnmpEngineInterface']    = form.portNumberSnmpEngineInterface.data
     data['PortNumber']['PriorityRequestGeneratorServer']    = form.portNumberPriorityRequestGeneratorServer.data
     data['psid']['map']    = form.psidMap.data
-    data['psid']['spat']    = form.psidSPat.data
+    data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
     data['psid']['srm']    = form.psidSRM.data
     data['psid']['ssm']    = form.psidSSM.data
     data['psid']['bsm']    = form.psidBSM.data
     data['msgId']['map']    = form.msgIdMap.data
-    data['msgId']['map']    = form.msgIdSPaT.data
-    data['msgId']['map']    = form.msgIdRSM.data
-    data['msgId']['map']    = form.msgIdSRMLower.data
-    data['msgId']['map']    = form.msgIdSRMUpper.data
-    data['msgId']['map']    = form.msgIdSSMLower.data
-    data['msgId']['map']    = form.msgIdSSMUpper.data
-    data['msgId']['map']    = form.msgIdBSM.data
+    data['msgId']['spat']    = form.msgIdSPaT.data
+    data['msgId']['rsm']    = form.msgIdRSM.data
+    data['msgId']['srm_lower']    = form.msgIdSRMLower.data
+    data['msgId']['srm_upper']    = form.msgIdSRMUpper.data
+    data['msgId']['ssm_lower']    = form.msgIdSSMLower.data
+    data['msgId']['ssm_upper']    = form.msgIdSSMUpper.data
+    data['msgId']['bsm']    = form.msgIdBSM.data
+    data['SignalController']['IpAddress']    = form.signalControllerIP.data
+    data['SignalController']['NtcipPort']    = form.signalControllerNTCIPPort.data
+    data['SignalController']['TimingPlanUpdateInterval_sec']    = form.signalControllerUpdateInterval.data
+    data['SignalController']['NtcipBackupTime_sec']    = form.signalControllerNtcipBackupTime_sec.data
+    data['SignalController']['Vendor']    = form.signalControllerVendor.data
+    data['SignalController']['TimingPlanMib']    = form.signalControllerTimingPlanMib.data
+    data['SignalController']['InactiveVehPhases']    = form.signalControllerInactiveVehPhases.data
+    data['SignalController']['InactivePedPhases']    = form.signalControllerInactivePedPhases.data
+    data['SignalController']['SplitPhases'] ['1']   = form.signalControllerSplitPhases1.data
+    data['SignalController']['SplitPhases'] ['3']   = form.signalControllerSplitPhases3.data
+    data['SignalController']['SplitPhases'] ['5']   = form.signalControllerSplitPhases5.data
+    data['SignalController']['SplitPhases'] ['7']   = form.signalControllerSplitPhases7.data
+    data['SignalController']['PermissiveEnabled'] ['1']   = form.signalControllerPermissiveEnabled1.data
+    data['SignalController']['PermissiveEnabled'] ['3']   = form.signalControllerPermissiveEnabled3.data
+    data['SignalController']['PermissiveEnabled'] ['5']   = form.signalControllerPermissiveEnabled5.data
+    data['SignalController']['PermissiveEnabled'] ['7']   = form.signalControllerPermissiveEnabled7.data
+
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])
 def configuration():
     import json
 
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
 
     sysConfig = SysConfig(data)    
