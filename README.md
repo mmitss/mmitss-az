@@ -1,3 +1,13 @@
+# MMITSS 
+ The  Multi-Modal  Intelligent  Traffic  Signal  System  (MMITSS)  project  is  part  of  the  Connected Vehicle  Pooled  Fund  Study  (CV  PFS)  entitled  “Program  to  Support  the  Development  and Deployment of Connected Vehicle System Applications.”  The CV PFS was developed by a group of state and local transportation agencies and the Federal Highway Administration (FHWA).  The Virginia Department of Transportation (VDOT) serves as the lead agency and is assisted by the University  of  Virginia’s  Center for Transportation  Studies,  which  serves  as  the  technical  and administrative lead for the PFS.
+
+The  USDOT    identified  six  mobility  application  bundles  under  the  Dynamic  Mobility Applications (DMA) program for the connected vehicle environment where high-fidelity data from vehicles, infrastructure, pedestrians, etc. can be shared through wireless communications. Each bundle contains a set of related applications that are focused on similar outcomes. Since a major focus  of  the  CV  PFS  members –who  are  the  actual  owners  and  operators  of  transportation infrastructure –lies in traffic signal related applications, the CV PFS team is leading the project entitled “Multi-Modal Intelligent Traffic Signal System” in cooperation with US DOT’sDynamic Mobility Applications Program. As one of the six DMA application bundles, MMITSS includes five applications:  Intelligent  Traffic  Signal  Control  (I-SIG),  Transit  Signal  Priority  (TSP),  Mobile Accessible Pedestrian Signal System (PED-SIG), Freight Signal Priority (FSP), and Emergency Vehicle Preemption (PREEMPT).The   MMITSS   prototype   was   developed   based   on   traffic   controllers   using   the   NTCIP communications  protocol  and  new  algorithms  for  providing  priority  control  (emergency  vehicle, transit,  and  truck  priority)  and  intelligent  signal  control  (e.g.  adaptive  control  using  connected vehicle data). 
+
+The current implementation of MMITSS, based on the CV PFS Phase 3 – Deployment Readiness project, has been developed to be deployed on a variety of hardware platforms for both vehicles and at intersections. The Figure below shows the current MMITSS architecture. One of the objectives of the Phase 3 project was for the software to be hardware agnostic so that any vendor’s roadside units (RSU) and onboard  units (OBU) could be interfaced to the processors.
+
+![MMITSS Arch](docs/image/mmitssArchitecture2020.png)
+
+
 # Contributing Guide
 
 Welcome to the MMITSS AZ open source project contributing guide. Please read this guide to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
