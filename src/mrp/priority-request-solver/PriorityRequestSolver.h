@@ -72,7 +72,7 @@ private:
   vector<int> EV_P22;
   vector<int> requestedSignalGroup;
   vector<int> plannedEVPhases;
-
+  vector<int> inactivePhases;
 
 public:
   PriorityRequestSolver();
@@ -93,6 +93,7 @@ public:
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string receivedJsonString);
   void validateTrafficControllerStatus();
+  void validateEVTrafficSignalPlan();
   // void loggingData(string jsonString);
   void loggingSignalPlanData(string jsonString);
   // void loggingPRSData(string jsonString);
