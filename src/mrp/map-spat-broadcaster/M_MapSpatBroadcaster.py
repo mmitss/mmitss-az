@@ -30,13 +30,13 @@ import time
 import json
 import Ntcip1202v2Blob
 import Spat
+import MmitssSpat
 
 def main():
 
     # Read a config file by creating an object of the time MapSpatBroadcasterConfig
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
-
 
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -89,6 +89,10 @@ def main():
     spatObject.setIntersectionID(intersectionID)
     spatObject.setRegionalID(regionalID)
 
+    mmitssSpatObject = MmitssSpat.MmitssSpat()
+    mmitssSpatObject.setIntersectionID(intersectionID)
+    mmitssSpatObject.setRegionalID(regionalID)
+
     msgCnt = 0
     spatMapMsgCount = 0
 
@@ -105,7 +109,8 @@ def main():
             print(data)
             data = json.loads(data)
             if(data["MsgType"]=="ActivePhaseControlSchedule"):
-                print(data["ScheduledActivePhaseControls"]["Holds"])
+                phaseControlSchedule = data
+                mmitssSpatObject.extract_local_phase_control_schedule(phaseControlSchedule)
         except (UnicodeDecodeError, AttributeError):
             spatBlob = data
             if spatBroadcastSuccessFlag == False:
@@ -125,10 +130,17 @@ def main():
                 # Check if TCI is running:
                 tciIsRunning = checkIfProcessRunning("M_TrafficControllerInterface")
                 snmpEngineIsRunning = checkIfProcessRunning("M_SnmpEngine")
+                scheduleIsActive = mmitssSpatObject.isScheduleActive
 
-                spatObject.setmsgCnt(msgCnt)
-                spatObject.fillSpatInformation(currentBlob)
-                spatJsonString = spatObject.Spat2Json()
+                if (tciIsRunning and snmpEngineIsRunning and scheduleIsActive):
+                    currentSpatObject = mmitssSpatObject
+                    mmitssSpatObject.update_current_phases(currentBlob)
+                    currentSpatObject.update_local_phase_control_schedule()
+                else: currentSpatObject = spatObject
+
+                currentSpatObject.setmsgCnt(msgCnt)
+                currentSpatObject.fillSpatInformation(currentBlob)
+                spatJsonString = currentSpatObject.Spat2Json()
                 currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
                 s.sendto(spatJsonString.encode(), msgEncoderAddress)
                 s.sendto(spatJsonString.encode(), dataCollectorAddress)
