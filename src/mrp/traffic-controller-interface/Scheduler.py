@@ -39,6 +39,7 @@ For installation and general help: https://apscheduler.readthedocs.io/en/v1.3.1/
 import json
 import time, datetime
 import atexit
+import socket
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers import interval
 from apscheduler.triggers import date
@@ -79,6 +80,15 @@ class Scheduler:
 
         self.scheduleReceiptTime = 0
 
+        configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+        config = (json.load(configFile))
+
+        # Close the config file:
+        configFile.close()
+
+        self.expectedScheduleExecutionTime = config["SRMTimedOutTime"] + config["ScheduleExecutionBuffer"]
+        
+        self.mapSpatBroadcasterAddress = ((config["HostIp"],config["PortNumber"]["MapSPaTBroadcaster"]))
       
 
     def processReceivedSchedule(self, scheduleJson:json):
@@ -420,6 +430,43 @@ class Scheduler:
         self.backgroundScheduler.remove_all_jobs()
         if rescheduleTimingPlanUpdate==True:
             self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
+
+    def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
+        
+       # Delete the commands with invalid combination of startTime and EndTime
+        schedule =  [command for command in schedule if not (command["commandStartTime"] <= self.expectedScheduleExecutionTime)] 
+        
+        scheduledPhaseControlsJson = {"ScheduledPhaseControls":
+                            {
+                                "Omits": None,
+                                "Holds": None,
+                                "ForceOffs":None
+                            }
+        }
+
+        holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
+        if len(holdCommands) > 0:
+            scheduledHolds = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]]
+            for holdCommand in holdCommands:
+                holdPhase = holdCommand["commandPhase"]
+                scheduledHolds[holdPhase-1][0] = holdCommand["commandStartTime"]*10
+                scheduledHolds[holdPhase-1][1] = holdCommand["commandEndTime"]*10            
+            scheduledPhaseControlsJson["ScheduledPhaseControls"]["Holds"] = scheduledHolds
+        
+        forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
+        if len(forceOffCommands) > 0:        
+            scheduledForceOffs = [-1,-1,-1,-1,-1,-1,-1,-1]
+            for forceOffCommand in forceOffCommands:
+                forceOffPhase = forceOffCommand["commandPhase"]
+                scheduledForceOffs[forceOffPhase-1] = forceOffCommand["commandStartTime"]*10
+
+            scheduledPhaseControlsJson["ScheduledPhaseControls"]["ForceOffs"] = scheduledForceOffs
+
+        scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.sendto(scheduledPhaseControlsJson.encode(), self.mapSpatBroadcasterAddress)
+        s.close()
+
 
 '''##############################################
                    Unit testing
