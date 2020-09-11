@@ -1,4 +1,4 @@
-# MMITSS 
+# Project Description: MMITSS 
  The Multi-Modal Intelligent Traffic Signal System (MMITSS) project is part of the Connected Vehicle Pooled Fund Study (CV PFS) entitled “Program to Support the Development and Deployment of Connected Vehicle System Applications.” The CV PFS was developed by a group of state and local transportation agencies and the Federal Highway Administration (FHWA). The Virginia Department of Transportation (VDOT) serves as the lead agency and is assisted by the University of Virginia’s Center for Transportation Studies, which serves as the technical and administrative lead for the PFS.
 
 The USDOT identified six mobility application bundles under the Dynamic Mobility Applications (DMA) program for the connected vehicle environment where high-fidelity data from vehicles, infrastructure, pedestrians, etc. can be shared through wireless communications. Each bundle contains a set of related applications that are focused on similar outcomes. Since a major focus of the CV PFS members –who are the actual owners and operators of transportation infrastructure –lies in traffic signal related applications, the CV PFS team is leading the project entitled “Multi-Modal Intelligent Traffic Signal System” in cooperation with US DOT’s Dynamic Mobility Applications Program. As one of the six DMA application bundles, MMITSS includes five applications: Intelligent Traffic Signal Control (I-SIG), Transit Signal Priority (TSP), Mobile Accessible Pedestrian Signal System (PED-SIG), Freight Signal Priority (FSP), and Emergency Vehicle Preemption (PREEMPT).The MMITSS prototype was developed based on traffic controllers using the NTCIP communications protocol and new algorithms for providing priority control (emergency vehicle, transit, and truck priority) and intelligent signal control (e.g. adaptive control using connected vehicle data). 
@@ -27,31 +27,40 @@ The VSP components include:
 * *MMITSS Web Interface* that allows a user to check the status, review and clear logs, and start and stop MMITSS components (using supervisorctl) and edit the system configuration parameters (e.g. IP addresses of the host VSP, OBU, ports for socket communications, and other key MMITSS parameters)
 * External to the VSP is a *MMITSS HMI* display and *HMI Controller* that can be executed on a laptop to allow visualization of SPaT data, vehicle data, SSM data, received MAPs, and status of the vehicle being on a MAP and sending an SRM
 
-# Contributing Guide
+# Prerequisites
 
-Welcome to the MMITSS AZ open source project contributing guide. Please read this guide to learn about our development process, how to propose pull requests and improvements, and how to build and test your changes to this project. 
+Requires:
+* Python 3.7
+* C++ (???)
+* Docker ???
+
+# Usage
+
+## Building
+
+Instructions for building MMITSS are in the /docs/mmitss-deployment/mmitss-build-docker-image.docx file 
+
+## Testing
+
+Tests are provided for many of the MMITSS components, but they are not currently automated. Where specific tests are provided, an input generator and output receiver (if used) is provided. For example see /src/mrp/traffic-controller-interface/tests or /src/mrp/priority-request-solver/test. Additional test scripts and automated testing are planned in future sprints.
+
+# Deploying and Executing MMITSS
+
+Instructions for deploying MMITSS are in /docs/mmitss-deployment/mmitss-field-deployment.docx
+
+# MMITSS Simulation Platform
+
+Instructions for setting up MMITSS Simulation using VISSIM are in /docs/mmitss-deloyment/mmitss-simulation-deployment.docx
+
+
+# Additional Notes
+
 
 
 ## Open source license
 
 By contributing to the Multi-Modal Intelligent Traffic Signal Systems (MMITSS) open source project, you agree that your contributions will be licensed under its Apache License 2.0 license.
 
-## Style Guide
-
-[Code Standards]
-
-
-## Miscellaneous Documentation
-
-[MMITSS AZ GitHub page](https://github.com/mmitss/mmitss)
-
-[MMITSS AZ Wiki] TBD
-
-[MMITSS AZ Architecture] TBD
-
-[MMITSS AZ User Guide] TBD
-
-[MMITSS AZ Smoke Tests]	TBD
 
 ## Tools
 
