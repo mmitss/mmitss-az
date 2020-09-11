@@ -28,6 +28,7 @@
 import socket
 import time
 import json
+import psutil
 import Ntcip1202v2Blob
 import Spat
 import MmitssSpat
@@ -142,6 +143,7 @@ def main():
                 currentSpatObject.fillSpatInformation(currentBlob)
                 spatJsonString = currentSpatObject.Spat2Json()
                 currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
+
                 s.sendto(spatJsonString.encode(), msgEncoderAddress)
                 s.sendto(spatJsonString.encode(), dataCollectorAddress)
                 s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)

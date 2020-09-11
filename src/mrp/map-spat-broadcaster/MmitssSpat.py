@@ -1,5 +1,3 @@
-import time
-import os
 import json
 from Spat import Spat
 from Ntcip1202v2Blob import Ntcip1202v2Blob
