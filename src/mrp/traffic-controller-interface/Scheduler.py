@@ -438,9 +438,9 @@ class Scheduler:
        # Delete the commands with invalid combination of startTime and EndTime
         schedule =  [command for command in schedule if not (command["commandStartTime"] > self.expectedScheduleExecutionTime)] 
         
-        scheduledPhaseControlsJson = {"ScheduledPhaseControls":
+        scheduledPhaseControlsJson = {"MsgType":"ActivePhaseControlSchedule",
+                            "ScheduledActivePhaseControls":
                             {
-                                "Omits": None,
                                 "Holds": None,
                                 "ForceOffs":None
                             }
