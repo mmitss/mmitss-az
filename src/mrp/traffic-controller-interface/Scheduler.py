@@ -259,7 +259,9 @@ class Scheduler:
                                                             (command["commandStartTime"] < 0) or
                                                             (command["commandEndTime"] < 0)
                                                         )
-                        ] 
+                        ]
+
+        self.sendScheduledGreenPhaseControlsToMapSpatBroadcaster(scheduleJson) 
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandEndTime"]))
@@ -434,7 +436,7 @@ class Scheduler:
     def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
         
        # Delete the commands with invalid combination of startTime and EndTime
-        schedule =  [command for command in schedule if not (command["commandStartTime"] <= self.expectedScheduleExecutionTime)] 
+        schedule =  [command for command in schedule if not (command["commandStartTime"] > self.expectedScheduleExecutionTime)] 
         
         scheduledPhaseControlsJson = {"ScheduledPhaseControls":
                             {
@@ -480,7 +482,7 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("src/mrp/traffic-controller-interface/test/schedule1.json", "r")
+    scheduleFile = open("test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
 
     scheduler.processReceivedSchedule(scheduleJson)
