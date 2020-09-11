@@ -6,8 +6,8 @@ class MmitssSpat(Spat):
     def __init__(self):
         super().__init__()
         
-        self.UNKNOWN_MIN_END_TIME = 36000
-        self.UNKNOWN_MAX_END_TIME = 36000
+        self.UNKNOWN_MIN_END_TIME = 36001 # Refer SAEJ2735/2016 Page 202 of 267
+        self.UNKNOWN_MAX_END_TIME = 36001 # Refer SAEJ2735/2016 Page 202 of 267
 
         self.isScheduleActive = False
         self.scheduledHolds = None
