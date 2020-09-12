@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# mmitss_docker_make_all_for_arm.sh                                                                     
+# build-x86.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -19,8 +19,8 @@
 #                                                                                           
 # Operational Description:                                                                   
 # This script builds all mmitss applications (vehicle, intersection, and common),
-# under the arm environment. The primary reason for such builds is development and testing.
-# This script can not be used in the x86 architecture based devices.                                                                                                  
+# under the x86 environment. The primary reason for such builds is development and testing.
+# This script can not be used in the ARM architecture based devices.                                                                                                  
 #############################################################################################
 
 # Define colors:
@@ -35,11 +35,11 @@ echo "Building Message Encoder..."
 cd ./../src/common/MsgTransceiver/MsgEncoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_MsgEncoder ../../../../bin/MsgEncoder/arm
+    mv M_MsgEncoder ../../../../bin/MsgEncoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -56,10 +56,10 @@ echo "Building Wireless Message Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/WirelessMsgDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder/arm
+    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -76,10 +76,10 @@ echo "Building Host BSM Decoder..."
 cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/arm
+    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -98,10 +98,10 @@ echo "Building Priority Request Generator..."
 cd ./../src/obu/priority-request-generator
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/arm
+    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -120,10 +120,10 @@ echo "Building Priority Request Server..."
 cd ./../src/mrp/priority-request-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/arm
+    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/x86
     echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -140,10 +140,10 @@ echo "Building Priority Solver..."
 cd ./../src/mrp/priority-request-solver
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestSolver ../../../bin/PriorityRequestSolver/arm
+    mv M_PriorityRequestSolver ../../../bin/PriorityRequestSolver/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -160,10 +160,10 @@ echo "Building Snmp Engine..."
 cd ./../src/mrp/snmp-engine
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_SnmpEngine ../../../bin/SnmpEngine/arm
+    mv M_SnmpEngine ../../../bin/SnmpEngine/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -182,7 +182,7 @@ cd ./../src/mrp/traffic-controller-interface
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_TrafficControllerInterface.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface/arm
+    mv dist/M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -202,7 +202,7 @@ cd ./../src/mrp/map-spat-broadcaster
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MapSpatBroadcaster.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_MapSpatBroadcaster  ../../../bin/MapSpatBroadcaster/arm
+    mv dist/M_MapSpatBroadcaster  ../../../bin/MapSpatBroadcaster/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -216,34 +216,14 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building TrajectoryAware..."
-cd ./../src/mrp/trajectory-aware
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_TrajectoryAware.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/M_TrajectoryAware  ../../../bin/TrajectoryAware/arm
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building Map Engine..."
-cd ./../src/mrp/map-engine
+echo "Building Priority Request Generator Server..."
+cd ./../src/simulation/priority-request-generator-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+make linux &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_MapEngine ../../../bin/MapEngine/arm
+    mv M_PriorityRequestGeneratorServer ../../../bin/PriorityRequestGeneratorServer/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -253,16 +233,16 @@ rm ./*.o &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
 sleep 1s
-######################################################################################
+#######################################################################################
 
 #######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
+echo "Building Message Distributor..."
+cd ./../src/simulation/message-distributor
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_SystemPerformanceDataCollector.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MessageDistributor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_SystemPerformanceDataCollector  ../../../bin/SystemPerformanceDataCollector/arm
+    mv dist/M_MessageDistributor  ../../../bin/MessageDistributor/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -276,13 +256,13 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Light Siren Status Manager..."
-cd ./../src/obu/light-siren-status-manager
+echo "Building System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_LightSirenStatusManager.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_SystemPerformanceDataCollector.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_LightSirenStatusManager  ../../../bin/LightSirenStatusManager/arm
+    mv dist/M_SystemPerformanceDataCollector  ../../../bin/SystemPerformanceDataCollector/x86
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
