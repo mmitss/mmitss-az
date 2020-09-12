@@ -14,6 +14,7 @@ COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
 COPY TrajectoryAware/arm/M_TrajectoryAware /mmitss
 COPY MapEngine/arm/M_MapEngine /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
+COPY ../src/system-interface /mmitss/system-interface
 
 COPY supervisord-mrp.conf /mmitss/supervisord.conf
 CMD ["/usr/bin/supervisord"]

@@ -10,6 +10,7 @@ COPY HostBsmDecoder/arm/M_HostBsmDecoder /mmitss
 COPY PriorityRequestGenerator/arm/M_PriorityRequestGenerator /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
 COPY LightSirenStatusManager/arm/M_LightSirenStatusManager /mmitss
+COPY ../src/system-interface /mmitss/system-interface
 
 COPY supervisord-vsp.conf /mmitss/supervisord.conf
 CMD ["/usr/bin/supervisord"]

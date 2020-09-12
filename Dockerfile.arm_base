@@ -40,6 +40,8 @@ RUN mkdir /mmitss
 
 RUN mkdir -p /mmitss/map
 
+RUN mkdir -p /mmitss/system-interface
+
 WORKDIR /mmitss
 
 # Environment variables
