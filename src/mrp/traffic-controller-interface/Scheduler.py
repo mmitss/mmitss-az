@@ -377,7 +377,8 @@ class Scheduler:
         trigger = interval.IntervalTrigger(seconds=update_interval)
         self.backgroundScheduler.add_job(self.signalController.updateAndSendActiveTimingPlan,
                     trigger = trigger,
-                    id = str(self.commandId))
+                    id = str(self.commandId),
+                    max_instances=10)
         return self.commandId
 
     def stopBackgroundScheduler(self):
