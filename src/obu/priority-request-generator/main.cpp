@@ -38,14 +38,17 @@ int main()
 
     //Socket Communication
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    const string HostIP = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
-    char receiveBuffer[5120];
+    // const int LightSirenStatusManagerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["LightSirenStatusManager"].asInt());
+
+    char receiveBuffer[40960];
     std::string srmJsonString{};
     std::string prgStatusJsonString{};
+    int msgType{};
     PRG.getLoggingStatus();
     PRG.setVehicleType();
 
@@ -54,36 +57,35 @@ int main()
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
         std::string receivedJsonString(receiveBuffer);
+        msgType = PRG.getMessageType(receivedJsonString);
 
-        if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_bsm)
+        if (msgType == static_cast<int>(msgType::lightSirenStatus))
+            PRG.setLightSirenStatus(receivedJsonString);
+
+        else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
             if (PRG.shouldSendOutRequest(basicVehicle) == true)
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                priorityRequestGeneratorSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
-                // std::cout << "SRM is sent" << std::endl;
+                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
             }
             mapManager.updateMapAge();
             mapManager.deleteMap();
-            PRG.changeMapStatusInAvailableMapList(mapManager);
-
+            PRG.manageMapStatusInAvailableMapList(mapManager);
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
-            // std::cout << prgStatusJsonString << std::endl;
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
-            //std::cout << "Message sent to HMI Conrtoller" << std::endl;
         }
 
-        else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_map)
+        else if (msgType == MsgEnum::DSRCmsgID_map)
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
-            //std::cout << "Map is received" << std::endl;
         }
 
-        else if (PRG.getMessageType(receivedJsonString) == MsgEnum::DSRCmsgID_ssm)
+        else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);

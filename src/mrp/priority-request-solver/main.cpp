@@ -34,8 +34,8 @@ int main()
     UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    char receiveBuffer[10240];
-    char receivedSignalStatusBuffer[10240];
+    char receiveBuffer[40960];
+    char receivedSignalStatusBuffer[40960];
     int msgType{};
     string tciJsonString{};
 

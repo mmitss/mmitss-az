@@ -92,7 +92,7 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
     }
     findVehicleIDInList->mapManager.updateMapAge();
     findVehicleIDInList->mapManager.deleteMap();
-    findVehicleIDInList->PRG.changeMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
+    findVehicleIDInList->PRG.manageMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
     // prgStatusSendingJsonString = findVehicleIDInList->prgStatus.priorityRequestGeneratorStatus2Json(findVehicleIDInList->PRG, basicVehicle);
 }
 
