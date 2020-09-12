@@ -234,7 +234,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
         else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
             requestedEV_P22.push_back(requestedSignalGroup[i]);
     }
-
+    //If a freight vehicle is trapped in the dilemma zone, then remove the split phase priority request from the list.
     if (!dilemmaZoneRequestList.empty())
     {
         for (size_t i = 0; i < requestedSignalGroup.size(); i++)
@@ -749,6 +749,50 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
         else if (trafficSignalPlan_EV[i].phaseNumber > 6 && trafficSignalPlan_EV[i].phaseRing == 2)
             EV_P22.push_back(trafficSignalPlan_EV[i].phaseNumber);
     }
+
+    validateEVTrafficSignalPlan();
+}
+
+/*
+    - The following method will fill the missing data in EVTrafficSignalPlan.
+    - For example if phase 5 data is missing then fill up the information with phase 2 data
+*/
+void PriorityRequestSolver::validateEVTrafficSignalPlan()
+{
+    int temporarySignalGroup{};
+    int associatedSignalGroup{};
+    for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
+    {
+        temporarySignalGroup = trafficSignalPlan_EV[i].phaseNumber;
+        if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
+            associatedSignalGroup = temporarySignalGroup + 4;
+        
+        else if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
+            associatedSignalGroup = temporarySignalGroup - 4;
+
+        else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
+            associatedSignalGroup = temporarySignalGroup + 5;
+        
+        else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
+            associatedSignalGroup = temporarySignalGroup - 3;
+
+        else
+            continue;
+        
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findAssociatedSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
+                                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == associatedSignalGroup; });
+
+        if (findAssociatedSignalGroupOnList != trafficSignalPlan_EV.end())
+        {
+            trafficSignalPlan_EV[i].pedWalk = findAssociatedSignalGroupOnList->pedWalk;
+            trafficSignalPlan_EV[i].pedClear = findAssociatedSignalGroupOnList->pedClear;
+            trafficSignalPlan_EV[i].minGreen = findAssociatedSignalGroupOnList->minGreen;
+            trafficSignalPlan_EV[i].passage = findAssociatedSignalGroupOnList->passage;
+            trafficSignalPlan_EV[i].maxGreen = findAssociatedSignalGroupOnList->maxGreen;
+            trafficSignalPlan_EV[i].yellowChange = findAssociatedSignalGroupOnList->yellowChange;
+            trafficSignalPlan_EV[i].redClear = findAssociatedSignalGroupOnList->redClear;
+        }
+    }
 }
 
 /*
@@ -969,7 +1013,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 
     for (int i = 0; i < noOfPhase; i++)
     {
-        Passage.push_back(((jsonObject["TimingPlan"]["Passage"][i]).asDouble()) / 10.0);
+        Passage.push_back(((jsonObject["TimingPlan"]["Passage"][i]).asDouble()));
     }
 
     for (int i = 0; i < noOfPhase; i++)
@@ -1035,27 +1079,27 @@ void PriorityRequestSolver::printSignalPlan()
         cout << trafficSignalPlan[i].phaseNumber << " " << trafficSignalPlan[i].phaseRing << " " << trafficSignalPlan[i].minGreen << endl;
     }
 }
-
+/*
+    - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
+    - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
+*/
 void PriorityRequestSolver::modifySignalTimingPlan()
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
-    vector<TrafficControllerData::TrafficSignalPlan> temporaryTrafficSignalPlan;
-
-    temporaryTrafficSignalPlan.insert(temporaryTrafficSignalPlan.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
-
+    
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
         temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
 
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(temporaryTrafficSignalPlan), std::end(temporaryTrafficSignalPlan),
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
         if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < 5)
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;
-            if (temporarySignalGroup > 5)
+            else if (temporarySignalGroup > 4)
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
@@ -1070,28 +1114,9 @@ void PriorityRequestSolver::modifySignalTimingPlan()
             findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
         }
 
-        else if ((temporarySignalGroup % 2 != 0) && (trafficSignalPlan[i].minGreen == 0))
-        {
-            //temporaryTrafficSignalPlan.erase(findSignalGroupOnList);
-            if (temporarySignalGroup < 5)
-                temporaryCompitableSignalGroup = temporarySignalGroup + 5;
-            if (temporarySignalGroup > 5)
-                temporaryCompitableSignalGroup = temporarySignalGroup - 3;
-
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
-
-            findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
-            findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
-            findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
-            findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
-            findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
-            findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
-            findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
-        }
+        else 
+            continue;
     }
-    trafficSignalPlan.clear();
-    trafficSignalPlan.insert(trafficSignalPlan.end(), temporaryTrafficSignalPlan.begin(), temporaryTrafficSignalPlan.end());
 }
 
 /*
@@ -1099,6 +1124,7 @@ void PriorityRequestSolver::modifySignalTimingPlan()
 */
 void PriorityRequestSolver::generateModFile()
 {
+    // modifySignalTimingPlan();
     ofstream FileMod;
     FileMod.open("/nojournal/bin/NewModel.mod", ios::out);
     // =================Defining the sets ======================
@@ -1294,7 +1320,7 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1)), Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
     FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
