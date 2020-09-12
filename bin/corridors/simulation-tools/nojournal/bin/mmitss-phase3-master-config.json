@@ -80,7 +80,7 @@
 	"SignalController": {
 		"IpAddress": "10.12.6.107",
 		"NtcipPort": 501,
-		"TimingPlanUpdateInterval_sec": 60,
+		"TimingPlanUpdateInterval_sec": 600,
 		"NtcipBackupTime_sec": 300,
 		"Vendor": "Econolite",
 		"TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
