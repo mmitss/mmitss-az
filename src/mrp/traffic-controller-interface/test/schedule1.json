@@ -2,27 +2,27 @@
 	"MsgType": "Schedule",
 	"Schedule": [
 		{
-			"commandEndTime": 10.0,
-			"commandPhase": 4,
+			"commandEndTime": 6.0,
+			"commandPhase": 2,
 			"commandStartTime": 0.0,
 			"commandType": "hold"
 		},
 		{
-			"commandEndTime": 10.0,
-			"commandPhase": 8,
+			"commandEndTime": 6.0,
+			"commandPhase": 6,
 			"commandStartTime": 0.0,
 			"commandType": "hold"
 		},
 		{
-			"commandEndTime": 15.0,
-			"commandPhase": 5,
-			"commandStartTime": 5.0,
+			"commandEndTime": 9.1,
+			"commandPhase": 2,
+			"commandStartTime": 9.0,
 			"commandType": "forceoff"
 		},
 		{
-			"commandEndTime": 15.0,
+			"commandEndTime": 9.1,
 			"commandPhase": 6,
-			"commandStartTime": 5.0,
+			"commandStartTime": 9.0,
 			"commandType": "forceoff"
 		}
 

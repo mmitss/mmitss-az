@@ -448,12 +448,11 @@ class Scheduler:
 
         holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
         if len(holdCommands) > 0:
-            scheduledHolds = [[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1],[-1,-1]]
+            scheduledHolds = [-1,-1,-1,-1,-1,-1,-1,-1]
             for holdCommand in holdCommands:
                 holdPhase = holdCommand["commandPhase"]
-                scheduledHolds[holdPhase-1][0] = holdCommand["commandStartTime"]*10
-                scheduledHolds[holdPhase-1][1] = holdCommand["commandEndTime"]*10            
-            scheduledPhaseControlsJson["ScheduledPhaseControls"]["Holds"] = scheduledHolds
+                scheduledHolds[holdPhase-1] = holdCommand["commandEndTime"]*10            
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Holds"] = scheduledHolds
         
         forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
         if len(forceOffCommands) > 0:        
@@ -462,7 +461,7 @@ class Scheduler:
                 forceOffPhase = forceOffCommand["commandPhase"]
                 scheduledForceOffs[forceOffPhase-1] = forceOffCommand["commandStartTime"]*10
 
-            scheduledPhaseControlsJson["ScheduledPhaseControls"]["ForceOffs"] = scheduledForceOffs
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["ForceOffs"] = scheduledForceOffs
 
         scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
