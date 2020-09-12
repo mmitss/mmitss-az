@@ -30,9 +30,10 @@ The VSP components include:
 # Prerequisites
 
 Requires:
-* Python 3.7
-* C++ (???)
-* Docker ???
+* Ubuntu 18.04
+* Docker
+
+Other system requirements are defined in /docs/mmitss-deployment/mmitss-build-docker-image.docx
 
 # Usage
 
