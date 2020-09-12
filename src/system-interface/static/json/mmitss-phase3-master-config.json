@@ -11,9 +11,9 @@
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
 	"VehicleType": "Transit",
 	"Logging": "False",
-	"SRMTimedOutTime": "10.0",
-	"ScheduleExecutionBuffer": "1.0",
-	"SystemPerformanceTimeInterval": "300.0",
+	"SRMTimedOutTime": 10.0,
+	"ScheduleExecutionBuffer": 1.0,
+	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
 	"PortNumber": {
 		"MessageTransceiver": {
@@ -107,8 +107,8 @@
 		}
 	},
 	"IntersectionReferencePoint": {
-		"Latitude_DecimalDegree": "33.84293808964164",
-		"Longitude_DecimalDegree": "-112.1351945016523",
-		"Elevation_Meter": 506
+		"Latitude_DecimalDegree": 33.84293808964164,
+		"Longitude_DecimalDegree": -112.1351945016525,
+		"Elevation_Meter": 508.0
 	}
 }

@@ -254,9 +254,9 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
-    data['SRMTimedOutTime']= form.srmTimedOutTime.data
-    data['ScheduleExecutionBuffer']= form.scheduleExecutionBuffer.data
-    data['SystemPerformanceTimeInterval']= form.systemPerformanceTimeInterval.data
+    data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
+    data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
+    data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
     data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
@@ -331,9 +331,9 @@ def prepareJSONData(data, form):
     data['SignalController']['PermissiveEnabled'] ['3']   = form.signalControllerPermissiveEnabled3.data
     data['SignalController']['PermissiveEnabled'] ['5']   = form.signalControllerPermissiveEnabled5.data
     data['SignalController']['PermissiveEnabled'] ['7']   = form.signalControllerPermissiveEnabled7.data
-    data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = form.intersectionReferencePointLatitudeDecimalDegree.data
-    data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = form.intersectionReferencePointLongitudeDecimalDegree.data
-    data['IntersectionReferencePoint']['Elevation_Meter']           = form.intersectionReferencePointElevationMeter.data
+    data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
+    data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
+    data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
 
 
 # configuration viewer / editor
