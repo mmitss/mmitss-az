@@ -39,6 +39,7 @@ For installation and general help: https://apscheduler.readthedocs.io/en/v1.3.1/
 import json
 import time, datetime
 import atexit
+import socket
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers import interval
 from apscheduler.triggers import date
@@ -79,6 +80,15 @@ class Scheduler:
 
         self.scheduleReceiptTime = 0
 
+        configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+        config = (json.load(configFile))
+
+        # Close the config file:
+        configFile.close()
+
+        self.expectedScheduleExecutionTime = config["SRMTimedOutTime"] + config["ScheduleExecutionBuffer"]
+        
+        self.mapSpatBroadcasterAddress = ((config["HostIp"],config["PortNumber"]["MapSPaTBroadcaster"]))
       
 
     def processReceivedSchedule(self, scheduleJson:json):
@@ -249,7 +259,9 @@ class Scheduler:
                                                             (command["commandStartTime"] < 0) or
                                                             (command["commandEndTime"] < 0)
                                                         )
-                        ] 
+                        ]
+
+        self.sendScheduledGreenPhaseControlsToMapSpatBroadcaster(scheduleJson) 
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandEndTime"]))
@@ -365,7 +377,8 @@ class Scheduler:
         trigger = interval.IntervalTrigger(seconds=update_interval)
         self.backgroundScheduler.add_job(self.signalController.updateAndSendActiveTimingPlan,
                     trigger = trigger,
-                    id = str(self.commandId))
+                    id = str(self.commandId),
+                    max_instances=10)
         return self.commandId
 
     def stopBackgroundScheduler(self):
@@ -421,6 +434,42 @@ class Scheduler:
         if rescheduleTimingPlanUpdate==True:
             self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
 
+    def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
+        
+       # Delete the commands with invalid combination of startTime and EndTime
+        schedule =  [command for command in schedule if not (command["commandStartTime"] > self.expectedScheduleExecutionTime)] 
+        
+        scheduledPhaseControlsJson = {"MsgType":"ActivePhaseControlSchedule",
+                            "ScheduledActivePhaseControls":
+                            {
+                                "Holds": None,
+                                "ForceOffs":None
+                            }
+        }
+
+        holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
+        if len(holdCommands) > 0:
+            scheduledHolds = [-1,-1,-1,-1,-1,-1,-1,-1]
+            for holdCommand in holdCommands:
+                holdPhase = holdCommand["commandPhase"]
+                scheduledHolds[holdPhase-1] = holdCommand["commandEndTime"]*10            
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Holds"] = scheduledHolds
+        
+        forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
+        if len(forceOffCommands) > 0:        
+            scheduledForceOffs = [-1,-1,-1,-1,-1,-1,-1,-1]
+            for forceOffCommand in forceOffCommands:
+                forceOffPhase = forceOffCommand["commandPhase"]
+                scheduledForceOffs[forceOffPhase-1] = forceOffCommand["commandStartTime"]*10
+
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["ForceOffs"] = scheduledForceOffs
+
+        scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.sendto(scheduledPhaseControlsJson.encode(), self.mapSpatBroadcasterAddress)
+        s.close()
+
+
 '''##############################################
                    Unit testing
 ##############################################'''
@@ -433,7 +482,7 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("src/mrp/traffic-controller-interface/test/schedule1.json", "r")
+    scheduleFile = open("test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
 
     scheduler.processReceivedSchedule(scheduleJson)

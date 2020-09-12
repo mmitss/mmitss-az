@@ -28,15 +28,16 @@
 import socket
 import time
 import json
+import psutil
 import Ntcip1202v2Blob
 import Spat
+import MmitssSpat
 
 def main():
 
     # Read a config file by creating an object of the time MapSpatBroadcasterConfig
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
-
 
     # Establish a socket and bind it to IP and port
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -89,6 +90,10 @@ def main():
     spatObject.setIntersectionID(intersectionID)
     spatObject.setRegionalID(regionalID)
 
+    mmitssSpatObject = MmitssSpat.MmitssSpat()
+    mmitssSpatObject.setIntersectionID(intersectionID)
+    mmitssSpatObject.setRegionalID(regionalID)
+
     msgCnt = 0
     spatMapMsgCount = 0
 
@@ -97,12 +102,22 @@ def main():
     spatBroadcastSuccessFlag = False
 
     while True:
-        spatBlob, addr = s.recvfrom(1024)
-        if spatBroadcastSuccessFlag == False:
-            print("\nStarted receiving packets from the Signal Controller. SPAT Broadcast Set Successfully!")
-            spatBroadcastSuccessFlag = True
-        # Send spat blob to external clients:       
-        if addr[0] == controllerIp:
+        data, addr = s.recvfrom(1024)
+        # If the data is received from the signal controller:
+
+        if addr[0] == mrpIp:
+            internalMsg = data.decode()
+            internalMsg = json.loads(internalMsg)
+            if(internalMsg["MsgType"]=="ActivePhaseControlSchedule"):
+                phaseControlSchedule = internalMsg
+                mmitssSpatObject.extract_local_phase_control_schedule(phaseControlSchedule)
+
+        elif addr[0] == controllerIp:
+            spatBlob = data
+            if spatBroadcastSuccessFlag == False:
+                print("\nStarted receiving packets from the Signal Controller. SPAT Broadcast Set Successfully!")
+                spatBroadcastSuccessFlag = True
+            # Send spat blob to external clients:       
             for client in clients_spatBlob:
                 address = (client["IP"], client["Port"])
                 s.sendto(spatBlob, address)
@@ -111,10 +126,27 @@ def main():
             if(msgCnt < 127):
                 msgCnt = msgCnt + 1
             else: msgCnt = 0
-            spatObject.setmsgCnt(msgCnt)
-            spatObject.fillSpatInformation(currentBlob)
-            spatJsonString = spatObject.Spat2Json()
+
+            # Check if TCI is running:
+            tciIsRunning = checkIfProcessRunning("M_TrafficControllerInterface")
+            snmpEngineIsRunning = checkIfProcessRunning("M_SnmpEngine")
+            scheduleIsActive = mmitssSpatObject.isScheduleActive
+
+            if (tciIsRunning and snmpEngineIsRunning and scheduleIsActive):
+                currentSpatObject = mmitssSpatObject
+                currentSpatObject.update_current_phase_status(currentBlob)
+                currentSpatObject.update_local_phase_control_schedule()
+            else: currentSpatObject = spatObject
+
+            currentSpatObject.setmsgCnt(msgCnt)
+            currentSpatObject.fillSpatInformation(currentBlob)
+            
+            print(currentSpatObject.vehMinEndTimeList)
+            print(currentSpatObject.vehMaxEndTimeList)
+            print("\n")
+            spatJsonString = currentSpatObject.Spat2Json()
             currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
+
             s.sendto(spatJsonString.encode(), msgEncoderAddress)
             s.sendto(spatJsonString.encode(), dataCollectorAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
@@ -130,6 +162,20 @@ def main():
                 s.sendto(mapJson.encode(), msgDistributorAddress)
                 print("MapSpatBroadcaster Sent Map")
                 spatMapMsgCount = 0
+        
+def checkIfProcessRunning(processName):
+    '''
+    Check if there is any running process that contains the given name processName.
+    '''
+    #Iterate over the all the running process
+    for proc in psutil.process_iter():
+        try:
+            # Check if process name contains the given name string.
+            if processName.lower() in proc.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
                 
 
 if __name__ == "__main__":

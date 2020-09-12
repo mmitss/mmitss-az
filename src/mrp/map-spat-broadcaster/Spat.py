@@ -41,6 +41,8 @@ class Spat:
         self.minuteOfYear = 0
         self.msOfMinute = 0
         self.intersectionStatus = ''
+        self.vehMinEndTimeList = 0
+        self.vehMaxEndTimeList = 0
 
     def setRegionalID(self, regionalID:int):
         self.regionalID = regionalID
@@ -51,28 +53,84 @@ class Spat:
     def setmsgCnt(self, msgCnt:int):
         self.msgCnt = msgCnt
 
-    def fillSpatInformation(self, ntcip1202v2Blob:Ntcip1202v2Blob):
-        self.minuteOfYear = ntcip1202v2Blob.getMinuteOfYear()
-        self.msOfMinute = ntcip1202v2Blob.getMsOfMinute()
-        self.intersectionStatus = ntcip1202v2Blob.getIntersectionStatus()
+    def fillSpatInformation(self, spatBlob:Ntcip1202v2Blob):
+        self.minuteOfYear = spatBlob.getMinuteOfYear()
+        self.msOfMinute = spatBlob.getMsOfMinute()
+        self.intersectionStatus = spatBlob.getIntersectionStatus()
+        
+        vehCurrStateList = self.getVehCurrStateList(spatBlob)
+        vehStartTimeList = self.getVehStartTimeList(spatBlob)
+        vehMinEndTimeList = self.getVehMinEndTimeList(spatBlob)
+        vehMaxEndTimeList = self.getVehMaxEndTimeList(spatBlob)
+        vehElapsedTimeList = self.getVehElapsedTimeList(spatBlob)
+
+        pedCurrStateList = self.getPedCurrStateList(spatBlob)
+        pedStartTimeList = self.getPedStartTimeList(spatBlob)
+        pedMinEndTimeList = self.getPedMinEndTimeList(spatBlob)
+        pedMaxEndTimeList = self.getPedMaxEndTimeList(spatBlob)
+        pedElapsedTimeList = self.getPedElapsedTimeList(spatBlob)
+        
         for i in range(8):
             tempPhase = Phase()
             tempPhase.phaseNo = i+1
-            tempPhase.currState = ntcip1202v2Blob.getVehCurrState()[i]
-            tempPhase.startTime = ntcip1202v2Blob.getVehStartTime()[i]
-            tempPhase.minEndTime = ntcip1202v2Blob.getVehMinEndTime()[i]
-            tempPhase.maxEndTime = ntcip1202v2Blob.getVehMaxEndTime()[i]
-            tempPhase.elapsedTime = ntcip1202v2Blob.getVehElapsedTime()[i]
+            tempPhase.currState = vehCurrStateList[i]
+            tempPhase.startTime = vehStartTimeList[i]
+            tempPhase.minEndTime = vehMinEndTimeList[i]
+            tempPhase.maxEndTime = vehMaxEndTimeList[i]
+            tempPhase.elapsedTime = vehElapsedTimeList[i]
             self.vehPhases[i] = tempPhase
             
             tempPhase = Phase()
             tempPhase.phaseNo = i+1
-            tempPhase.currState = ntcip1202v2Blob.getPedCurrState()[i]
-            tempPhase.startTime = ntcip1202v2Blob.getPedStartTime()[i]
-            tempPhase.minEndTime = ntcip1202v2Blob.getPedMinEndTime()[i]
-            tempPhase.maxEndTime = ntcip1202v2Blob.getPedMaxEndTime()[i]
-            tempPhase.elapsedTime = ntcip1202v2Blob.getPedElapsedTime()[i]
+            tempPhase.currState = pedCurrStateList[i]
+            tempPhase.startTime = pedStartTimeList[i]
+            tempPhase.minEndTime = pedMinEndTimeList[i]
+            tempPhase.maxEndTime = pedMaxEndTimeList[i]
+            tempPhase.elapsedTime = pedElapsedTimeList[i]
             self.pedPhases[i] = tempPhase
+
+    def getVehCurrStateList(self, spatBlob:Ntcip1202v2Blob):
+        vehCurrStateList = spatBlob.getVehCurrState()
+        return vehCurrStateList
+
+    def getVehStartTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehStartTimeList = spatBlob.getVehStartTime()
+        return vehStartTimeList
+
+    def getVehMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehMinEndTimeList = spatBlob.getVehMinEndTime()
+        self.vehMinEndTimeList = vehMinEndTimeList
+        return vehMinEndTimeList
+
+    def getVehMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehMaxEndTimeList = spatBlob.getVehMaxEndTime()
+        self.vehMaxEndTimeList = vehMaxEndTimeList
+        return vehMaxEndTimeList
+
+    def getVehElapsedTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehElapsedTimeList = spatBlob.getVehElapsedTime()
+        return vehElapsedTimeList
+
+    def getPedCurrStateList(self, spatBlob:Ntcip1202v2Blob):
+        pedCurrStateList = spatBlob.getPedCurrState()
+        return pedCurrStateList
+
+    def getPedStartTimeList(self, spatBlob:Ntcip1202v2Blob):
+        pedStartTimeList = spatBlob.getPedStartTime()
+        return pedStartTimeList
+
+    def getPedMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        pedMinEndTimeList = spatBlob.getPedMinEndTime()
+        return pedMinEndTimeList
+
+    def getPedMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        pedMaxEndTimeList = spatBlob.getPedMaxEndTime()
+        return pedMaxEndTimeList
+
+    def getPedElapsedTimeList(self, spatBlob:Ntcip1202v2Blob):
+        pedElapsedTimeList = spatBlob.getPedElapsedTime()
+        return pedElapsedTimeList
+
 
     def Spat2Json(self):
         for i in range(8):
