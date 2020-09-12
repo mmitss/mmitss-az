@@ -20,7 +20,7 @@ This is a web-based Python Flask application that has the following functionalit
 
 from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators
+from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 
@@ -53,51 +53,51 @@ def local_console():
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
     hostIp = StringField(validators=[ip_address()])
-    sourceDsrcDeviceIp = StringField(validators=[ip_address()])
-    intersectionName = StringField()
-    intersectionID = StringField()
-    regionalID = StringField([validators.Length(min=2, max=5)])
-    dataCollectorIP = StringField()
-    hmiControllerIP = StringField()
-    messageDistributorIP = StringField()
+    sourceDsrcDeviceIp      = StringField(validators=[ip_address()])
+    intersectionName        = StringField()
+    intersectionID          = IntegerField()
+    regionalID              = IntegerField()
+    dataCollectorIP         = StringField()
+    hmiControllerIP         = StringField()
+    messageDistributorIP    = StringField()
     priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
-    vehicleType = StringField('Vehicle Type')
-    logging = StringField('Logging')
-    srmTimedOutTime = StringField('SRM Timed Out Time')
-    scheduleExecutionBuffer = StringField('Schedule Execution Buffer')
-    systemPerformanceTimeInterval = StringField('System Performance Time Interval')
-    applicationPlatform = StringField('Application Platform')
-    portNumberMTMessageSender = StringField('Port Number: Message Transceiver / Message Sender')
-    portNumberMTMessageReceiver = StringField('Port Number: Message Transceiver / Message Receiver')
-    portNumberMTMessageEncoder = StringField('Port Number: Message Transceiver / Message Encoder')
-    portNumberMTMessageDecoder = StringField('Port Number: Message Transceiver / Message Decoder')
-    portNumberMessageDistributor = StringField('Port Number: Message Distributor')
-    portNumberRSMDecoder        = StringField('Port Number: RSM Decoder')
-    portNumberOBUBSMReceiver = StringField('Port Number: OBU BSM Receiver')
-    portNumberHostBsmDecoder = StringField('Port Number: Host BSM Decoder')
-    portNumberTrajectoryAware = StringField('Port Number: Trajectory Aware')
-    portNumberPriorityRequestServer = StringField('Port Number: Priority Request Server')
-    portNumberPrioritySolver = StringField('Port Number: Priority Solver')
-    portNumberPriorityRequestGenerator = StringField('Port Number: Priority Request Generator')
-    portNumberTrafficControllerInterface = StringField('Port Number: Traffic Controller Interface')
-    portNumberTrafficControllerCurrPhaseListener = StringField('Port Number: Traffic Controller Current Phase Listener')
-    portNumberTrafficControllerTimingPlanSender = StringField('Port Number: Traffic Controller Timing Plan Sender')
-    portNumberPerformanceObserver = StringField('Port Number: Performance Observer')
-    portNumberHMIController = StringField('Port Number: HMI Controller')
-    portNumberPrioritySolverToTCIInterface = StringField('Port Number: Priority Solver To TCI Interface')
-    portNumberSignalCoordination = StringField('Port Number: Signal Coordination')
-    portNumberMapSPaTBroadcaster = StringField('Port Number: Map SPaT Broadcaster')
-    portNumberDsrcImmediateForwarder = StringField('Port Number: DSRC Immediate Forwarder')
-    portNumberPriorityRequestServer_SendSSM = StringField('Port Number: PriorityRequestServer_SendSSM')
-    portNumberDataCollector = StringField('Port Number: Data Collector')
-    portNumberSnmpEngine = StringField('Port Number: SNMP Engine')
-    portNumberSnmpEngineInterface = StringField('Port Number: SNMP Engine Interface')
-    portNumberPriorityRequestGeneratorServer = StringField('Port Number: Priority Request Generator Server')
-    portNumberTrajectoryAware_MapEngineInterface = StringField('Port Number: Trajectory Aware Map Engine Interface')
-    portNumberMapEngine = StringField('Port Number: Map Engine')
-    portNumberPriorityLightSirenStatusManager = StringField('Port Number: Light Siren Status Manager')
-    portNumberPeerToPeerPriority = StringField('Port Number: Peer To Peer Priority')
-    portNumberSystemPerformanceDataCollector = StringField('Port Number: System Performance Data Collector')
+    vehicleType                     = StringField('Vehicle Type')
+    logging                         = StringField('Logging')
+    srmTimedOutTime                 = StringField('SRM Timed Out Time')
+    scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
+    systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
+    applicationPlatform             = StringField('Application Platform')
+    portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
+    portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
+    portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
+    portNumberMTMessageDecoder      = IntegerField('Port Number: Message Transceiver / Message Decoder')
+    portNumberMessageDistributor    = IntegerField('Port Number: Message Distributor')
+    portNumberRSMDecoder            = IntegerField('Port Number: RSM Decoder')
+    portNumberOBUBSMReceiver        = IntegerField('Port Number: OBU BSM Receiver')
+    portNumberHostBsmDecoder        = IntegerField('Port Number: Host BSM Decoder')
+    portNumberTrajectoryAware       = IntegerField('Port Number: Trajectory Aware')
+    portNumberPriorityRequestServer = IntegerField('Port Number: Priority Request Server')
+    portNumberPrioritySolver        = IntegerField('Port Number: Priority Solver')
+    portNumberPriorityRequestGenerator              = IntegerField('Port Number: Priority Request Generator')
+    portNumberTrafficControllerInterface            = IntegerField('Port Number: Traffic Controller Interface')
+    portNumberTrafficControllerCurrPhaseListener    = IntegerField('Port Number: Traffic Controller Current Phase Listener')
+    portNumberTrafficControllerTimingPlanSender     = IntegerField('Port Number: Traffic Controller Timing Plan Sender')
+    portNumberPerformanceObserver                   = IntegerField('Port Number: Performance Observer')
+    portNumberHMIController                         = IntegerField('Port Number: HMI Controller')
+    portNumberPrioritySolverToTCIInterface          = IntegerField('Port Number: Priority Solver To TCI Interface')
+    portNumberSignalCoordination                    = IntegerField('Port Number: Signal Coordination')
+    portNumberMapSPaTBroadcaster                    = IntegerField('Port Number: Map SPaT Broadcaster')
+    portNumberDsrcImmediateForwarder                = IntegerField('Port Number: DSRC Immediate Forwarder')
+    portNumberPriorityRequestServer_SendSSM         = IntegerField('Port Number: PriorityRequestServer_SendSSM')
+    portNumberDataCollector                         = IntegerField('Port Number: Data Collector')
+    portNumberSnmpEngine                            = IntegerField('Port Number: SNMP Engine')
+    portNumberSnmpEngineInterface                   = IntegerField('Port Number: SNMP Engine Interface')
+    portNumberPriorityRequestGeneratorServer        = IntegerField('Port Number: Priority Request Generator Server')
+    portNumberTrajectoryAware_MapEngineInterface    = IntegerField('Port Number: Trajectory Aware Map Engine Interface')
+    portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
+    portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
+    portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
+    portNumberSystemPerformanceDataCollector        = IntegerField('Port Number: System Performance Data Collector')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -112,37 +112,37 @@ class ConfigurationForm(FlaskForm):
     msgIdSSMLower = StringField('Msg ID: SSM Lower')
     msgIdSSMUpper = StringField('Msg ID: SSM Upper')
     msgIdBSM = StringField('Msg ID: BSM')
-    txChannelMap = StringField('Tx Channel: Map')
-    txChannelSPaT = StringField('Tx Channel: SPaT')    
-    txChannelRSM = StringField('Tx Channel: RSM')    
-    txChannelSRM = StringField('Tx Channel: SRM')    
-    txChannelSSM = StringField('Tx Channel: SSM')    
-    txChannelBSM = StringField('Tx Channel: BSM')
-    txModeMap = StringField('Tx Mode: Map')
-    txModeSPaT = StringField('Tx Mode: SPaT')    
-    txModeRSM = StringField('Tx Mode: RSM')    
-    txModeSRM = StringField('Tx Mode: SRM')    
-    txModeSSM = StringField('Tx Mode: SSM')    
-    txModeBSM = StringField('Tx Mode: BSM')
-    signalControllerIP = StringField('Signal Controller IP Address')
-    signalControllerNTCIPPort = StringField('Signal Controller NTCIP Address')
-    signalControllerUpdateInterval = StringField('Signal Controller Timing Plan Update Interval')
-    signalControllerNtcipBackupTime_sec = StringField('Signal Controller NTCIP Backup Time')
-    signalControllerVendor = StringField('Signal Controller Vendor')
-    signalControllerTimingPlanMib = StringField('Signal Controller Timing Plan MIB')
-    signalControllerInactiveVehPhases = StringField('Signal Controller Inactive Vehicle Phases')
-    signalControllerInactivePedPhases = StringField('Signal Controller Inactive Pedestrian Phases')
-    signalControllerSplitPhases1 = StringField('Signal Controller Split Phases 1')
-    signalControllerSplitPhases3 = StringField('Signal Controller Split Phases 3')
-    signalControllerSplitPhases5 = StringField('Signal Controller Split Phases 5')
-    signalControllerSplitPhases7 = StringField('Signal Controller Split Phases 7')
-    signalControllerPermissiveEnabled1 = StringField('Signal Controller Permissive Enabled 1')
-    signalControllerPermissiveEnabled3 = StringField('Signal Controller Permissive Enabled 3')
-    signalControllerPermissiveEnabled5 = StringField('Signal Controller Permissive Enabled 5')
-    signalControllerPermissiveEnabled7 = StringField('Signal Controller Permissive Enabled 7')
-    intersectionReferencePointLatitudeDecimalDegree = StringField('Intersection Reference Point Latitude Decimal Degree')
-    intersectionReferencePointLongitudeDecimalDegree = StringField('Intersection Reference Point Longitude Decimal Degree')
-    intersectionReferencePointElevationMeter = StringField('Intersection Reference Point Elevation Meter')
+    txChannelMap    = IntegerField('Tx Channel: Map')
+    txChannelSPaT   = IntegerField('Tx Channel: SPaT')    
+    txChannelRSM    = IntegerField('Tx Channel: RSM')    
+    txChannelSRM    = IntegerField('Tx Channel: SRM')    
+    txChannelSSM    = IntegerField('Tx Channel: SSM')    
+    txChannelBSM    = IntegerField('Tx Channel: BSM')
+    txModeMap       = StringField('Tx Mode: Map')
+    txModeSPaT      = StringField('Tx Mode: SPaT')    
+    txModeRSM       = StringField('Tx Mode: RSM')    
+    txModeSRM       = StringField('Tx Mode: SRM')    
+    txModeSSM       = StringField('Tx Mode: SSM')    
+    txModeBSM       = StringField('Tx Mode: BSM')
+    signalControllerIP                  = StringField('Signal Controller IP Address')
+    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Address')
+    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval')
+    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time')
+    signalControllerVendor              = StringField('Signal Controller Vendor')
+    signalControllerTimingPlanMib       = StringField('Signal Controller Timing Plan MIB')
+    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases')
+    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases')
+    signalControllerSplitPhases1        = IntegerField('Signal Controller Split Phases 1')
+    signalControllerSplitPhases3        = IntegerField('Signal Controller Split Phases 3')
+    signalControllerSplitPhases5        = IntegerField('Signal Controller Split Phases 5')
+    signalControllerSplitPhases7        = IntegerField('Signal Controller Split Phases 7')
+    signalControllerPermissiveEnabled1  = BooleanField('Signal Controller Permissive Enabled 1')
+    signalControllerPermissiveEnabled3  = BooleanField('Signal Controller Permissive Enabled 3')
+    signalControllerPermissiveEnabled5  = BooleanField('Signal Controller Permissive Enabled 5')
+    signalControllerPermissiveEnabled7  = BooleanField('Signal Controller Permissive Enabled 7')
+    intersectionReferencePointLatitudeDecimalDegree     = StringField('Intersection Reference Point Latitude Decimal Degree')
+    intersectionReferencePointLongitudeDecimalDegree    = StringField('Intersection Reference Point Longitude Decimal Degree')
+    intersectionReferencePointElevationMeter            = IntegerField('Intersection Reference Point Elevation Meter')
     
 
 # System Configuration data object
@@ -254,9 +254,9 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
-    data['SRMTimedOutTime']= form.srmTimedOutTime.data
-    data['ScheduleExecutionBuffer']= form.scheduleExecutionBuffer.data
-    data['SystemPerformanceTimeInterval']= form.systemPerformanceTimeInterval.data
+    data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
+    data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
+    data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
     data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
@@ -331,9 +331,9 @@ def prepareJSONData(data, form):
     data['SignalController']['PermissiveEnabled'] ['3']   = form.signalControllerPermissiveEnabled3.data
     data['SignalController']['PermissiveEnabled'] ['5']   = form.signalControllerPermissiveEnabled5.data
     data['SignalController']['PermissiveEnabled'] ['7']   = form.signalControllerPermissiveEnabled7.data
-    data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = form.intersectionReferencePointLatitudeDecimalDegree.data
-    data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = form.intersectionReferencePointLongitudeDecimalDegree.data
-    data['IntersectionReferencePoint']['Elevation_Meter']           = form.intersectionReferencePointElevationMeter.data
+    data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
+    data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
+    data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
 
 
 # configuration viewer / editor
@@ -341,6 +341,7 @@ def prepareJSONData(data, form):
 def configuration():
     import json
 
+    #field location
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
     #with open('static/json/mmitss-phase3-master-config.json') as json_file:
@@ -353,11 +354,12 @@ def configuration():
     #if request.method == 'POST' and form.validate():
     if request.method == 'POST':
         # Serialize the edited data
+        #field location
         with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
         #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
-            dataResult = json.dump(data, json_file) 
+            dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  
     
     return render_template('configuration.html', pageTitle=pageTitle, form=form)
