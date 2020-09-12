@@ -115,6 +115,11 @@ This is an html file that contains the presentation for:
         <div>
             {{ form.srmTimedOutTime }}
         </div>
+
+        {{ renderfield(form.scheduleExecutionBuffer)}}
+        {{ renderfield(form.systemPerformanceTimeInterval)}}
+        {{ renderfield(form.applicationPlatform)}}
+
         <div>
             {{ form.portNumberMTMessageSender.label }}  
         </div>
@@ -198,6 +203,9 @@ This is an html file that contains the presentation for:
         <div>
             {{ form.portNumberTrafficControllerCurrPhaseListener }}
         </div>
+
+
+        {{ renderfield(form.portNumberTrafficControllerTimingPlanSender)}}
         {{ renderfield(form.portNumberPerformanceObserver)}}
         {{ renderfield(form.portNumberHMIController)}}
         {{ renderfield(form.portNumberPrioritySolverToTCIInterface)}}
@@ -209,6 +217,11 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.portNumberSnmpEngine)}}
         {{ renderfield(form.portNumberSnmpEngineInterface)}}
         {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
+        {{ renderfield(form.portNumberTrajectoryAware_MapEngineInterface)}}
+        {{ renderfield(form.portNumberMapEngine)}}
+        {{ renderfield(form.portNumberPriorityLightSirenStatusManager)}}
+        {{ renderfield(form.portNumberPeerToPeerPriority)}}
+        {{ renderfield(form.portNumberSystemPerformanceDataCollector)}}
         {{ renderfield(form.psidMap)}}
         {{ renderfield(form.psidSPaT)}}
         {{ renderfield(form.psidRSM)}}
@@ -222,6 +235,21 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.msgIdSRMUpper)}}
         {{ renderfield(form.msgIdSSMLower)}}
         {{ renderfield(form.msgIdSSMUpper)}}
+
+        {{ renderfield(form.txChannelMap)}}
+        {{ renderfield(form.txChannelSPaT)}}
+        {{ renderfield(form.txChannelRSM)}}
+        {{ renderfield(form.txChannelSRM)}}
+        {{ renderfield(form.txChannelSSM)}}
+        {{ renderfield(form.txChannelBSM)}}
+
+        {{ renderfield(form.txModeMap)}}
+        {{ renderfield(form.txModeSPaT)}}
+        {{ renderfield(form.txModeRSM)}}
+        {{ renderfield(form.txModeSRM)}}
+        {{ renderfield(form.txModeSSM)}}
+        {{ renderfield(form.txModeBSM)}}
+
         {{ renderfield(form.signalControllerIP)}}
         {{ renderfield(form.signalControllerNTCIPPort)}}
         {{ renderfield(form.signalControllerUpdateInterval)}}
@@ -239,6 +267,10 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.signalControllerPermissiveEnabled5)}}
         {{ renderfield(form.signalControllerPermissiveEnabled7)}}
         
+        {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
+        {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
+        {{ renderfield(form.intersectionReferencePointElevationMeter)}}
+
         <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
