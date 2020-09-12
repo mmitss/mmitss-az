@@ -354,8 +354,8 @@ def configuration():
     #if request.method == 'POST' and form.validate():
     if request.method == 'POST':
         # Serialize the edited data
-        field location
-        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        #field location
+        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
         #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
