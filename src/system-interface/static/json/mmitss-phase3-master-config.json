@@ -11,9 +11,9 @@
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
 	"VehicleType": "Transit",
 	"Logging": "False",
-	"SRMTimedOutTime": 10.0,
-	"ScheduleExecutionBuffer": 1.0,
-	"SystemPerformanceTimeInterval": 300.0,
+	"SRMTimedOutTime": "10.0",
+	"ScheduleExecutionBuffer": "1.0",
+	"SystemPerformanceTimeInterval": "300.0",
 	"ApplicationPlatform": "roadside",
 	"PortNumber": {
 		"MessageTransceiver": {
@@ -68,7 +68,7 @@
 		"ssm_upper": "001E",
 		"bsm": "0014"
 	},
-		"TxChannel": {
+	"TxChannel": {
 		"map": 172,
 		"spat": 172,
 		"rsm": 172,
@@ -84,15 +84,15 @@
 		"ssm": "ALT",
 		"bsm": "CONT"
 	},
-"SignalController": {
+	"SignalController": {
 		"IpAddress": "10.12.6.103",
 		"NtcipPort": 501,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
 		"Vendor": "Econolite",
 		"TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
-		"InactiveVehPhases": [],
-		"InactivePedPhases": [],
+		"InactiveVehPhases": "[]",
+		"InactivePedPhases": "[]",
 		"SplitPhases": {
 			"1": 6,
 			"3": 8,
@@ -107,8 +107,8 @@
 		}
 	},
 	"IntersectionReferencePoint": {
-		"Latitude_DecimalDegree": 33.84293808964164,
-		"Longitude_DecimalDegree": -112.1351945016523,
+		"Latitude_DecimalDegree": "33.84293808964164",
+		"Longitude_DecimalDegree": "-112.1351945016523",
 		"Elevation_Meter": 506
 	}
 }
