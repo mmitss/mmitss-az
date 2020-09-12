@@ -3,12 +3,12 @@
         {
             "Phase": 4,
             "State": "green",
-            "ElapsedTime": 129
+            "ElapsedTime": 51
         },
         {
             "Phase": 8,
             "State": "green",
-            "ElapsedTime": 210
+            "ElapsedTime": 212
         }
     ],
     "MsgType": "CurrNextPhaseStatus",
