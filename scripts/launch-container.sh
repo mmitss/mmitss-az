@@ -18,9 +18,7 @@
 # in the Transportation Research Institute.                                                 
 #                                                                                           
 # Operational Description:                                                                   
-# This script builds all mmitss applications (vehicle, intersection, and common),
-# under the x86 environment. The primary reason for such builds is development and testing.
-# This script can not be used in the ARM architecture based devices.                                                                                                  
+# This script launches the docker container after getting inputs from the user                                                                                               
 #############################################################################################
 
 read -p "Full absolute path of MMITSS configuration directory: " config_path

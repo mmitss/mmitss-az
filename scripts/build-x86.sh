@@ -18,7 +18,7 @@
 # in the Transportation Research Institute.                                                 
 #                                                                                           
 # Operational Description:                                                                   
-# This script builds all mmitss applications (vehicle, intersection, and common),
+# This script builds all mmitss applications (vehicle, intersection, common, and simulation),
 # under the x86 environment. The primary reason for such builds is development and testing.
 # This script can not be used in the ARM architecture based devices.                                                                                                  
 #############################################################################################
