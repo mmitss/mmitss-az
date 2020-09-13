@@ -23,9 +23,18 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
+import os
+import sys
 
-# Initialize application
-app = Flask(__name__)
+# Initialize application for either PyInstaller or Development
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    static_folder = os.path.join(sys._MEIPASS, 'static')
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask(__name__)
+
+# Apply Bootstrap 
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = '%sq72f#8c$seryfl#2h'
 
