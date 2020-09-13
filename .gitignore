@@ -20,7 +20,7 @@ cmake*
 
 CMake*
 
-docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
+
 *.pyc
 .DS_Store
 
@@ -29,6 +29,7 @@ docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
 *NewModelData.dat
 *Results.txt
 *.map.payload
+*.log
 *mmitss-system-performance-roadside-log-data.csv
 
 
