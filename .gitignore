@@ -1,5 +1,5 @@
 #ignore binaries
-#docker/applications/M_*
+M_*
 
 #unignore the shell script
 !docker/applictions/*.sh
