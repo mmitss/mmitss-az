@@ -91,11 +91,31 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
+#######################################################################################
+echo "Building System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
 ################################# VEHICLE APPLICATIONS ################################
 
 #######################################################################################
 echo "Building Priority Request Generator..."
-cd ./../src/obu/priority-request-generator
+cd ./../src/vsp/priority-request-generator
 # Clean the folder and build for linux.
 make clean &> /dev/null
 make linux ARM=1 &> /dev/null
@@ -108,6 +128,26 @@ else
 fi
 # Remove the .o files to keep the folders clean
 rm ./*.o &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Light Siren Status Manager..."
+cd ./../src/vsp/light-siren-status-manager
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed light-siren-status-manager.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/light-siren-status-manager  ../../../bin/LightSirenStatusManager/arm/M_LightSirenStatusManager
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
 # Return back to original directory to go over the process again for another one
 cd - &> /dev/null
 sleep 1s
@@ -179,10 +219,10 @@ sleep 1s
 echo "Building Traffic Controller Interface..."
 cd ./../src/mrp/traffic-controller-interface
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_TrafficControllerInterface.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed traffic-controller-interface.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface/arm
+    mv dist/traffic-controller-interface  ../../../bin/TrafficControllerInterface/arm/M_TrafficControllerInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -199,10 +239,10 @@ sleep 1s
 echo "Building Map Spat Broadcaster..."
 cd ./../src/mrp/map-spat-broadcaster
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MapSpatBroadcaster.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat-broadcaster.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_MapSpatBroadcaster  ../../../bin/MapSpatBroadcaster/arm
+    mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/arm/M_MapSpatBroadcaster
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -219,10 +259,10 @@ sleep 1s
 echo "Building TrajectoryAware..."
 cd ./../src/mrp/trajectory-aware
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_TrajectoryAware.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed trajectory-aware.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_TrajectoryAware  ../../../bin/TrajectoryAware/arm
+    mv dist/trajectory-aware  ../../../bin/TrajectoryAware/arm/M_TrajectoryAware
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -255,42 +295,5 @@ cd - &> /dev/null
 sleep 1s
 ######################################################################################
 
-#######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_SystemPerformanceDataCollector.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/M_SystemPerformanceDataCollector  ../../../bin/SystemPerformanceDataCollector/arm
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
 
-#######################################################################################
-echo "Building Light Siren Status Manager..."
-cd ./../src/obu/light-siren-status-manager
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_LightSirenStatusManager.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/M_LightSirenStatusManager  ../../../bin/LightSirenStatusManager/arm
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
+
