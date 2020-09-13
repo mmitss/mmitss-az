@@ -83,7 +83,7 @@ def main():
             offset = 0
 
             # Open our background image.
-            image = Image.open("images/inputs-blank.jpg")
+            image = Image.open("inputs-blank.jpg")
             draw = ImageDraw.Draw(image)
             
             if automationhat.input[1].is_on():
