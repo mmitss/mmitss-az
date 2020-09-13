@@ -95,7 +95,7 @@ sleep 1s
 
 #######################################################################################
 echo "Building Priority Request Generator..."
-cd ./../src/obu/priority-request-generator
+cd ./../src/vsp/priority-request-generator
 # Clean the folder and build for linux.
 make clean &> /dev/null
 make linux &> /dev/null
@@ -179,10 +179,10 @@ sleep 1s
 echo "Building Traffic Controller Interface..."
 cd ./../src/mrp/traffic-controller-interface
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_TrafficControllerInterface.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed traffic-controller-interface.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_TrafficControllerInterface  ../../../bin/TrafficControllerInterface/x86
+    mv dist/traffic-controller-interface  ../../../bin/TrafficControllerInterface/x86/M_TrafficControllerInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -199,10 +199,10 @@ sleep 1s
 echo "Building Map Spat Broadcaster..."
 cd ./../src/mrp/map-spat-broadcaster
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MapSpatBroadcaster.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat-broadcaster.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_MapSpatBroadcaster  ../../../bin/MapSpatBroadcaster/x86
+    mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/x86/M_MapSpatBroadcaster
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -214,6 +214,28 @@ rm -r __pycache__ &> /dev/null
 cd - &> /dev/null
 sleep 1s
 #######################################################################################
+
+#######################################################################################
+echo "Building System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/x86/M_SystemPerformanceDataCollector
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+################################### SIMULATION TOOLS ##################################
 
 #######################################################################################
 echo "Building Priority Request Generator Server..."
@@ -239,30 +261,10 @@ sleep 1s
 echo "Building Message Distributor..."
 cd ./../src/simulation/message-distributor
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_MessageDistributor.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed message-distributor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/M_MessageDistributor  ../../../bin/MessageDistributor/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_SystemPerformanceDataCollector.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/M_SystemPerformanceDataCollector  ../../../bin/SystemPerformanceDataCollector/x86
+    mv dist/message-distributor  ../../../bin/MessageDistributor/x86/M_MessageDistributor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
