@@ -140,10 +140,6 @@ def main():
 
             currentSpatObject.setmsgCnt(msgCnt)
             currentSpatObject.fillSpatInformation(currentBlob)
-            
-            print(currentSpatObject.vehMinEndTimeList)
-            print(currentSpatObject.vehMaxEndTimeList)
-            print("\n")
             spatJsonString = currentSpatObject.Spat2Json()
             currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
 
