@@ -1,7 +1,7 @@
 #pragma once
-#include "../../obu/priority-request-generator/PriorityRequestGenerator.h"
-#include "../../obu/priority-request-generator/MapManager.h"
-#include "../../obu/priority-request-generator/PriorityRequestGeneratorStatus.h"
+#include "../../vsp/priority-request-generator/PriorityRequestGenerator.h"
+#include "../../vsp/priority-request-generator/MapManager.h"
+#include "../../vsp/priority-request-generator/PriorityRequestGeneratorStatus.h"
 
 using std::string;
 

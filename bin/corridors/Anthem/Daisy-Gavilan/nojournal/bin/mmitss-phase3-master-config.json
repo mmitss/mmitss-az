@@ -85,7 +85,7 @@
 		"bsm": "CONT"
 	},
 	"SignalController": {
-		"IpAddress": "10.12.6.2",
+		"IpAddress": "10.12.6.104",
 		"NtcipPort": 501,
 		"TimingPlanUpdateInterval_sec": 600,
 		"NtcipBackupTime_sec": 300,
