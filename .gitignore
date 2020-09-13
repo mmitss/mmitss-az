@@ -23,3 +23,12 @@ CMake*
 docker/corridors/speedway/rse81_campbell/nojournal/bin/log/*.log
 *.pyc
 .DS_Store
+
+*NewModel_EV.mod
+*NewModel.mod
+*NewModelData.dat
+*Results.txt
+*.map.payload
+*mmitss-system-performance-roadside-log-data.csv
+
+
