@@ -91,6 +91,26 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
+#######################################################################################
+echo "Building System Performance Data Collector..."
+cd ./../src/common/system-performance-data-collector
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/x86/M_SystemPerformanceDataCollector
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
 ################################# VEHICLE APPLICATIONS ################################
 
 #######################################################################################
@@ -203,26 +223,6 @@ pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/x86/M_MapSpatBroadcaster
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/x86/M_SystemPerformanceDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
