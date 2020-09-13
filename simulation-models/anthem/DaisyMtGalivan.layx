@@ -35,13 +35,15 @@
 								<objectRef key="1 2 5"/>
 								<objectRef key="1 2 6"/>
 								<objectRef key="1 2 7"/>
+								<objectRef key="1 2 8"/>
 							</dockableChildPanes>
 						</dockableChildPane>
-						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Signal Controllers1" no="3" paneLayoutNo="3" paneType="CONTROL" pinned="true" sizeHeight="0" sizeWidth="0" subType="Parent SIGNALCONTROLLER" tag="" text="Signal Controllers / Signal Groups" textTabResolved="Signal Controllers / Signal Groups" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
+						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="true" keyText="Signal Controllers1" no="3" paneLayoutNo="3" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent SIGNALCONTROLLER" tag="" text="Signal Controllers / Signal Groups" textTabResolved="Signal Controllers / Signal Groups" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
 						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Vehicle Inputs1" no="4" paneLayoutNo="5" paneType="CONTROL" pinned="true" sizeHeight="161" sizeWidth="1674" subType="Parent VEHICLEINPUT" tag="" text="Vehicle Inputs / Vehicle Volumes By Time Interval" textTabResolved="Vehicle Inputs / Vehicle Volumes By Time Interval" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
 						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Vehicle Compositions1" no="5" paneLayoutNo="6" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent VEHICLECOMPOSITION" tag="" text="Vehicle Compositions / Relative Flows" textTabResolved="Vehicle Compositions / Relative Flows" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
-						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="161" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="true" keyText="Public Transport Lines1" no="6" paneLayoutNo="7" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent PTLINE" tag="" text="Public Transport Lines / Public Transport Line Stops" textTabResolved="Public Transport Lines / Public Transport Line Stops" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
+						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="161" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Public Transport Lines1" no="6" paneLayoutNo="7" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent PTLINE" tag="" text="Public Transport Lines / Public Transport Line Stops" textTabResolved="Public Transport Lines / Public Transport Line Stops" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
 						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Static Vehicle Routing Decisions1" no="7" paneLayoutNo="8" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent VEHICLEROUTINGDECISIONSTATIC" tag="" text="Static Vehicle Routing Decisions / Static Vehicle Routes" textTabResolved="Static Vehicle Routing Decisions / Static Vehicle Routes" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
+						<dockableChildPane childPaneStyle="0" flyoutSizeHeight="-1" flyoutSizeWidth="-1" isDirectAreaChild="false" isSelectedTab="false" keyText="Vehicle Classes1" no="8" paneLayoutNo="9" paneType="CONTROL" pinned="true" sizeHeight="257" sizeWidth="1674" subType="Parent VEHICLECLASS" tag="" text="Vehicle Classes / Vehicle Types" textTabResolved="Vehicle Classes / Vehicle Types" type="PTV.Vision.Controls.CoupledListWindow, Controls, Version=10.0.7.0, Culture=neutral, PublicKeyToken=null" visible="true"/>
 					</dockChildPanes>
 				</dockableAreaPane>
 			</dockAreaPanes>
@@ -49,7 +51,7 @@
 		</windowLayoutCurrent>
 	</currentWindowLayouts>
 	<defaultWindowLayouts>
-		<windowLayoutDefault floating="true" height="446" no="1" positionX="1110" positionY="343" subType="" type="MessageWindow" width="744"/>
+		<windowLayoutDefault floating="true" height="446" no="1" positionX="1114" positionY="347" subType="" type="MessageWindow" width="744"/>
 		<windowLayoutDefault floating="false" height="768" no="2" positionX="202" positionY="297" subType="" type="ChartWindow" width="1718"/>
 		<windowLayoutDefault floating="false" height="451" no="3" positionX="202" positionY="1261" subType="Parent DELAYMEASUREMENTEVALUATION" type="CoupledListWindow" width="1718"/>
 		<windowLayoutDefault floating="false" height="452" no="4" positionX="202" positionY="1259" subType="Parent QUEUECOUNTEREVALUATION" type="CoupledListWindow" width="1718"/>
@@ -72,7 +74,7 @@
 		<windowLayoutDefault floating="false" height="257" no="21" positionX="246" positionY="1409" subType="Parent VEHICLECLASS" type="CoupledListWindow" width="1674"/>
 	</defaultWindowLayouts>
 	<listLayouts>
-		<listLayout childRelation="SGS" exportListWhenSimulationFinished="false" name="" no="3" synchronization="false" verticalSplitterPosition="0.43172690763052207">
+		<listLayout childRelation="SGS" exportListWhenSimulationFinished="false" name="" no="3" synchronization="false" verticalSplitterPosition="0.43130227001194743">
 			<childNetObjectLParSet filtered="false" headerHeight="0" netObjectTypeID="SIGNALGROUP" rowHeaderWidth="50" rowHeight="0" showSimulationRunAggregates="true" showTimeIntervalAggregates="false">
 				<attributeLPars>
 					<attributeListLayoutParameters alignment="RIGHT" attributeID="NO" columnWidth="29" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
@@ -176,6 +178,28 @@
 					<attributeListLayoutParameters alignment="CENTER" attributeID="ALLVEHTYPES" columnWidth="76" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
 					<attributeListLayoutParameters alignment="LEFT" attributeID="VEHCLASSES" columnWidth="70" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
 					<attributeListLayoutParameters alignment="CENTER" attributeID="USEVEHROUTENO" columnWidth="98" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+				</attributeLPars>
+			</netObjectLParSet>
+		</listLayout>
+		<listLayout childRelation="VEHTYPES" exportListWhenSimulationFinished="false" name="" no="9" synchronization="false" verticalSplitterPosition="0.5">
+			<childNetObjectLParSet filtered="false" headerHeight="0" netObjectTypeID="VEHICLETYPE" rowHeaderWidth="50" rowHeight="0" showSimulationRunAggregates="true" showTimeIntervalAggregates="false">
+				<attributeLPars>
+					<attributeListLayoutParameters alignment="RIGHT" attributeID="NO" columnWidth="29" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="NAME" columnWidth="45" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="CATEGORY" columnWidth="61" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="MODEL2D3DDISTR" columnWidth="99" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="COLORDISTR1" columnWidth="72" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="OCCUPDISTR" columnWidth="117" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="RIGHT" attributeID="CAPACITY" columnWidth="59" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+				</attributeLPars>
+			</childNetObjectLParSet>
+			<netObjectLParSet filtered="false" headerHeight="0" netObjectTypeID="VEHICLECLASS" rowHeaderWidth="50" rowHeight="0" showSimulationRunAggregates="true" showTimeIntervalAggregates="false">
+				<attributeLPars>
+					<attributeListLayoutParameters alignment="RIGHT" attributeID="NO" columnWidth="29" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="NAME" columnWidth="210" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="VEHTYPES" columnWidth="62" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="CENTER" attributeID="USEVEHTYPECOLOR" columnWidth="105" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
+					<attributeListLayoutParameters alignment="LEFT" attributeID="COLOR" columnWidth="116" decimals="0" format="DEFAULT" quickViewRowHeight="0" showUnits="false"/>
 				</attributeLPars>
 			</netObjectLParSet>
 		</listLayout>
