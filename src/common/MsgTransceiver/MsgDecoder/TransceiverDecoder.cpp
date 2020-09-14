@@ -83,7 +83,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
 {
     std::ofstream outputfile;
     std::string fmap{};
-    std::string intersectionName{};
+    std::string intersection_Name{};
     std::string mapName{};
     int intersectionID{};
     bool singleFrame = false;
@@ -105,11 +105,11 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     outputfile.close();
 
     fmap = "Map.map.payload";
-    intersectionName = "Map";
+    intersection_Name = "Map";
 
     /// instance class LocAware (Map Engine)
     LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
-    intersectionID = plocAwareLib->getIntersectionIdByName(intersectionName);
+    intersectionID = plocAwareLib->getIntersectionIdByName(intersection_Name);
     mapName = "Map" + std::to_string(intersectionID);
     jsonObject["MsgType"] = "MAP";
     jsonObject["IntersectionName"] = mapName;
@@ -279,7 +279,7 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
         signalStatus.setIntersectionID(ssmOut.id);
         signalStatus.setNoOfRequest(unsigned(ssmOut.mpSignalRequetStatus.size()));
 
-        for (int i = 0; i < ssmOut.mpSignalRequetStatus.size(); i++)
+        for (size_t i = 0; i < ssmOut.mpSignalRequetStatus.size(); i++)
         {
             activeRequest.vehicleID = ssmOut.mpSignalRequetStatus[i].vehId;
             activeRequest.requestID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].reqId);
@@ -287,6 +287,7 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
             activeRequest.basicVehicleRole = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].vehRole);
             activeRequest.vehicleLaneID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].inLaneId);
             activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
+            activeRequest.vehicleETADuration = ssmOut.mpSignalRequetStatus[i].duration;
             activeRequest.prsStatus = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].status);
             ActiveRequestTable.push_back(activeRequest);
         }
@@ -410,7 +411,8 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
 bool TransceiverDecoder::sendSystemPerformanceDataLog()
 {
     bool sendData{false};
-    auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    double currenTime{}; 
+    currenTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
     if (currenTime - msgSentTime >= timeInterval)
         sendData = true;
@@ -423,7 +425,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     std::string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    Json::StyledStreamWriter styledStreamWriter;
+    // Json::StyledStreamWriter styledStreamWriter;
     std::ofstream outputter("systemPerformanceDataLog.json");
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
@@ -478,12 +480,12 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
         jsonObject["MsgInformation"]["MsgCount"] = spatMsgCount;
         spatMsgCount = 0;
     }
-    
+
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
     jsonObject["MsgInformation"]["MsgSentTime"] = static_cast<int>(currentTime);
 
     systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-    styledStreamWriter.write(outputter, jsonObject);
+    // styledStreamWriter.write(outputter, jsonObject);
 
     msgSentTime = static_cast<int>(currentTime);
 
