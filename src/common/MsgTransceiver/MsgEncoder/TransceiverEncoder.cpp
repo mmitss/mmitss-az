@@ -314,9 +314,10 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
 bool TransceiverEncoder::sendSystemPerformanceDataLog()
 {
     bool sendData{false};
-    auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    double currentTime{};
+    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-    if (currenTime - msgSentTime >= timeInterval)
+    if (currentTime - msgSentTime >= timeInterval)
         sendData = true;
 
     return sendData;
@@ -327,9 +328,10 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
     std::string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    Json::StyledStreamWriter styledStreamWriter;
-    std::ofstream outputter("systemPerformanceDataLog.json");
-    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    // Json::StyledStreamWriter styledStreamWriter;
+    // std::ofstream outputter("systemPerformanceDataLog.json");
+    double currentTime{};
+    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
     if (applicationPlatform == "roadside")
     {
@@ -381,7 +383,7 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
     jsonObject["MsgInformation"]["MsgSentTime"] = static_cast<int>(currentTime);
 
     systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-    styledStreamWriter.write(outputter, jsonObject);
+    // styledStreamWriter.write(outputter, jsonObject);
 
     msgSentTime = static_cast<int>(currentTime);
 

@@ -15,7 +15,7 @@ int main()
 
     TransceiverDecoder decoder;
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt()));
-    char receiveBuffer[5120];
+    char receiveBuffer[10240];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
     const string DataCollectorIP = jsonObject_config["DataCollectorIP"].asString();

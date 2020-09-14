@@ -1,12 +1,12 @@
 {
     "currentPhases": [
         {
-            "Phase": 4,
+            "Phase": 1,
             "State": "green",
-            "ElapsedTime": 51
+            "ElapsedTime": 251
         },
         {
-            "Phase": 8,
+            "Phase": 6,
             "State": "green",
             "ElapsedTime": 212
         }

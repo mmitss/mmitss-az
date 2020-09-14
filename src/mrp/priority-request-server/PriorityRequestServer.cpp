@@ -615,8 +615,8 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 	int noOfRequest{};
 	Json::Value jsonObject;
 	Json::FastWriter fastWriter;
-	Json::StyledStreamWriter styledStreamWriter;
-	std::ofstream outputter("schedule.json");
+	// Json::StyledStreamWriter styledStreamWriter;
+	// std::ofstream outputter("schedule.json");
 
 	noOfRequest = static_cast<int>(ActiveRequestTable.size());
 	if (noOfRequest > 0)
@@ -654,7 +654,7 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 		std::cout << "Sent Clear Request to Solver " << std::endl;
 	}
 	solverJsonString = fastWriter.write(jsonObject);
-	styledStreamWriter.write(outputter, jsonObject);
+	// styledStreamWriter.write(outputter, jsonObject);
 
 	loggingData(solverJsonString);
 
@@ -992,9 +992,10 @@ void PriorityRequestServer::loggingData(std::string jsonString)
 bool PriorityRequestServer::sendSystemPerformanceDataLog()
 {
 	bool sendData{false};
-	auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime{};
+	currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 	
-	if (currenTime - msgSentTime >= timeInterval)
+	if (currentTime - msgSentTime >= timeInterval)
 		sendData = true;
 
 	return sendData;	
@@ -1005,8 +1006,8 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	std::string systemPerformanceDataLogJsonString{};
 	Json::Value jsonObject;
 	Json::FastWriter fastWriter;
-	Json::StyledStreamWriter styledStreamWriter;
-	std::ofstream outputter("systemPerformanceDataLog.json");
+	// Json::StyledStreamWriter styledStreamWriter;
+	// std::ofstream outputter("systemPerformanceDataLog.json");
 	auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 	jsonObject["MsgType"] = "IntersectionDataLog";
@@ -1019,7 +1020,7 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
     jsonObject["MsgInformation"]["MsgSentTime"]= static_cast<int>(currenTime);
 
 	systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-	styledStreamWriter.write(outputter, jsonObject);
+	// styledStreamWriter.write(outputter, jsonObject);
 
 	msgSentTime = static_cast<int>(currenTime);
 	msgReceived = 0;
