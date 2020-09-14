@@ -37,11 +37,15 @@ int main()
     const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
     const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
+    const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
+
    
     char receiveBuffer[10240];
 
     const string LOCALHOST = jsonObject_config["HostIp"].asString(); //"127.0.0.1";
     const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
+    const string dataCollectorIp = jsonObject_config["DataCollectorIP"].asString();
+
     int msgType{};
     bool timedOutOccur{};
     std::string ssmJsonString{};
@@ -67,6 +71,7 @@ int main()
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+                PRSSocket.sendData(dataCollectorIp, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.loggingData(receivedJsonString);
