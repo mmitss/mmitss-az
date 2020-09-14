@@ -86,8 +86,6 @@ class Scheduler:
         # Close the config file:
         configFile.close()
 
-        self.expectedScheduleExecutionTime = config["SRMTimedOutTime"] + config["ScheduleExecutionBuffer"]
-        
         self.mapSpatBroadcasterAddress = ((config["HostIp"],config["PortNumber"]["MapSPaTBroadcaster"]))
       
 
@@ -436,32 +434,34 @@ class Scheduler:
 
     def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
         
-       # Delete the commands with invalid combination of startTime and EndTime
-        schedule =  [command for command in schedule if not (command["commandStartTime"] > self.expectedScheduleExecutionTime)] 
-        
-        scheduledPhaseControlsJson = {"MsgType":"ActivePhaseControlSchedule",
-                            "ScheduledActivePhaseControls":
-                            {
-                                "Holds": None,
-                                "ForceOffs":None
-                            }
-        }
+        scheduledPhaseControlsJson = {
+                                        "MsgType":"ActivePhaseControlSchedule",
+                                        "ScheduledActivePhaseControls":
+                                        {
+                                            "Holds": None,
+                                            "ForceOffs":None
+                                        }
+                                    }
 
         holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
-        if len(holdCommands) > 0:
+        
+        if len(holdCommands) > 0:     
             scheduledHolds = [-1,-1,-1,-1,-1,-1,-1,-1]
-            for holdCommand in holdCommands:
-                holdPhase = holdCommand["commandPhase"]
-                scheduledHolds[holdPhase-1] = holdCommand["commandEndTime"]*10            
+            # Filter holds for current cycle
+            for phaseIndex in range(8):
+                holdEndTimes_phase = [command["commandEndTime"] for command in holdCommands if (command["commandPhase"] == phaseIndex+1)]
+                if len(holdEndTimes_phase) > 0:
+                    scheduledHolds[phaseIndex] = (min(holdEndTimes_phase))*10
             scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Holds"] = scheduledHolds
         
         forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
         if len(forceOffCommands) > 0:        
             scheduledForceOffs = [-1,-1,-1,-1,-1,-1,-1,-1]
-            for forceOffCommand in forceOffCommands:
-                forceOffPhase = forceOffCommand["commandPhase"]
-                scheduledForceOffs[forceOffPhase-1] = forceOffCommand["commandStartTime"]*10
-
+            # Filter forceoffs for current cycle
+            for phaseIndex in range(8):
+                forceoffTimes_phase = [command["commandStartTime"] for command in forceOffCommands if (command["commandPhase"] == phaseIndex+1)]
+                if len(forceoffTimes_phase) > 0:
+                    scheduledForceOffs[phaseIndex] = (min(forceoffTimes_phase))*10            
             scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["ForceOffs"] = scheduledForceOffs
 
         scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
