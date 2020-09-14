@@ -198,11 +198,18 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
-	if (lightSirenStatus == false)
+	if (lightSirenStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
-		sendRequestStatus = false;
+		sendRequestStatus = true;
 		requestSendStatus  = false;
-		std::cout << "SRM is not sent since light-siren is off at time " << timenow << std::endl;	
+		std::cout << "SRM is not sent since light-siren is off, at time " << timenow << std::endl;	
+	}
+
+	else if (bgetActiveMap == false && findVehicleIDOnTable != ActiveRequestTable.end())
+	{
+		sendRequestStatus = true;
+		requestSendStatus  = false;
+		std::cout << "SRM is not sent since vehicle is out off the map, at time " << timenow << std::endl;	
 	}
 	
 	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
@@ -602,6 +609,27 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																			 [&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
+	
+	if (lightSirenStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
+	{
+		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
+		mapManager.deleteActiveMapfromList();
+		activeMapList.clear();
+		ActiveRequestTable.clear();
+		setIntersectionID(0);
+		bgetActiveMap = false; //Required for HMI json
+		requestSendStatus  = false;
+		tempSRMTimeStamp = 0.0;
+	}
+
+	else if (bgetActiveMap == false && findVehicleIDOnTable != ActiveRequestTable.end())
+	{
+		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
+		requestSendStatus  = false;	
+		bgetActiveMap = false; //Required for HMI json
+		tempSRMTimeStamp = 0.0;
+	}
+	
 	if (getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 
