@@ -11,8 +11,6 @@ COPY PriorityRequestServer/arm/M_PriorityRequestServer /mmitss
 COPY SnmpEngine/arm/M_SnmpEngine /mmitss
 COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
-COPY TrajectoryAware/arm/M_TrajectoryAware /mmitss
-COPY MapEngine/arm/M_MapEngine /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
 
 COPY supervisord-mrp.conf /mmitss/supervisord.conf
