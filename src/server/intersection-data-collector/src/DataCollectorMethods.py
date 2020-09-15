@@ -109,7 +109,7 @@ def receiveProcessAndStoreIntersectionDataLocally(socket, spatLogFile, surroundi
         signalStatus, spatCsv = spatJsonToCsv(jsonData)
         spatLogFile.write(spatCsv)
         return signalStatus
-    elif jsonData["MsgType"]=="TrajectoryDatapoint": # then this message is a BSM message
+    elif jsonData["MsgType"]=="BSM": # then this message is a BSM message
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
     elif jsonData["MsgType"]=="SRM": # then this message is a SRM message
         srmLogFile.write(srmJsonToCsv(jsonData))
