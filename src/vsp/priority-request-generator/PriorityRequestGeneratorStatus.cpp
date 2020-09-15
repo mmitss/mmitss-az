@@ -17,32 +17,30 @@
 #include "json/json.h"
 #include <fstream>
 
-const double ETA_DURATION_SECOND = 2;
+// const double ETA_DURATION_SECOND = 2;
 
 PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
 }
 
-std::vector<Map::AvailableMap> PriorityRequestGeneratorStatus::getAvailableMapList(PriorityRequestGenerator PRG)
+void PriorityRequestGeneratorStatus::setAvailableMapList(PriorityRequestGenerator priorityRequestGenerator)
 {
-    availableMapList = PRG.availableMapList;
-    return availableMapList;
+    availableMapList = priorityRequestGenerator.availableMapList;
 }
 
-std::vector<ActiveRequest> PriorityRequestGeneratorStatus::getActiveRequestTable(PriorityRequestGenerator PRG)
+void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenerator priorityRequestGenerator)
 {
-    ActiveRequestTable = PRG.getActiveRequestTable();
-    return ActiveRequestTable;
+    ActiveRequestTable = priorityRequestGenerator.getActiveRequestTable();
 }
 
 std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    std::string jsonString;
+    std::string jsonString{};
 
-    getAvailableMapList(priorityRequestGenerator);
-    getActiveRequestTable(priorityRequestGenerator);
+    setAvailableMapList(priorityRequestGenerator);
+    setActiveRequestTable(priorityRequestGenerator);
 
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["secMark_Second"] = basicVehicle.getSecMark_Second();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"] = basicVehicle.getTemporaryID();
@@ -90,15 +88,16 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
             jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundLane"] = ActiveRequestTable[i].vehicleLaneID;
             jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["inBoundApproach"] = ActiveRequestTable[i].vehicleApproachID;
             jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["vehicleETA"] = ActiveRequestTable[i].vehicleETA;
-            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["duration"] = ETA_DURATION_SECOND;
+            jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["duration"] = ActiveRequestTable[i].vehicleETADuration;
             jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
         }
     }
 
-    Json::StyledStreamWriter styledStreamWriter;
-    std::ofstream outputter("output.json");
-    styledStreamWriter.write(outputter, jsonObject);
+    // Json::StyledStreamWriter styledStreamWriter;
+    // std::ofstream outputter("output.json");
+    // styledStreamWriter.write(outputter, jsonObject);
     jsonString = fastWriter.write(jsonObject);
+    priorityRequestGenerator.loggingData(jsonString);
     return jsonString;
 }
 

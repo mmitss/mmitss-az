@@ -83,7 +83,7 @@ def main():
             offset = 0
 
             # Open our background image.
-            image = Image.open("images/inputs-blank.jpg")
+            image = Image.open("inputs-blank.jpg")
             draw = ImageDraw.Draw(image)
             
             if automationhat.input[1].is_on():
@@ -100,7 +100,7 @@ def main():
                 #print("TemporaryLightSirenStatus is: ", temporaryLightSirenStatus," at time ", time.time())  
                 lightSirenStatus = temporaryLightSirenStatus
                 lightSirenStatusJsonString = lightSirenStatusMsg(lightSirenStatus)
-                #print('\n',lightSirenStatusJsonString)
+                print('\n',lightSirenStatusJsonString)
                 lightSirenStatusManagerSocket.sendto(lightSirenStatusJsonString.encode(),priorityRequestGeneratorAddress)
             
                 

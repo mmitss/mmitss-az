@@ -35,7 +35,7 @@ private:
   std::vector<Map::ActiveMap> activeMapList;
 
   bool bgetActiveMap{false};      //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
-  bool bRequestSendStatus{false}; //Required for HMI json
+  bool requestSendStatus {false}; //Required for HMI json
   bool loggingStatus{false};
   bool lightSirenStatus{false};
   std::string mapFileDirectory{};
@@ -54,10 +54,24 @@ private:
   int priorityRequestType{};
   int counter_VehicleInMap{};
   int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
+  int HOURSINADAY{};
+	int MINUTESINAHOUR{};
+	int SECONDTOMILISECOND{};
+	int maxMsgCount{};
+	int minMsgCount{};
   double time2go{};
   double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
   double tempSRMTimeStamp{};    //temporary store the time when last SRM has been sent
   double requestTimedOutValue{};
+  double ETA_Duration{};
+  double DISTANCEUNITCONVERSION{}; //cm to meter
+	double vehicleMinSpeed{};
+	double vehicleSpeedDeviationLimit{};
+	double min_ETA {};
+	double SRM_GAPOUT_TIME{};
+	double SECONDSINAMINUTE{};
+	double allowed_ETA_Difference{};
+	
 
 public:
   PriorityRequestGenerator();

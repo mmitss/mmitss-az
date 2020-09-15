@@ -9,7 +9,7 @@ COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY HostBsmDecoder/arm/M_HostBsmDecoder /mmitss
 COPY PriorityRequestGenerator/arm/M_PriorityRequestGenerator /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
-COPY LightSirenStatusManager/arm/M_LightSirenStatusManager /mmitss
+COPY LightSirenStatusManager/images /mmitss
 COPY SystemInterface/arm/M_SystemInterface /mmitss
 
 CMD ["/usr/bin/supervisord -c /nojournal/bin/supervisord.conf"]
