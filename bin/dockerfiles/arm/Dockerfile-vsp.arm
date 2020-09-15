@@ -12,5 +12,5 @@ COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
 COPY LightSirenStatusManager/images /mmitss
 COPY SystemInterface/arm/M_SystemInterface /mmitss
 
-CMD ["/usr/bin/supervisord -c /nojournal/bin/supervisord.conf"]
+ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 
