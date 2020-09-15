@@ -1,14 +1,14 @@
 {
     "currentPhases": [
         {
-            "Phase": 1,
+            "Phase": 2,
             "State": "green",
-            "ElapsedTime": 251
+            "ElapsedTime": 134
         },
         {
             "Phase": 6,
             "State": "green",
-            "ElapsedTime": 212
+            "ElapsedTime": 134
         }
     ],
     "MsgType": "CurrNextPhaseStatus",

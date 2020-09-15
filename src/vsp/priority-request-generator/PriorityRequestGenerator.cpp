@@ -202,7 +202,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	{
 		sendRequestStatus = true;
 		requestSendStatus  = false;
-		std::cout << "SRM is not sent since light-siren is off, at time " << timenow << std::endl;	
+		std::cout << "SRM is sent since light-siren is off, at time " << timenow << std::endl;	
 	}
 
 	else if (bgetActiveMap == false && findVehicleIDOnTable != ActiveRequestTable.end())
@@ -277,6 +277,12 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 			ETA_Duration = 4.0;
 			std::cout << "SRM is sent to avoid PRS timed out at time " << timenow << std::endl;
 		}
+	}
+
+	else if (lightSirenStatus == false)
+	{	
+		requestSendStatus  = false;
+		std::cout << "SRM is not sent since light-siren is off, at time " << timenow << std::endl;	
 	}
 
 	if (sendRequestStatus == true)
@@ -613,11 +619,11 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 	if (lightSirenStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
-		mapManager.deleteActiveMapfromList();
-		activeMapList.clear();
-		ActiveRequestTable.clear();
-		setIntersectionID(0);
-		bgetActiveMap = false; //Required for HMI json
+		// mapManager.deleteActiveMapfromList();
+		// activeMapList.clear();
+		// ActiveRequestTable.clear();
+		// setIntersectionID(0);
+		// bgetActiveMap = false; //Required for HMI json
 		requestSendStatus  = false;
 		tempSRMTimeStamp = 0.0;
 	}
@@ -772,7 +778,7 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 
 	if (requestSendStatus  == true)
 		vehicleSRMStatus = "True";
-	else
+	else if (requestSendStatus  == false)
 		vehicleSRMStatus = "False";
 
 	return vehicleSRMStatus;
