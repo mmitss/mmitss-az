@@ -40,9 +40,9 @@ int main()
     const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
 
    
-    char receiveBuffer[10240];
+    char receiveBuffer[15360];
 
-    const string LOCALHOST = jsonObject_config["HostIp"].asString(); //"127.0.0.1";
+    const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
     const string dataCollectorIp = jsonObject_config["DataCollectorIP"].asString();
 

@@ -100,7 +100,7 @@ def main():
                 #print("TemporaryLightSirenStatus is: ", temporaryLightSirenStatus," at time ", time.time())  
                 lightSirenStatus = temporaryLightSirenStatus
                 lightSirenStatusJsonString = lightSirenStatusMsg(lightSirenStatus)
-                #print('\n',lightSirenStatusJsonString)
+                print('\n',lightSirenStatusJsonString)
                 lightSirenStatusManagerSocket.sendto(lightSirenStatusJsonString.encode(),priorityRequestGeneratorAddress)
             
                 
