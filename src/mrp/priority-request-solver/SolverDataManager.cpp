@@ -239,13 +239,14 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     if (emergencyVehicleStatus == true)
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-        {
-            if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
+        // {
+        //     if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
+        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
 
-            else
-                fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-        }
+        //     else
+        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
+        // }
     }
     
     else
@@ -423,7 +424,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
         // else
         //     ETA_Range = 2.0;
 
-        ETA_Range = 5.0;
+        ETA_Range = 4.0;
 
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
