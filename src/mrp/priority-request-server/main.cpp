@@ -38,9 +38,9 @@ int main()
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
     const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
    
-    char receiveBuffer[10240];
+    char receiveBuffer[15360];
 
-    const string LOCALHOST = jsonObject_config["HostIp"].asString(); //"127.0.0.1";
+    const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
     int msgType{};
     bool timedOutOccur{};
