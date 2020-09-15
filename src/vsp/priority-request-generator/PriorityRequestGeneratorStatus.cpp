@@ -23,14 +23,14 @@ PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
 }
 
-void PriorityRequestGeneratorStatus::setAvailableMapList(PriorityRequestGenerator PRG)
+void PriorityRequestGeneratorStatus::setAvailableMapList(PriorityRequestGenerator priorityRequestGenerator)
 {
-    availableMapList = PRG.availableMapList;
+    availableMapList = priorityRequestGenerator.availableMapList;
 }
 
-void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenerator PRG)
+void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenerator priorityRequestGenerator)
 {
-    ActiveRequestTable = PRG.getActiveRequestTable();
+    ActiveRequestTable = priorityRequestGenerator.getActiveRequestTable();
 }
 
 std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
@@ -97,6 +97,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     // std::ofstream outputter("output.json");
     // styledStreamWriter.write(outputter, jsonObject);
     jsonString = fastWriter.write(jsonObject);
+    priorityRequestGenerator.loggingData(jsonString);
     return jsonString;
 }
 

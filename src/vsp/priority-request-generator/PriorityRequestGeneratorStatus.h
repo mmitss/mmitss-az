@@ -32,8 +32,8 @@ private:
 public:
     PriorityRequestGeneratorStatus();
     ~PriorityRequestGeneratorStatus();
-    void setAvailableMapList(PriorityRequestGenerator PRG);
-    void setActiveRequestTable(PriorityRequestGenerator PRG);
+    void setAvailableMapList(PriorityRequestGenerator priorityRequestGenerator);
+    void setActiveRequestTable(PriorityRequestGenerator priorityRequestGenerator);
     std::string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle);
 };
 
