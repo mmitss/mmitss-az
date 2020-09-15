@@ -97,7 +97,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     // std::ofstream outputter("output.json");
     // styledStreamWriter.write(outputter, jsonObject);
     jsonString = fastWriter.write(jsonObject);
-    priorityRequestGenerator.loggingData(jsonString);
+    // priorityRequestGenerator.loggingData(jsonString);
     return jsonString;
 }
 

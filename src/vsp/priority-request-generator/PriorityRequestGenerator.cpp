@@ -622,7 +622,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		// mapManager.deleteActiveMapfromList();
 		// activeMapList.clear();
-		// ActiveRequestTable.clear();
+		ActiveRequestTable.clear();
 		// setIntersectionID(0);
 		// bgetActiveMap = false; //Required for HMI json
 		requestSendStatus  = false;
@@ -767,7 +767,7 @@ std::string PriorityRequestGenerator::getVehicleMapStatus()
 	else if (bgetActiveMap == false)
 		vehicleMapStatus = "False";
 
-	std::cout << "Vehicle Map Status" << vehicleMapStatus << std::endl;
+	// std::cout << "Vehicle Map Status" << vehicleMapStatus << std::endl;
 	return vehicleMapStatus;
 }
 
@@ -783,7 +783,7 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 	else if (requestSendStatus  == false)
 		vehicleSRMStatus = "False";
 
-	std::cout << "Vehicle Request Send Status" << vehicleSRMStatus << std::endl;
+	// std::cout << "Vehicle Request Send Status" << vehicleSRMStatus << std::endl;
 	return vehicleSRMStatus;
 }
 
