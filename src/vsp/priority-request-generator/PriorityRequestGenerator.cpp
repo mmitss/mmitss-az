@@ -209,7 +209,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 	{
 		sendRequestStatus = true;
 		requestSendStatus  = false;
-		std::cout << "SRM is not sent since vehicle is out off the map, at time " << timenow << std::endl;	
+		std::cout << "SRM is sent since vehicle is out off the map, at time " << timenow << std::endl;	
 	}
 	
 	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
@@ -279,7 +279,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		}
 	}
 
-	else if (lightSirenStatus == false)
+	else if (lightSirenStatus == false && bgetActiveMap == true && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME)
 	{	
 		requestSendStatus  = false;
 		std::cout << "SRM is not sent since light-siren is off, at time " << timenow << std::endl;	
@@ -429,6 +429,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane(stopped in the parking lot)
 		if (counter_VehicleInMap > 10)
 		{
+			//If vehicle is on Map
 			if (plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1) == true && unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus) == static_cast<int>(MsgEnum::mapLocType::onInbound))
 			{
 				setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
@@ -443,7 +444,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				getVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 				// requestSendStatus  = true;
 			}
-
+			//If vehicle is not on Map
 			else
 			{
 				mapManager.deleteActiveMapfromList();
@@ -636,7 +637,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		tempSRMTimeStamp = 0.0;
 	}
 	
-	if (getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	else if (getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation); //Setting priority requestType
@@ -661,37 +662,37 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		tempSRMTimeStamp = 0.0;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable == ActiveRequestTable.end())
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable == ActiveRequestTable.end())
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityRequest);
 		requestSendStatus  = true; //Required for HMI json
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != signalGroup)
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != signalGroup)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		requestSendStatus  = true;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= vehicleSpeedDeviationLimit)
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) <= vehicleSpeedDeviationLimit)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		requestSendStatus  = true;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= allowed_ETA_Difference)
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleETA - getTime2Go()) >= allowed_ETA_Difference)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		requestSendStatus  = true;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount)
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->msgCount != msgCount)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		requestSendStatus  = true;
 	}
 
-	else if (getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= requestTimedOutValue)
+	else if (lightSirenStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && findVehicleIDOnTable != ActiveRequestTable.end() && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= requestTimedOutValue)
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::requestUpdate);
 		requestSendStatus  = true;
@@ -758,14 +759,15 @@ int PriorityRequestGenerator::getMsgCount()
 */
 std::string PriorityRequestGenerator::getVehicleMapStatus()
 {
-	std::string vehicleMapStatus{};
+	std::string vehicleMapStatus{"False"};
 
 	if (bgetActiveMap == true)
 		vehicleMapStatus = "True";
 
-	else
+	else if (bgetActiveMap == false)
 		vehicleMapStatus = "False";
 
+	std::cout << "Vehicle Map Status" << vehicleMapStatus << std::endl;
 	return vehicleMapStatus;
 }
 
@@ -781,6 +783,7 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 	else if (requestSendStatus  == false)
 		vehicleSRMStatus = "False";
 
+	std::cout << "Vehicle Request Send Status" << vehicleSRMStatus << std::endl;
 	return vehicleSRMStatus;
 }
 
