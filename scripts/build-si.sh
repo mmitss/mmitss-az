@@ -12,7 +12,7 @@ cd ./../src/system-interface
 pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/system-interface  ../../bin/SystemInterface/x86/M_SystemInterface
+    mv dist/system-interface  ../../bin/SystemInterface/arm/M_SystemInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
