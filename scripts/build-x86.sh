@@ -196,26 +196,6 @@ sleep 1s
 ######################################################################################
 
 #######################################################################################
-echo "Building Map Engine..."
-cd ./../src/mrp/map-engine
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_MapEngine ../../../bin/MapEngine/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-######################################################################################
-
-#######################################################################################
 echo "Building Traffic Controller Interface..."
 cd ./../src/mrp/traffic-controller-interface
 # Clean the folder and build for linux.
@@ -243,26 +223,6 @@ pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/x86/M_MapSpatBroadcaster
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building TrajectoryAware..."
-cd ./../src/mrp/trajectory-aware
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed trajectory-aware.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/trajectory-aware  ../../../bin/TrajectoryAware/x86/M_TrajectoryAware
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
