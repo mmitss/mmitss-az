@@ -26,11 +26,7 @@ import sh
 def initializeBsmLogFile(FileName):
     bsmFilename = "./../datalogs/BsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     bsmLogFile = open(bsmFilename, 'w')
-    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,"+
-                        "trajectoryId,secMark,latitude,longitude,elevation,local_x,local_y,local_z,"+
-                        "speed,heading,type,length,width,position_on_map,in_queue,current_approach,current_lane,"+
-                        "current_signal_group,trajectory_signal_group,distance_to_stopbar,"+
-                        "time_to_stopbar,distance_along_path,onmap_status\n")
+    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
     return bsmLogFile, bsmFilename
 
 def initializeSrmLogFile(FileName):
@@ -113,7 +109,7 @@ def receiveProcessAndStoreIntersectionDataLocally(socket, spatLogFile, surroundi
         signalStatus, spatCsv = spatJsonToCsv(jsonData)
         spatLogFile.write(spatCsv)
         return signalStatus
-    elif jsonData["MsgType"]=="TrajectoryDatapoint": # then this message is a BSM message
+    elif jsonData["MsgType"]=="BSM": # then this message is a BSM message
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
     elif jsonData["MsgType"]=="SRM": # then this message is a SRM message
         srmLogFile.write(srmJsonToCsv(jsonData))
@@ -126,7 +122,7 @@ def receiveProcessAndStoreVehicleDataLocally(socket, hostBsmDecoderPort, hostBsm
     if address[1]==hostBsmDecoderPort: # then this message is a BSM from the host vehicle
         hostBsmLogFile.write(bsmJsonToCsv(jsonData))
 
-    elif jsonData["MsgType"]=="TrajectoryDatapoint": # then this message is a BSM from surrounding connected vehicle
+    elif jsonData["MsgType"]=="BSM": # then this message is a BSM from surrounding connected vehicle
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
 
     elif jsonData["MsgType"]=="SPaT": 
@@ -177,61 +173,33 @@ Thanks.""".format(transferSize, unit, str(datetime.datetime.now()))
 def bsmJsonToCsv(jsonData:json):
     log_timestamp_verbose = str(datetime.datetime.now())
     log_timestamp_posix = str(time.time())
-    timestamp_verbose = str(datetime.datetime.now())
+    timestamp_verbose = str(jsonData["Timestamp_verbose"])
     timestamp_posix = str(jsonData["Timestamp_posix"])
     temporaryId = str(jsonData["BasicVehicle"]["temporaryID"])
-    trajectoryId = str(jsonData["TrajectoryId"])
     secMark = str(jsonData["BasicVehicle"]["secMark_Second"])
     latitude = str(jsonData["BasicVehicle"]["position"]["latitude_DecimalDegree"])
     longitude = str(jsonData["BasicVehicle"]["position"]["longitude_DecimalDegree"])
     elevation = str(jsonData["BasicVehicle"]["position"]["elevation_Meter"])
-    local_x = str(jsonData["OnmapVehicle"]["LocalCoordinates"]["x"])
-    local_y= str(jsonData["OnmapVehicle"]["LocalCoordinates"]["y"])
-    local_z = str(jsonData["OnmapVehicle"]["LocalCoordinates"]["z"])
     speed = str(jsonData["BasicVehicle"]["speed_MeterPerSecond"])
     heading = str(jsonData["BasicVehicle"]["heading_Degree"])
     vehType = str(jsonData["BasicVehicle"]["type"])
     length = str(jsonData["BasicVehicle"]["size"]["length_cm"])
     width = str(jsonData["BasicVehicle"]["size"]["width_cm"])
-    position_on_map = str(jsonData["OnmapVehicle"]["PositionOnMap"])
-    in_queue = str(jsonData["OnmapVehicle"]["InboundStatus"]["InQueueStatus"])
-    current_approach = str(jsonData["OnmapVehicle"]["ApproachId"])
-    current_lane = str(jsonData["OnmapVehicle"]["LaneId"])
-    signal_group = str(jsonData["OnmapVehicle"]["InboundStatus"]["SignalGroup"])
-    trajectory_signal_group = str(jsonData["TrajectorySignalGroup"])
-    distance_to_stopbar = str(jsonData["OnmapVehicle"]["InboundStatus"]["DistanceToStopbar_Meter"])
-    time_to_stopbar = str(jsonData["OnmapVehicle"]["InboundStatus"]["TimeToStopbar_Second"])
-    distance_along_path = str(jsonData["OnmapVehicle"]["DistanceTravelledAlongTrajectory_Meter"])
-    onmap = str(jsonData["OnMapStatus"])
     
     csv = (log_timestamp_verbose + "," 
             + log_timestamp_posix + "," 
             + timestamp_verbose + "," 
             + timestamp_posix + "," 
             + temporaryId + "," 
-            + trajectoryId + ","
             + secMark + "," 
             + latitude + "," 
             + longitude + "," 
             + elevation + "," 
-            + local_x + "," 
-            + local_y + "," 
-            + local_z + ","
             + speed + "," 
             + heading + "," 
             + vehType + ","
             + length + "," 
-            + width + ","
-            + position_on_map + ","
-            + in_queue + ","
-            + current_approach + ","
-            + current_lane + ","
-            + signal_group + ","
-            + trajectory_signal_group + ","
-            + distance_to_stopbar + ","
-            + time_to_stopbar + ","
-            + distance_along_path + ","
-            + onmap + "\n")
+            + width + "\n")
     return csv
 
 def srmJsonToCsv(jsonData:json):
