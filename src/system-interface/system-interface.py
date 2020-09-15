@@ -56,8 +56,10 @@ def local_console():
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         pageTitle = data['IntersectionName']
-    
-    return render_template('local_console.html', pageTitle=pageTitle)
+        hostIp = data['hostIp']
+    	hostIpAndPort = 'http://' + hostIp + '9001'
+
+    return render_template('local_console.html', pageTitle=pageTitle, hostIpAndPort)
 
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
@@ -385,4 +387,4 @@ def internal_server_error(e):
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')

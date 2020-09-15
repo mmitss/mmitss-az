@@ -1,18 +1,16 @@
 #-----------------------------------------------------------------------------#
 #    Dockerfile to build an arm platform image for the vsp                    #
 #-----------------------------------------------------------------------------#
-#FROM mmitssuarizona/mmitss-arm-base:1.0
-FROM mmitss-arm-base:1.0
+FROM mmitssuarizona/mmitss-arm-base:1.0
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY WirelessMsgDecoder/arm/M_WirelessMsgDecoder /mmitss
 COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY HostBsmDecoder/arm/M_HostBsmDecoder /mmitss
 COPY PriorityRequestGenerator/arm/M_PriorityRequestGenerator /mmitss
-#COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
-#COPY LightSirenStatusManager/arm/M_LightSirenStatusManager /mmitss
-COPY SystemInterface /mmitss/system-interface
+COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
+COPY LightSirenStatusManager/arm/M_LightSirenStatusManager /mmitss
+COPY SystemInterface/arm/M_SystemInterface /mmitss
 
-COPY supervisord-vsp.conf /mmitss/supervisord.conf
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord -c /nojournal/bin/supervisord.conf"]
 
