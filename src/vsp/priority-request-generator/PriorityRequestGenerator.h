@@ -79,11 +79,9 @@ public:
   std::vector<Map::AvailableMap> availableMapList;
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
   std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
-
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
   bool getLoggingStatus();
-
   void loggingData(std::string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
