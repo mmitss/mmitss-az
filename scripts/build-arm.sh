@@ -257,3 +257,46 @@ sleep 1s
 
 
 
+#######################################################################################
+echo "Building Light Siren Status Manager..."
+cd ./../src/vsp/light-siren-status-manager
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed M_LightSirenStatusManager.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/M_LightSirenStatusManager  ../../../bin/LightSirenStatusManager/arm
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+
+
+#######################################################################################
+echo "Building System Interface..."
+cd ./../src/system-interface
+# Clean the folder and build for linux.
+pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/system-interface  ../../bin/SystemInterface/arm/M_SystemInterface
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+

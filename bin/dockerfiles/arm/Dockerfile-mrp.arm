@@ -12,7 +12,7 @@ COPY SnmpEngine/arm/M_SnmpEngine /mmitss
 COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
+COPY SystemInterface/arm/M_SystemInterface /mmitss
 
-COPY supervisord-mrp.conf /mmitss/supervisord.conf
-CMD ["/usr/bin/supervisord"]
+ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 

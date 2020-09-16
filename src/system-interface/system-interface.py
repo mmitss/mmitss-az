@@ -23,9 +23,18 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
+import os
+import sys
 
-# Initialize application
-app = Flask(__name__)
+# Initialize application for either PyInstaller or Development
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    static_folder = os.path.join(sys._MEIPASS, 'static')
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask(__name__)
+
+# Apply Bootstrap 
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = '%sq72f#8c$seryfl#2h'
 
@@ -47,8 +56,10 @@ def local_console():
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         pageTitle = data['IntersectionName']
-    
-    return render_template('local_console.html', pageTitle=pageTitle)
+        hostIp = data['HostIp']
+        hostIpAndPort = "http://" + hostIp + ":9001"
+
+    return render_template('local_console.html', pageTitle=pageTitle, hostIpAndPort=hostIpAndPort)
 
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
@@ -57,6 +68,7 @@ class ConfigurationForm(FlaskForm):
     intersectionName        = StringField()
     intersectionID          = IntegerField()
     regionalID              = IntegerField()
+    mapPayload              = StringField('Map Payload')
     dataCollectorIP         = StringField()
     hmiControllerIP         = StringField()
     messageDistributorIP    = StringField()
@@ -152,6 +164,7 @@ class SysConfig:
         self.sourceDsrcDeviceIp = data['SourceDsrcDeviceIp']
         self.intersectionName = data['IntersectionName']
         self.intersectionID = data['IntersectionID']
+        self.mapPayload = data['MapPayload']
         self.regionalID = data['RegionalID']
         self.dataCollectorIP = data['DataCollectorIP']
         self.hmiControllerIP = data['HMIControllerIP']
@@ -240,13 +253,26 @@ class SysConfig:
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
 
-
+def convertToList(formString):
+    # remove any brackets
+    formString = formString.replace("[", "")
+    formString = formString.replace("]", "")
+    
+    if len(formString) > 0:
+        # split the string
+        string_list = formString.split(",")
+        intList = [int(x) for x in string_list]
+    else:
+        # empty list
+        intList = []
+    return intList
 
 def prepareJSONData(data, form):
     data['HostIp']              = form.hostIp.data
     data['SourceDsrcDeviceIp']  = form.sourceDsrcDeviceIp.data
     data['IntersectionName']    = form.intersectionName.data
     data['IntersectionID']      = form.intersectionID.data
+    data['MapPayload']          = form.mapPayload.data
     data['RegionalID']          = form.regionalID.data
     data['DataCollectorIP']     = form.dataCollectorIP.data
     data['HMIControllerIP']     = form.hmiControllerIP.data
@@ -321,8 +347,8 @@ def prepareJSONData(data, form):
     data['SignalController']['NtcipBackupTime_sec']    = form.signalControllerNtcipBackupTime_sec.data
     data['SignalController']['Vendor']    = form.signalControllerVendor.data
     data['SignalController']['TimingPlanMib']    = form.signalControllerTimingPlanMib.data
-    data['SignalController']['InactiveVehPhases']    = form.signalControllerInactiveVehPhases.data
-    data['SignalController']['InactivePedPhases']    = form.signalControllerInactivePedPhases.data
+    data['SignalController']['InactiveVehPhases']    = convertToList(form.signalControllerInactiveVehPhases.data)
+    data['SignalController']['InactivePedPhases']    = convertToList(form.signalControllerInactivePedPhases.data)
     data['SignalController']['SplitPhases'] ['1']   = form.signalControllerSplitPhases1.data
     data['SignalController']['SplitPhases'] ['3']   = form.signalControllerSplitPhases3.data
     data['SignalController']['SplitPhases'] ['5']   = form.signalControllerSplitPhases5.data
@@ -346,10 +372,9 @@ def configuration():
     #test location
     #with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
-
-    sysConfig = SysConfig(data)    
-    pageTitle = data['IntersectionName']
-    form = ConfigurationForm(obj=sysConfig)
+        sysConfig = SysConfig(data)    
+        pageTitle = data['IntersectionName']
+        form = ConfigurationForm(obj=sysConfig)
 
     #if request.method == 'POST' and form.validate():
     if request.method == 'POST':
@@ -376,4 +401,4 @@ def internal_server_error(e):
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
