@@ -11,9 +11,6 @@ M_*
 
 *.code-workspace
 
-#M_*
-
-
 .vscode
 
 cmake*
