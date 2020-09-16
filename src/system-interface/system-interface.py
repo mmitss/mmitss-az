@@ -68,6 +68,7 @@ class ConfigurationForm(FlaskForm):
     intersectionName        = StringField()
     intersectionID          = IntegerField()
     regionalID              = IntegerField()
+    mapPayload              = StringField('Map Payload')
     dataCollectorIP         = StringField()
     hmiControllerIP         = StringField()
     messageDistributorIP    = StringField()
@@ -163,6 +164,7 @@ class SysConfig:
         self.sourceDsrcDeviceIp = data['SourceDsrcDeviceIp']
         self.intersectionName = data['IntersectionName']
         self.intersectionID = data['IntersectionID']
+        self.mapPayload = data['MapPayload']
         self.regionalID = data['RegionalID']
         self.dataCollectorIP = data['DataCollectorIP']
         self.hmiControllerIP = data['HMIControllerIP']
@@ -270,6 +272,7 @@ def prepareJSONData(data, form):
     data['SourceDsrcDeviceIp']  = form.sourceDsrcDeviceIp.data
     data['IntersectionName']    = form.intersectionName.data
     data['IntersectionID']      = form.intersectionID.data
+    data['MapPayload']          = form.mapPayload.data
     data['RegionalID']          = form.regionalID.data
     data['DataCollectorIP']     = form.dataCollectorIP.data
     data['HMIControllerIP']     = form.hmiControllerIP.data
