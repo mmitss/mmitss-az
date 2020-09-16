@@ -251,7 +251,19 @@ class SysConfig:
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
 
-
+def convertToList(formString):
+    # remove any brackets
+    formString = formString.replace("[", "")
+    formString = formString.replace("]", "")
+    
+    if len(formString) > 0:
+        # split the string
+        string_list = formString.split(",")
+        intList = [int(x) for x in string_list]
+    else:
+        # empty list
+        intList = []
+    return intList
 
 def prepareJSONData(data, form):
     data['HostIp']              = form.hostIp.data
@@ -332,8 +344,8 @@ def prepareJSONData(data, form):
     data['SignalController']['NtcipBackupTime_sec']    = form.signalControllerNtcipBackupTime_sec.data
     data['SignalController']['Vendor']    = form.signalControllerVendor.data
     data['SignalController']['TimingPlanMib']    = form.signalControllerTimingPlanMib.data
-    data['SignalController']['InactiveVehPhases']    = form.signalControllerInactiveVehPhases.data
-    data['SignalController']['InactivePedPhases']    = form.signalControllerInactivePedPhases.data
+    data['SignalController']['InactiveVehPhases']    = convertToList(form.signalControllerInactiveVehPhases.data)
+    data['SignalController']['InactivePedPhases']    = convertToList(form.signalControllerInactivePedPhases.data)
     data['SignalController']['SplitPhases'] ['1']   = form.signalControllerSplitPhases1.data
     data['SignalController']['SplitPhases'] ['3']   = form.signalControllerSplitPhases3.data
     data['SignalController']['SplitPhases'] ['5']   = form.signalControllerSplitPhases5.data
@@ -357,10 +369,9 @@ def configuration():
     #test location
     #with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
-
-    sysConfig = SysConfig(data)    
-    pageTitle = data['IntersectionName']
-    form = ConfigurationForm(obj=sysConfig)
+        sysConfig = SysConfig(data)    
+        pageTitle = data['IntersectionName']
+        form = ConfigurationForm(obj=sysConfig)
 
     #if request.method == 'POST' and form.validate():
     if request.method == 'POST':
