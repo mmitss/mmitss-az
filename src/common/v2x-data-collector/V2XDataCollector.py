@@ -6,11 +6,11 @@ class V2XDataCollector:
     def __init__(self, environment:str):
 
         self.environment = environment
-        self.hostBsmLogFile = None
+        self.hostBsmLogfile = None
         self.remoteBsmLogfile = None
         self.spatLogfile = None
         self.srmLogfile = None
-        self.ssmLogflie = None
+        self.ssmLogfile = None
 
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
         config = (json.load(configFile))
@@ -104,7 +104,7 @@ class V2XDataCollector:
         if self.environment == "vehicle":
             hostBsmLogfileName = directory + self.baseName + "_" + "HostBsmLog_" + timestamp + ".csv"
             self.hostBsmLogfile = open(hostBsmLogfileName, 'w')
-            self.remoteBsmLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
+            self.hostBsmLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
                                         + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
 
     def close_logfiles(self):
@@ -128,7 +128,7 @@ class V2XDataCollector:
         
         csvRow = self.bsmJsonToCsv(bsmJson)
         if ((self.environment == "vehicle") and (senderPort == self.hostBsmDecoderPort)):
-            self.hostBsmLogFile.write(csvRow)
+            self.hostBsmLogfile.write(csvRow)
         else:
             self.remoteBsmLogfile.write(csvRow)
 
@@ -138,11 +138,11 @@ class V2XDataCollector:
 
     def write_srm(self, srmJson:json):
         csvRow = self.srmJsonToCsv(srmJson)
-        self.spatLogfile.write(csvRow)        
+        self.srmLogfile.write(csvRow)        
 
     def write_ssm(self, ssmJson:json):
         csvRow = self.ssmJsonToCsv(ssmJson)
-        self.spatLogfile.write(csvRow)
+        self.ssmLogfile.write(csvRow)
 
     def bsmJsonToCsv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
