@@ -118,7 +118,7 @@ cd ./../src/common/v2x-data-collector
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
+    mv dist/v2x-data-collector  ../../../bin/V2XDataCollector/x86/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
