@@ -64,7 +64,7 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 	DISTANCEUNITCONVERSION = 100; //cm to meter
 	vehicleMinSpeed = 4.0;
 	vehicleSpeedDeviationLimit = 5.0;
-	min_ETA  = 1.0;
+	min_ETA  = 3.0;
 	SRM_GAPOUT_TIME = 2.0;
 	SECONDSINAMINUTE = 60.0;
 	allowed_ETA_Difference = 6.0;
@@ -321,11 +321,17 @@ void PriorityRequestGenerator::setSignalGroup(int phaseNo)
 */
 void PriorityRequestGenerator::setTime2Go(double distance2go, double vehicleSpeed)
 {
+	double vehicleLength = 6.096;
 	if (vehicleSpeed >= vehicleMinSpeed)
 		time2go = static_cast<double>((distance2go / DISTANCEUNITCONVERSION) / vehicleSpeed); //distance2go is cm. DISTANCEUNITCONVERSION is used converst distance2go into meter
 
 	else
-		time2go = min_ETA ;
+	{	
+		time2go = static_cast<double>(((distance2go / DISTANCEUNITCONVERSION)/vehicleLength)*2);
+		if(time2go < min_ETA)
+			time2go = min_ETA;
+	}
+
 }
 
 /*
