@@ -17,7 +17,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(host)
 
 v2xDc = V2XDataCollector(environment)
-v2xDc.initialize_logfiles()
 
 if DEBUGGING: logFileCreationDay = datetime.datetime.now().minute
 else: logFileCreationDay = datetime.datetime.now().day
@@ -26,7 +25,7 @@ while True:
     if DEBUGGING: currentDay = datetime.datetime.now().minute
     else: currentDay = datetime.datetime.now().day
     
-    data, addr = s.recvfrom(2048)
+    data, addr = s.recvfrom(20480)
     senderPort = addr[1]
 
     if currentDay == logFileCreationDay:
