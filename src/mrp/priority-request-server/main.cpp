@@ -44,7 +44,6 @@ int main()
 
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
-    const string dataCollectorIp = jsonObject_config["DataCollectorIP"].asString();
 
     int msgType{};
     bool timedOutOccur{};
@@ -71,7 +70,7 @@ int main()
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
-                PRSSocket.sendData(dataCollectorIp, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.loggingData(receivedJsonString);
