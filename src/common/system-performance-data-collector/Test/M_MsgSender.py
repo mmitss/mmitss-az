@@ -3,7 +3,7 @@ import json
 import datetime
 import time
 
-fileName = "vehicleLogData.json"
+fileName = "intersectionLogData.json"
 
 # Read a config file into a json object:
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -22,10 +22,6 @@ f = open(fileName, 'r')
 data = f.read()
 s.sendto(data.encode(),communicationInfo)
 print (time.time())
-
-# data,address = s.recvfrom(10240)
-# print(data.decode())
-
 
 f.close()
 s.close()

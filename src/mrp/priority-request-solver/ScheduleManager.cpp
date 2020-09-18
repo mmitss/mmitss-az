@@ -27,7 +27,7 @@ ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<Traffic
     if (!signalPlan.empty())
         trafficSignalPlan = signalPlan;
 
-    bEVStatus = EVStatus;
+    emergencyVehicleStatus = EVStatus;
 }
 
 /*
@@ -555,7 +555,7 @@ void ScheduleManager::createEventList()
         }
     }
 
-    if (bEVStatus == true)
+    if (emergencyVehicleStatus == true)
     {
         getOmitPhases();
 
