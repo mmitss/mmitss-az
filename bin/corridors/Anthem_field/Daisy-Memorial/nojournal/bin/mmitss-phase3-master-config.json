@@ -40,7 +40,7 @@
 		"MapSPaTBroadcaster": 6053,
 		"DsrcImmediateForwarder": 1516,
 		"PriorityRequestServer_SendSSM": 50003,
-		"DataCollector": 30005,
+		"DataCollector": 30001,
 		"SnmpEngine": 20020,
 		"SnmpEngineInterface": 20021,
 		"PriorityRequestGeneratorServer": 20022,
