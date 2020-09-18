@@ -14,6 +14,7 @@ COPY TrajectoryAware/x86/M_TrajectoryAware /mmitss
 COPY MapEngine/x86/M_MapEngine /mmitss
 COPY SystemPerformanceDataCollector/x86/M_SystemPerformanceDataCollector /mmitss
 COPY SystemInterface/x86/M_SystemInterface /mmitss
+COPY V2XDataCollector/x86/M_V2XDataCollector /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 

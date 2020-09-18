@@ -47,7 +47,8 @@ def main():
     
     snmpEngineAddress = (mrpIp, config["PortNumber"]["SnmpEngine"])
     msgEncoderAddress = (mrpIp, config["PortNumber"]["MessageTransceiver"]["MessageEncoder"])
-    dataCollectorAddress = (config["DataCollectorIP"], config["PortNumber"]["DataCollector"])
+    dataCollectorServerAddress = (config["DataCollectorIP"], config["PortNumber"]["DataCollector"])
+    localDataCollectorAddress = (config["HostIp"], config["PortNumber"]["DataCollector"])
     msgDistributorAddress = (config["MessageDistributorIP"], config["PortNumber"]["MessageDistributor"])
     tci_currPhaseAddress = (mrpIp, config["PortNumber"]["TrafficControllerCurrPhaseListener"])
     
@@ -143,8 +144,15 @@ def main():
             spatJsonString = currentSpatObject.Spat2Json()
             currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
 
+            vehCurrStateJson = json.dumps({
+                "MsgType": "CurrentState_VehiclePhases",
+                "Intersection": intersectionName,
+                "States": currentBlob.getVehCurrState()
+            })
+                
+            s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
             s.sendto(spatJsonString.encode(), msgEncoderAddress)
-            s.sendto(spatJsonString.encode(), dataCollectorAddress)
+            s.sendto(spatJsonString.encode(), localDataCollectorAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
                         
             # Send spat json to external clients:

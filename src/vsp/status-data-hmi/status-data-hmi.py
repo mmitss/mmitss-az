@@ -452,8 +452,9 @@ def populate_MAP_tree(availableMaps):
     #gui.MAP_tree.config(height=len(availableMaps))
     gui.MAP_tree.config(height=6)
 
-    for map in availableMaps:
-        gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
+    if availableMaps != None:
+        for map in availableMaps:
+            gui.MAP_tree.insert('', 'end', iid=None, text=" ", values=(map['IntersectionID'], map['DescriptiveName'], map['active'], map['age'] ), tag='data')
 
     # tag styles
     #gui.MAP_tree.tag_configure('data', background=gui.statusPanelBackground, foreground=gui.textForeground)
