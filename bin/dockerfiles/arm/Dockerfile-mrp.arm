@@ -13,6 +13,7 @@ COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
 COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
 COPY SystemInterface/arm/M_SystemInterface /mmitss
+COPY V2XDataCollector/arm/M_V2XDataCollector /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 

@@ -426,7 +426,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
     // Json::StyledStreamWriter styledStreamWriter;
-    std::ofstream outputter("systemPerformanceDataLog.json");
+    // std::ofstream outputter("systemPerformanceDataLog.json");
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
     if (applicationPlatform == "roadside")
