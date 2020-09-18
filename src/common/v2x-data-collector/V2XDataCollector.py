@@ -76,7 +76,7 @@ class V2XDataCollector:
 
 
         srmLogfileName = directory + self.baseName + "_" + "SrmLog_" + timestamp + ".csv"
-        self.srmLogfile = open(srmLogfileName, 'w')
+        self.srmLogfile = open(srmLogfileName, 'w', buffering=1)
         self.srmLogfile.write(("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose" + "," 
                                 + "timestamp_posix" + ","
                                 + "minuteOfYear" + "," 
@@ -100,7 +100,7 @@ class V2XDataCollector:
                                 + "\n"))
 
         ssmLogfileName = directory + self.baseName + "_" + "SsmLog_" + timestamp + ".csv"
-        self.ssmLogfile = open(ssmLogfileName, 'w')
+        self.ssmLogfile = open(ssmLogfileName, 'w', buffering=1)
         self.ssmLogfile.write("log_timestamp_verbose" + "," 
                     + "log_timestamp_posix" + "," 
                     + "timestamp_verbose" + "," 
