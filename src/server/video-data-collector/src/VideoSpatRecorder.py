@@ -58,6 +58,11 @@ class VideoSpatRecorder:
             color = (0,255,255)
             if time.time() % 2 < 1.5 :
                 frame = cv2.arrowedLine(frame, (40,160), (10,160), color, 5, tipLength=0.5)
+    
+    def overlayTimestamp(self, frame):
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        timestamp = str(datetime.datetime.now())
+        frame = cv2.putText(frame, timestamp, (10, 100), font, 1,(0, 255, 255), 2, cv2.LINE_AA)
 
     def getMetadataJson(self):
         metadataJson = {
@@ -72,8 +77,9 @@ class VideoSpatRecorder:
         return metadataJson
 
 if __name__ == "__main__":
-    vsr = VideoSpatRecorder("./../datalogs/signal_status/DaisyMountain_GavilanPeak.json", 1,6)
-    im = cv2.imread("sample_picture.png")
+    vsr = VideoSpatRecorder("test/DaisyMountain_GavilanPeak.json", 1,6)
+    im = cv2.imread("test/sample_picture.jpg")
     vsr.drawBlankSignalHeads(im)
     vsr.fillSignalHeads(im)
+    vsr.overlayTimestamp(im)
     cv2.imwrite("sample_spat.jpg", im)

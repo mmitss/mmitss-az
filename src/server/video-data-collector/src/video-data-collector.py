@@ -22,7 +22,6 @@ import datetime
 import sys
 import json
 import cv2
-import DataCollectorMethods as DCM
 from VideoSpatRecorder import VideoSpatRecorder
 
 cameraConfigFile = open(sys.argv[1], 'r')    
@@ -35,17 +34,17 @@ cyverseDirectory = cameraConfig["CyVerse_DirectoryPath"]
 leftTurnPhase = cameraConfig["LeftTurnPhase"]
 throughPhase = cameraConfig["ThroughPhase"]
 
-configFile = open('./../config/video-data-collection-module-config.json', 'r')
+configFile = open('/nojournal/bin/config/global_config.json', 'r')
 config = json.load(configFile)
-
-signalStatusFileName = ('./../datalogs/signal_status/' + intersectionName + ".json")
 
 totalLength_sec = config["TotalLength_Sec"]
 sliceLength_sec = config["SliceLength_Sec"]
 totalStartTime = time.time()
 
-FileName = localStorageDirectory + "/" + intersectionName + "_" + cameraDirection
+signalStatusFileName = ('/nojournal/bin/signal_status/' + intersectionName + ".json")
 
+
+fileName = localStorageDirectory + "/" + intersectionName + "_" + cameraDirection
 
 vsr = VideoSpatRecorder(signalStatusFileName, leftTurnPhase, throughPhase)
 
@@ -53,13 +52,11 @@ cap = cv2.VideoCapture(url)
 
 fourcc = cv2.VideoWriter_fourcc(*'XVID')
 
-
-
 while(cap.isOpened()):
     
     if time.time()-totalStartTime < totalLength_sec:
     
-        currentVideoFileName = FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".avi"
+        currentVideoFileName = fileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".avi"
         currentMetadataFilename = currentVideoFileName.replace(".avi", "_meta.json")
         out = cv2.VideoWriter(currentVideoFileName, fourcc, 30, (1920,1080))
         metadataFile = open(currentMetadataFilename, 'w')
@@ -76,6 +73,7 @@ while(cap.isOpened()):
             if ret == True:
                 vsr.drawBlankSignalHeads(frame)
                 vsr.fillSignalHeads(frame)
+                vsr.overlayTimestamp(frame)
                 out.write(frame)
                 metadata_frame = metadata_frame + [vsr.getMetadataJson()]
 
