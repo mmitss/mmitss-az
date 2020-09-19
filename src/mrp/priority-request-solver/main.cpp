@@ -34,8 +34,8 @@ int main()
     UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    char receiveBuffer[5120];
-    char receivedSignalStatusBuffer[5120];
+    char receiveBuffer[40960];
+    char receivedSignalStatusBuffer[40960];
     int msgType{};
     string tciJsonString{};
 
@@ -51,7 +51,7 @@ int main()
 
         if (msgType == static_cast<int>(msgType::signalPlan))
         {
-            // cout << "Received Signal Timing Plan " << endl;
+            cout << "Received Signal Timing Plan " << endl;
             priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
         }
 

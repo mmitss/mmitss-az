@@ -19,7 +19,7 @@ using std::ofstream;
 class ScheduleManager
 {
 private:
-    bool bEVStatus{};
+    bool emergencyVehicleStatus{};
     vector<RequestList> priorityRequestList;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
     vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;

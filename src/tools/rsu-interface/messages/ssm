@@ -1,6 +1,6 @@
 Version=0.7
 Type=SSM
-PSID=0xE000020
+PSID=0xE0000020
 Priority=7
 TxMode=ALT
 TxChannel=182

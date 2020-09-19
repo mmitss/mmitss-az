@@ -26,7 +26,7 @@ import sh
 def initializeBsmLogFile(FileName):
     bsmFilename = "./../datalogs/BsmLog" + FileName + "_" + ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now())) + ".csv"
     bsmLogFile = open(bsmFilename, 'w')
-    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,length,width\n")
+    bsmLogFile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
     return bsmLogFile, bsmFilename
 
 def initializeSrmLogFile(FileName):
@@ -106,7 +106,9 @@ def receiveProcessAndStoreIntersectionDataLocally(socket, spatLogFile, surroundi
     data, address = socket.recvfrom(4096)
     jsonData = json.loads(data.decode())
     if jsonData["MsgType"]=="SPaT": # then this message is a SPAT message
-        spatLogFile.write(spatJsonToCsv(jsonData))
+        signalStatus, spatCsv = spatJsonToCsv(jsonData)
+        spatLogFile.write(spatCsv)
+        return signalStatus
     elif jsonData["MsgType"]=="BSM": # then this message is a BSM message
         surroundingBsmLogFile.write(bsmJsonToCsv(jsonData))
     elif jsonData["MsgType"]=="SRM": # then this message is a SRM message
@@ -180,6 +182,7 @@ def bsmJsonToCsv(jsonData:json):
     elevation = str(jsonData["BasicVehicle"]["position"]["elevation_Meter"])
     speed = str(jsonData["BasicVehicle"]["speed_MeterPerSecond"])
     heading = str(jsonData["BasicVehicle"]["heading_Degree"])
+    vehType = str(jsonData["BasicVehicle"]["type"])
     length = str(jsonData["BasicVehicle"]["size"]["length_cm"])
     width = str(jsonData["BasicVehicle"]["size"]["width_cm"])
     
@@ -194,6 +197,7 @@ def bsmJsonToCsv(jsonData:json):
             + elevation + "," 
             + speed + "," 
             + heading + "," 
+            + vehType + ","
             + length + "," 
             + width + "\n")
     return csv
@@ -408,7 +412,10 @@ def spatJsonToCsv(jsonData:json):
             p6_currState + "," + p6_minEndTime + "," + p6_maxEndTime + "," + p6_elapsedTime + "," +
             p7_currState + "," + p7_minEndTime + "," + p7_maxEndTime + "," + p7_elapsedTime + "," +
             p8_currState + "," + p8_minEndTime + "," + p8_maxEndTime + "," + p8_elapsedTime + "\n")
-    return csv
+    
+    signalStatus = [(v1_currState),(v2_currState),(v3_currState),(v4_currState),(v5_currState),(v6_currState),(v7_currState),(v8_currState)]
+    
+    return signalStatus, csv
 
 if __name__ == "__main__":
     pass

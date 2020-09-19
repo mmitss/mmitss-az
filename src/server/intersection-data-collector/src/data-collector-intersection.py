@@ -58,12 +58,26 @@ def main():
     surroundingBsmLogFile, currentSurroundingBsmFilename = DCM.initializeBsmLogFile(IntersectionName)
     srmLogFile, currentSrmFilename = DCM.initializeSrmLogFile(IntersectionName)
     ssmLogFile, currentSsmFilename = DCM.initializeSsmLogFile(IntersectionName)
+    previousSignalStatus = 0
 
     while True:
         if DEBUGGING: currentDay = datetime.datetime.now().minute
         else: currentDay = datetime.datetime.now().day
         if currentDay == logFileCreationDay:
-            DCM.receiveProcessAndStoreIntersectionDataLocally(s, spatLogFile, surroundingBsmLogFile, srmLogFile, ssmLogFile)
+            signalStatus = DCM.receiveProcessAndStoreIntersectionDataLocally(s, spatLogFile, surroundingBsmLogFile, srmLogFile, ssmLogFile)
+            if signalStatus == None:
+                pass
+            elif signalStatus == previousSignalStatus:
+                pass
+            else :
+                previousSignalStatus = signalStatus
+                signalStatusFile = open(("./../datalogs/signal_status/" + IntersectionName + ".json"), 'w')
+                signalStatusDict = {
+                    "SignalStatus": signalStatus
+                }
+                signalStatusFile.write(json.dumps(signalStatusDict))
+                signalStatusFile.close()
+
         else:
             logFileCreationDay = currentDay
 
@@ -74,15 +88,15 @@ def main():
             ssmLogFile.close()
 
             # Interaction with CyVerse
-            spatLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
-            bsmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)
-            srmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Srm, currentSrmFilename)
-            ssmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Ssm, currentSsmFilename)
-            totalTransferSizeBytes = spatLogSizeBytes + bsmLogSizeBytes + srmLogSizeBytes + ssmLogSizeBytes
-            notification = str(totalTransferSizeBytes)
+            #spatLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Spat, currentSpatFilename)
+            #bsmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_SurroundingBsms, currentSurroundingBsmFilename)
+            #srmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Srm, currentSrmFilename)
+            #ssmLogSizeBytes = DCM.transferToCyVerseAndDeleteLocal(CyVerse_DirectoryPath_Ssm, currentSsmFilename)
+            #totalTransferSizeBytes = spatLogSizeBytes + bsmLogSizeBytes + srmLogSizeBytes + ssmLogSizeBytes
+            #notification = str(totalTransferSizeBytes)
             
             # Send notification to email server
-            s.sendto(notification.encode(),emailServerAddress)
+            #s.sendto(notification.encode(),emailServerAddress)
             
             # Open a new log file with new timestamp and initialize it
             spatLogFile, currentSpatFilename = DCM.initializeSpatLogFile(IntersectionName)

@@ -1,0 +1,36 @@
+<!
+***************************************************************************************
+ © 2020 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+***************************************************************************************
+local_console.html
+Created by: Sherilyn Keaton
+University of Arizona   
+College of Engineering
+This code was developed under the supervision of Professor Larry Head
+in the Systems and Industrial Engineering Department.
+***************************************************************************************
+Description:
+------------
+This is the html file that contains the presentation for:
+    * MMITSS Component Process Control and Status Reporting Console
+***************************************************************************************
+-->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Local Console</h1>
+    </div>
+    <div class="page-header">
+        <h2>{{ pageTitle }}</h2>
+    </div>
+    <form method="POST" action="/">
+        <div></div>
+        <iframe src={{ hostIpAndPort }} width="853" height="480" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </form>
+</div>
+{% endblock %}

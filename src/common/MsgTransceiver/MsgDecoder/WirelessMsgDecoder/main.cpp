@@ -8,36 +8,39 @@
 int main()
 {
     Json::Value jsonObject_config;
-	Json::Reader reader;
-	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    Json::Reader reader;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject_config);
-    
+    reader.parse(configJsonString.c_str(), jsonObject_config);
+
     TransceiverDecoder decoder;
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt()));
-    char receiveBuffer[5120];
+    char receiveBuffer[10240];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
-    const string DataCollectorIP = jsonObject_config["DataCollectorIP"].asString();
 
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    
+    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["TrajectoryAware"]).asInt();
+    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
+
     std::string receivedPayload{};
     std::string extractedPayload{};
-    
-    while(true)
+    std::string applicationPlatform = decoder.getApplicationPlatform();
+    int msgType{};
+
+    while (true)
     {
 
         receivedPayload = decoderSocket.receivePayloadHexString();
         size_t pos = receivedPayload.find("001");
-        if (pos!=std::string::npos)
+        if (pos != std::string::npos)
         {
-            extractedPayload = receivedPayload.erase(0,pos);
-            int msgType = decoder.getMessageType(extractedPayload);
+            extractedPayload = receivedPayload.erase(0, pos);
+            msgType = decoder.getMessageType(extractedPayload);
 
             if (msgType == MsgEnum::DSRCmsgID_map)
             {
@@ -45,41 +48,58 @@ int main()
                 decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(mapReceiverPortNo), mapJsonString);
                 std::cout << "Decoded MAP" << std::endl;
             }
-            
+
             else if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
                 std::string bsmJsonString = decoder.bsmDecoder(extractedPayload);
                 decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
                 decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
-                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trajectoryAwarePortNo), bsmJsonString);
                 std::cout << "Decoded BSM" << std::endl;
             }
-            
+
             else if (msgType == MsgEnum::DSRCmsgID_srm)
             {
                 std::string srmJsonString = decoder.srmDecoder(extractedPayload);
                 decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
                 std::cout << "Decoded SRM" << std::endl;
             }
-            
+
             else if (msgType == MsgEnum::DSRCmsgID_spat)
             {
                 std::string spatJsonString = decoder.spatDecoder(extractedPayload);
                 decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
-                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
                 std::cout << "Decoded SPAT" << std::endl;
             }
-            
+
             else if (msgType == MsgEnum::DSRCmsgID_ssm)
             {
                 std::string ssmJsonString = decoder.ssmDecoder(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo),ssmJsonString);
-                decoderSocket.sendData(DataCollectorIP , static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
                 std::cout << "Decoded SSM" << std::endl;
-            }        
+            }
+        }
+
+        if (decoder.sendSystemPerformanceDataLog() == true)
+        {
+            if (applicationPlatform == "roadside")
+            {
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
+            }
+
+            else if (applicationPlatform == "vehicle")
+            {
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SSM"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("MAP"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
+            }
         }
     }
-    
+
     return 0;
 }

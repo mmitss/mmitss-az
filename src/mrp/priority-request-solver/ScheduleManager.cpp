@@ -27,7 +27,7 @@ ScheduleManager::ScheduleManager(vector<RequestList> requestList, vector<Traffic
     if (!signalPlan.empty())
         trafficSignalPlan = signalPlan;
 
-    bEVStatus = EVStatus;
+    emergencyVehicleStatus = EVStatus;
 }
 
 /*
@@ -533,7 +533,10 @@ void ScheduleManager::createEventList()
             ring1Schedule.commandPhase = vehicleSignalGroup;
             ring1Schedule.commandType = "call_veh";
             ring1Schedule.commandStartTime = 0.0;
-            ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+            if (priorityRequestList[i].vehicleETA <= 6.0)
+                ring1Schedule.commandEndTime = 10.0; //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
+            else
+                ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
             ring1_TCISchedule.push_back(ring1Schedule);
         }
@@ -543,13 +546,16 @@ void ScheduleManager::createEventList()
             ring2Schedule.commandPhase = vehicleSignalGroup;
             ring2Schedule.commandType = "call_veh";
             ring2Schedule.commandStartTime = 0.0;
-            ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
+            if (priorityRequestList[i].vehicleETA <= 6.0) //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
+                ring2Schedule.commandEndTime = 10.0;
+            else
+                ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
             ring2_TCISchedule.push_back(ring2Schedule);
         }
     }
 
-    if (bEVStatus == true)
+    if (emergencyVehicleStatus == true)
     {
         getOmitPhases();
 

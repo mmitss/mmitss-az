@@ -9,7 +9,7 @@ INCLUDES    := -I$(J2735_INCL) -I$(COMMON_INCL) # tell the compiler where to fin
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -ldsrc -lasn -lmmitss-common #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += main.cpp PriorityRequestGeneratorServer.cpp ../../obu/priority-request-generator/PriorityRequestGenerator.cpp ../../obu/priority-request-generator/MapManager.cpp ../../obu/priority-request-generator/PriorityRequestGeneratorStatus.cpp ../../obu/priority-request-generator/locAware.cpp ../../obu/priority-request-generator/geoUtils.cpp
+SRC += main.cpp PriorityRequestGeneratorServer.cpp ../../vsp/priority-request-generator/PriorityRequestGenerator.cpp ../../vsp/priority-request-generator/MapManager.cpp ../../vsp/priority-request-generator/PriorityRequestGeneratorStatus.cpp ../../vsp/priority-request-generator/locAware.cpp ../../vsp/priority-request-generator/geoUtils.cpp
 
 #the name of the executable goes here
 TARGET = M_PriorityRequestGeneratorServer
