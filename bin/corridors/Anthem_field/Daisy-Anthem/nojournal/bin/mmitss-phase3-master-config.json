@@ -15,7 +15,7 @@
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
-	"PeerDataDecoding": true
+	"PeerDataDecoding": true,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,
