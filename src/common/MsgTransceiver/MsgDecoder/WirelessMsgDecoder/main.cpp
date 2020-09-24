@@ -15,9 +15,10 @@ int main()
 
     TransceiverDecoder decoder;
     UdpSocket decoderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageDecoder"].asInt()));
-    char receiveBuffer[10240];
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
+
+    const bool peerDataDecoding = jsonObject_config["PeerDataDecoding"].asBool();
 
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
     const int mapReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
@@ -44,9 +45,12 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_map)
             {
-                std::string mapJsonString = decoder.createJsonStingOfMapPayload(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(mapReceiverPortNo), mapJsonString);
-                std::cout << "Decoded MAP" << std::endl;
+                if ((applicationPlatform == "vehicle") || ((applicationPlatform == "roadside") && (peerDataDecoding == true)))
+                {
+                    std::string mapJsonString = decoder.createJsonStingOfMapPayload(extractedPayload);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(mapReceiverPortNo), mapJsonString);
+                    std::cout << "Decoded MAP" << std::endl;
+                }
             }
 
             else if (msgType == MsgEnum::DSRCmsgID_bsm)
@@ -61,26 +65,35 @@ int main()
 
             else if (msgType == MsgEnum::DSRCmsgID_srm)
             {
-                std::string srmJsonString = decoder.srmDecoder(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
-                std::cout << "Decoded SRM" << std::endl;
+                if ((applicationPlatform == "roadside") || ((applicationPlatform == "vehicle") && (peerDataDecoding == true)))
+                {                
+                    std::string srmJsonString = decoder.srmDecoder(extractedPayload);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), srmJsonString);
+                    std::cout << "Decoded SRM" << std::endl;
+                }
             }
 
             else if (msgType == MsgEnum::DSRCmsgID_spat)
             {
-                std::string spatJsonString = decoder.spatDecoder(extractedPayload);
-                decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
-                std::cout << "Decoded SPAT" << std::endl;
+                if ((applicationPlatform == "vehicle") || ((applicationPlatform == "roadside") && (peerDataDecoding == true)))
+                {
+                    std::string spatJsonString = decoder.spatDecoder(extractedPayload);
+                    decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
+                    std::cout << "Decoded SPAT" << std::endl;
+                }
             }
 
             else if (msgType == MsgEnum::DSRCmsgID_ssm)
             {
-                std::string ssmJsonString = decoder.ssmDecoder(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
-                std::cout << "Decoded SSM" << std::endl;
+                if ((applicationPlatform == "vehicle") || ((applicationPlatform == "roadside") && (peerDataDecoding == true)))
+                {                
+                    std::string ssmJsonString = decoder.ssmDecoder(extractedPayload);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                    std::cout << "Decoded SSM" << std::endl;
+                }
             }
         }
 
