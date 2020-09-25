@@ -16,9 +16,7 @@ for client in config["clients"]:
     authorizer.add_user(username=client["name"],
                         password='mmitss123',
                         homedir=client["directory"], 
-                        perm='elradfmwMT',
-                        msg_login=(client["name"] + "logged in"),
-                        msg_quit=(client["name"] + "logged out"))
+                        perm='elradfmwMT')
 
 # Instantiate FTP handler class
     handler = FTPHandler
