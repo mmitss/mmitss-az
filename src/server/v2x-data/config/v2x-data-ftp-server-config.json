@@ -1,0 +1,31 @@
+{
+    "ftpHost": "10.12.6.56",
+    "ftpPort": 9090,
+    "clients":
+    [
+        {
+            "name":"daisy-gavilan",
+            "directory": "../data/daisy-gavilan"
+        },
+        {
+            "name":"daisy-dedication",
+            "directory": "../data/daisy-dedication"
+        },
+        {
+            "name":"daisy-meridian",
+            "directory": "../data/daisy-meridian"
+        },
+        {
+            "name":"daisy-hastings",
+            "directory": "../data/daisy-hastings"
+        },
+        {
+            "name":"daisy-memorial",
+            "directory": "../data/daisy-memorial"
+        },
+        {
+            "name":"daisy-anthem",
+            "directory": "../data/daisy-anthem"
+        }
+    ]
+}
