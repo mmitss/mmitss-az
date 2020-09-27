@@ -46,8 +46,7 @@
         "TrajectoryAware_MapEngineInterface": 20023,
         "MapEngine":20024,
 		"LightSirenStatusManager": 20025,
-		"PeerToPeerPriority": 20026,
-		"SystemPerformanceDataCollector": 20027
+		"PeerToPeerPriority": 20026
 	},
 	"psid": {
 		"map": "8002",
