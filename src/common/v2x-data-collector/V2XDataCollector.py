@@ -18,6 +18,7 @@
 import json
 import time, datetime
 import os
+import shutil
 
 class V2XDataCollector:
     def __init__(self, environment:str):
@@ -51,19 +52,23 @@ class V2XDataCollector:
     def initialize_logfiles(self):
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
         self.loggingDirectory = "/nojournal/bin/v2x_data/" + self.baseName + "_" + self.initializationTimestamp + "/"
+        
         os.makedirs(self.loggingDirectory)
+        os.makedirs("/nojournal/bin/v2x_data/archive")
+
         self.initialize_msgCountsLogfile()
         self.initialize_bsmLogfile("Remote")
         self.initialize_spatLogfile()
         self.initialize_srmLogfile()
         self.initialize_ssmLogfile()
+
         if self.environment == "vehicle":
             self.initialize_bsmLogfile("Host")
 
 
     def initialize_msgCountsLogfile(self):
         msgCountsLogfileName = self.loggingDirectory + self.baseName + "_" + "MsgCountsLog_" + self.initializationTimestamp + ".csv"
-        self.msgCountsLogfile = open(msgCountsLogfileName, 'w')
+        self.msgCountsLogfile = open(msgCountsLogfileName, 'w', buffering=1)
         
         if self.environment == "roadside":
             self.msgCountsLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,interval_sec,msg_source,msg_type,msg_count,msg_served,msg_rejected\n")
@@ -155,52 +160,57 @@ class V2XDataCollector:
         self.ssmLogfile.write(csvHeader)
 
     def write_msgCount(self, msgCounts:json):
-        csvRow = self.msgCountsJsonToCsv(msgCounts)
+        csvRow = self.msgCounts_json_to_csv(msgCounts)
         self.msgCountsLogfile.write(csvRow)
 
     def write_bsm(self, bsmJson:json, senderPort:int):        
-        csvRow = self.bsmJsonToCsv(bsmJson)
+        csvRow = self.bsm_json_to_csv(bsmJson)
         if ((self.environment == "vehicle") and (senderPort == self.hostBsmDecoderPort)):
             self.hostBsmLogfile.write(csvRow)
         else:
             self.remoteBsmLogfile.write(csvRow)
 
     def write_spat(self, spatJson:json):
-        csvRow = self.spatJsonToCsv(spatJson)
+        csvRow = self.spat_json_to_csv(spatJson)
         self.spatLogfile.write(csvRow)
 
     def write_srm(self, srmJson:json):
-        csvRow = self.srmJsonToCsv(srmJson)
+        csvRow = self.srm_json_to_csv(srmJson)
         self.srmLogfile.write(csvRow)        
 
     def write_ssm(self, ssmJson:json):
-        csvRow = self.ssmJsonToCsv(ssmJson)
+        csvRow = self.ssm_json_to_csv(ssmJson)
         self.ssmLogfile.write(csvRow)
 
-    def msgCountsJsonToCsv(self, jsonData:json):
-        msgLoggingTime = time.time()
-        msgLoggingDateTime = datetime.datetime.now()
-        msgSendingTime = jsonData["MsgInformation"]["MsgSentTime"]
-        timeInterval = jsonData["MsgInformation"]["TimeInterval"]
-        msgSource = jsonData["MsgInformation"]["MsgSource"]
-        msgType = jsonData["MsgInformation"]["MsgCountType"]
-        msgCount = jsonData["MsgInformation"]["MsgCount"]
-        msgServed = jsonData["MsgInformation"]["MsgServed"]
-        msgRejected = jsonData["MsgInformation"]["MsgRejected"]
-        
-        csv = (str(msgSource) + "," +
-                 str(msgType) + "," +
-                 str(msgCount) + "," +
-                 str(msgServed) + "," +
-                 str(msgRejected) + "," +
-                 str(timeInterval) + "," +
-                 str(msgSendingTime) + "," +
-                 str(msgLoggingTime) + "," +
-                 str(msgLoggingDateTime) + "\n")
+    def msgCounts_json_to_csv(self, jsonData:json):
+        log_timestamp_posix = str(time.time())
+        log_timestamp_verbose = str(datetime.datetime.now())
+        timestamp_posix = str(jsonData["MsgInformation"]["Timestamp_posix"])
+        timestamp_verbose = str(jsonData["MsgInformation"]["Timestamp_verbose"])
+        timeInterval = str(jsonData["MsgInformation"]["TimeInterval"])
+        msgSource = str(jsonData["MsgInformation"]["MsgSource"])
+        msgType = str(jsonData["MsgInformation"]["MsgCountType"])
+        msgCount = str(jsonData["MsgInformation"]["MsgCount"])
+                
+        csv = (log_timestamp_verbose + "," +
+               log_timestamp_posix + "," +
+               timestamp_verbose + "," +
+               timestamp_posix + "," + 
+               timeInterval + "," +
+               msgSource + "," +
+               msgType + "," +
+               msgCount)
+
+        if self.environment == "roadside":
+            msgServed = str(jsonData["MsgInformation"]["MsgServed"])
+            msgRejected = str(jsonData["MsgInformation"]["MsgRejected"])
+            csv = csv + msgServed + "," + msgRejected
+
+        csv = csv + "\n"
 
         return csv
 
-    def bsmJsonToCsv(self, jsonData:json):
+    def bsm_json_to_csv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
         log_timestamp_posix = str(time.time())
         timestamp_verbose = str(jsonData["Timestamp_verbose"])
@@ -232,7 +242,7 @@ class V2XDataCollector:
                 + width + "\n")
         return csv
 
-    def spatJsonToCsv(self, jsonData:json):
+    def spat_json_to_csv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
         log_timestamp_posix = str(time.time())
         timestamp_verbose = str(jsonData["Timestamp_verbose"])
@@ -346,7 +356,7 @@ class V2XDataCollector:
         
         return csv
 
-    def srmJsonToCsv(self, jsonData:json):
+    def srm_json_to_csv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
         log_timestamp_posix = str(time.time())
         timestamp_verbose = str(jsonData["Timestamp_verbose"])
@@ -395,7 +405,7 @@ class V2XDataCollector:
                 + "\n")
         return csv
 
-    def ssmJsonToCsv(self, jsonData:json):
+    def ssm_json_to_csv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
         log_timestamp_posix = str(time.time())
         timestamp_verbose = str(jsonData["Timestamp_verbose"])
@@ -456,6 +466,8 @@ class V2XDataCollector:
                 self.write_srm(receivedMsg)
             elif receivedMsg["MsgType"] == "SSM":
                 self.write_ssm(receivedMsg)
+            elif receivedMsg["MsgType"] == "MsgCount":
+                self.write_msgCount(receivedMsg)
         except:
             print("Failed decoding of received message at: " + str(time.time()))
 
@@ -480,7 +492,8 @@ class V2XDataCollector:
             if not self.hostBsmLogfile.closed:
                 self.hostBsmLogfile.close()
 
-        # TODO: Move logs to archive directory
+        shutil.move(self.loggingDirectory, "/nojournal/bin/v2x-data/archive")           
+
 
 if __name__ == "__main__":
     pass

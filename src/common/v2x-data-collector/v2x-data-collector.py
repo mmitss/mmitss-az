@@ -45,12 +45,12 @@ while True:
     data, addr = s.recvfrom(20480)
     senderPort = addr[1]
 
-    if currentDay == logFileCreationDay:
-        v2xDc.decode_and_store_data(data, senderPort)
-    else:
+    if currentDay != logFileCreationDay:
         currentDay = logFileCreationDay
         v2xDc.close_logfiles()
         v2xDc.initialize_logfiles()        
+        v2xDc.decode_and_store_data(data, senderPort)        
+    else:
         v2xDc.decode_and_store_data(data, senderPort)
 
 s.close()
