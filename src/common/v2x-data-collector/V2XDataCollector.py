@@ -23,17 +23,21 @@ class V2XDataCollector:
     def __init__(self, environment:str):
 
         self.environment = environment
+
+        self.loggingDirectory = None
+        self.initializationTimestamp = None
+
         self.hostBsmLogfile = None
         self.remoteBsmLogfile = None
         self.spatLogfile = None
         self.srmLogfile = None
         self.ssmLogfile = None
+        self.msgCountsLogfile = None
 
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
         config = (json.load(configFile))
         configFile.close()
 
-        self.msgDecoderPort = config["PortNumber"]["MessageTransceiver"]["MessageDecoder"]
         self.hostBsmDecoderPort = config["PortNumber"]["HostBsmDecoder"]
         
         if self.environment == "vehicle":
@@ -43,19 +47,47 @@ class V2XDataCollector:
 
         self.initialize_logfiles()
     
+
     def initialize_logfiles(self):
-        timestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-        directory = "/nojournal/bin/v2x_data/" + self.baseName + "_" + timestamp + "/"
-        os.makedirs(directory)
+        self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+        self.loggingDirectory = "/nojournal/bin/v2x_data/" + self.baseName + "_" + self.initializationTimestamp + "/"
+        os.makedirs(self.loggingDirectory)
+        self.initialize_msgCountsLogfile()
+        self.initialize_bsmLogfile("Remote")
+        self.initialize_spatLogfile()
+        self.initialize_srmLogfile()
+        self.initialize_ssmLogfile()
+        if self.environment == "vehicle":
+            self.initialize_bsmLogfile("Host")
 
-        remoteBsmLogfileName = directory + self.baseName + "_" + "RemoteBsmLog_" + timestamp + ".csv"
-        self.remoteBsmLogfile = open(remoteBsmLogfileName, 'w')
-        self.remoteBsmLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
-                                        + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
 
-        spatLogfileName = directory + self.baseName + "_" + "SpatLog_" + timestamp + ".csv"
+    def initialize_msgCountsLogfile(self):
+        msgCountsLogfileName = self.loggingDirectory + self.baseName + "_" + "MsgCountsLog_" + self.initializationTimestamp + ".csv"
+        self.msgCountsLogfile = open(msgCountsLogfileName, 'w')
+        
+        if environment == "roadside":
+            self.msgCountsLogfile.write("a,b,c,d\n")
+
+        else:
+            self.msgCountsLogfile.write("a,b,c,d\n")
+
+    def initialize_bsmLogfile(self, origin):
+        bsmLogfileName = self.loggingDirectory + self.baseName + "_" + origin + "BsmLog_" + self.initializationTimestamp + ".csv"
+        csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
+                                    + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
+
+        if origin == "Host":
+            self.hostBsmLogfile = open(bsmLogfileName, 'w')
+            self.hostBsmLogfile.write(csvHeader)
+        
+        elif origin == "Remote":
+            self.remoteBsmLogfile = open(bsmLogfileName, 'w')
+            self.remoteBsmLogfile.write(csvHeader)
+
+    def initialize_spatLogfile(self):
+        spatLogfileName = self.loggingDirectory + self.baseName + "_" + "SpatLog_" + self.initializationTimestamp + ".csv"
         self.spatLogfile = open(spatLogfileName, 'w')
-        self.spatLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,regionalId,intersectionId,msgCount,moy,msom," + 
+        csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,regionalId,intersectionId,msgCount,moy,msom," + 
                         "v1_currState,v1_minEndTime,v1_maxEndTime,v1_elapsedTime," +
                         "v2_currState,v2_minEndTime,v2_maxEndTime,v2_elapsedTime," +
                         "v3_currState,v3_minEndTime,v3_maxEndTime,v3_elapsedTime," +
@@ -73,11 +105,12 @@ class V2XDataCollector:
                         "p6_currState,p6_minEndTime,p6_maxEndTime,p6_elapsedTime," +
                         "p7_currState,p7_minEndTime,p7_maxEndTime,p7_elapsedTime," +
                         "p8_currState,p8_minEndTime,p8_maxEndTime,p8_elapsedTime" + "\n")
+        self.spatLogfile.write(csvHeader)
 
-
-        srmLogfileName = directory + self.baseName + "_" + "SrmLog_" + timestamp + ".csv"
+    def initialize_srmLogfile(self):
+        srmLogfileName = self.loggingDirectory + self.baseName + "_" + "SrmLog_" + self.initializationTimestamp + ".csv"
         self.srmLogfile = open(srmLogfileName, 'w', buffering=1)
-        self.srmLogfile.write(("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose" + "," 
+        csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose" + "," 
                                 + "timestamp_posix" + ","
                                 + "minuteOfYear" + "," 
                                 + "msOfMinute" + "," 
@@ -97,11 +130,13 @@ class V2XDataCollector:
                                 + "heading" + "," 
                                 + "speed" + "," 
                                 + "vehicleType"
-                                + "\n"))
+                                + "\n")
+        self.srmLogfile.write(csvHeader)
 
-        ssmLogfileName = directory + self.baseName + "_" + "SsmLog_" + timestamp + ".csv"
+    def initialize_ssmLogfile(self):
+        ssmLogfileName = self.loggingDirectory + self.baseName + "_" + "SsmLog_" + self.initializationTimestamp + ".csv"
         self.ssmLogfile = open(ssmLogfileName, 'w', buffering=1)
-        self.ssmLogfile.write("log_timestamp_verbose" + "," 
+        csvHeader = ("log_timestamp_verbose" + "," 
                     + "log_timestamp_posix" + "," 
                     + "timestamp_verbose" + "," 
                     + "timestamp_posix" + "," 
@@ -117,32 +152,13 @@ class V2XDataCollector:
                     "," + "r3_vehicleID,r3_msgCount,r3_basicVehicleRole,r3_inBoundLaneID,r3_ETA_Minute,r3_ETA_Second,r3_ETA_Duration,r3_priorityRequestStatus" + 
                     "," + "r4_vehicleID,r4_msgCount,r4_basicVehicleRole,r4_inBoundLaneID,r4_ETA_Minute,r4_ETA_Second,r4_ETA_Duration,r4_priorityRequestStatus" + 
                     "," + "r5_vehicleID,r5_msgCount,r5_basicVehicleRole,r5_inBoundLaneID,r5_ETA_Minute,r5_ETA_Second,r5_ETA_Duration,r5_priorityRequestStatus\n")
+        self.ssmLogfile.write(csvHeader)
 
-        if self.environment == "vehicle":
-            hostBsmLogfileName = directory + self.baseName + "_" + "HostBsmLog_" + timestamp + ".csv"
-            self.hostBsmLogfile = open(hostBsmLogfileName, 'w')
-            self.hostBsmLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
-                                        + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
+    def write_msgCount(self, msgCounts:json)
+        csvRow = self.msgCountsJsonToCsv(msgCounts)
+        self.msgCountsLogfile.write(csvRow)
 
-    def close_logfiles(self):
-        if not self.remoteBsmLogfile.closed:
-            self.remoteBsmLogfile.close()
-
-        if not self.spatLogfile.closed:
-            self.spatLogfile.close()
-
-        if not self.srmLogfile.closed:
-            self.srmLogfile.close()
-
-        if not self.ssmLogfile.closed:
-            self.ssmLogfile.close()
-        
-        if self.environment == "vehicle":
-            if not self.hostBsmLogfile.closed:
-                self.hostBsmLogfile.close()
-
-    def write_bsm(self, bsmJson:json, senderPort:int):
-        
+    def write_bsm(self, bsmJson:json, senderPort:int):        
         csvRow = self.bsmJsonToCsv(bsmJson)
         if ((self.environment == "vehicle") and (senderPort == self.hostBsmDecoderPort)):
             self.hostBsmLogfile.write(csvRow)
@@ -160,6 +176,10 @@ class V2XDataCollector:
     def write_ssm(self, ssmJson:json):
         csvRow = self.ssmJsonToCsv(ssmJson)
         self.ssmLogfile.write(csvRow)
+
+    def msgCountsJsonToCsv(self, jsonData:json):
+        csv = "a,b,c,d\n"
+        return csv
 
     def bsmJsonToCsv(self, jsonData:json):
         log_timestamp_verbose = str(datetime.datetime.now())
@@ -418,7 +438,30 @@ class V2XDataCollector:
             elif receivedMsg["MsgType"] == "SSM":
                 self.write_ssm(receivedMsg)
         except:
-            print("Failed decoding of received message at: " + str(time.time()))    
+            print("Failed decoding of received message at: " + str(time.time()))
+
+    def close_logfiles(self):
+
+        if not self.msgCountsLogfile.closed:
+            self.msgCountsLogfile.close()
+
+        if not self.remoteBsmLogfile.closed:
+            self.remoteBsmLogfile.close()
+
+        if not self.spatLogfile.closed:
+            self.spatLogfile.close()
+
+        if not self.srmLogfile.closed:
+            self.srmLogfile.close()
+
+        if not self.ssmLogfile.closed:
+            self.ssmLogfile.close()
+        
+        if self.environment == "vehicle":
+            if not self.hostBsmLogfile.closed:
+                self.hostBsmLogfile.close()
+
+        # TODO: Move logs to archive directory
 
 if __name__ == "__main__":
     pass
