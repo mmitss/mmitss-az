@@ -25,7 +25,6 @@ int main()
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["TrajectoryAware"]).asInt();
-    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
 
     std::string receivedPayload{};
     std::string extractedPayload{};
@@ -88,15 +87,15 @@ int main()
         {
             if (applicationPlatform == "roadside")
             {
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
             }
 
             else if (applicationPlatform == "vehicle")
             {
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SSM"));
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("MAP"));
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("RemoteBSM"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SSM"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("MAP"));
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
             }
         }
     }

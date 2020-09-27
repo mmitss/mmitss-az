@@ -20,7 +20,6 @@ int main()
     const string LOCALHOST = jsonObject_config["HostIp"].asString();
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
-    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
 
     std::string receivedPayload{};
     std::string extractedPayload{};
@@ -43,7 +42,7 @@ int main()
         }
 
         if (decoder.sendSystemPerformanceDataLog() == true && applicationPlatform == "vehicle")
-            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("HostBSM"));
+            decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), decoder.createJsonStringForSystemPerformanceDataLog("HostBSM"));
     }
 
     return 0;

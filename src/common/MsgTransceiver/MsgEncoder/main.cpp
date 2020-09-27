@@ -27,7 +27,7 @@ int main()
 
     const string sourceDsrcDeviceIp = jsonObject_config["SourceDsrcDeviceIp"].asString();
     const int sourceDsrcDevicePort = jsonObject_config["PortNumber"]["DsrcImmediateForwarder"].asInt();
-    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
+    const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
    
     int msgType{};
     std::string applicationPlatform = encoder.getApplicationPlatform();
@@ -96,15 +96,15 @@ int main()
             if (applicationPlatform == "roadside")
             {
                 encoder.setMapMsgCount(mapMsgCount);
-                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SSM"));
-                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("MAP"));
-                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SSM"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("MAP"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SPaT"));
                 mapMsgCount = 0;
             }
 
             else if (applicationPlatform == "vehicle")
             {
-                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SRM"));
+                encoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), encoder.createJsonStringForSystemPerformanceDataLog("SRM"));
             }
         }
         

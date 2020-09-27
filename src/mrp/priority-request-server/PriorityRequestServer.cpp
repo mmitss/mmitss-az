@@ -35,6 +35,7 @@
 #include "msgEnum.h"
 #include "locAware.h"
 #include "geoUtils.h"
+#include "Timestamp.h"
 
 using namespace MsgEnum;
 
@@ -1006,21 +1007,19 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	std::string systemPerformanceDataLogJsonString{};
 	Json::Value jsonObject;
 	Json::FastWriter fastWriter;
-	// Json::StyledStreamWriter styledStreamWriter;
-	// std::ofstream outputter("systemPerformanceDataLog.json");
 	auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-	jsonObject["MsgType"] = "IntersectionDataLog";
+	jsonObject["MsgType"] = "MsgCount";
 	jsonObject["MsgInformation"]["MsgSource"] = intersectionName;
 	jsonObject["MsgInformation"]["MsgCountType"] = "SRM";
     jsonObject["MsgInformation"]["MsgCount"] = msgReceived;
     jsonObject["MsgInformation"]["MsgServed"] = msgServed;
     jsonObject["MsgInformation"]["MsgRejected"] = msgRejected;
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
-    jsonObject["MsgInformation"]["MsgSentTime"]= static_cast<int>(currenTime);
+    jsonObject["MsgInformation"]["Timestamp_posix"]= getPosixTimestamp();
+	jsonObject["MsgInformation"]["Timestamp_verbose"]= getVerboseTimestamp();
 
 	systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-	// styledStreamWriter.write(outputter, jsonObject);
 
 	msgSentTime = static_cast<int>(currenTime);
 	msgReceived = 0;
