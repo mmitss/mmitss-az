@@ -65,11 +65,11 @@ class V2XDataCollector:
         msgCountsLogfileName = self.loggingDirectory + self.baseName + "_" + "MsgCountsLog_" + self.initializationTimestamp + ".csv"
         self.msgCountsLogfile = open(msgCountsLogfileName, 'w')
         
-        if environment == "roadside":
-            self.msgCountsLogfile.write("a,b,c,d\n")
+        if self.environment == "roadside":
+            self.msgCountsLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,interval_sec,msg_source,msg_type,msg_count,msg_served,msg_rejected\n")
 
-        else:
-            self.msgCountsLogfile.write("a,b,c,d\n")
+        elif self.environment == "vehicle":
+            self.msgCountsLogfile.write("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,interval_sec,msg_source,msg_type,msg_count\n")
 
     def initialize_bsmLogfile(self, origin):
         bsmLogfileName = self.loggingDirectory + self.baseName + "_" + origin + "BsmLog_" + self.initializationTimestamp + ".csv"
@@ -154,7 +154,7 @@ class V2XDataCollector:
                     "," + "r5_vehicleID,r5_msgCount,r5_basicVehicleRole,r5_inBoundLaneID,r5_ETA_Minute,r5_ETA_Second,r5_ETA_Duration,r5_priorityRequestStatus\n")
         self.ssmLogfile.write(csvHeader)
 
-    def write_msgCount(self, msgCounts:json)
+    def write_msgCount(self, msgCounts:json):
         csvRow = self.msgCountsJsonToCsv(msgCounts)
         self.msgCountsLogfile.write(csvRow)
 
@@ -178,7 +178,26 @@ class V2XDataCollector:
         self.ssmLogfile.write(csvRow)
 
     def msgCountsJsonToCsv(self, jsonData:json):
-        csv = "a,b,c,d\n"
+        msgLoggingTime = time.time()
+        msgLoggingDateTime = datetime.datetime.now()
+        msgSendingTime = jsonData["MsgInformation"]["MsgSentTime"]
+        timeInterval = jsonData["MsgInformation"]["TimeInterval"]
+        msgSource = jsonData["MsgInformation"]["MsgSource"]
+        msgType = jsonData["MsgInformation"]["MsgCountType"]
+        msgCount = jsonData["MsgInformation"]["MsgCount"]
+        msgServed = jsonData["MsgInformation"]["MsgServed"]
+        msgRejected = jsonData["MsgInformation"]["MsgRejected"]
+        
+        csv = (str(msgSource) + "," +
+                 str(msgType) + "," +
+                 str(msgCount) + "," +
+                 str(msgServed) + "," +
+                 str(msgRejected) + "," +
+                 str(timeInterval) + "," +
+                 str(msgSendingTime) + "," +
+                 str(msgLoggingTime) + "," +
+                 str(msgLoggingDateTime) + "\n")
+
         return csv
 
     def bsmJsonToCsv(self, jsonData:json):
