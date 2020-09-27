@@ -36,7 +36,6 @@ int main()
     const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
-    const int systemPerformanceDataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["SystemPerformanceDataCollector"].asInt());
     const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
 
    
@@ -98,7 +97,7 @@ int main()
             if(PRS.sendSystemPerformanceDataLog()== true)
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(systemPerformanceDataCollectorPortNo), systemPerformanceDataCollectorJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), systemPerformanceDataCollectorJsonString);
                 std::cout << "System Performance Data Log" << systemPerformanceDataCollectorJsonString << std::endl;
             }
 
