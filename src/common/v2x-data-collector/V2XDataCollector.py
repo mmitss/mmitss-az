@@ -47,27 +47,30 @@ class V2XDataCollector:
             self.baseName = config["IntersectionName"]
 
         self.initialize_logfiles()
+        
+        if not os.path.exists("/nojournal/bin/v2x-data/archive"):
+            os.makedirs("/nojournal/bin/v2x-data/archive")
+
     
 
     def initialize_logfiles(self):
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-        self.loggingDirectory = "/nojournal/bin/v2x_data/" + self.baseName + "_" + self.initializationTimestamp + "/"
+        self.loggingDirectory = "/nojournal/bin/v2x-data/" + self.baseName + "_" + self.initializationTimestamp + "/"
         
         os.makedirs(self.loggingDirectory)
-        os.makedirs("/nojournal/bin/v2x_data/archive")
 
         self.initialize_msgCountsLogfile()
-        self.initialize_bsmLogfile("Remote")
+        self.initialize_bsmLogfile("remote")
         self.initialize_spatLogfile()
         self.initialize_srmLogfile()
         self.initialize_ssmLogfile()
 
         if self.environment == "vehicle":
-            self.initialize_bsmLogfile("Host")
+            self.initialize_bsmLogfile("host")
 
 
     def initialize_msgCountsLogfile(self):
-        msgCountsLogfileName = self.loggingDirectory + self.baseName + "_" + "MsgCountsLog_" + self.initializationTimestamp + ".csv"
+        msgCountsLogfileName = self.loggingDirectory + self.baseName + "_" + "msgCountsLog_" + self.initializationTimestamp + ".csv"
         self.msgCountsLogfile = open(msgCountsLogfileName, 'w', buffering=1)
         
         if self.environment == "roadside":
@@ -81,16 +84,16 @@ class V2XDataCollector:
         csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
                                     + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
 
-        if origin == "Host":
+        if origin == "host":
             self.hostBsmLogfile = open(bsmLogfileName, 'w')
             self.hostBsmLogfile.write(csvHeader)
         
-        elif origin == "Remote":
+        elif origin == "remote":
             self.remoteBsmLogfile = open(bsmLogfileName, 'w')
             self.remoteBsmLogfile.write(csvHeader)
 
     def initialize_spatLogfile(self):
-        spatLogfileName = self.loggingDirectory + self.baseName + "_" + "SpatLog_" + self.initializationTimestamp + ".csv"
+        spatLogfileName = self.loggingDirectory + self.baseName + "_" + "spatLog_" + self.initializationTimestamp + ".csv"
         self.spatLogfile = open(spatLogfileName, 'w')
         csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,regionalId,intersectionId,msgCount,moy,msom," + 
                         "v1_currState,v1_minEndTime,v1_maxEndTime,v1_elapsedTime," +
@@ -113,7 +116,7 @@ class V2XDataCollector:
         self.spatLogfile.write(csvHeader)
 
     def initialize_srmLogfile(self):
-        srmLogfileName = self.loggingDirectory + self.baseName + "_" + "SrmLog_" + self.initializationTimestamp + ".csv"
+        srmLogfileName = self.loggingDirectory + self.baseName + "_" + "srmLog_" + self.initializationTimestamp + ".csv"
         self.srmLogfile = open(srmLogfileName, 'w', buffering=1)
         csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose" + "," 
                                 + "timestamp_posix" + ","
@@ -139,7 +142,7 @@ class V2XDataCollector:
         self.srmLogfile.write(csvHeader)
 
     def initialize_ssmLogfile(self):
-        ssmLogfileName = self.loggingDirectory + self.baseName + "_" + "SsmLog_" + self.initializationTimestamp + ".csv"
+        ssmLogfileName = self.loggingDirectory + self.baseName + "_" + "ssmLog_" + self.initializationTimestamp + ".csv"
         self.ssmLogfile = open(ssmLogfileName, 'w', buffering=1)
         csvHeader = ("log_timestamp_verbose" + "," 
                     + "log_timestamp_posix" + "," 
@@ -492,8 +495,10 @@ class V2XDataCollector:
             if not self.hostBsmLogfile.closed:
                 self.hostBsmLogfile.close()
 
-        shutil.move(self.loggingDirectory, "/nojournal/bin/v2x-data/archive")           
-
+        self.archive_current_directory()
+        
+    def archive_current_directory(self):
+        shutil.move(self.loggingDirectory, ("/nojournal/bin/v2x-data/archive/"))
 
 if __name__ == "__main__":
     pass
