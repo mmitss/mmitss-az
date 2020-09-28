@@ -204,7 +204,7 @@ class V2XDataCollector:
         if self.environment == "roadside":
             msgServed = str(jsonData["MsgInformation"]["MsgServed"])
             msgRejected = str(jsonData["MsgInformation"]["MsgRejected"])
-            csv = csv + msgServed + "," + msgRejected
+            csv = csv + "," + msgServed + "," + msgRejected
 
         csv = csv + "\n"
 
