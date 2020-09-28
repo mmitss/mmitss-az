@@ -23,7 +23,7 @@ for client in clients:
         os.makedirs((client["directory"] + "/" + "remoteBsm"))
 
     if not os.path.exists((client["directory"] + "/" + "srm")):
-        os.makedirs((client["directory"] + "/" + "ssm"))
+        os.makedirs((client["directory"] + "/" + "srm"))
 
     if not os.path.exists((client["directory"] + "/" + "ssm")):
         os.makedirs((client["directory"] + "/" + "ssm"))

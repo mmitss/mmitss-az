@@ -37,13 +37,13 @@ while True:
 
             if "remoteBsm" in filename:
                 with open((path + "/" + directory + "/" + filename),'rb') as file:
-                    storCommand = "STOR surrounding_vehicle_data/" + filename
+                    storCommand = "STOR remoteBsm/" + filename
                     ftp.storbinary(storCommand, file)
                 os.remove((path + "/" + directory + "/" + filename))
 
             if "msgCounts" in filename:
                 with open((path + "/" + directory + "/" + filename),'rb') as file:
-                    storCommand = "STOR msgCounts/" + filename
+                    storCommand = "STOR msgCount/" + filename
                     ftp.storbinary(storCommand, file)
                 os.remove((path + "/" + directory + "/" + filename))
 ftp.quit()
