@@ -1,37 +1,49 @@
 import os
+import json
 from ftplib import FTP
-ftp = FTP()
-ftp.connect("10.12.6.56",port=9090)
-ftp.login(user="daisy-gavilan",passwd="mmitss123")
 
-path = "/nojournal/bin/v2x_data/"
-root, directories, files = os.walk(path)
+with open("/nojournal/bin/mmitss-phase3-master-config.json", 'r') as configFile:
+    config = json.load(configFile)
+
+
+ftp = FTP()
+ftp.connect(config["DataCollectorIP"],port=config["PortNumber"]["DataCollectorFtpServer"])
+ftp.login(user=config["IntersectionName"],passwd="mmitss123")
+
+path = '/nojournal/bin/v2x-data/archive'
+archive = list(os.walk(path))[0][1]
 
 while True:
-    for directory in root[1]:
-        lst = os.listdir((path + directory))
-        for filename in lst:
-            if "SpatLog" in filename:
-                with open((path+directory+"/"+filename),'rb') as file:
+    for directory in archive:
+        filenames = os.listdir((path + "/" + directory))
+        for filename in filenames:
+            if "spat" in filename:
+                with open((path + "/" + directory + "/" + filename),'rb') as file:
                     storCommand = "STOR spat/" + filename
                     ftp.storbinary(storCommand, file)
-                os.remove((path+directory+"/"+filename))
+                os.remove((path + "/" + directory + "/" + filename))
 
-            if "SrmLog" in filename:
-                with open((path+directory+"/"+filename),'rb') as file:
+            if "srm" in filename:
+                with open((path + "/" + directory + "/" + filename),'rb') as file:
                     storCommand = "STOR srm/" + filename
                     ftp.storbinary(storCommand, file)
-                os.remove((path+directory+"/"+filename))
+                os.remove((path + "/" + directory + "/" + filename))
 
-            if "SsmLog" in filename:
-                with open((path+directory+"/"+filename),'rb') as file:
+            if "ssm" in filename:
+                with open((path + "/" + directory + "/" + filename),'rb') as file:
                     storCommand = "STOR ssm/" + filename
                     ftp.storbinary(storCommand, file)
-                os.remove((path+directory+"/"+filename))
+                os.remove((path + "/" + directory + "/" + filename))
 
-            if "RemoteBsmLog" in filename:
-                with open((path+directory+"/"+filename),'rb') as file:
+            if "remoteBsm" in filename:
+                with open((path + "/" + directory + "/" + filename),'rb') as file:
                     storCommand = "STOR surrounding_vehicle_data/" + filename
                     ftp.storbinary(storCommand, file)
-                os.remove((path+directory+"/"+filename))
+                os.remove((path + "/" + directory + "/" + filename))
+
+            if "msgCounts" in filename:
+                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                    storCommand = "STOR msgCounts/" + filename
+                    ftp.storbinary(storCommand, file)
+                os.remove((path + "/" + directory + "/" + filename))
 ftp.quit()
