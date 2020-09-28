@@ -21,7 +21,7 @@ import time, datetime
 import atexit
 from V2XDataCollector import V2XDataCollector
 
-DEBUGGING = True
+DEBUGGING = False
 
 configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
 config = (json.load(configFile))
