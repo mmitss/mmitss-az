@@ -16,8 +16,20 @@ authorizer = DummyAuthorizer()
 for client in clients:
 
     # Create root directory for each client, if it does not exist::
-    if not os.path.exists(client["directory"]):
-        os.makedirs(client["directory"])
+    if not os.path.exists((client["directory"] + "/" + "spat")):
+        os.makedirs((client["directory"] + "/" + "spat"))
+
+    if not os.path.exists((client["directory"] + "/" + "remoteBsm")):
+        os.makedirs((client["directory"] + "/" + "remoteBsm"))
+
+    if not os.path.exists((client["directory"] + "/" + "srm")):
+        os.makedirs((client["directory"] + "/" + "ssm"))
+
+    if not os.path.exists((client["directory"] + "/" + "ssm")):
+        os.makedirs((client["directory"] + "/" + "ssm"))
+
+    if not os.path.exists((client["directory"] + "/" + "msgCount")):
+        os.makedirs((client["directory"] + "/" + "msgCount"))
 
     # Add clients as authorised users:
     authorizer.add_user(username=client["name"],
