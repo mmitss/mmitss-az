@@ -46,6 +46,7 @@ class V2XDataCollector:
         else:
             self.baseName = config["IntersectionName"]
 
+        self.archive_leftover_directories()
         self.initialize_logfiles()
         
         if not os.path.exists("/nojournal/bin/v2x-data/archive"):
@@ -499,6 +500,13 @@ class V2XDataCollector:
         
     def archive_current_directory(self):
         shutil.move(self.loggingDirectory, ("/nojournal/bin/v2x-data/archive/"))
+
+    def archive_leftover_directories(self):
+        directories = list(os.walk("/nojournal/bin/v2x-data"))[0][1]
+        directories.remove("archive")
+        if len(directories) > 0:
+            for directory in directories:
+                shutil.move(("/nojournal/bin/v2x-data" + "/" + directory), ("/nojournal/bin/v2x-data/archive/"))
 
 if __name__ == "__main__":
     pass
