@@ -15,8 +15,8 @@ def main():
     path = '/nojournal/bin/v2x-data/archive'
 
     while True:
+        # TODO: Timecheck
         serverIsReachable = ping(config["DataCollectorIP"], 1, 1000)
-
         if serverIsReachable:
             archive = list(os.walk(path))[0][1]
             if len(archive) != 0:
@@ -24,34 +24,49 @@ def main():
                     filenames = os.listdir((path + "/" + directory))
                     for filename in filenames:
                         if "spat" in filename:
-                            with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                storCommand = "STOR spat/" + filename
-                                ftp.storbinary(storCommand, file)
-                            os.remove((path + "/" + directory + "/" + filename))
+                            try:
+                                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                                    storCommand = "STOR spat/" + filename
+                                    ftp.storbinary(storCommand, file)
+                                os.remove((path + "/" + directory + "/" + filename))
+                            except FTP.all_errors:
+                                pass
 
                         if "srm" in filename:
-                            with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                storCommand = "STOR srm/" + filename
-                                ftp.storbinary(storCommand, file)
-                            os.remove((path + "/" + directory + "/" + filename))
+                            try:
+                                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                                    storCommand = "STOR srm/" + filename
+                                    ftp.storbinary(storCommand, file)
+                                os.remove((path + "/" + directory + "/" + filename))
+                            except FTP.all_errors:
+                                pass
 
                         if "ssm" in filename:
-                            with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                storCommand = "STOR ssm/" + filename
-                                ftp.storbinary(storCommand, file)
-                            os.remove((path + "/" + directory + "/" + filename))
+                            try:
+                                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                                    storCommand = "STOR ssm/" + filename
+                                    ftp.storbinary(storCommand, file)
+                                os.remove((path + "/" + directory + "/" + filename))
+                            except FTP.all_errors:
+                                pass
 
                         if "remoteBsm" in filename:
-                            with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                storCommand = "STOR remoteBsm/" + filename
-                                ftp.storbinary(storCommand, file)
-                            os.remove((path + "/" + directory + "/" + filename))
+                            try:
+                                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                                    storCommand = "STOR remoteBsm/" + filename
+                                    ftp.storbinary(storCommand, file)
+                                os.remove((path + "/" + directory + "/" + filename))
+                            except FTP.all_errors:
+                                pass
 
                         if "msgCounts" in filename:
-                            with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                storCommand = "STOR msgCount/" + filename
-                                ftp.storbinary(storCommand, file)
-                            os.remove((path + "/" + directory + "/" + filename))
+                            try:
+                                with open((path + "/" + directory + "/" + filename),'rb') as file:
+                                    storCommand = "STOR msgCount/" + filename
+                                    ftp.storbinary(storCommand, file)
+                                os.remove((path + "/" + directory + "/" + filename))
+                            except FTP.all_errors:
+                                pass
                     
                     files = os.listdir(path + "/" + directory)
                     if len(files) == 0:
