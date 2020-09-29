@@ -46,17 +46,20 @@ class V2XDataCollector:
         else:
             self.baseName = config["IntersectionName"]
 
+        self.path = "/nojournal/bin/v2x-data"
+        
+        if not os.path.exists(self.path + "/archive"):
+            os.makedirs(self.path + "/archive")
+
         self.archive_leftover_directories()
         self.initialize_logfiles()
-        
-        if not os.path.exists("/nojournal/bin/v2x-data/archive"):
-            os.makedirs("/nojournal/bin/v2x-data/archive")
 
+        
     
 
     def initialize_logfiles(self):
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-        self.loggingDirectory = "/nojournal/bin/v2x-data/" + self.baseName + "_" + self.initializationTimestamp + "/"
+        self.loggingDirectory = self.path + "/" + self.baseName + "_" + self.initializationTimestamp + "/"
         
         os.makedirs(self.loggingDirectory)
 
@@ -499,14 +502,16 @@ class V2XDataCollector:
         self.archive_current_directory()
         
     def archive_current_directory(self):
-        shutil.move(self.loggingDirectory, ("/nojournal/bin/v2x-data/archive/"))
+        shutil.move(self.loggingDirectory, (self.path + "/archive/"))
 
     def archive_leftover_directories(self):
-        directories = list(os.walk("/nojournal/bin/v2x-data"))[0][1]
+        directories = list(os.walk(self.path))[0][1]
         directories.remove("archive")
         if len(directories) > 0:
             for directory in directories:
-                shutil.move(("/nojournal/bin/v2x-data" + "/" + directory), ("/nojournal/bin/v2x-data/archive/"))
+                shutil.move((self.path + "/" + directory), (self.path + "/archive/"))
+                directories = list(os.walk(self.path))[0][1]
+                directories.remove("archive")
 
 if __name__ == "__main__":
     pass
