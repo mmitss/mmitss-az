@@ -5,6 +5,8 @@ from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
 DEFAULT_CLIENT_PASSWORD = "mmitss123"
+MAX_CONNECTIONS_TOTAL = 256
+MAX_CONNECTIONS_PER_IP = 5
 
 def main():
     # Read the configuration file
@@ -19,7 +21,6 @@ def main():
     for client in clients:
         add_client(client["Name"], client["LocalDirectory"], authorizer)
 
-
     # Instantiate FTP handler class
     handler = FTPHandler
     handler.authorizer = authorizer
@@ -29,8 +30,8 @@ def main():
     server = FTPServer(address, handler)
 
     # set a limit for connections
-    server.max_cons = 256
-    server.max_cons_per_ip = 5
+    server.max_cons = MAX_CONNECTIONS_TOTAL
+    server.max_cons_per_ip = MAX_CONNECTIONS_PER_IP
 
     # start ftp server
     server.serve_forever()
