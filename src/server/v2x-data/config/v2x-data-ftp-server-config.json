@@ -1,31 +1,90 @@
 {
-    "ftpHost": "10.12.6.56",
-    "ftpPort": 9090,
-    "clients":
+    "FtpHost": "10.12.6.56",
+    "FtpPort": 9090,
+    "CyVerseDataTransfer": {
+		"StartTime": {
+			"Hour": 1,
+			"Minute": 0
+		},
+		"EndTime": {
+			"Hour": 2,
+			"Minute": 0
+		},
+		"MaxRetries": 3
+	},
+    "Clients":
     [
         {
-            "name":"daisy-gavilan",
-            "directory": "../data/daisy-gavilan"
+            "Name":"daisy-gavilan",
+            "LocalDirectory": "data/daisy-gavilan",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         },
         {
-            "name":"daisy-dedication",
-            "directory": "../data/daisy-dedication"
+            "Name":"daisy-dedication",
+            "LocalDirectory": "data/daisy-dedication",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         },
         {
-            "name":"daisy-meridian",
-            "directory": "../data/daisy-meridian"
+            "Name":"daisy-meridian",
+            "LocalDirectory": "data/daisy-meridian",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         },
         {
-            "name":"daisy-hastings",
-            "directory": "../data/daisy-hastings"
+            "Name":"daisy-hastings",
+            "LocalDirectory": "data/daisy-hastings",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         },
         {
-            "name":"daisy-memorial",
-            "directory": "../data/daisy-memorial"
+            "Name":"daisy-memorial",
+            "LocalDirectory": "data/daisy-memorial",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         },
         {
-            "name":"daisy-anthem",
-            "directory": "../data/daisy-anthem"
+            "Name":"daisy-anthem",
+            "LocalDirectory": "data/daisy-anthem",
+            "CyVerse":
+            {
+                "spat": "spatDirectory",
+                "remoteBsm": "spatDirectory",
+                "srm": "spatDirectory",
+                "ssm": "spatDirectory",
+                "msgCount": "spatDirectory"
+            }
         }
     ]
 }

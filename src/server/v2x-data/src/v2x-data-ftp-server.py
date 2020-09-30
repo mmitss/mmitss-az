@@ -4,54 +4,54 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
-# Read the configuration file
-with open("../config/v2x-data-ftp-server-config.json") as configFile:
-    config = json.load(configFile)
+DEFAULT_CLIENT_PASSWORD = "mmitss123"
 
-clients = config["clients"]
+def main():
+    # Read the configuration file
+    with open("/nojournal/bin/v2x-data-ftp-server-config.json") as configFile:
+        config = json.load(configFile)
 
-# Instantiate a dummy authorizer for managing 'virtual' users
-authorizer = DummyAuthorizer()
+    clients = config["Clients"]
 
-for client in clients:
+    # Instantiate a dummy authorizer for managing 'virtual' users
+    authorizer = DummyAuthorizer()
 
-    # Create root directory for each client, if it does not exist::
-    if not os.path.exists((client["directory"] + "/" + "spat")):
-        os.makedirs((client["directory"] + "/" + "spat"))
-
-    if not os.path.exists((client["directory"] + "/" + "remoteBsm")):
-        os.makedirs((client["directory"] + "/" + "remoteBsm"))
-
-    if not os.path.exists((client["directory"] + "/" + "srm")):
-        os.makedirs((client["directory"] + "/" + "srm"))
-
-    if not os.path.exists((client["directory"] + "/" + "ssm")):
-        os.makedirs((client["directory"] + "/" + "ssm"))
-
-    if not os.path.exists((client["directory"] + "/" + "msgCount")):
-        os.makedirs((client["directory"] + "/" + "msgCount"))
-
-    # Add clients as authorised users:
-    authorizer.add_user(username=client["name"],
-                        password='mmitss123',
-                        homedir=client["directory"], 
-                        perm='elradfmwMT')
+    for client in clients:
+        add_client(client["Name"], client["LocalDirectory"], authorizer)
 
 
-
-# Instantiate FTP handler class
+    # Instantiate FTP handler class
     handler = FTPHandler
     handler.authorizer = authorizer
 
+    # Instantiate FTP server class to listen at specified address
+    address = (config["FtpHost"], config["FtpPort"])
+    server = FTPServer(address, handler)
 
-# Instantiate FTP server class to listen at specified address
-address = (config["ftpHost"], config["ftpPort"])
-server = FTPServer(address, handler)
+    # set a limit for connections
+    server.max_cons = 256
+    server.max_cons_per_ip = 5
 
-# set a limit for connections
-server.max_cons = 256
-server.max_cons_per_ip = 5
+    # start ftp server
+    server.serve_forever()
 
-# start ftp server
-server.serve_forever()
+def add_client(name:str, localDirectory:str, authorizer:DummyAuthorizer):
+    create_client_directory(localDirectory, "spat")
+    create_client_directory(localDirectory, "remoteBsm")
+    create_client_directory(localDirectory, "srm")
+    create_client_directory(localDirectory, "ssm")
+    create_client_directory(localDirectory, "msgCount")
+
+    # Add clients as authorised users:
+    authorizer.add_user(username=name,
+                        password=DEFAULT_CLIENT_PASSWORD,
+                        homedir=localDirectory, 
+                        perm='elradfmwMT')
+
+def create_client_directory(localDirectory:str, dataType:str):
+    if not os.path.exists((localDirectory + "/" + dataType)):
+        os.makedirs((localDirectory + "/" + dataType))
+
+if __name__ == "__main__":
+    main()
 
