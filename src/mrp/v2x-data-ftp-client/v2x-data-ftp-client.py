@@ -1,104 +1,107 @@
 import os
+import subprocess
 import json
-from ftplib import FTP
+import time, datetime
+from V2XDataFtpClient import V2XDataFtpClient
 
+HOURS_IN_DAY = 24
+MINUTES_IN_HOUR = 60
+
+SEC_IN_DAY = 24 * 60 * 60
+SEC_IN_HOUR = 60 * 60
+SEC_IN_MINUTE = 60
+
+DEFAULT_START_HOUR = 1
+DEFAULT_START_MINUTE = 0
+DEFAULT_END_HOUR = 1
+DEFAULT_END_MINUTE = 30
+
+FTP_CLIENT_PASSWORD = "mmitss123"
+
+SEC_BEFORE_RETRY = 60
 
 def main():
     with open("/nojournal/bin/mmitss-phase3-master-config.json", 'r') as configFile:
         config = json.load(configFile)
 
+    ftpServerIp = config["DataCollectorIP"]
+    ftpServerPort = config["DataTransfer"]["FtpServerPort"]
+    ftpClientUsername = config["IntersectionName"]
+    ftpClientPassword = FTP_CLIENT_PASSWORD
 
-    ftp = FTP()
-    ftp.connect(config["DataCollectorIP"],port=config["PortNumber"]["DataCollectorFtpServer"])
-    ftp.login(user=config["IntersectionName"],passwd="mmitss123")
+    startHour = config["DataTransfer"]["StartTime"]["Hour"]
+    startMinute = config["DataTransfer"]["StartTime"]["Minute"]
+    startSecondFromMidnight = ((startHour * SEC_IN_HOUR) + (startMinute * SEC_IN_MINUTE))
+    
+    endHour = config["DataTransfer"]["EndTime"]["Hour"]
+    endMinute = config["DataTransfer"]["EndTime"]["Minute"]
+    endSecondFromMidnight = ((endHour * SEC_IN_HOUR) + (endMinute * SEC_IN_MINUTE))
 
-    path = '/nojournal/bin/v2x-data/archive'
+    if ((endSecondFromMidnight < startSecondFromMidnight) or startHour >= HOURS_IN_DAY or endHour >= HOURS_IN_DAY or startMinute >= MINUTES_IN_HOUR or endMinute >= MINUTES_IN_HOUR):
+        startSecondFromMidnight = ((DEFAULT_START_HOUR * SEC_IN_HOUR) + (DEFAULT_START_MINUTE * SEC_IN_MINUTE))
+        endSecondFromMidnight = ((DEFAULT_END_HOUR * SEC_IN_HOUR) + (DEFAULT_END_MINUTE * SEC_IN_MINUTE))
+
+    maxRetries = config["DataTransfer"]["MaxRetries"]
+
+    archivePath = '/nojournal/bin/v2x-data/archive'
+
+    attempt = 0
 
     while True:
-        # TODO: Timecheck
-        serverIsReachable = ping(config["DataCollectorIP"], 1, 1000)
-        if serverIsReachable:
-            archive = list(os.walk(path))[0][1]
-            if len(archive) != 0:
-                for directory in archive:
-                    filenames = os.listdir((path + "/" + directory))
-                    for filename in filenames:
-                        if "spat" in filename:
-                            try:
-                                with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                    storCommand = "STOR spat/" + filename
-                                    ftp.storbinary(storCommand, file)
-                                os.remove((path + "/" + directory + "/" + filename))
-                            except FTP.all_errors:
-                                pass
+        now = datetime.datetime.now()
+        nowSecondFromMidnight = ((now.hour * SEC_IN_HOUR) + (now.minute * SEC_IN_MINUTE) + (now.second))
+        
+        if nowSecondFromMidnight < startSecondFromMidnight:
+            sleepTime = startSecondFromMidnight - nowSecondFromMidnight
+            time.sleep(sleepTime)
 
-                        if "srm" in filename:
-                            try:
-                                with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                    storCommand = "STOR srm/" + filename
-                                    ftp.storbinary(storCommand, file)
-                                os.remove((path + "/" + directory + "/" + filename))
-                            except FTP.all_errors:
-                                pass
+        elif nowSecondFromMidnight >= endSecondFromMidnight:
+            sleepTime = SEC_IN_DAY - nowSecondFromMidnight + startSecondFromMidnight
+            time.sleep(sleepTime)
 
-                        if "ssm" in filename:
-                            try:
-                                with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                    storCommand = "STOR ssm/" + filename
-                                    ftp.storbinary(storCommand, file)
-                                os.remove((path + "/" + directory + "/" + filename))
-                            except FTP.all_errors:
-                                pass
-
-                        if "remoteBsm" in filename:
-                            try:
-                                with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                    storCommand = "STOR remoteBsm/" + filename
-                                    ftp.storbinary(storCommand, file)
-                                os.remove((path + "/" + directory + "/" + filename))
-                            except FTP.all_errors:
-                                pass
-
-                        if "msgCounts" in filename:
-                            try:
-                                with open((path + "/" + directory + "/" + filename),'rb') as file:
-                                    storCommand = "STOR msgCount/" + filename
-                                    ftp.storbinary(storCommand, file)
-                                os.remove((path + "/" + directory + "/" + filename))
-                            except FTP.all_errors:
-                                pass
+        else: 
+            while (nowSecondFromMidnight >= startSecondFromMidnight and nowSecondFromMidnight < endSecondFromMidnight):
+                now = datetime.datetime.now()
+                nowSecondFromMidnight = ((now.hour * SEC_IN_HOUR) + (now.minute * SEC_IN_MINUTE) + (now.second))
+                if attempt < maxRetries:
+                    attempt = attempt + 1
+                    serverIsReachable = check_network_connection(ftpServerIp)
+                    if (serverIsReachable):
+                        ftpc = V2XDataFtpClient(ftpServerIp, ftpServerPort, ftpClientUsername, ftpClientPassword)
+                        archivedDirectories = list(os.walk(archivePath))[0][1]
+                        if len(archivedDirectories) > 0:
+                            for directory in archivedDirectories:
+                                directoryPath = archivePath + "/" + directory
+                                filenames = os.listdir((directoryPath))
+                                for filename in filenames:
+                                    ftpc.transfer_data(directoryPath, filename)
+                                filenames = os.listdir((directoryPath))
+                                if len(filenames) == 0:
+                                    os.rmdir(directoryPath)
+                                    archivedDirectories = list(os.walk(archivePath))[0][1]
+                            print("[" + str(datetime.datetime.now()) + "]" + " Data transfer is successful: Attempt#" + str(attempt))
+                            attempt = maxRetries
+                            ftpc.close_connection()
+                            break
+                        else:
+                            print("[" + str(datetime.datetime.now()) + "]" + " No files to transfer")
+                            time.sleep(endSecondFromMidnight-nowSecondFromMidnight)
+                    else: 
+                        print("[" + str(datetime.datetime.now()) + "]" + " Server not reachable - will try again after 60 seconds: Attempt#" + str(attempt) + " failed!")
+                        time.sleep(SEC_BEFORE_RETRY)
+                
+                else: 
+                    time.sleep(endSecondFromMidnight-nowSecondFromMidnight)
+                    break
                     
-                    files = os.listdir(path + "/" + directory)
-                    if len(files) == 0:
-                        archive.remove(directory)
-                        os.rmdir(path + "/" + directory)
-    ftp.quit()
 
-def ping(host, packets, timeout):
-    import subprocess, platform
-
-    ''' Calls system "ping" command, returns True if ping succeeds.
-    Required parameter: host_or_ip (str, address of host to ping)
-    Optional parameters: packets (int, number of retries), timeout (int, ms to wait for response)
-    Does not show any output, either as popup window or in command line.
-    Python 3.5+, Windows and Linux compatible (Mac not tested, should work)
-    '''
-    # The ping command is the same for Windows and Linux, except for the "number of packets" flag.
-    if platform.system().lower() == 'windows':
-        command = ['ping', '-n', str(packets), '-w', str(timeout), host]
-        # run parameters: capture output, discard error messages, do not show window
-        result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, creationflags=0x08000000)
-        # 0x0800000 is a windows-only Popen flag to specify that a new process will not create a window.
-        # On Python 3.7+, you can use a subprocess constant:
-        #   result = subprocess.run(command, capture_output=True, creationflags=subprocess.CREATE_NO_WINDOW)
-        # On windows 7+, ping returns 0 (ok) when host is not reachable; to be sure host is responding,
-        # we search the text "TTL=" on the command output. If it's there, the ping really had a response.
-        return result.returncode == 0 and b'TTL=' in result.stdout
-    else:
-        command = ['ping', '-c', str(packets), '-w', str(timeout), host]
-        # run parameters: discard output and error messages
-        result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return result.returncode == 0
+def check_network_connection(ftpServerIp):
+    packets = 1
+    timeout = 1000
+    command = ['ping', '-c', str(packets), '-w', str(timeout), ftpServerIp]
+    result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return result.returncode == 0
 
 if __name__ == "__main__":
     main()
+
