@@ -17,7 +17,7 @@
         {
             "Name":"daisy-gavilan",
             "LocalDirectory": "data/daisy-gavilan",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/remoteBsm",
@@ -29,7 +29,7 @@
         {
             "Name":"daisy-dedication",
             "LocalDirectory": "data/daisy-dedication",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/remoteBsm",
@@ -41,7 +41,7 @@
         {
             "Name":"daisy-meridian",
             "LocalDirectory": "data/daisy-meridian",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/remoteBsm",
@@ -53,7 +53,7 @@
         {
             "Name":"daisy-hastings",
             "LocalDirectory": "data/daisy-hastings",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/remoteBsm",
@@ -65,7 +65,7 @@
         {
             "Name":"daisy-memorial",
             "LocalDirectory": "data/daisy-memorial",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/remoteBsm",
@@ -77,7 +77,7 @@
         {
             "Name":"daisy-anthem",
             "LocalDirectory": "data/daisy-anthem",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/remoteBsm",
@@ -89,7 +89,7 @@
 	{
             "Name":"test",
             "LocalDirectory": "data/test",
-            "CyVerse":
+            "CyVerseDirectories":
             {
                 "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/test/spat",
                 "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/test/remoteBsm",
