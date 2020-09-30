@@ -555,6 +555,7 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 		// 	std::cout << "Unknown priority request type" << std::endl;
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
+		printvector();
 	}
 }
 /*
@@ -571,7 +572,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
 
 	//For EV we have to delete two request
-	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::basicRole::fire) && findVehicleIDOnTable != ActiveRequestTable.end())
+	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
@@ -646,12 +647,14 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = ActiveRequestTable[i].vehicleHeading;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
+		sentClearRequest = false;
 	}
 
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
 		std::cout << "Sent Clear Request to Solver " << std::endl;
+		sentClearRequest = true;
 	}
 	solverJsonString = fastWriter.write(jsonObject);
 	// styledStreamWriter.write(outputter, jsonObject);
@@ -695,14 +698,14 @@ bool PriorityRequestServer::updateETA()
 */
 bool PriorityRequestServer::sendClearRequest()
 {
-	bool bSendClearRequest = false;
+	bool clearRequestStatus = false;
 
-	if (ActiveRequestTable.size() == 0)
-		bSendClearRequest = true;
+	if (ActiveRequestTable.size() == 0 && sentClearRequest == false)
+		clearRequestStatus = true;
 	else
-		bSendClearRequest = false;
+		clearRequestStatus = false;
 
-	return bSendClearRequest;
+	return clearRequestStatus;
 }
 
 /*
@@ -746,6 +749,7 @@ void PriorityRequestServer::printvector()
 {
 	if (!ActiveRequestTable.empty())
 	{
+		std::cout << "Active Request Table is Following:" << std::endl;
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
 			std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleType << " " << ActiveRequestTable[i].vehicleETA << std::endl;
