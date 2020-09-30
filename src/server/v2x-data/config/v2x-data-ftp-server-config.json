@@ -19,11 +19,11 @@
             "LocalDirectory": "data/daisy-gavilan",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-gavilan/msgCount"
             }
         },
         {
@@ -31,11 +31,11 @@
             "LocalDirectory": "data/daisy-dedication",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-dedication/msgCount"
             }
         },
         {
@@ -43,11 +43,11 @@
             "LocalDirectory": "data/daisy-meridian",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-meridian/msgCount"
             }
         },
         {
@@ -55,11 +55,11 @@
             "LocalDirectory": "data/daisy-hastings",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-hastings/msgCount"
             }
         },
         {
@@ -67,11 +67,11 @@
             "LocalDirectory": "data/daisy-memorial",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-memorial/msgCount"
             }
         },
         {
@@ -79,11 +79,23 @@
             "LocalDirectory": "data/daisy-anthem",
             "CyVerse":
             {
-                "spat": "spatDirectory",
-                "remoteBsm": "spatDirectory",
-                "srm": "spatDirectory",
-                "ssm": "spatDirectory",
-                "msgCount": "spatDirectory"
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/daisy-anthem/msgCount"
+            }
+        },
+	{
+            "Name":"test",
+            "LocalDirectory": "data/test",
+            "CyVerse":
+            {
+                "spat": "/iplant/home/shared/mmitss/anthem/infrastructure/test/spat",
+                "remoteBsm": "/iplant/home/shared/mmitss/anthem/infrastructure/test/remoteBsm",
+                "srm": "/iplant/home/shared/mmitss/anthem/infrastructure/test/srm",
+                "ssm": "/iplant/home/shared/mmitss/anthem/infrastructure/test/ssm",
+                "msgCount": "/iplant/home/shared/mmitss/anthem/infrastructure/test/msgCount"
             }
         }
     ]
