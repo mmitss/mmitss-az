@@ -22,6 +22,7 @@ import subprocess
 import json
 import datetime, time
 import sh
+import ssl, smtplib
 
 HOURS_IN_DAY = 24
 MINUTES_IN_HOUR = 60
@@ -62,7 +63,11 @@ def main():
     localNetworkGateway = config["LocalNetworkGateway"]
     dnsServer = config["DnsServer"]
 
-    notificationEmailRecipients = config["NotificationEmailRecipients"]
+    emailSenderAccount = config["NotificationEmail"]["SenderAccount"]
+    emailSenderPassword = config["NotificationEmail"]["Password"]
+    emailSslPort = config["NotificationEmail"]["SslPort"]
+    notificationEmailRecipients = config["NotificationEmail"]["Recipients"]
+    
 
     while True:
         now = datetime.datetime.now()
@@ -92,15 +97,39 @@ def main():
                 
                 localNetworkIsReachable = check_network_connection(localNetworkGateway)
                 if (localNetworkIsReachable==False or internetIsReachable==False):
-                    send_email_notification(notificationEmailRecipients)
+                    send_notification_email(emailSenderAccount,emailSenderPassword,emailSslPort,notificationEmailRecipients)
 
                 now = datetime.datetime.now()
                 nowSecondFromMidnight = ((now.hour * SEC_IN_HOUR) + (now.minute * SEC_IN_MINUTE) + (now.second))
                 time.sleep(endSecondFromMidnight-nowSecondFromMidnight)
                 break
 
-def send_email_notification(notificationEmailRecipients):
-    pass
+def send_notification_email(emailSenderAccount,emailSenderPassword,emailSslPort,notificationEmailRecipients):
+    text = get_email_text()
+    context = ssl.create_default_context()
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", emailSslPort, context=context) as server:
+            server.login(emailSenderAccount, emailSenderPassword)
+            for receipient in notificationEmailRecipients:
+                server.sendmail(emailSenderAccount, receipient, text)
+                print("Email sent to {}".format(receipient))
+    except:
+        print("Network not reachable but notification email could not be sent at: " + str(datetime.datetime.now()))
+
+
+def get_email_text():
+    text = """\
+Subject: IAM Data Server
+
+Hello,
+
+IAM Server could not establish communication with local network at {}.
+
+This is an auto-generated email. Please do not reply.
+
+Thanks.""".format(str(datetime.datetime.now()))
+    return text
+
 
 def transfer_directory_content(localDirectory:str, cyverseDirectory:str):
     sh.cd(localDirectory)
@@ -112,7 +141,7 @@ def transfer_directory_content(localDirectory:str, cyverseDirectory:str):
 
 def check_network_connection(serverIp:str):
     packets = 1
-    timeout = 1000
+    timeout = 100
     command = ['ping', '-c', str(packets), '-w', str(timeout), serverIp]
     result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return result.returncode == 0

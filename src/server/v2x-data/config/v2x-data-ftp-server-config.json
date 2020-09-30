@@ -3,6 +3,18 @@
     "FtpPort": 9090,
     "LocalNetworkGateway":"10.12.6.1",
     "DnsServer": "8.8.8.8",
+    "NotificationEmail":
+    {
+        "SenderAccount": "iam.cyverse@gmail.com",
+        "Password": "mmitss123",
+        "SslPort": 465,
+        "Recipients":
+        [
+            "nvaltekar@gmail.com",
+            "nvaltekar@email.arizona.edu"
+        ]
+
+    },
     "CyVerseDataTransfer": {
 		"StartTime": {
 			"Hour": 1,
