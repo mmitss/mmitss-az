@@ -109,5 +109,17 @@
 		"Latitude_DecimalDegree": 33.85035976176664,
 		"Longitude_DecimalDegree": -112.11656353845339,
 		"Elevation_Meter": 526
+	},
+	"DataTransfer": {
+		"FtpServerPort": 9090,
+		"StartTime": {
+			"Hour": 18,
+			"Minute": 30
+		},
+		"EndTime": {
+			"Hour": 19,
+			"Minute": 30
+		},
+		"MaxRetries": 3
 	}
 }
