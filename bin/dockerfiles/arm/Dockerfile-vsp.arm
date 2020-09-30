@@ -12,6 +12,7 @@ COPY LightSirenStatusManager/arm/M_LightSirenStatusManager /mmitss
 COPY LightSirenStatusManager/images /mmitss
 COPY SystemInterface/arm/M_SystemInterface /mmitss
 COPY V2XDataCollector/arm/M_V2XDataCollector /mmitss
+COPY DataCompressor/arm/M_DataCompressor /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 
