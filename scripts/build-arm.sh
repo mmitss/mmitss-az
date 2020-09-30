@@ -220,7 +220,7 @@ cd ./../src/mrp/v2x-data-ftp-client
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-ftp-client  ../../../bin/MapSpatBroadcaster/arm/M_V2XDataFtpClient
+    mv dist/v2x-data-ftp-client  ../../../bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -283,6 +283,26 @@ pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed light-si
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv dist/light-siren-status-manager  ../../../bin/LightSirenStatusManager/arm/M_LightSirenStatusManager
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Data Compressor..."
+cd ./../src/vsp/data-compressor
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed data-compressor.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/data-compressor  ../../../bin/DataCompressor/arm/M_DataCompressor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
