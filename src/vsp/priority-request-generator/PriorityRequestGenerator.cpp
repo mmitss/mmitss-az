@@ -37,7 +37,6 @@
 #include <ctime>
 #include <cmath>
 #include <math.h>
-
 #include "AsnJ2735Lib.h"
 #include "locAware.h"
 #include "geoUtils.h"
@@ -57,9 +56,6 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	reader.parse(configJsonString.c_str(), jsonObject);
-
-	// set the request timed out value to avoid clearing the old request in PRS
-	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_GAPOUT_TIME;
 	ETA_Duration = 4.0;
 	DISTANCEUNITCONVERSION = 100; //cm to meter
 	vehicleMinSpeed = 4.0;
@@ -73,6 +69,9 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 	SECONDTOMILISECOND = 1000;
 	maxMsgCount = 127;
 	minMsgCount = 1;
+	// set the request timed out value to avoid clearing the old request in PRS
+	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_GAPOUT_TIME;
+	
 	
 }
 
@@ -545,19 +544,19 @@ void PriorityRequestGenerator::setVehicleType()
 
 	if (jsonObject_config["VehicleType"].asString() == "Transit")
 	{
-		vehicleType = 6;
+		vehicleType = Transit;
 		lightSirenStatus = true;
 	}
 
 	else if (jsonObject_config["VehicleType"].asString() == "Truck")
 	{
-		vehicleType = 9;
+		vehicleType = Truck;
 		lightSirenStatus = true;
 	}
 
 	else if (jsonObject_config["VehicleType"].asString() == "EmergencyVehicle")
 	{
-		vehicleType = 2;
+		vehicleType = EmergencyVehicle;
 		lightSirenStatus = false;
 	}
 }
@@ -566,13 +565,13 @@ void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
 {
 	lightSirenStatus = true;
 	if (vehType == "transit")
-		vehicleType = 6;
+		vehicleType = Transit;
 
 	else if (vehType == "truck")
-		vehicleType = 9;
+		vehicleType = Truck;
 
 	else if (vehType == "emergency")
-		vehicleType = 2;
+		vehicleType = EmergencyVehicle;
 }
 
 /*
@@ -773,7 +772,6 @@ std::string PriorityRequestGenerator::getVehicleMapStatus()
 	else if (bgetActiveMap == false)
 		vehicleMapStatus = "False";
 
-	// std::cout << "Vehicle Map Status" << vehicleMapStatus << std::endl;
 	return vehicleMapStatus;
 }
 
@@ -789,7 +787,6 @@ std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
 	else if (requestSendStatus  == false)
 		vehicleSRMStatus = "False";
 
-	// std::cout << "Vehicle Request Send Status" << vehicleSRMStatus << std::endl;
 	return vehicleSRMStatus;
 }
 
@@ -899,12 +896,11 @@ void PriorityRequestGenerator::setLightSirenStatus(std::string jsonString)
 	Json::Reader reader;
 	reader.parse(jsonString.c_str(), jsonObject);
 
-	if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == 2)
+	if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
 		lightSirenStatus = true;
-	else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == 2)
+	else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
 		lightSirenStatus = false;
 
-	// std::cout << "Received Json String from LightSirenStatusManager" << jsonString << std::endl;
 }
 
 PriorityRequestGenerator::~PriorityRequestGenerator()
