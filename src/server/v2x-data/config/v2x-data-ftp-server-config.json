@@ -1,6 +1,8 @@
 {
     "FtpHost": "10.12.6.56",
     "FtpPort": 9090,
+    "LocalNetworkGateway":"10.12.6.1",
+    "DnsServer": "8.8.8.8",
     "CyVerseDataTransfer": {
 		"StartTime": {
 			"Hour": 1,
