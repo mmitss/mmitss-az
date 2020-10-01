@@ -109,7 +109,6 @@ class ConfigurationForm(FlaskForm):
     portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
     portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
     portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
-    portNumberSystemPerformanceDataCollector        = IntegerField('Port Number: System Performance Data Collector')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -155,6 +154,11 @@ class ConfigurationForm(FlaskForm):
     intersectionReferencePointLatitudeDecimalDegree     = StringField('Intersection Reference Point Latitude Decimal Degree')
     intersectionReferencePointLongitudeDecimalDegree    = StringField('Intersection Reference Point Longitude Decimal Degree')
     intersectionReferencePointElevationMeter            = IntegerField('Intersection Reference Point Elevation Meter')
+    dataTransferFtpServerPort            = IntegerField('Data Transfer Server Port')
+    dataTransferStartTimeHour            = IntegerField('Data Transfer Start Time Hour')
+    dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
+    dataTransferEndTimeHour              = IntegerField('Data Transfer Start Time Hour')
+    dataTransferEndTimeMinute            = IntegerField('Data Transfer Start Time Minute')
     
 
 # System Configuration data object
@@ -206,7 +210,6 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
-        self.portNumberSystemPerformanceDataCollector = data['PortNumber']['SystemPerformanceDataCollector']
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -252,6 +255,11 @@ class SysConfig:
         self.intersectionReferencePointLatitudeDecimalDegree = data['IntersectionReferencePoint']['Latitude_DecimalDegree']
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
+        self.dataTransferFtpServerPort      = data['DataTransfer']['FtpServerPort']
+        self.dataTransferStartTimeHour      = data['DataTransfer']['StartTime']['Hour']
+        self.dataTransferStartTimeMinute    = data['DataTransfer']['StartTime']['Minute']
+        self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
+        self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
 
 def convertToList(formString):
     # remove any brackets
@@ -314,7 +322,6 @@ def prepareJSONData(data, form):
     data['PortNumber']['MapEngine']    = form.portNumberMapEngine.data
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
-    data['PortNumber']['SystemPerformanceDataCollector']    = form.portNumberSystemPerformanceDataCollector.data
     data['psid']['map']    = form.psidMap.data    
     data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
@@ -360,6 +367,11 @@ def prepareJSONData(data, form):
     data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
+    data['DataTransfer']['FtpServerPort']               = form.dataTransferFtpServerPort.data
+    data['DataTransfer']['StartTime']['Hour']           = form.dataTransferStartTimeHour.data
+    data['DataTransfer']['StartTime']['Minute']         = form.dataTransferStartTimeMinute.data
+    data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
+    data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
 
 
 # configuration viewer / editor
