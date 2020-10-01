@@ -159,7 +159,7 @@ class ConfigurationForm(FlaskForm):
     dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
     dataTransferEndTimeHour              = IntegerField('Data Transfer Start Time Hour')
     dataTransferEndTimeMinute            = IntegerField('Data Transfer Start Time Minute')
-    
+    dataTransferMaxRetries            = IntegerField('Data Transfer Max Retries')    
 
 # System Configuration data object
 class SysConfig:
@@ -260,6 +260,7 @@ class SysConfig:
         self.dataTransferStartTimeMinute    = data['DataTransfer']['StartTime']['Minute']
         self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
         self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
+        self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
 
 def convertToList(formString):
     # remove any brackets
@@ -372,6 +373,7 @@ def prepareJSONData(data, form):
     data['DataTransfer']['StartTime']['Minute']         = form.dataTransferStartTimeMinute.data
     data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
     data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
+    data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
 
 
 # configuration viewer / editor
