@@ -10,12 +10,12 @@
 	"MessageDistributorIP": "10.12.6.20",
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
 	"VehicleType": "Transit",
-	"Logging": "False",
+	"Logging": "True",
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
-	"PeerDataDecoding": true,
+	"PeerDataDecoding": false,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,

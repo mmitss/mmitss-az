@@ -52,7 +52,7 @@ def main():
     server.max_cons = MAX_CONNECTIONS_TOTAL
     server.max_cons_per_ip = MAX_CONNECTIONS_PER_IP
 
-    # start ftp server
+    # start ftp server and serve it forever
     server.serve_forever()
 
 def add_client(name:str, localDirectory:str, authorizer:DummyAuthorizer):
