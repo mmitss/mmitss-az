@@ -19,6 +19,7 @@ in the Systems and Industrial Engineering Department.
 
 import os
 import shutil
+import time
 
 MIN_DISK_SPACE_GB = 1
 BYTES_PER_GB = 1024*1024*1024
@@ -47,5 +48,7 @@ while (remainingDiskSpace_gb) < MIN_DISK_SPACE_GB:
     if len(full_path) > 0:
         oldest_file = min(full_path, key=os.path.getctime)
         os.remove(oldest_file)
+
+time.sleep(10)
     
 
