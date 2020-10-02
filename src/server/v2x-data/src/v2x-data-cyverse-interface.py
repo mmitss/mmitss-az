@@ -36,8 +36,6 @@ DEFAULT_START_MINUTE = 0
 DEFAULT_END_HOUR = 1
 DEFAULT_END_MINUTE = 30
 
-FTP_CLIENT_PASSWORD = "mmitss123"
-
 SEC_BEFORE_RETRY = 60
 
 WORKING_DIRECTORY = str(sh.pwd())[:-1]
@@ -132,12 +130,15 @@ Thanks.""".format(str(datetime.datetime.now()))
 
 
 def transfer_directory_content(localDirectory:str, cyverseDirectory:str):
-    sh.cd(localDirectory)
-    sh.icd(cyverseDirectory)
-    sh.iput("-r","-f",".")
-    sh.cd(WORKING_DIRECTORY)
-    sh.rm("-r", localDirectory)
-    os.makedirs(localDirectory)
+    try:
+        sh.cd(localDirectory)
+        sh.icd(cyverseDirectory)
+        sh.iput("-r","-f",".")
+        sh.cd(WORKING_DIRECTORY)
+        sh.rm("-r", localDirectory)
+        os.makedirs(localDirectory)
+    except:
+        pass
 
 def check_network_connection(serverIp:str):
     packets = 1

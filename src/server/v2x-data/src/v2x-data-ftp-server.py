@@ -1,10 +1,29 @@
+"""
+***************************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+***************************************************************************************
+
+v2x-data-cyverse-interface.py
+Created by: Niraj Vasant Altekar
+University of Arizona   
+College of Engineering
+
+This code was developed under the supervision of Professor Larry Head
+in the Systems and Industrial Engineering Department.
+
+***************************************************************************************
+"""
+
 import os
 import json
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 
-DEFAULT_CLIENT_PASSWORD = "mmitss123"
+DEFAULT_CLIENT_PASSWORD = "MmitssIntersection"
 MAX_CONNECTIONS_TOTAL = 256
 MAX_CONNECTIONS_PER_IP = 5
 
