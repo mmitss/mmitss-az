@@ -63,7 +63,7 @@ int main()
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
-                
+                PRS.loggingData(receivedJsonString);
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.managingSignalRequestTable(signalRequest); 
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
@@ -72,7 +72,6 @@ int main()
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                PRS.loggingData(receivedJsonString);
             }
         }
 
@@ -85,15 +84,17 @@ int main()
             if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
             {
                 PRS.deleteTimedOutRequestfromActiveRequestTable();
-
+                solverJsonString = PRS.createJsonStringForPrioritySolver();
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.printvector();
-                if (PRS.sendClearRequest() == true)
-                {
-                    solverJsonString = PRS.createJsonStringForPrioritySolver();
-                    PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                }
             }
             
+            if (PRS.sendClearRequest() == true)
+            {
+                solverJsonString = PRS.createJsonStringForPrioritySolver();
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+            }
+        
             if(PRS.sendSystemPerformanceDataLog()== true)
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
@@ -107,8 +108,8 @@ int main()
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
             }
-
         }
     }
 

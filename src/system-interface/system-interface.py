@@ -79,6 +79,7 @@ class ConfigurationForm(FlaskForm):
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
     applicationPlatform             = StringField('Application Platform')
+    peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
     portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
@@ -180,6 +181,7 @@ class SysConfig:
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
         self.applicationPlatform = data['ApplicationPlatform']
+        self.peerDataDecoding = data['PeerDataDecoding']
         self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
         self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
         self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
@@ -289,10 +291,12 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
+    data['Logging']= form.logging.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
+    data['PeerDataDecoding']= form.peerDataDecoding.data
     data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
     data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
