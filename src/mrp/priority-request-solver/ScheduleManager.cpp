@@ -1,3 +1,18 @@
+/*
+**********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  SolverDataManager.cpp
+  Created by: Debashis Das
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. This script contains method to read the Results.txt file and store the right and left critical points value.
+  2. This script contains method to develop optimal schedule in a JSON formatted message.
+*/
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -45,37 +60,37 @@ void ScheduleManager::obtainRequiredSignalGroup()
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle1, ring1
     {
-        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing1.front() && trafficSignalPlan[i].phaseRing == 1)
+        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing1.front() && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 1)
             plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle2, ring1
     {
-        if (trafficSignalPlan[i].phaseNumber < 5 && trafficSignalPlan[i].phaseRing == 1)
+        if (trafficSignalPlan[i].phaseNumber < 5 && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 1)
             plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle3, ring1
     {
-        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing1.front() && trafficSignalPlan[i].phaseRing == 1)
+        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing1.front() && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 1)
             plannedSignalGroupInRing1.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle1, ring2
     {
-        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing2.front() && trafficSignalPlan[i].phaseRing == 2)
+        if (trafficSignalPlan[i].phaseNumber > plannedSignalGroupInRing2.front() && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 2)
             plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle2, ring2
     {
-        if (trafficSignalPlan[i].phaseNumber < 9 && trafficSignalPlan[i].phaseRing == 2)
+        if (trafficSignalPlan[i].phaseNumber < 9 && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 2)
             plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++) //Obtaining all the required phases for cycle3, ring2
     {
-        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing2.front() && trafficSignalPlan[i].phaseRing == 2)
+        if (trafficSignalPlan[i].phaseNumber < plannedSignalGroupInRing2.front() && trafficSignalPlan[i].minGreen > 0.0 && trafficSignalPlan[i].phaseRing == 2)
             plannedSignalGroupInRing2.push_back(trafficSignalPlan[i].phaseNumber);
     }
 }

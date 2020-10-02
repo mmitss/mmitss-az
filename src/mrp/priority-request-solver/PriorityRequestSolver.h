@@ -9,7 +9,7 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
   Revision History:
-  1. 
+  1. Header file for PriorityRequestSolver class
 */
 
 #pragma once
