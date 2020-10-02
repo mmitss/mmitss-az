@@ -157,8 +157,8 @@ class ConfigurationForm(FlaskForm):
     dataTransferFtpServerPort            = IntegerField('Data Transfer Server Port')
     dataTransferStartTimeHour            = IntegerField('Data Transfer Start Time Hour')
     dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
-    dataTransferEndTimeHour              = IntegerField('Data Transfer Start Time Hour')
-    dataTransferEndTimeMinute            = IntegerField('Data Transfer Start Time Minute')
+    dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
+    dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
     dataTransferMaxRetries            = IntegerField('Data Transfer Max Retries')    
 
 # System Configuration data object
