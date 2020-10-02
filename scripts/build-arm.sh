@@ -75,10 +75,10 @@ sleep 1s
 echo "Building V2X Data Collector..."
 cd ./../src/common/v2x-data-collector
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
+    mv dist/v2x-data-collector-main  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -217,10 +217,10 @@ sleep 1s
 echo "Building V2X Data Ftp Client..."
 cd ./../src/mrp/v2x-data-ftp-client
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-ftp-client  ../../../bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
+    mv dist/v2x-data-ftp-client-main  ../../../bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
