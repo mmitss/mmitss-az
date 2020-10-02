@@ -224,7 +224,6 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.portNumberMapEngine)}}
         {{ renderfield(form.portNumberLightSirenStatusManager)}}
         {{ renderfield(form.portNumberPeerToPeerPriority)}}
-        {{ renderfield(form.portNumberSystemPerformanceDataCollector)}}
         {{ renderfield(form.psidMap)}}
         {{ renderfield(form.psidSPaT)}}
         {{ renderfield(form.psidRSM)}}
@@ -273,7 +272,13 @@ This is an html file that contains the presentation for:
         {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
         {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
         {{ renderfield(form.intersectionReferencePointElevationMeter)}}
-
+        {{ renderfield(form.dataTransferFtpServerPort)}}
+        {{ renderfield(form.dataTransferStartTimeHour)}}
+        {{ renderfield(form.dataTransferStartTimeMinute)}}
+        {{ renderfield(form.dataTransferEndTimeHour)}}
+        {{ renderfield(form.dataTransferEndTimeMinute)}}
+        {{ renderfield(form.dataTransferMaxRetries)}}
+        
         <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

@@ -18,6 +18,7 @@
 import socket
 import json
 import time, datetime
+import atexit
 from V2XDataCollector import V2XDataCollector
 
 DEBUGGING = False
@@ -34,6 +35,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(host)
 
 v2xDc = V2XDataCollector(environment)
+atexit.register(v2xDc.archive_current_directory)
 
 if DEBUGGING: logFileCreationDay = datetime.datetime.now().minute
 else: logFileCreationDay = datetime.datetime.now().day
@@ -45,12 +47,12 @@ while True:
     data, addr = s.recvfrom(20480)
     senderPort = addr[1]
 
-    if currentDay == logFileCreationDay:
-        v2xDc.decode_and_store_data(data, senderPort)
-    else:
-        currentDay = logFileCreationDay
+    if ((currentDay != logFileCreationDay)) :
         v2xDc.close_logfiles()
-        v2xDc.initialize_logfiles()        
+        v2xDc.initialize_logfiles()   
+        v2xDc.decode_and_store_data(data, senderPort)  
+        logFileCreationDay = currentDay      
+    else:
         v2xDc.decode_and_store_data(data, senderPort)
 
 s.close()
