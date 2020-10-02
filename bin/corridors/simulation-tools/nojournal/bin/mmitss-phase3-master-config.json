@@ -12,7 +12,8 @@
     "VehicleType" : "Transit",
     "Logging" : "True",
     "SRMTimedOutTime" : 10.0,
-    "PortNumber":
+	"PeerDataDecoding": true,
+	"PortNumber":
 	{
 		"MessageTransceiver":
 		{
