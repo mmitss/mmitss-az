@@ -425,13 +425,16 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     std::string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
     Json::FastWriter fastWriter;
-    // Json::StyledStreamWriter styledStreamWriter;
-    // std::ofstream outputter("systemPerformanceDataLog.json");
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
+    jsonObject["MsgType"] = "MsgCount";
+    jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
+    jsonObject["MsgInformation"]["Timestamp_posix"] = getPosixTimestamp();
+    jsonObject["MsgInformation"]["Timestamp_verbose"] = getVerboseTimestamp();
+    jsonObject["MsgInformation"]["MsgCountType"] = msgCountType;
+    
     if (applicationPlatform == "roadside")
     {
-        jsonObject["MsgType"] = "IntersectionDataLog";
         jsonObject["MsgInformation"]["MsgSource"] = intersectionName;
         jsonObject["MsgInformation"]["MsgServed"] = "NA";
         jsonObject["MsgInformation"]["MsgRejected"] = "NA";
@@ -439,11 +442,8 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
 
     else if (applicationPlatform == "vehicle")
     {
-        jsonObject["MsgType"] = "VehicleDataLog";
         jsonObject["MsgInformation"]["MsgSource"] = "vehicle";
     }
-
-    jsonObject["MsgInformation"]["MsgCountType"] = msgCountType;
 
     if (msgCountType == "RemoteBSM")
     {
@@ -481,11 +481,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
         spatMsgCount = 0;
     }
 
-    jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
-    jsonObject["MsgInformation"]["MsgSentTime"] = static_cast<int>(currentTime);
-
     systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-    // styledStreamWriter.write(outputter, jsonObject);
 
     msgSentTime = static_cast<int>(currentTime);
 

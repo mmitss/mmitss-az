@@ -10,7 +10,8 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
   Revision History:
-  1. 
+  1. This script contains method to manage the priority requests in a list.
+  2. This script manage the current signal timing plan and current signal status required for solving the optimization model.
 */
 
 #include "PriorityRequestSolver.h"

@@ -11,9 +11,9 @@ COPY PriorityRequestServer/arm/M_PriorityRequestServer /mmitss
 COPY SnmpEngine/arm/M_SnmpEngine /mmitss
 COPY MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
-COPY SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector /mmitss
 COPY SystemInterface/arm/M_SystemInterface /mmitss
 COPY V2XDataCollector/arm/M_V2XDataCollector /mmitss
+COPY V2XDataFtpClient/arm/M_V2XDataFtpClient /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 

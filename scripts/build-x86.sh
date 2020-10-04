@@ -92,33 +92,13 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/x86/M_SystemPerformanceDataCollector
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
 echo "Building V2X Data Collector..."
 cd ./../src/common/v2x-data-collector
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector  ../../../bin/V2XDataCollector/x86/M_V2XDataCollector
+    mv dist/v2x-data-collector-main  ../../../bin/V2XDataCollector/x86/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -255,6 +235,26 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
+#######################################################################################
+echo "Building V2X Data Ftp Client..."
+cd ./../src/mrp/v2x-data-ftp-client
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/v2x-data-ftp-client-main  ../../../bin/V2XDataFtpClient/x86/M_V2XDataFtpClient
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
 ################################### SIMULATION TOOLS ##################################
 
 #######################################################################################
@@ -285,6 +285,26 @@ pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed message-
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv dist/message-distributor  ../../../bin/MessageDistributor/x86/M_MessageDistributor
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Data Compressor..."
+cd ./../src/vsp/data-compressor
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed data-compressor.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/data-compressor  ../../../bin/DataCompressor/x86/M_DataCompressor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"

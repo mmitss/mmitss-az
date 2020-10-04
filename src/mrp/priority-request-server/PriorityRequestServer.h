@@ -44,6 +44,7 @@ private:
     double timeInterval{0.0};
     bool bLogging{};
     bool emergencyVehicleStatus{false};
+    bool sentClearRequest{};
     std::string intersectionName{};
 
 public:

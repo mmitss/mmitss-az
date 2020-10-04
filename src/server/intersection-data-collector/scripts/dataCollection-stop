@@ -1,4 +1,0 @@
-#!/bin/bash
-
-echo Stopping all instances of Data Collector
-pkill -9 -f data-collector

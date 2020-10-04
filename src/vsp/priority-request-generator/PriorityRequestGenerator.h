@@ -23,6 +23,10 @@
 #include "ActiveRequest.h"
 #include "MapManager.h"
 
+#define EmergencyVehicle 2
+#define Transit 6
+#define Truck 9
+
 enum msgType
 {
   lightSirenStatus = 1,
