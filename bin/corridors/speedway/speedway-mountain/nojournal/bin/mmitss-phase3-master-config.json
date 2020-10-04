@@ -10,11 +10,12 @@
 	"MessageDistributorIP": "10.12.6.20",
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
 	"VehicleType": "Transit",
-	"Logging": "False",
+	"Logging": "True",
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
+	"PeerDataDecoding": false,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,
@@ -47,8 +48,7 @@
 		"TrajectoryAware_MapEngineInterface": 20023,
 		"MapEngine": 20024,
 		"LightSirenStatusManager": 20025,
-		"PeerToPeerPriority": 20026,
-		"SystemPerformanceDataCollector": 20027
+		"PeerToPeerPriority": 20026
 	},
 	"psid": {
 		"map": "8002",
@@ -110,5 +110,17 @@
 		"Latitude_DecimalDegree": 32.23378985583269,
 		"Longitude_DecimalDegree": -110.95232938020776,
 		"Elevation_Meter": 715
+	},
+	"DataTransfer": {
+		"FtpServerPort": 9090,
+		"StartTime": {
+			"Hour": 15,
+			"Minute": 30
+		},
+		"EndTime": {
+			"Hour": 18,
+			"Minute": 30
+		},
+		"MaxRetries": 3
 	}
 }

@@ -35,6 +35,7 @@
 #include "msgEnum.h"
 #include "locAware.h"
 #include "geoUtils.h"
+#include "Timestamp.h"
 
 using namespace MsgEnum;
 
@@ -555,6 +556,7 @@ void PriorityRequestServer::managingSignalRequestTable(SignalRequest signalReque
 		// 	std::cout << "Unknown priority request type" << std::endl;
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
+		printvector();
 	}
 }
 /*
@@ -571,7 +573,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
 
 	//For EV we have to delete two request
-	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::basicRole::fire) && findVehicleIDOnTable != ActiveRequestTable.end())
+	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
@@ -646,12 +648,14 @@ std::string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = ActiveRequestTable[i].vehicleHeading;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
+		sentClearRequest = false;
 	}
 
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
 		std::cout << "Sent Clear Request to Solver " << std::endl;
+		sentClearRequest = true;
 	}
 	solverJsonString = fastWriter.write(jsonObject);
 	// styledStreamWriter.write(outputter, jsonObject);
@@ -695,14 +699,14 @@ bool PriorityRequestServer::updateETA()
 */
 bool PriorityRequestServer::sendClearRequest()
 {
-	bool bSendClearRequest = false;
+	bool clearRequestStatus = false;
 
-	if (ActiveRequestTable.size() == 0)
-		bSendClearRequest = true;
+	if (ActiveRequestTable.size() == 0 && sentClearRequest == false)
+		clearRequestStatus = true;
 	else
-		bSendClearRequest = false;
+		clearRequestStatus = false;
 
-	return bSendClearRequest;
+	return clearRequestStatus;
 }
 
 /*
@@ -746,6 +750,7 @@ void PriorityRequestServer::printvector()
 {
 	if (!ActiveRequestTable.empty())
 	{
+		std::cout << "Active Request Table is Following:" << std::endl;
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
 			std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleType << " " << ActiveRequestTable[i].vehicleETA << std::endl;
@@ -1006,21 +1011,19 @@ std::string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	std::string systemPerformanceDataLogJsonString{};
 	Json::Value jsonObject;
 	Json::FastWriter fastWriter;
-	// Json::StyledStreamWriter styledStreamWriter;
-	// std::ofstream outputter("systemPerformanceDataLog.json");
 	auto currenTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-	jsonObject["MsgType"] = "IntersectionDataLog";
+	jsonObject["MsgType"] = "MsgCount";
 	jsonObject["MsgInformation"]["MsgSource"] = intersectionName;
 	jsonObject["MsgInformation"]["MsgCountType"] = "SRM";
     jsonObject["MsgInformation"]["MsgCount"] = msgReceived;
     jsonObject["MsgInformation"]["MsgServed"] = msgServed;
     jsonObject["MsgInformation"]["MsgRejected"] = msgRejected;
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
-    jsonObject["MsgInformation"]["MsgSentTime"]= static_cast<int>(currenTime);
+    jsonObject["MsgInformation"]["Timestamp_posix"]= getPosixTimestamp();
+	jsonObject["MsgInformation"]["Timestamp_verbose"]= getVerboseTimestamp();
 
 	systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
-	// styledStreamWriter.write(outputter, jsonObject);
 
 	msgSentTime = static_cast<int>(currenTime);
 	msgReceived = 0;

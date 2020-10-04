@@ -79,6 +79,7 @@ class ConfigurationForm(FlaskForm):
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
     applicationPlatform             = StringField('Application Platform')
+    peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
     portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
@@ -109,7 +110,6 @@ class ConfigurationForm(FlaskForm):
     portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
     portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
     portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
-    portNumberSystemPerformanceDataCollector        = IntegerField('Port Number: System Performance Data Collector')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -155,7 +155,12 @@ class ConfigurationForm(FlaskForm):
     intersectionReferencePointLatitudeDecimalDegree     = StringField('Intersection Reference Point Latitude Decimal Degree')
     intersectionReferencePointLongitudeDecimalDegree    = StringField('Intersection Reference Point Longitude Decimal Degree')
     intersectionReferencePointElevationMeter            = IntegerField('Intersection Reference Point Elevation Meter')
-    
+    dataTransferFtpServerPort            = IntegerField('Data Transfer Server Port')
+    dataTransferStartTimeHour            = IntegerField('Data Transfer Start Time Hour')
+    dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
+    dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
+    dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
+    dataTransferMaxRetries            = IntegerField('Data Transfer Max Retries')    
 
 # System Configuration data object
 class SysConfig:
@@ -176,6 +181,7 @@ class SysConfig:
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
         self.applicationPlatform = data['ApplicationPlatform']
+        self.peerDataDecoding = data['PeerDataDecoding']
         self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
         self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
         self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
@@ -206,7 +212,6 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
-        self.portNumberSystemPerformanceDataCollector = data['PortNumber']['SystemPerformanceDataCollector']
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -252,6 +257,12 @@ class SysConfig:
         self.intersectionReferencePointLatitudeDecimalDegree = data['IntersectionReferencePoint']['Latitude_DecimalDegree']
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
+        self.dataTransferFtpServerPort      = data['DataTransfer']['FtpServerPort']
+        self.dataTransferStartTimeHour      = data['DataTransfer']['StartTime']['Hour']
+        self.dataTransferStartTimeMinute    = data['DataTransfer']['StartTime']['Minute']
+        self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
+        self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
+        self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
 
 def convertToList(formString):
     # remove any brackets
@@ -280,10 +291,12 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
+    data['Logging']= form.logging.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
+    data['PeerDataDecoding']= form.peerDataDecoding.data
     data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
     data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
@@ -314,7 +327,6 @@ def prepareJSONData(data, form):
     data['PortNumber']['MapEngine']    = form.portNumberMapEngine.data
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
-    data['PortNumber']['SystemPerformanceDataCollector']    = form.portNumberSystemPerformanceDataCollector.data
     data['psid']['map']    = form.psidMap.data    
     data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
@@ -360,6 +372,12 @@ def prepareJSONData(data, form):
     data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
+    data['DataTransfer']['FtpServerPort']               = form.dataTransferFtpServerPort.data
+    data['DataTransfer']['StartTime']['Hour']           = form.dataTransferStartTimeHour.data
+    data['DataTransfer']['StartTime']['Minute']         = form.dataTransferStartTimeMinute.data
+    data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
+    data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
+    data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
 
 
 # configuration viewer / editor
