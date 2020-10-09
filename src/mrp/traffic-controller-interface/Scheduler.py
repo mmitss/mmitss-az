@@ -262,7 +262,7 @@ class Scheduler:
         self.sendScheduledGreenPhaseControlsToMapSpatBroadcaster(scheduleJson) 
         
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
-        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandEndTime"]))
+        scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandStartTime"], i["commandType"], i["commandEndTime"]))
 
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
