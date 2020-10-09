@@ -219,8 +219,8 @@ class Scheduler:
                 groupPhases = groupPhases + [command.phases]
 
             groupPhaseInt = formulateBinaryIntegerRepresentation(groupPhases)
-
             groupCommand = Command(groupPhaseInt, groupCommand, groupStartTime, groupEndTime)
+
             return groupCommand
             
         # Create Schedule data structure
@@ -282,6 +282,19 @@ class Scheduler:
                 if (command != currentGroup[0] and (command.startTime == currentGroup[0].startTime) and (command.action == currentGroup[0].action)):
                     currentGroup = currentGroup + [command]
                     index = index+1
+
+            # TODO: Check if existing holds need to be continued
+            if currentGroup[0].action == "hold":
+                if len(currentGroup) == 1:
+                    # Check which holds in progress (ask the signal controller). 
+                    dummyCommand = Command(0,0,0,0)
+                    currentHoldsInteger = self.signalController.getPhaseControl(dummyCommand.HOLD_VEH_PHASES)
+                    # If no holds are in progress then pass. 
+                    # Else for all holds that are in progress, check their end times from the scheduleDataStructure (minus the scheduleReceiptTime)
+                    # If the endTimes of currently executing holds are less than the endTimes of each phase in the currentGroup, then add the currently executing COMMAND to current group
+
+
+
             groupCommand =  formulateGroupCommand(currentGroup)
 
             # Check the end times of all items in the current group and add additional commands for the phases that end later.
