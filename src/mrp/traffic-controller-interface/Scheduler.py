@@ -180,35 +180,6 @@ class Scheduler:
             
             """
 
-            # Formulate the binary integer representation of the commandPhase:
-            def formulateBinaryIntegerRepresentation(groupPhases:list) -> int:
-                """
-                converts the list of phases to an integer representing a bit string. 
-                For example:
-                (1) If the argument is [1,2,3,4,5,6,7,8] then the bitstring would be 11111111, 
-                    the returned integer would be 255.
-                (2) if the argument is [3,8], then the bitstring would be 10000100,
-                    the returned integer would be 132
-                Arguments: 
-                ----------
-                    (1) list of phases in the group
-
-                Returns:
-                --------
-                    The integer corresponding to the bitstring
-                """
-
-                groupPhaseStr = list("00000000")
-                
-                if groupPhases[0] != 0:
-                    for phase in groupPhases:
-                        groupPhaseStr[phase-1]="1"
-                groupPhaseStr = groupPhaseStr[::-1]
-                groupPhaseStr = "".join(groupPhaseStr)
-                groupPhaseInt = int(groupPhaseStr,2)
-                
-                return groupPhaseInt    
-
             # End the group at time which is minimum of all commands' end time. Additional commands will be added later in the code
             # for controls that end later.
             groupCommand = currentGroup[0].action
@@ -218,7 +189,7 @@ class Scheduler:
             for command in currentGroup:
                 groupPhases = groupPhases + [command.phases]
 
-            groupPhaseInt = formulateBinaryIntegerRepresentation(groupPhases)
+            groupPhaseInt = self.signalController.snmp.getBinaryIntegerRepresentationFromList(groupPhases)
             groupCommand = Command(groupPhaseInt, groupCommand, groupStartTime, groupEndTime)
 
             return groupCommand
@@ -283,14 +254,18 @@ class Scheduler:
                     currentGroup = currentGroup + [command]
                     index = index+1
 
-            # TODO: Check if existing holds need to be continued
-            if currentGroup[0].action == "hold":
+            # TODO: Check if any of existing holds need to be continued
+            dummyCommand = Command(0,0,0,0)
+            if currentGroup[0].action == dummyCommand.HOLD_VEH_PHASES:
                 if len(currentGroup) == 1:
                     # Check which holds in progress (ask the signal controller). 
-                    dummyCommand = Command(0,0,0,0)
                     currentHoldsInteger = self.signalController.getPhaseControl(dummyCommand.HOLD_VEH_PHASES)
-                    # If no holds are in progress then pass. 
-                    # Else for all holds that are in progress, check their end times from the scheduleDataStructure (minus the scheduleReceiptTime)
+                    currentHeldPhases = self.signalController.snmp.getListFromBinaryIntegerRepresentation(currentHoldsInteger)
+                    if len(currentHeldPhases) > 0: 
+                        # for all holds that are in progress, check their end times from the scheduleDataStructure (minus the scheduleReceiptTime)
+                        for phase in currentHeldPhases:
+                            for scheduledPhaseControl in scheduleDataStructure:
+                                pass
                     # If the endTimes of currently executing holds are less than the endTimes of each phase in the currentGroup, then add the currently executing COMMAND to current group
 
 

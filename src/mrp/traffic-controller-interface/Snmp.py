@@ -71,6 +71,64 @@ class Snmp:
         snmpGetResponseJson = json.loads(data.decode())
         
         return snmpGetResponseJson["Value"]
+    
+    def getListFromBinaryIntegerRepresentation(self, binaryIntegerRepresentation:int) -> list:
+        """
+        converts the integer representing a bit string to list of phases
+        For example:
+        (1) If the argument is '11111111' then the returned list of phases would be [1,2,3,4,5,6,7,8]
+        (2) if the argument is '10000100' then the returned list of phases would be [3,8]
+        Arguments: 
+        ----------
+            An integer corresponding to the bitstring
+
+        Returns:
+        --------
+            List of phases in the group
+        """
+        num_bits = 8
+        if binaryIntegerRepresentation < 256:
+            bitString = (lambda binaryIntegerRepresentation, num_bits: format(binaryIntegerRepresentation, 'b').zfill(num_bits))(binaryIntegerRepresentation,num_bits)[::-1]
+            bitList = list(bitString)
+
+            for index in range(8):
+                if bitList[index] == "1":
+                        bitList[index] = index+1
+        
+            bitList = [bit for bit in bitList if bit != '0']
+
+            return bitList
+        else: return []
+
+
+    # Formulate the binary integer representation of the commandPhase:
+    def getBinaryIntegerRepresentationFromList(self, groupPhases:list) -> int:
+        """
+        converts the list of phases to an integer representing a bit string. 
+        For example:
+        (1) If the argument is [1,2,3,4,5,6,7,8] then the bitstring would be 11111111, 
+            the returned integer would be 255.
+        (2) if the argument is [3,8], then the bitstring would be 10000100,
+            the returned integer would be 132
+        Arguments: 
+        ----------
+            (1) list of phases in the group
+
+        Returns:
+        --------
+            The integer corresponding to the bitstring
+        """
+
+        groupPhaseStr = list("00000000")
+        
+        if groupPhases[0] != 0:
+            for phase in groupPhases:
+                groupPhaseStr[phase-1]="1"
+        groupPhaseStr = groupPhaseStr[::-1]
+        groupPhaseStr = "".join(groupPhaseStr)
+        groupPhaseInt = int(groupPhaseStr,2)
+        
+        return groupPhaseInt   
 
     def setValue(self, oid:str, value:int):
         """
@@ -94,20 +152,22 @@ if __name__ == "__main__":
     snmp = Snmp()
     import time
 
-    requestTime = time.time()
-    print("Original value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    deliveryTime = time.time()
-    leadTime = deliveryTime - requestTime
-    print("Received in " + str(leadTime) + " Seconds" )
+    # requestTime = time.time()
+    # print("Original value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
+    # deliveryTime = time.time()
+    # leadTime = deliveryTime - requestTime
+    # print("Received in " + str(leadTime) + " Seconds" )
 
-    time.sleep(0.1)
-    snmp.setValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1", 6)
-    time.sleep(0.1)
+    # time.sleep(0.1)
+    # snmp.setValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1", 6)
+    # time.sleep(0.1)
 
-    requestTime = time.time()
-    print("New value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    deliveryTime = time.time()
-    leadTime = deliveryTime - requestTime
-    print("Received in " + str(leadTime) + " Seconds" )
+    # requestTime = time.time()
+    # print("New value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
+    # deliveryTime = time.time()
+    # leadTime = deliveryTime - requestTime
+    # print("Received in " + str(leadTime) + " Seconds" )
+
+    print(snmp.getListFromBinaryIntegerRepresentation(0))
 
     
