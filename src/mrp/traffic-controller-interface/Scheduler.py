@@ -238,6 +238,7 @@ class Scheduler:
         clearOldSchedule(scheduleDataStructure, self.scheduleReceiptTime)
 
         # Form a list of startGroups for commands that start together
+        
         startGroups = []
         index = 0
         while index < len(scheduleDataStructure):
