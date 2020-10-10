@@ -26,6 +26,8 @@ This class provides methods that interface with the SnmpEngine.
 import socket
 import json
 
+from bitstring import BitArray
+
 class Snmp:
     """
     provides methods to interface with the SnmpEngine
@@ -72,64 +74,18 @@ class Snmp:
         
         return snmpGetResponseJson["Value"]
     
-    def getListFromBinaryIntegerRepresentation(self, binaryIntegerRepresentation:int) -> list:
-        """
-        converts the integer representing a bit string to list of phases
-        For example:
-        (1) If the argument is '11111111' then the returned list of phases would be [1,2,3,4,5,6,7,8]
-        (2) if the argument is '10000100' then the returned list of phases would be [3,8]
-        Arguments: 
-        ----------
-            An integer corresponding to the bitstring
+    def getPhaseListFromBitArray(self, bitArray:BitArray) -> list:       
 
-        Returns:
-        --------
-            List of phases in the group
-        """
-        num_bits = 8
-        if binaryIntegerRepresentation < 256:
-            bitString = (lambda binaryIntegerRepresentation, num_bits: format(binaryIntegerRepresentation, 'b').zfill(num_bits))(binaryIntegerRepresentation,num_bits)[::-1]
-            bitList = list(bitString)
+        phaseList = []
 
-            for index in range(8):
-                if bitList[index] == "1":
-                        bitList[index] = index+1
-        
-            bitList = [bit for bit in bitList if bit != '0']
+        for phase in range(8):
+            if bitArray[-phase]==True:
+                if phase==0: 
+                    phaseList = phaseList + [8]                    
+                else: phaseList = phaseList + [phase]
 
-            return bitList
-        else: return []
-
-
-    # Formulate the binary integer representation of the commandPhase:
-    def getBinaryIntegerRepresentationFromList(self, groupPhases:list) -> int:
-        """
-        converts the list of phases to an integer representing a bit string. 
-        For example:
-        (1) If the argument is [1,2,3,4,5,6,7,8] then the bitstring would be 11111111, 
-            the returned integer would be 255.
-        (2) if the argument is [3,8], then the bitstring would be 10000100,
-            the returned integer would be 132
-        Arguments: 
-        ----------
-            (1) list of phases in the group
-
-        Returns:
-        --------
-            The integer corresponding to the bitstring
-        """
-
-        groupPhaseStr = list("00000000")
-        
-        if groupPhases[0] != 0:
-            for phase in groupPhases:
-                groupPhaseStr[phase-1]="1"
-        groupPhaseStr = groupPhaseStr[::-1]
-        groupPhaseStr = "".join(groupPhaseStr)
-        groupPhaseInt = int(groupPhaseStr,2)
-        
-        return groupPhaseInt   
-
+        return sorted(phaseList)
+       
     def setValue(self, oid:str, value:int):
         """
         sends a "set" request to the SnmpEngine for the OID provided in argument
@@ -149,25 +105,20 @@ class Snmp:
 
 if __name__ == "__main__":
 
-    snmp = Snmp()
+    import StandardMib
     import time
+    
+    snmp = Snmp()
+    
+    phase = 8
 
-    # requestTime = time.time()
-    # print("Original value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    # deliveryTime = time.time()
-    # leadTime = deliveryTime - requestTime
-    # print("Received in " + str(leadTime) + " Seconds" )
+    bitArray = BitArray([False,False,False,False,False,False,False,False])
+    
+    bitArray = bitArray[::-1]
+    bitArray[phase-1] = True
+    
 
-    # time.sleep(0.1)
-    # snmp.setValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1", 6)
-    # time.sleep(0.1)
-
-    # requestTime = time.time()
-    # print("New value: " + str(snmp.getValue( "1.3.6.1.4.1.1206.3.5.2.9.44.1.1")))
-    # deliveryTime = time.time()
-    # leadTime = deliveryTime - requestTime
-    # print("Received in " + str(leadTime) + " Seconds" )
-
-    print(snmp.getListFromBinaryIntegerRepresentation(0))
-
+    print(snmp.getPhaseListFromBitArray(bitArray))
+    groupInteger = bitArray.uint
+    snmp.setValue(StandardMib.PHASE_CONTROL_VEHCALL,groupInteger)
     
