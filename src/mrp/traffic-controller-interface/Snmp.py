@@ -74,8 +74,8 @@ class Snmp:
         
         return snmpGetResponseJson["Value"]
     
-    def getPhaseListFromBitArray(self, bitArray:BitArray) -> list:       
-
+    def getPhaseListFromBitArray(self, bitArray:BitArray) -> list:   
+        
         phaseList = []
 
         for phase in range(8):

@@ -35,7 +35,7 @@ following functions:
 """
 import json
 import socket
-import time
+import time, datetime
 from SignalController import SignalController
 from Scheduler import Scheduler
 
@@ -67,20 +67,20 @@ def main():
 
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
-                print("Received a clear request at time:" + str(time.time()))
+                print("[" + str(datetime.datetime.now()) + "] " + "Received a clear request at time:" + str(time.time()))
                 scheduler.clearBackgroundScheduler(True)
                 # Clear all holds, forceoffs, calls, and omits from the signal controller:
                 scheduler.clearAllNtcipCommandsFromSignalController()
             else:
-                print("Received a new schedule at time:" + str(time.time())) 
+                print("[" + str(datetime.datetime.now()) + "] " + "Received a new schedule at time:" + str(time.time())) 
                 print(receivedMessage)
                 scheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            print("Received CurrNextPhaseRequest at time " + str(time.time()) + str(receivedMessage))
+            print("[" + str(datetime.datetime.now()) + "] " + "Received CurrNextPhaseRequest at time " + str(time.time()) + str(receivedMessage))
             asc.sendCurrentAndNextPhasesDict(address)
-            print("Sent currNextPhaseStatus")
+            print("[" + str(datetime.datetime.now()) + "] " + "Sent currNextPhaseStatus")
 
         elif receivedMessage["MsgType"]=="TimingPlanRequest":
             # Read the current timing plan from the object of SignalController class
@@ -89,7 +89,7 @@ def main():
             s.sendto(currentTimingPlan.encode(),address)
             print(currentTimingPlan)
 
-        else: print("Invalid message received!")
+        else: print("[" + str(datetime.datetime.now()) + "] " + "Invalid message received!")
         
     s.close()
 

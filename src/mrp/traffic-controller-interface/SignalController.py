@@ -104,14 +104,6 @@ class SignalController:
         # Read the currently active timing plan and store it into a JSON string
         self.updateAndSendActiveTimingPlan()
 
-
-                # if command["commandType"] == "call_veh": commandType = Command.CALL_VEH_PHASES
-                # elif command["commandType"] == "call_ped": commandType = Command.CALL_PED_PHASES
-                # elif command["commandType"] == "forceoff": commandType = Command.FORCEOFF_PHASES
-                # elif command["commandType"] == "hold": commandType = Command.HOLD_VEH_PHASES
-                # elif command["commandType"] == "omit_veh": commandType = Command.OMIT_VEH_PHASES
-                # elif command["commandType"] == "omit_ped": commandType = Command.OMIT_PED_PHASES
-
         self.phaseControls = dict({
                                         1:{
                                             "name":"VEH_CALL",
@@ -184,23 +176,28 @@ class SignalController:
         
         return value
 
-    def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int):
+    def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int): # Add the datetime format in the logging
+        """
+        What does this function do?
+        """
         phaseControlDict = self.phaseControls.get(control)
         if ((len(phases) == 0) or (len(phases) == 1 and phases[0] == 0)) :
             phaseControlDict["status"] = BitArray(False for phase in range(8))
             phaseList = []
             groupInt = phaseControlDict["status"].uint
             self.snmp.setValue(phaseControlDict["oid"], groupInt)
-            print(phaseControlDict["name"] + " " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
+            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
+            
         
         else:
             for phase in phases:
-                phaseControlDict["status"][-phase] = action
+                phaseControlDict["status"][-phase] = action # What does "-" sign do?
             
             groupInt = phaseControlDict["status"].uint
             self.snmp.setValue(phaseControlDict["oid"], groupInt)
             phaseList = self.snmp.getPhaseListFromBitArray(phaseControlDict["status"])
-            print(phaseControlDict["name"] + " "  + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds. Integer=" + str(groupInt))
+            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " "  + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds. Integer=" + str(groupInt))
+            
 
     ######################## Definition End: phaseControl(self, action, phases) ########################
 
@@ -233,7 +230,7 @@ class SignalController:
             """
 
             nextPhasesInt = int(self.snmp.getValue(StandardMib.PHASE_GROUP_STATUS_NEXT))
-            print("Current next phases are" + str(nextPhasesInt))
+            print("[" + str(datetime.datetime.now()) + "] " + "Current next phases are" + str(nextPhasesInt))
             nextPhasesStr = str(f'{(nextPhasesInt):08b}')[::-1]
             
             nextPhasesList = [0,0]
@@ -258,7 +255,7 @@ class SignalController:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind(self.currPhaseListenerAddress)
         data, addr = s.recvfrom(1024)
-        print("Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
+        print("[" + str(datetime.datetime.now()) + "] " + "Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
 
         currentPhasesDict = json.loads(data.decode())
 
@@ -273,7 +270,7 @@ class SignalController:
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        print("Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
+        print("[" + str(datetime.datetime.now()) + "] " + "Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
@@ -379,7 +376,7 @@ class SignalController:
                 s.bind(self.timingPlanSenderAddress)
                 s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
                 s.close()
-                print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+                print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
                 print(self.currentTimingPlanJson)
 
         else:
@@ -465,7 +462,7 @@ class SignalController:
             s.bind(self.timingPlanSenderAddress)
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
             s.close()
-            print("Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
+            print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
             print(self.currentTimingPlanJson)
             
     ######################## Definition End: updateActiveTimingPlan(self) ########################
