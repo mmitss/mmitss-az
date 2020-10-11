@@ -177,9 +177,6 @@ class SignalController:
         return value
 
     def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int): # Add the datetime format in the logging
-        """
-        What does this function do?
-        """
         phaseControlDict = self.phaseControls.get(control)
         if ((len(phases) == 0) or (len(phases) == 1 and phases[0] == 0)) :
             phaseControlDict["status"] = BitArray(False for phase in range(8))
