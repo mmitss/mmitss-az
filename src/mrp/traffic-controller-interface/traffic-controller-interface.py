@@ -47,6 +47,12 @@ def main():
     # Close the config file:
     configFile.close()
 
+    # Read the logging status:
+    logging = config["Logging"]
+
+    if (logging.lower() == "True" or logging.lower() == "true"): logging == True
+    if (logging.lower() == "False" or logging.lower() == "false"): logging == False
+
     # Open a socket and bind it to the IP and port dedicated for this application:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
@@ -69,16 +75,18 @@ def main():
             if receivedMessage["Schedule"] == "Clear":
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a clear request at time:" + str(time.time()))
                 scheduler.clearBackgroundScheduler(True)
-                # Clear all holds, forceoffs, calls, and omits from the signal controller:
+                # Clear all holds, forceoffs, calls, and omits from the ASC signal controller:
                 scheduler.clearAllNtcipCommandsFromSignalController()
+                # Clear all phase controls from the SignalController class of the Schedule class.
+                scheduler.signalController.resetAllPhaseControls()
             else:
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a new schedule at time:" + str(time.time())) 
-                print(receivedMessage)
+                if logging: print(receivedMessage)
                 scheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            print("[" + str(datetime.datetime.now()) + "] " + "Received CurrNextPhaseRequest at time " + str(time.time()) + str(receivedMessage))
+            print("[" + str(datetime.datetime.now()) + "] " + "Received CurrNextPhaseRequest at time " + str(time.time()))
             asc.sendCurrentAndNextPhasesDict(address)
             print("[" + str(datetime.datetime.now()) + "] " + "Sent currNextPhaseStatus")
 
@@ -87,7 +95,7 @@ def main():
             currentTimingPlan = asc.currentTimingPlanJson
             # Send the current timing plan to the requestor
             s.sendto(currentTimingPlan.encode(),address)
-            print(currentTimingPlan)
+            if logging: print(currentTimingPlan)
 
         else: print("[" + str(datetime.datetime.now()) + "] " + "Invalid message received!")
         

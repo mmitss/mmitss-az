@@ -125,6 +125,9 @@ class Scheduler:
             """     
             self.clearBackgroundScheduler(True)
             
+            # Resets phase control bits from the SignalController object:
+            self.signalController.resetAllPhaseControls()
+            
             # Initialize flags to clear Holds, PedOmits, and VehOmits
             clearHolds = True
             clearPedOmit = True
@@ -233,7 +236,7 @@ class Scheduler:
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
-        print("[" + str(datetime.datetime.now()) + "] " + "Beginning to clear old schedule")
+        print("[" + str(datetime.datetime.now()) + "] " + "Clearing old schedule")
         # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
         clearOldSchedule(scheduleDataStructure, self.scheduleReceiptTime)
 
@@ -295,7 +298,7 @@ class Scheduler:
         Activates the phase control at startSecFrmNow, and keeps it active till endSecFromNow.
         """
         if startSecFromNow == 0.0:
-            startSecFromNow = 0.01 # Why did you add this delay??
+            startSecFromNow = 0.01 # Jobs that start at time NOW (0.0 sec from now) are incompatible with BackgroundScheduler
 
         intervalTrigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1,
                                                 start_date=(datetime.datetime.now()+datetime.timedelta(seconds=startSecFromNow)), 

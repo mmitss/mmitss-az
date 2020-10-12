@@ -33,7 +33,6 @@ import datetime
 import time
 import socket
 import json
-from Command import FORCEOFF_PHASES
 import StandardMib
 import importlib.util
 import Command
@@ -139,6 +138,14 @@ class SignalController:
 
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
+    def resetAllPhaseControls(self, control:int):
+        self.currentHolds = BitArray([False for phase in range(8)])
+        self.currentForceoffs = BitArray([False for phase in range(8)])
+        self.currentVehOmits = BitArray([False for phase in range(8)])
+        self.currentPedOmits = BitArray([False for phase in range(8)])
+        self.currentVehCalls = BitArray([False for phase in range(8)])
+        self.currentPedCalls = BitArray([False for phase in range(8)])
+
     def getPhaseControl(self, control:int) -> int:
         """
         returns the integer representation of bit-string denoting which phases are currently executing 
@@ -176,7 +183,7 @@ class SignalController:
         
         return value
 
-    def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int): # Add the datetime format in the logging
+    def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int):
         phaseControlDict = self.phaseControls.get(control)
         if ((len(phases) == 0) or (len(phases) == 1 and phases[0] == 0)) :
             phaseControlDict["status"] = BitArray(False for phase in range(8))
