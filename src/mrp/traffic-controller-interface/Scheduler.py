@@ -125,9 +125,6 @@ class Scheduler:
             """     
             self.clearBackgroundScheduler(True)
             
-            # Resets phase control bits from the SignalController object:
-            self.signalController.resetAllPhaseControls()
-            
             # Initialize flags to clear Holds, PedOmits, and VehOmits
             clearHolds = True
             clearPedOmit = True
@@ -140,10 +137,10 @@ class Scheduler:
                         if self.signalController.getPhaseControl(Command.HOLD_VEH_PHASES) > 0:
                             clearHolds = False
                     elif command.control == Command.OMIT_VEH_PHASES:    
-                        if self.signalController.getPhaseControl(Command.HOLD_VEH_PHASES) > 0:
+                        if self.signalController.getPhaseControl(Command.OMIT_VEH_PHASES) > 0:
                             clearVehOmit = False
                     elif command.control == Command.OMIT_PED_PHASES:
-                        if self.signalController.getPhaseControl(Command.HOLD_VEH_PHASES) > 0:
+                        if self.signalController.getPhaseControl(Command.OMIT_PED_PHASES) > 0:
                             clearPedOmit = False
 
             # Clear Holds if its flag is True    
@@ -211,6 +208,7 @@ class Scheduler:
     
     ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
+        self.signalController.resetAllPhaseControls()
         scheduleJson = scheduleJson["Schedule"]
         self.scheduleReceiptTime = time.time()
 
@@ -443,7 +441,7 @@ if __name__ == "__main__":
     scheduler = Scheduler(asc)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule1.json", "r")
+    scheduleFile = open("test/schedule3.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
     scheduleFile.close()
 

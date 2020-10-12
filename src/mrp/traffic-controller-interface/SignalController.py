@@ -30,6 +30,7 @@ of calls to Snmp::getValue funtion and listening for information from MapSpatBro
 """
 
 import datetime
+from threading import current_thread
 import time
 import socket
 import json
@@ -138,13 +139,14 @@ class SignalController:
 
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
 
-    def resetAllPhaseControls(self, control:int):
-        self.currentHolds = BitArray([False for phase in range(8)])
-        self.currentForceoffs = BitArray([False for phase in range(8)])
-        self.currentVehOmits = BitArray([False for phase in range(8)])
-        self.currentPedOmits = BitArray([False for phase in range(8)])
-        self.currentVehCalls = BitArray([False for phase in range(8)])
-        self.currentPedCalls = BitArray([False for phase in range(8)])
+    def resetAllPhaseControls(self):
+        
+        self.phaseControls.get(Command.CALL_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.CALL_PED_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.FORCEOFF_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.HOLD_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.OMIT_PED_PHASES)["status"] = BitArray(False for phase in range(8))
+        self.phaseControls.get(Command.OMIT_VEH_PHASES)["status"] = BitArray(False for phase in range(8))
 
     def getPhaseControl(self, control:int) -> int:
         """
@@ -194,6 +196,7 @@ class SignalController:
             
         
         else:
+            currentStatus = phaseControlDict["status"]
             for phase in phases:
                 phaseControlDict["status"][-phase] = action # What does "-" sign do?
             

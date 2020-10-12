@@ -2,7 +2,7 @@
     "MsgType": "Schedule",
     "Schedule": [
         {
-            "commandEndTime": 0.8,
+            "commandEndTime": 8,
             "commandPhase": 4,
             "commandStartTime": 0.0,
             "commandType": "omit_veh"
@@ -50,7 +50,7 @@
             "commandType": "omit_veh"
         },
         {
-            "commandEndTime": 0.8,
+            "commandEndTime": 8,
             "commandPhase": 8,
             "commandStartTime": 0.0,
             "commandType": "omit_veh"

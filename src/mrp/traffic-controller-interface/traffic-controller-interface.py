@@ -50,8 +50,8 @@ def main():
     # Read the logging status:
     logging = config["Logging"]
 
-    if (logging.lower() == "True" or logging.lower() == "true"): logging == True
-    if (logging.lower() == "False" or logging.lower() == "false"): logging == False
+    if (logging.lower() == "True" or logging.lower() == "true"): logging = True
+    if (logging.lower() == "False" or logging.lower() == "false"): logging = False
 
     # Open a socket and bind it to the IP and port dedicated for this application:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -82,6 +82,7 @@ def main():
             else:
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a new schedule at time:" + str(time.time())) 
                 if logging: print(receivedMessage)
+                scheduler.signalController.resetAllPhaseControls()
                 scheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
