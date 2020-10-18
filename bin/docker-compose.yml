@@ -11,20 +11,20 @@ services:
 #            target: /nojournal
 #        networks:    
 #            mmitss_vlan:
-#                ipv4_address: 172.16.52.92    
+#                ipv4_address: 172.16.52.98    
 #
-#    market-10th:
-#        build:
-#            context: ./
-#        container_name: market-10th
-#        volumes:
-#            - type: bind
-#              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-10th/nojournal
-#              target: /nojournal
-#        networks:    
-#            mmitss_vlan:
-#                ipv4_address: 172.16.52.95
-#
+    market-10th:
+        build:
+            context: ./
+        container_name: market-10th
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-10th/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.95
+
     market-broadway:
         build:
             context: ./
@@ -35,7 +35,7 @@ services:
               target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 172.16.52.98        
+                ipv4_address: 172.16.52.92        
 
 
 networks:

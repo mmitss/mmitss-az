@@ -85,12 +85,12 @@
 		"bsm": "CONT"
 	},
 	"SignalController": {
-		"IpAddress": "172.16.50.82",
+		"IpAddress": "172.16.52.82",
 		"NtcipPort": 501,
 		"TimingPlanUpdateInterval_sec": 600,
 		"NtcipBackupTime_sec": 300,
-		"Vendor": "MaxTime",
-		"TimingPlanMib": "StandardMib",
+		"Vendor": "Econolite",
+		"TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
 		"InactiveVehPhases": [],
 		"InactivePedPhases": [],
 		"SplitPhases": {
