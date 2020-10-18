@@ -1,4 +1,4 @@
-XSversion: "3.8"
+1XSversion: "3.8"
 services:
 
     market-11th:
@@ -7,11 +7,11 @@ services:
         container_name: market-11th
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_field/market-11th/nojournal
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-11th/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 10.12.6.3    
+                ipv4_address: 172.16.52.92    
 
     market-10th:
         build:
@@ -19,11 +19,11 @@ services:
         container_name: market-10th
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_field/market-10th/nojournal
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-10th/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 10.12.6.6
+                ipv4_address: 172.16.52.95
 
     market-broadway:
         build:
@@ -31,11 +31,11 @@ services:
         container_name: market-broadway
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_field/market-broadway/nojournal
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-broadway/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 10.12.6.9        
+                ipv4_address: 172.16.52.98        
 
 
 networks:
@@ -45,4 +45,4 @@ networks:
             parent: enp4s0 
         ipam:
             config:
-              - subnet: 10.12.6.0/24
+              - subnet: 172.16.52.0/24
