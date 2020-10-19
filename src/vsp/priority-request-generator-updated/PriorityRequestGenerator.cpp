@@ -18,8 +18,7 @@
   6. This script has an API to create Active Request Table on the vehicle side based on the received ssm.
 */
 
-#include <iostream>
-#include <iomanip>
+
 #include <fstream>
 #include <netinet/in.h>
 #include <cstddef>
@@ -51,28 +50,33 @@ using namespace MsgEnum;
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
 	Json::Value jsonObject;
-	Json::Reader reader;
+	// Json::Reader reader;
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject);
+	// reader.parse(configJsonString.c_str(), jsonObject);
+	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	ETA_Duration = 4.0;
-	DISTANCEUNITCONVERSION = 100; //cm to meter
+	// DISTANCEUNITCONVERSION = 100; //cm to meter
 	vehicleMinSpeed = 4.0;
-	vehicleSpeedDeviationLimit = 5.0;
+	// vehicleSpeedDeviationLimit = 5.0;
 	min_ETA  = 3.0;
-	SRM_GAPOUT_TIME = 2.0;
-	SECONDSINAMINUTE = 60.0;
-	allowed_ETA_Difference = 6.0;
-	HOURSINADAY = 24;
-	MINUTESINAHOUR = 60;
-	SECONDTOMILISECOND = 1000;
-	maxMsgCount = 127;
-	minMsgCount = 1;
+	// SRM_GAPOUT_TIME = 2.0;
+	// SECONDSINAMINUTE = 60.0;
+	// allowed_ETA_Difference = 6.0;
+	// HOURSINADAY = 24;
+	// MINUTESINAHOUR = 60;
+	// SECONDTOMILISECOND = 1000;
+	// maxMsgCount = 127;
+	// minMsgCount = 1;
 	// set the request timed out value to avoid clearing the old request in PRS
-	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_GAPOUT_TIME;
+	if(parsingSuccessful == true)
+		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_GAPOUT_TIME;
 	
-	
+	delete reader;
 }
 
 /*
@@ -204,28 +208,28 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		std::cout << "SRM is sent since light-siren is off, at time " << timenow << std::endl;	
 	}
 
-	else if (bgetActiveMap == false && findVehicleIDOnTable != ActiveRequestTable.end())
+	else if (activeMapStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		sendRequestStatus = true;
 		requestSendStatus  = false;
 		std::cout << "SRM is sent since vehicle is out off the map, at time " << timenow << std::endl;	
 	}
 	
-	else if (bgetActiveMap == true && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	else if (activeMapStatus == true && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 		sendRequestStatus = true;
 		ETA_Duration = 2.0;
 		std::cout << "SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection at time " << timenow << std::endl;
 	}
 
-	else if (bgetActiveMap == true && findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
+	else if (activeMapStatus == true && findVehicleIDOnTable != ActiveRequestTable.end() && getVehicleIntersectionStatus() == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) //If vehicle is out of the intersection (not in inBoundLane), vehicle should send srm and clear activeMapList
 	{
 		sendRequestStatus = true;
 		ETA_Duration = 2.0;
 		std::cout << "SRM is sent since vehicle is leaving the Intersection at time " << timenow << std::endl;
 	}
 
-	else if (lightSirenStatus == true && bgetActiveMap == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
+	else if (lightSirenStatus == true && activeMapStatus == true && getVehicleIntersectionStatus() == static_cast<int>(MsgEnum::mapLocType::onInbound) && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME) //check if there is active or not
 	{
 
 		if (findVehicleIDOnTable == ActiveRequestTable.end()) //If vehicleID is not in the ART, vehicle should send srm
@@ -278,7 +282,7 @@ bool PriorityRequestGenerator::shouldSendOutRequest(BasicVehicle basicVehicle)
 		}
 	}
 
-	else if (lightSirenStatus == false && bgetActiveMap == true && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME)
+	else if (lightSirenStatus == false && activeMapStatus == true && abs(tempSRMTimeStamp - getMsOfMinute() / SECONDTOMILISECOND) >= SRM_GAPOUT_TIME)
 	{	
 		requestSendStatus  = false;
 		std::cout << "SRM is not sent since light-siren is off, at time " << timenow << std::endl;	
@@ -347,23 +351,31 @@ void PriorityRequestGenerator::setVehicleIntersectionStatus(int vehIntersectionS
 int PriorityRequestGenerator::getMessageType(std::string jsonString)
 {
 	Json::Value jsonObject;
-	Json::Reader reader;
-	reader.parse(jsonString.c_str(), jsonObject);
-
-	if ((jsonObject["MsgType"]).asString() == "MAP")
-		messageType = MsgEnum::DSRCmsgID_map;
-
-	else if ((jsonObject["MsgType"]).asString() == "BSM")
-		messageType = MsgEnum::DSRCmsgID_bsm;
-
-	else if ((jsonObject["MsgType"]).asString() == "SSM")
+	// Json::Reader reader;
+	// reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    
+    if(parsingSuccessful == true)
 	{
-		messageType = MsgEnum::DSRCmsgID_ssm;
-		loggingData(jsonString);
-	}
+		if ((jsonObject["MsgType"]).asString() == "MAP")
+			messageType = MsgEnum::DSRCmsgID_map;
 
-	else if ((jsonObject["MsgType"]).asString() == "LightSirenStatusMessage")
-		messageType = static_cast<int>(msgType::lightSirenStatus);
+		else if ((jsonObject["MsgType"]).asString() == "BSM")
+			messageType = MsgEnum::DSRCmsgID_bsm;
+
+		else if ((jsonObject["MsgType"]).asString() == "SSM")
+		{
+			messageType = MsgEnum::DSRCmsgID_ssm;
+			loggingData(jsonString);
+		}
+
+		else if ((jsonObject["MsgType"]).asString() == "LightSirenStatusMessage")
+			messageType = static_cast<int>(msgType::lightSirenStatus);
+	}
+	delete reader;	
 
 	return messageType;
 }
@@ -395,7 +407,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	//If active map List is not empty, locate vehicle on the map and obtain inBoundLaneID, inBoundApproachID, distance from the stop-bar and time requires to reach the stop-bar
 	if (!activeMapList.empty())
 	{
-		bgetActiveMap = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true.
+		activeMapStatus = true; //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true.
 		// std::cout << "Active Map List is not Empty" << std::endl;
 		fmap = activeMapList.front().activeMapFileDirectory;
 		intersectionName = activeMapList.front().activeMapFileName;
@@ -457,7 +469,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				ActiveRequestTable.clear();
 				setIntersectionID(0);
 				setSignalGroup(0);
-				bgetActiveMap = false;
+				activeMapStatus = false;
 				requestSendStatus  = false;
 			}
 			counter_VehicleInMap = 0;
@@ -484,7 +496,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 	else
 	{
 		// std::cout << "Active Map List is  Empty" << std::endl;
-		bgetActiveMap = false;
+		activeMapStatus = false;
 	}
 }
 
@@ -536,29 +548,38 @@ int PriorityRequestGenerator::getVehicleIntersectionStatus()
 */
 void PriorityRequestGenerator::setVehicleType()
 {
-	Json::Value jsonObject_config;
-	Json::Reader reader;
+	Json::Value jsonObject;
+	// Json::Reader reader;
 	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
 	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject_config);
-
-	if (jsonObject_config["VehicleType"].asString() == "Transit")
+	// reader.parse(configJsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+    
+    if(parsingSuccessful == true)
 	{
-		vehicleType = Transit;
-		lightSirenStatus = true;
-	}
+		if (jsonObject["VehicleType"].asString() == "Transit")
+		{
+			vehicleType = Transit;
+			lightSirenStatus = true;
+			getBusStopInformation();
+		}
 
-	else if (jsonObject_config["VehicleType"].asString() == "Truck")
-	{
-		vehicleType = Truck;
-		lightSirenStatus = true;
-	}
+		else if (jsonObject["VehicleType"].asString() == "Truck")
+		{
+			vehicleType = Truck;
+			lightSirenStatus = true;
+		}
 
-	else if (jsonObject_config["VehicleType"].asString() == "EmergencyVehicle")
-	{
-		vehicleType = EmergencyVehicle;
-		lightSirenStatus = false;
+		else if (jsonObject["VehicleType"].asString() == "EmergencyVehicle")
+		{
+			vehicleType = EmergencyVehicle;
+			lightSirenStatus = false;
+		}
 	}
+	delete reader;
 }
 
 void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
@@ -629,16 +650,16 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		// activeMapList.clear();
 		ActiveRequestTable.clear();
 		// setIntersectionID(0);
-		// bgetActiveMap = false; //Required for HMI json
+		// activeMapStatus = false; //Required for HMI json
 		requestSendStatus  = false;
 		tempSRMTimeStamp = 0.0;
 	}
 
-	else if (bgetActiveMap == false && findVehicleIDOnTable != ActiveRequestTable.end())
+	else if (activeMapStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		priorityRequestType = static_cast<int>(MsgEnum::requestType::priorityCancellation);
 		requestSendStatus  = false;	
-		bgetActiveMap = false; //Required for HMI json
+		activeMapStatus = false; //Required for HMI json
 		tempSRMTimeStamp = 0.0;
 	}
 	
@@ -650,7 +671,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
-		bgetActiveMap = false; //Required for HMI json
+		activeMapStatus = false; //Required for HMI json
 		requestSendStatus  = false;
 		tempSRMTimeStamp = 0.0;
 	}
@@ -662,7 +683,7 @@ int PriorityRequestGenerator::getPriorityRequestType(BasicVehicle basicVehicle, 
 		activeMapList.clear();
 		ActiveRequestTable.clear();
 		setIntersectionID(0);
-		bgetActiveMap = false; //Required for HMI json
+		activeMapStatus = false; //Required for HMI json
 		requestSendStatus  = false;
 		tempSRMTimeStamp = 0.0;
 	}
@@ -748,9 +769,13 @@ int PriorityRequestGenerator::getMsOfMinute()
 int PriorityRequestGenerator::getMsgCount()
 {
 	if (msgCount < maxMsgCount)
+	{
 		msgCount++;
+	}
 	else
+	{
 		msgCount = minMsgCount;
+	}
 
 	return msgCount;
 }
@@ -762,10 +787,10 @@ std::string PriorityRequestGenerator::getVehicleMapStatus()
 {
 	std::string vehicleMapStatus{"False"};
 
-	if (bgetActiveMap == true)
+	if (activeMapStatus == true)
 		vehicleMapStatus = "True";
 
-	else if (bgetActiveMap == false)
+	else if (activeMapStatus == false)
 		vehicleMapStatus = "False";
 
 	return vehicleMapStatus;
@@ -861,12 +886,18 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	std::string logging{};
 	std::ofstream outputfile;
 	Json::Value jsonObject;
-	Json::Reader reader;
+	// Json::Reader reader;
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-	reader.parse(configJsonString.c_str(), jsonObject);
-	logging = (jsonObject["Logging"]).asString();
+	// reader.parse(configJsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+    
+    if(parsingSuccessful == true)
+		logging = (jsonObject["Logging"]).asString();
 
 	if (logging == "True")
 	{
@@ -879,6 +910,7 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	else
 		loggingStatus = false;
 
+	delete reader;
 	return loggingStatus;
 }
 
@@ -889,14 +921,67 @@ bool PriorityRequestGenerator::getLoggingStatus()
 void PriorityRequestGenerator::setLightSirenStatus(std::string jsonString)
 {
 	Json::Value jsonObject;
-	Json::Reader reader;
-	reader.parse(jsonString.c_str(), jsonObject);
+	// Json::Reader reader;
+	// reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    
+    if(parsingSuccessful == true)
+    {
 
-	if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
-		lightSirenStatus = true;
-	else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
-		lightSirenStatus = false;
+		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
+			lightSirenStatus = true;
+		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
+			lightSirenStatus = false;
+	}
+	delete reader;
+}
 
+void PriorityRequestGenerator::getBusStopInformation()
+{
+	Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-bus-stop-location.json");
+	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+	int noOfBusStop = jsonObject["NoOfBusStop"].asInt();
+	BusStopInformation busStopInformation;
+	busStopList.clear();
+	const Json::Value values = jsonObject["BusStopInformation"];
+	for (int i = 0; i < noOfBusStop; i++)
+	{
+		busStopInformation.reset();
+		
+		for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
+		{
+			if (values[i].getMemberNames()[j] == "IntersectionName")
+                busStopInformation.intersectionName = values[i][values[i].getMemberNames()[j]].asString();
+
+			else if (values[i].getMemberNames()[j] == "IntersectionID")
+				busStopInformation.intersectionID = values[i][values[i].getMemberNames()[j]].asInt();
+			
+			else if (values[i].getMemberNames()[j] == "TravelDirection")
+				busStopInformation.travelDirection = values[i][values[i].getMemberNames()[j]].asString();
+		
+			else if (values[i].getMemberNames()[j] == "ApproachNo")
+				busStopInformation.approachNo = values[i][values[i].getMemberNames()[j]].asInt();
+		
+			else if (values[i].getMemberNames()[j] == "Latitude_DecimalDegree")
+				busStopInformation.lattitude_DecimalDegree = values[i][values[i].getMemberNames()[j]].asDouble();
+		
+			else if (values[i].getMemberNames()[j] == "Longitude_DecimalDegree")
+				busStopInformation.longitude_DecimalDegree = values[i][values[i].getMemberNames()[j]].asDouble();
+		
+			else if (values[i].getMemberNames()[j] == "Elevation_Meter")	
+				busStopInformation.elevation_Meter = values[i][values[i].getMemberNames()[j]].asDouble();
+		}
+		busStopList.push_back(busStopInformation);
+	}
+	delete reader;
 }
 
 PriorityRequestGenerator::~PriorityRequestGenerator()
