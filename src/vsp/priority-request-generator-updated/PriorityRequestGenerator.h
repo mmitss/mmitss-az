@@ -36,7 +36,7 @@ using std::endl;
 #define EmergencyVehicle 2
 #define Transit 6
 #define Truck 9
-#define SRM_GAPOUT_TIME 2.0
+#define SrmTimeGapValue 2.0
 #define DISTANCEUNITCONVERSION 100
 #define SECONDSINAMINUTE 60.0
 #define HOURSINADAY 24
@@ -44,9 +44,13 @@ using std::endl;
 #define	SECONDTOMILISECOND 1000
 #define	maxMsgCount 127
 #define	minMsgCount 1
-#define minimumETADuration 4.0
+#define minimumETA 3.0
+#define minimumETA_Duration 4.0
+#define minimumVehicleSpeed 4.0
 #define vehicleSpeedDeviationLimit 4.0
 #define allowed_ETA_Difference 6.0
+#define minimumDistance 5
+#define kmToMeter 1000
 
 enum msgType
 {
@@ -64,10 +68,11 @@ private:
   bool requestSendStatus {false}; //Required for HMI json
   bool loggingStatus{false};
   bool lightSirenStatus{false};
+  bool busStopPassedStatus{false};
   string mapFileDirectory{};
   string mapFileName{};
   int messageType{};
-  int temporaryVehicleID{};
+  int vehicleID{};
   int vehicleLaneID{};
   int vehicleAprroachID{};
   int intersectionID{};
@@ -79,25 +84,13 @@ private:
   int basicVehicleRole{};
   int priorityRequestType{};
   int counter_VehicleInMap{};
-  int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
-  // int HOURSINADAY{};
-	// int MINUTESINAHOUR{};
-	// int SECONDTOMILISECOND{};
-	// int maxMsgCount{};
-	// int minMsgCount{};
-  double time2go{};
-  double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
-  double tempSRMTimeStamp{};    //temporary store the time when last SRM has been sent
+  double vehicleETA{};
+  double vehicleSpeed{};
+  double SrmSendingTime{};    //temporary store the time when last SRM has been sent
   double requestTimedOutValue{};
-  double ETA_Duration{};
-  // double DISTANCEUNITCONVERSION{}; //cm to meter
-	double vehicleMinSpeed{};
-	// double vehicleSpeedDeviationLimit{};
-	double min_ETA {};
-	// double SRM_GAPOUT_TIME{};
-	// double SECONDSINAMINUTE{};
-	// double allowed_ETA_Difference{};
-	
+  double busStopLattitude{};
+  double busStopLongitude{};
+
 
 public:
   PriorityRequestGenerator();
@@ -107,11 +100,17 @@ public:
   std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
+  bool checkRequestSendingRequirement();                                                                    //This overloading function will be used for Truck
+  bool checkRequestSendingRequirement(vector<BusStopInformation> bus_Stop_List, BasicVehicle basicVehicle); //This overloading function will be used for Transit
+  bool checkRequestSendingRequirement(bool light_Siren_Status);                                             //This overloading function will be used for EmergencyVehicle
+  bool findNearestBusStopLocation();
+  bool checkPassedNearestBusStop(BasicVehicle basicVehicle);
   bool getLoggingStatus();
   void loggingData(std::string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
   void setVehicleID(BasicVehicle basicVehicle);
+  void setVehicleSpeed(BasicVehicle basicVehicle);
   void setLaneID(int laneId);
   void setApproachID(int approachID);
   void setSignalGroup(int phaseNo);
@@ -119,14 +118,16 @@ public:
   void setVehicleIntersectionStatus(int vehIntersectionStatus);
   void setVehicleType();
   void setSimulationVehicleType(std::string vehType); //For PRGServer
+  void setPriorityRequestType(int priority_Request_Type);
   void setLightSirenStatus(std::string jsonString);
-  void setMsgCount(SrmManager srmManager);
+  void setMsgCount(int msg_count);
   int getMessageType(std::string jsonString);
   std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
   void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
   int getIntersectionID();
   int getRegionalID();
   int getVehicleID();
+  int getVehicleSpeed();
   int getLaneID();
   int getApproachID();
   int getSignalGroup();
@@ -134,16 +135,19 @@ public:
   int getVehicleIntersectionStatus();
   int getVehicleType();
   int getBasicVehicleRole();
-  int getPriorityRequestType(BasicVehicle basicVehicle, MapManager mapManager);
+  int getPriorityRequestType();
+  // int getPriorityRequestType(BasicVehicle basicVehicle, MapManager mapManager);
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();
   int getActiveMapStatus();
   double getRequestTimedOutValue();
+  double getHaversineDistance(double lat1, double lon1, double lat2, double lon2);
   std::string getVehicleMapStatus();
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();
   void printART();
   std::vector<Map::AvailableMap> manageMapStatusInAvailableMapList(MapManager mapManager);
   void getBusStopInformation();
+  void clearActiveMapInformation(MapManager mapManager);
 };
