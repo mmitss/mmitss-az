@@ -109,6 +109,7 @@ public:
   void loggingData(std::string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
+  void setVehicleID(BasicVehicle basicVehicle);
   void setLaneID(int laneId);
   void setApproachID(int approachID);
   void setSignalGroup(int phaseNo);
@@ -122,7 +123,7 @@ public:
   void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
   int getIntersectionID();
   int getRegionalID();
-  int getVehicleID(BasicVehicle basicVehicle);
+  int getVehicleID();
   int getLaneID();
   int getApproachID();
   int getSignalGroup();
@@ -134,6 +135,8 @@ public:
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();
+  int getActiveMapStatus();
+  double getRequestTimedOutValue();
   std::string getVehicleMapStatus();
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();

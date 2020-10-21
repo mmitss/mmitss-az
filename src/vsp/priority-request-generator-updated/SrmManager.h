@@ -23,7 +23,7 @@
 
 class SrmManager
 {
-private:
+protected:
     vector<ActiveRequest> ActiveRequestTable{};
     vector<Map::ActiveMap> activeMapList{};
     vector<BusStopInformation> busStopList{};
@@ -37,7 +37,7 @@ private:
     double vehicleSpeed{};
     double vehicleETA{};
     double ETA_Duration{};
-    double srmTimeStamp{};
+    double srmTimeGapValue{};
     double requestTimedOutValue{};
     double busStopLattitude{};
     double busStopLongitude{};
@@ -47,18 +47,16 @@ private:
     bool activeMapStatus{false};
 
 public:
-    SrmManager(PriorityRequestGenerator priorityRequestGenerator, vector<Map::ActiveMap> active_Map_List, vector<ActiveRequest>ART, vector<BusStopInformation> bus_Stop_List, BasicVehicle basicVehicle, bool active_Map_Status,bool light_Siren_Status, double Srm_Time_Stamp, double request_Timed_Out_Value);
+    SrmManager(PriorityRequestGenerator priorityRequestGenerator, vector<Map::ActiveMap> active_Map_List, vector<ActiveRequest>ART, BasicVehicle basicVehicle);
     ~SrmManager();
 
     string createSRMJsonObject(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
-    void setVehicleIntersectionStatus(PriorityRequestGenerator priorityRequestGenerator);
     void setPriorityRequestType(int priority_Request_Type);
-    int getVehicleIntersectionStatus();
-    int getSignalGroup(PriorityRequestGenerator priorityRequestGenerator);
-    // double setVehicleETA(PriorityRequestGenerator priorityRequestGenerator);
-    bool checkRequestSendingRequirement();
+    
+    double haversine(double lat1, double lon1, double lat2, double lon2);
     bool findNearestBusStopLocation();
     bool checkPassedNearestBusStop(BasicVehicle basicVehicle);
-    double haversine(double lat1, double lon1, double lat2, double lon2);
+    bool checkRequestSendingRequirement();
+    bool checkRequestSendingRequirement(vector<BusStopInformation> bus_Stop_List, BasicVehicle basicVehicle);
+    bool checkRequestSendingRequirement(bool light_Siren_Status);
 };
-
