@@ -71,12 +71,12 @@ int main()
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            if (PRG.shouldSendOutRequest(basicVehicle) == true)
-            {
-                srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
-            }
+            // if (PRG.shouldSendOutRequest(basicVehicle) == true)
+            // {
+            //     srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
+            //     priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+            //     priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
+            // }
             mapManager.updateMapAge();
             mapManager.deleteMap();
             PRG.manageMapStatusInAvailableMapList(mapManager);

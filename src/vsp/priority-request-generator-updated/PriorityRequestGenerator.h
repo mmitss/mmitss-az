@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <list>
 #include <string>
+#include <vector>
 #include <chrono>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
@@ -25,6 +26,7 @@
 #include "ActiveRequest.h"
 #include "MapManager.h"
 #include "BusStopInformation.h"
+#include "SrmManager.h"
 
 using std::string;
 using std::vector;
@@ -118,6 +120,7 @@ public:
   void setVehicleType();
   void setSimulationVehicleType(std::string vehType); //For PRGServer
   void setLightSirenStatus(std::string jsonString);
+  void setMsgCount(SrmManager srmManager);
   int getMessageType(std::string jsonString);
   std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
   void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
