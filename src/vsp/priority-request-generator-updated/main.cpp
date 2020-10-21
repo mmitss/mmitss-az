@@ -57,7 +57,6 @@ int main()
     PRG.getLoggingStatus();
     PRG.setVehicleType();
 
-
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -71,14 +70,14 @@ int main()
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            // if (PRG.shouldSendOutRequest(basicVehicle) == true)
-            // {
-            //     srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
-            //     priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
-            //     priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
-            // }
-            mapManager.updateMapAge();
-            mapManager.deleteMap();
+            if (PRG.shouldSendOutRequest(basicVehicle) == true)
+            {
+                srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest);
+                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
+                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
+            }
+            // mapManager.updateMapAge();
+            // mapManager.deleteMap();
             PRG.manageMapStatusInAvailableMapList(mapManager);
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);

@@ -26,7 +26,6 @@
 #include "ActiveRequest.h"
 #include "MapManager.h"
 #include "BusStopInformation.h"
-#include "SrmManager.h"
 
 using std::string;
 using std::vector;
@@ -72,7 +71,7 @@ private:
   string mapFileDirectory{};
   string mapFileName{};
   int messageType{};
-  int vehicleID{};
+  int temporaryVehicleID{};
   int vehicleLaneID{};
   int vehicleAprroachID{};
   int intersectionID{};
@@ -97,7 +96,7 @@ public:
   ~PriorityRequestGenerator();
   std::vector<Map::AvailableMap> availableMapList;
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
-  std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+  std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest);
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
   bool checkRequestSendingRequirement();                                                                    //This overloading function will be used for Truck
@@ -114,7 +113,7 @@ public:
   void setLaneID(int laneId);
   void setApproachID(int approachID);
   void setSignalGroup(int phaseNo);
-  void setTime2Go(double distance2go, double vehicleSpeed);
+  void setTime2Go(double distance2go, double vehicle_Speed);
   void setVehicleIntersectionStatus(int vehIntersectionStatus);
   void setVehicleType();
   void setSimulationVehicleType(std::string vehType); //For PRGServer
@@ -127,7 +126,7 @@ public:
   int getIntersectionID();
   int getRegionalID();
   int getVehicleID();
-  int getVehicleSpeed();
+  double getVehicleSpeed();
   int getLaneID();
   int getApproachID();
   int getSignalGroup();

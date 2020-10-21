@@ -82,7 +82,7 @@ public:
   ~PriorityRequestGenerator();
   std::vector<Map::AvailableMap> availableMapList;
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
-  std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+  std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest);
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest(BasicVehicle basicVehicle);
   bool getLoggingStatus();
