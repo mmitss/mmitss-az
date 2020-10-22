@@ -10,7 +10,7 @@ struct BusStopInformation
     double lattitude_DecimalDegree{};
     double longitude_DecimalDegree{};
     double elevation_Meter{};
-    
+    double heading_Degree{};
     
     void reset()
     {
@@ -20,6 +20,7 @@ struct BusStopInformation
         approachNo = 0;
         lattitude_DecimalDegree = 0.0;
         longitude_DecimalDegree = 0.0;
-        elevation_Meter = 0.0;  
+        elevation_Meter = 0.0;
+        heading_Degree = 0.0;  
     }
 };

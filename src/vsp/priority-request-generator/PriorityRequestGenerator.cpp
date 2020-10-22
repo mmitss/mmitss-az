@@ -319,7 +319,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 	}
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
-	else if (activeMapStatus == true && vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) 
+	else if (activeMapStatus == true && vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound)))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -429,7 +429,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 	}
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
-	else if (activeMapStatus == true && vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))) 
+	else if (activeMapStatus == true && vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound)))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -445,7 +445,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
 		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << std::endl;
 	}
-	
+
 	else if (activeMapStatus == true && lightSirenStatus == true && vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound) && (currentTime - SrmSendingTime) >= SrmTimeGapValue)
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
@@ -465,7 +465,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
 		}
 
-		//If vehicleID is in the ART and its speed is changed by threshold value (for example 5m/s), vehicle should send srm.
+		//If vehicleID is in the ART and it	struct geoRefPoint_t geoRefPoint_t_1 = {0, 0, 0};s speed is changed by threshold value (for example 5m/s), vehicle should send srm.
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleSpeed - vehicleSpeed) >= vehicleSpeedDeviationLimit)
 		{
 			requestSendingRequirement = true;
@@ -506,9 +506,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 	else if (lightSirenStatus == false && findVehicleIDOnTable != ActiveRequestTable.end())
 	{
 		requestSendingRequirement = true;
-		requestSendStatus  = false;
+		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		std::cout << "[" << currentTime << "] SRM is sent since light-siren is off " << std::endl;	
+		std::cout << "[" << currentTime << "] SRM is sent since light-siren is off " << std::endl;
 	}
 
 	if (requestSendingRequirement == true)
@@ -532,6 +532,8 @@ bool PriorityRequestGenerator::findNearestBusStopLocation()
 			nearestBusStopStatus = true;
 			busStopLattitude = busStopList[i].lattitude_DecimalDegree;
 			busStopLongitude = busStopList[i].longitude_DecimalDegree;
+			busStopElevation = busStopList[i].elevation_Meter;
+			busStopHeading = busStopList[i].heading_Degree;
 			break;
 		}
 	}
@@ -540,18 +542,48 @@ bool PriorityRequestGenerator::findNearestBusStopLocation()
 }
 
 /*
-    - If there is a bus stop along the travel path of a intersection, the following method will check whether the vehicle bus stop or not.
-    - If there is no bus stop along the travel path of a intersection, the method will always return true.
+    - If there is a bus stop along the travel path of a intersection, the following method will check whether the vehicle has passed the bus stop or not.
+	- The method will compute bus stop distance from the stop bar using the map engine library. The method will compare the vehicle distance from the stop bar and bus stop distance from the stop bar to take decision
+	- If there is no bus stop along the travel path of a intersection, the method will always return true.
 */
 bool PriorityRequestGenerator::checkPassedNearestBusStop()
 {
 	double busStopDistanceDistanceFromStopBar{};
+	std::string fmap{};
+	std::string intersectionName{};
+	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 
 	if (findNearestBusStopLocation() == true)
 	{
-		busStopDistanceDistanceFromStopBar = getHaversineDistance(mapReferenceLattitude, mapReferenceLongitue, busStopLattitude, busStopLongitude);
+		fmap = activeMapList.front().activeMapFileDirectory;
+		intersectionName = activeMapList.front().activeMapFileName;
+
+		//initialize mapengine library
+		LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
+		//initialize all the struct require to locate vehicle in Map.
+		struct geoPoint_t geoPoint_t_1 = {busStopLattitude, busStopLongitude, busStopElevation};
+		struct motion_t motion_t_1 = {1.0, busStopHeading};
+		struct intersectionTracking_t intersectionTracking_t_1 = {mapLocType::onInbound, 0, 0, 0};
+		struct point2D_t point2D_t_1 = {0, 0};
+		struct point2D_t point2D_t_2 = {0, 0};
+		struct projection_t projection_t_1 = {0.0, 0.0, 0.0};
+		struct laneProjection_t laneProjection_t_1 = {0, projection_t_1};
+		struct vehicleTracking_t vehicleTracking_t_1 = {intersectionTracking_t_1, laneProjection_t_1};
+		std::bitset<4> maneuvers;
+		struct dist2go_t dist2go_t_1 = {0.0, 0.0};
+		struct connectTo_t connectTo_t_1 = {0, 0, 0, maneuverType::straightAhead};
+		std::vector<connectTo_t> connect2go1;
+		connect2go1.push_back(connectTo_t_1);
+		struct locationAware_t locationAware_t_1 = {0, 0, 0, 0, 0.0, maneuvers, dist2go_t_1, connect2go1};
+		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
+		struct connectedVehicle_t connectedVehicle_t_1 = {0, 0, 0, geoPoint_t_1, motion_t_1, vehicleTracking_t_1, locationAware_t_1, signalAware_t_1};
+
+		plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
+		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
+		busStopDistanceDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
+		delete plocAwareLib;
 		
-		if (busStopDistanceDistanceFromStopBar - vehicleDistanceFromStopBar/DISTANCEUNITCONVERSION >= Bus_Stop_Distance_Allowance)
+		if (busStopDistanceDistanceFromStopBar / DISTANCEUNITCONVERSION - vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION >= Bus_Stop_Distance_Allowance)
 			busStopPassedStatus = true;
 		else
 			busStopPassedStatus = false;
@@ -559,7 +591,7 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 
 	else
 		busStopPassedStatus = true;
-
+	
 	return busStopPassedStatus;
 }
 
@@ -671,7 +703,6 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 
 	std::string fmap{};
 	std::string intersectionName{};
-	// double distance2go{};
 	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 	//If active map list is empty, look for active map
 	if (activeMapList.empty())
@@ -702,7 +733,6 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		setVehicleSpeed(basicVehicle);
 		double vehicle_Heading = basicVehicle.getHeading_Degree();
 		//initialize all the struct require to locate vehicle in Map.
-		struct geoRefPoint_t geoRefPoint_t_1 = {0, 0, 0};
 		struct geoPoint_t geoPoint_t_1 = {vehicle_Latitude, vehicle_Longitude, vehicle_Elevation};
 		struct motion_t motion_t_1 = {vehicleSpeed, vehicle_Heading};
 		struct intersectionTracking_t intersectionTracking_t_1 = {mapLocType::onInbound, 0, 0, 0};
@@ -723,7 +753,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		//counter_VehicleInMap will ensure after being inside the map vehicle doesn't go out of inBoundLane(stopped in the parking lot)
 		if (counter_VehicleInMap > 10)
 		{
-			//If vehicle is on Map
+			//If vehicle is on Map, update all the information
 			if (plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1) == true && unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus) == static_cast<int>(MsgEnum::mapLocType::onInbound))
 			{
 				setVehicleIntersectionStatus(unsigned(vehicleTracking_t_1.intsectionTrackingState.vehicleIntersectionStatus));
@@ -737,11 +767,8 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				setTime2Go(vehicleDistanceFromStopBar, vehicleSpeed);
 				setVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 											// requestSendStatus  = true;
-				geoRefPoint_t_1 = plocAwareLib->getIntersectionRefPoint(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex));
-				mapReferenceLattitude = static_cast<double>(geoRefPoint_t_1.latitude / Degree_Conversion);
-				mapReferenceLongitue = static_cast<double>(geoRefPoint_t_1.longitude / Degree_Conversion);	
 			}
-			//If vehicle is not on Map
+			//If vehicle is not on Map clear the active map related information
 			else
 			{
 				mapManager.deleteActiveMapfromList();
@@ -754,7 +781,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			}
 			counter_VehicleInMap = 0;
 		}
-
+		//If vehicle is on Map, update all the information
 		else
 		{
 			plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
@@ -768,9 +795,6 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			vehicleDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 			setTime2Go(vehicleDistanceFromStopBar, vehicleSpeed);
 			setVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
-			geoRefPoint_t_1 = plocAwareLib->getIntersectionRefPoint(unsigned(vehicleTracking_t_1.intsectionTrackingState.intersectionIndex));
-			mapReferenceLattitude = static_cast<double>(geoRefPoint_t_1.latitude / Degree_Conversion);
-			mapReferenceLongitue = static_cast<double>(geoRefPoint_t_1.longitude / Degree_Conversion);
 			counter_VehicleInMap++;
 		}
 
@@ -1310,6 +1334,9 @@ void PriorityRequestGenerator::getBusStopInformation()
 
 			else if (values[i].getMemberNames()[j] == "Elevation_Meter")
 				busStopInformation.elevation_Meter = values[i][values[i].getMemberNames()[j]].asDouble();
+
+			else if (values[i].getMemberNames()[j] == "Heading_Degree")
+				busStopInformation.heading_Degree = values[i][values[i].getMemberNames()[j]].asDouble();
 
 			// else if (values[i].getMemberNames()[j] == "StartPoint_Latitude_DecimalDegree")
 			// 	busStopInformation.startPoint_Lattitude_DecimalDegree = values[i][values[i].getMemberNames()[j]].asDouble();

@@ -92,14 +92,10 @@ private:
   double requestTimedOutValue{};
   double busStopLattitude{};
   double busStopLongitude{};
+  double busStopElevation{};
+  double busStopHeading{};
   double mapReferenceLattitude{};
   double mapReferenceLongitue{};
-  // double startPointBusStopLattitude{};
-  // double startPointBusStopLongitude{};
-  // double endPointBusStopLattitude{};
-  // double endPointBusStopLongitude{};
-  // double busStopLength{};
-
 
 public:
   PriorityRequestGenerator();
