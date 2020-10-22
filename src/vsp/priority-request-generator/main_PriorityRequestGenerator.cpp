@@ -75,8 +75,6 @@ int main()
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
             }
-            // mapManager.updateMapAge();
-            // mapManager.deleteMap();
             PRG.manageMapStatusInAvailableMapList(mapManager);
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);

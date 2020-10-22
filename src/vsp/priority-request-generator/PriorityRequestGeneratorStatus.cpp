@@ -17,7 +17,6 @@
 #include "json/json.h"
 #include <fstream>
 
-// const double ETA_DURATION_SECOND = 2;
 
 PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
@@ -54,7 +53,6 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["heading_Degree"] = basicVehicle.getHeading_Degree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["speed_MeterPerSecond"] = basicVehicle.getSpeed_MeterPerSecond();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"] = priorityRequestGenerator.getLaneID();
-    // jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getVehicleCurrentSignalGroup();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getSignalGroup();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"] = priorityRequestGenerator.getVehicleMapStatus();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
@@ -92,7 +90,6 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
         }
     }
 
-    // jsonString = fastWriter.write(jsonObject);
     jsonString = Json::writeString(builder, jsonObject);
     return jsonString;
 }

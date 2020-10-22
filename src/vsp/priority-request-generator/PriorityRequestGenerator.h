@@ -141,13 +141,11 @@ public:
   int getVehicleType();
   int getBasicVehicleRole();
   int getPriorityRequestType();
-  // int getPriorityRequestType(BasicVehicle basicVehicle, MapManager mapManager);
   int getMinuteOfYear();
   int getMsOfMinute();
   int getMsgCount();
   int getActiveMapStatus();
   double getRequestTimedOutValue();
-  double getHaversineDistance(double lat1, double lon1, double lat2, double lon2);
   std::string getVehicleMapStatus();
   std::string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();
