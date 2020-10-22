@@ -81,10 +81,10 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
     managingPRGServerList(basicVehicle);
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
                                                                     [&](ServerList const &p) { return p.vehicleID == vehid; });
-    
-    findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType); 
+
+    findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
     findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);
-    
+
     if (findVehicleIDInList->PRG.shouldSendOutRequest() == true)
     {
         srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonObject(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
@@ -286,20 +286,26 @@ int PriorityRequestGeneratorServer::getMessageType(string jsonString)
 {
     int messageType{};
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 
-    if ((jsonObject["MsgType"]).asString() == "MAP")
-        messageType = MsgEnum::DSRCmsgID_map;
+    if (parsingSuccessful == true)
+    {
+        if ((jsonObject["MsgType"]).asString() == "MAP")
+            messageType = MsgEnum::DSRCmsgID_map;
 
-    else if ((jsonObject["MsgType"]).asString() == "BSM")
-        messageType = MsgEnum::DSRCmsgID_bsm;
+        else if ((jsonObject["MsgType"]).asString() == "BSM")
+            messageType = MsgEnum::DSRCmsgID_bsm;
 
-    else if ((jsonObject["MsgType"]).asString() == "SSM")
-        messageType = MsgEnum::DSRCmsgID_ssm;
+        else if ((jsonObject["MsgType"]).asString() == "SSM")
+            messageType = MsgEnum::DSRCmsgID_ssm;
 
-    else
-        std::cout << "Message type is unknown" << std::endl;
+        else
+            std::cout << "Message type is unknown" << std::endl;
+    }
+    delete reader;
 
     return messageType;
 }
