@@ -23,11 +23,15 @@
 
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
+    Json::Value jsonObject;
+    // Json::Reader reader;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    // reader.parse(configJsonString.c_str(), jsonObject);
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
 
     PriorityRequestGenerator PRG;
     MapManager mapManager;
@@ -37,21 +41,21 @@ int main()
     SignalRequest signalRequest;
 
     //Socket Communication
-    UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGenerator"].asInt()));
-    const string HostIP = jsonObject_config["HostIp"].asString();
-    const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
-    const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
-    const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
-    const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
-    // const int LightSirenStatusManagerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["LightSirenStatusManager"].asInt());
 
+    UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestGenerator"].asInt()));
+    const string HostIP = jsonObject["HostIp"].asString();
+    const string HMIControllerIP = jsonObject["HMIControllerIP"].asString();
+    const int dataCollectorPort = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
+    const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
+    const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
+        
+    delete reader;
     char receiveBuffer[40960];
     std::string srmJsonString{};
     std::string prgStatusJsonString{};
     int msgType{};
     PRG.getLoggingStatus();
     PRG.setVehicleType();
-
 
     while (true)
     {
@@ -64,16 +68,17 @@ int main()
 
         else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
+            std::cout << "Received BSM: " << receivedJsonString << std::endl;
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            if (PRG.shouldSendOutRequest(basicVehicle) == true)
+            if (PRG.shouldSendOutRequest() == true)
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
             }
-            mapManager.updateMapAge();
-            mapManager.deleteMap();
+            // mapManager.updateMapAge();
+            // mapManager.deleteMap();
             PRG.manageMapStatusInAvailableMapList(mapManager);
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);

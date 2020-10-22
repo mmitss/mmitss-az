@@ -10,7 +10,7 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
   Revision History:
-  1. 
+  1. Formulate a JSON string for HMI controller to display PriorityRequestGenerator status
 */
 
 #include "PriorityRequestGeneratorStatus.h"
@@ -36,7 +36,10 @@ void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenera
 std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
+    // Json::FastWriter fastWriter;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
     std::string jsonString{};
 
     setAvailableMapList(priorityRequestGenerator);
@@ -57,9 +60,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
 
     if (availableMapList.empty())
-    {
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]= {};
-    }
     
     else
     {
@@ -73,9 +74,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     }
 
     if (ActiveRequestTable.empty())
-    {
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"] = {};
-    }
     
     else
     {
@@ -93,11 +92,8 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
         }
     }
 
-    // Json::StyledStreamWriter styledStreamWriter;
-    // std::ofstream outputter("output.json");
-    // styledStreamWriter.write(outputter, jsonObject);
-    jsonString = fastWriter.write(jsonObject);
-    // priorityRequestGenerator.loggingData(jsonString);
+    // jsonString = fastWriter.write(jsonObject);
+    jsonString = Json::writeString(builder, jsonObject);
     return jsonString;
 }
 
