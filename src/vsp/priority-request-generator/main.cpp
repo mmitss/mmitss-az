@@ -24,10 +24,8 @@
 int main()
 {
     Json::Value jsonObject;
-    // Json::Reader reader;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    // reader.parse(configJsonString.c_str(), jsonObject);
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
     std::string errors{};

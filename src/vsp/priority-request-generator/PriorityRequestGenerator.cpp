@@ -629,8 +629,6 @@ void PriorityRequestGenerator::setVehicleIntersectionStatus(int vehIntersectionS
 int PriorityRequestGenerator::getMessageType(std::string jsonString)
 {
 	Json::Value jsonObject;
-	// Json::Reader reader;
-	// reader.parse(jsonString.c_str(), jsonObject);
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	std::string errors{};
