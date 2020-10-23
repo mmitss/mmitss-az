@@ -66,7 +66,6 @@ int main()
 
         else if (msgType == MsgEnum::DSRCmsgID_bsm)
         {
-            std::cout << "Received BSM: " << receivedJsonString << std::endl;
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
             if (PRG.shouldSendOutRequest() == true)
