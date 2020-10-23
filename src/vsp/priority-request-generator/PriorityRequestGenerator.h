@@ -50,7 +50,6 @@ using std::vector;
 #define minimumVehicleSpeed 4.0
 #define vehicleSpeedDeviationLimit 4.0
 #define allowed_ETA_Difference 6.0
-#define Bus_Stop_Distance_Allowance 6.0
 #define kmToMeter 1000
 
 enum msgType
