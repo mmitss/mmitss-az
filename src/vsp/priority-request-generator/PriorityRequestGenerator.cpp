@@ -135,6 +135,8 @@ std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehi
 	vehExpectedTimeOfArrival_Second = remquo((getTime2Go() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
 	vehicleETA_Duration = minimumETA_Duration;
 	setMsgCount(msgCount);
+	tempVehicleSpeed = getVehicleSpeed(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
+	tempVehicleSignalGroup = getSignalGroup();
 
 	signalRequest.setMinuteOfYear(getMinuteOfYear());
 	signalRequest.setMsOfMinute(getMsOfMinute());
@@ -240,7 +242,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
 		}
 		//If vehicle signal group changed it is required to send SRM
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->signalGroup != signalGroup)
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -249,7 +251,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleSpeed - vehicleSpeed) >= vehicleSpeedDeviationLimit)
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit)
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -344,7 +346,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
 		}
 		//If vehicle's signal group is changed it is required to send SRM
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->signalGroup != signalGroup)
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -352,8 +354,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
 		}
 
-		//If vehicleID is in the ART and its speed is changed by threshold value (for example 5m/s), vehicle should send srm.
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleSpeed - vehicleSpeed) >= vehicleSpeedDeviationLimit)
+		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit)
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -454,7 +456,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
 		}
 		//If vehicle signal group changed it is required to send SRM
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && findVehicleIDOnTable->signalGroup != signalGroup)
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -462,8 +464,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
 		}
 
-		//If vehicleID is in the ART and it	struct geoRefPoint_t geoRefPoint_t_1 = {0, 0, 0};s speed is changed by threshold value (for example 5m/s), vehicle should send srm.
-		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(findVehicleIDOnTable->vehicleSpeed - vehicleSpeed) >= vehicleSpeedDeviationLimit)
+		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
+		else if (findVehicleIDOnTable != ActiveRequestTable.end() && abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit)
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -1090,7 +1092,7 @@ std::vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvaila
 void PriorityRequestGenerator::printART()
 {
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
-		std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << std::endl;
+		std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << " " << std::endl;
 }
 
 /*
@@ -1226,6 +1228,7 @@ void PriorityRequestGenerator::clearActiveMapInformation(MapManager mapManager)
 		setIntersectionID(0);
 		activeMapStatus = false; //Required for HMI json
 		requestSendStatus = false;
+		busStopPassedStatus = false;
 	}
 }
 
