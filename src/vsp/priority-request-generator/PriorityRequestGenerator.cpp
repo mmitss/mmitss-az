@@ -582,7 +582,7 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 		busStopDistanceDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 		delete plocAwareLib;
 		
-		if (busStopDistanceDistanceFromStopBar / DISTANCEUNITCONVERSION - vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION >= Bus_Stop_Distance_Allowance)
+		if (busStopDistanceDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
 			busStopPassedStatus = true;
 		else
 			busStopPassedStatus = false;
