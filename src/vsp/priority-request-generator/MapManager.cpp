@@ -50,12 +50,20 @@ MapManager::MapManager()
 void MapManager::json2MapPayload(std::string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
-
-    mapPayload = (jsonObject["MapPayload"]).asString();
-    intersectionMapName = (jsonObject["IntersectionName"]).asString();
-    intersectinID = (jsonObject["IntersectionID"]).asInt();
+    // Json::Reader reader;
+    // reader.parse(jsonString.c_str(), jsonObject);
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    
+    if(parsingSuccessful == true)
+    {    
+        mapPayload = (jsonObject["MapPayload"]).asString();
+        intersectionMapName = (jsonObject["IntersectionName"]).asString();
+        intersectinID = (jsonObject["IntersectionID"]).asInt();
+    }
+    delete reader;
 }
 
 /*
