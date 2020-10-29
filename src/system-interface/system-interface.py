@@ -386,9 +386,9 @@ def configuration():
     import json
 
     #field location
-    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    #with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
-    #with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         sysConfig = SysConfig(data)    
         pageTitle = data['IntersectionName']
@@ -398,9 +398,9 @@ def configuration():
     if request.method == 'POST':
         # Serialize the edited data
         #field location
-        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
-        #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
             dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  
