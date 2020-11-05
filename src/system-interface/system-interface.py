@@ -63,15 +63,15 @@ def local_console():
 
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
-    hostIp = StringField(validators=[ip_address()])
-    sourceDsrcDeviceIp      = StringField(validators=[ip_address()])
-    intersectionName        = StringField()
-    intersectionID          = IntegerField()
-    regionalID              = IntegerField()
+    hostIp = StringField('Host IP', validators=[ip_address()])
+    sourceDsrcDeviceIp      = StringField('Source DSRC Device IP', validators=[ip_address()])
+    intersectionName        = StringField('Intersection Name')
+    intersectionID          = IntegerField('Intersection ID')
+    regionalID              = IntegerField('Regional ID')
     mapPayload              = StringField('Map Payload')
-    dataCollectorIP         = StringField()
-    hmiControllerIP         = StringField()
-    messageDistributorIP    = StringField()
+    dataCollectorIP         = StringField('Data Collector IP')
+    hmiControllerIP         = StringField('HMI Controller IP')
+    messageDistributorIP    = StringField('Message Distributor IP')
     priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
     vehicleType                     = StringField('Vehicle Type')
     logging                         = StringField('Logging')
