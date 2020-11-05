@@ -108,6 +108,8 @@ def main():
             disp.display(image)
 
             time.sleep(0.5)
+        else:
+            break
     lightSirenStatusManagerSocket.close()
     
 if __name__ == "__main__":
