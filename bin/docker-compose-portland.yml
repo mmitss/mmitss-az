@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+
+    market-11th:
+        image: mmitssuarizona/mmitss-mrp-server:1.0
+        container_name: market-11th
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-11th/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.98    
+
+    market-10th:
+        image: mmitssuarizona/mmitss-mrp-server:1.0
+        container_name: market-10th
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-10th/nojournal
+                            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.95 
+
+    market-broadway:
+        image: mmitssuarizona/mmitss-mrp-server:1.0
+        container_name: market-broadway
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-broadway/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.92        
+
+networks:
+    mmitss_vlan:
+        driver: macvlan
+        driver_opts:
+# note: change to local IP address from ifconfig 
+            parent: enp4s0  
+        ipam:
+            config:
+              - subnet: 172.16.52.0/24
