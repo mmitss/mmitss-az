@@ -1,0 +1,140 @@
+{
+	"HostIp": "10.12.6.12",
+	
+    "SourceDsrcDeviceIp": "10.12.6.13",
+    "IntersectionName": "speedway-park",
+    "MapPayload": "0012826d3802302030d06e0948dbbcb5292728a02bd002dc051870b16008a000000480022e29f576d71bc00001414cdb41f1102828122e4000c58042800000400018b96f619b5bf0ffce0505369259f9b40a0a67bd8f5c81414da1ac80190282812270000c58062800000400018b98b001b5c17003205053681ddfa1c0a0a6d0a0bf4381414da29d803f0282812250000c58082800000400018ba22a4db5bf100000505368175fa340a0a6d0d03f4681414da283808a0282812230000c580a2800000280000b9d6339b4d2101de05050a4310000520c20002300c4400000400000b8d5641b5d38ff6a05050c0391000001000002e684166d741bfe08141430104400000400000ba04aa9b5cbaffce050516049a0000004800039bf1be86ff307b8242080020b028d000000800011c57ce0e382c03ddafe20a62c04fb0245e00020b02cd000000400001c024e5848034a6e0488a00040c062100000100000370e9c1c90329540581aa800000500008890cb0daa55b00ca04f6155d75ff6852110000490c200022c0e54000002000044486878d52a08032027b0aae88ffce0907800022c0f540000020000443eeaeed52b98071027d9aae89000004fb0241a00008b04150000005000010f537eb55b7e00fc09f61488a0002a45c40014604588000008000010afd30b55d75fda409f618126200000200000428d7e6d57377f50027d8604d88000008000010906a3b55c45ff0409f62c1474000000900006c30ca70e067e7f048990002160aba00000100006373465d07000f7812098edac50e5df4d7f5cdc8602788121900008582ce800000200000df9598d23f83a970241900010605e0800000800001c4b331a47e3bea9",
+    "IntersectionID" : 26679,
+    "RegionalID" : 0,
+    "DataCollectorIP": "172.3.1.91",
+	"HMIControllerIP": "10.12.6.56",
+	"MessageDistributorIP": "10.12.6.20",
+	"PriorityRequestGeneratorServerIP": "10.12.6.20",
+    "VehicleType": "Transit",
+	"Logging": "True",
+	"SRMTimedOutTime": 10.0,
+	"SystemPerformanceTimeInterval": 300.0,
+	"ApplicationPlatform": "roadside",
+    "PortNumber":
+	{
+		"MessageTransceiver":
+		{
+			"MessageSender": 10003,
+			"MessageReceiver": 10002,
+			"MessageEncoder": 10003,
+			"MessageDecoder": 10002
+		},
+		"MessageDistributor": 5000,
+		"RsmDecoder": 10006,
+		"OBUBSMReceiver": 10005,
+        "HostBsmDecoder": 10005,
+		"TrajectoryAware": 20001,
+		"PriorityRequestServer": 20002,
+		"PrioritySolver": 20003,
+		"PriorityRequestGenerator": 20004,
+		"TrafficControllerInterface": 20005,
+		"TrafficControllerCurrPhaseListener": 20006,
+		"TrafficControllerTimingPlanSender": 20007,
+		"PerformanceObserver": 20008,
+        "HMIController": 20009,
+        "PrioritySolverToTCIInterface": 20010,
+        "SignalCoordination": 20011,
+		"MapSPaTBroadcaster": 6053,
+		"DsrcImmediateForwarder": 1516,
+        "PriorityRequestServer_SendSSM": 50003,
+        "DataCollector": 30006,
+        "SnmpEngine": 20020,
+		"SnmpEngineInterface": 20021,
+		"PriorityRequestGeneratorServer": 20022,
+		"TrajectoryAware_MapEngineInterface": 20023,
+		"MapEngine": 20024,
+		"LightSirenStatusManager": 20025,
+		"PeerToPeerPriority": 20026,
+		"SystemPerformanceDataCollector": 20027
+	},
+    "psid": {
+		"map": "8002",
+		"spat": "8002",
+		"rsm": "8002",
+		"srm": "8002",
+		"ssm": "8002",
+		"bsm": "20"
+	},
+	"msgId": {
+		"map": "0012",
+		"spat": "0013",
+		"rsm": "0021",
+		"srm_lower": "001d",
+		"srm_upper": "001D",
+		"ssm_lower": "001e",
+		"ssm_upper": "001E",
+		"bsm": "0014"
+	},
+	"TxChannel": {
+		"map": 172,
+		"spat": 172,
+		"rsm": 172,
+		"srm": 182,
+		"ssm": 182,
+		"bsm": 172
+	},
+	"TxMode": {
+		"map": "CONT",
+		"spat": "CONT",
+		"rsm": "CONT",
+		"srm": "ALT",
+		"ssm": "ALT",
+		"bsm": "CONT"
+	},
+	"SignalController": 
+	{
+		"IpAddress": "10.12.6.104",
+		"NtcipPort": 505,
+		"TimingPlanUpdateInterval_sec": 60,
+		"NtcipBackupTime_sec": 300,
+        "Vendor": "Econolite",
+        "TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
+        "InactiveVehPhases":[],
+        "InactivePedPhases":[],
+		"SplitPhases":
+        {
+            "1": 6,
+            "3": 8,
+            "5": 2,
+            "7": 4       
+        },
+	    "PermissiveEnabled":
+        {
+            "1": true,
+            "3": true,
+            "5": true,
+            "7": true
+        }
+	},
+     "IntersectionReferencePoint":
+    {
+        "Latitude_DecimalDegree":32.23602450541839,
+        "Longitude_DecimalDegree":-110.95678390604628,
+        "Elevation_Meter":712
+    },
+    "PriorityParameter": {
+        "EmergencyVehicleWeight":1.0,
+        "EmergencyVehicleSplitPhaseWeight":0.1,        
+        "TransitWeight":1.0,
+        "TruckWeight":1.0,
+        "DilemmaZoneRequestWeight": 20.0,
+        "CoordinationWeight":1,
+        "CoordinationPhase1":2,
+        "CoordinationPhase2":6,
+        "VirtualPriorityRequestPhase":1,
+        "VirtualPriorityRequestETA":90,
+        "CoordinationStartTime_Hour": 0.0,
+        "CoordinationEndTime_Hour": 24.0,
+        "CoordinationStartTime_Minute": 30.0,
+        "CoordinationEndTime_Minute": 30.0,
+        "Offset": 65.0,
+        "CycleLength":105.0,
+        "CoordinationDuration":25.0,
+        "MaxGreen":100.0    
+    }
+}

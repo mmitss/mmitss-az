@@ -1,0 +1,96 @@
+version: "3.8"
+services:
+
+<<<<<<< HEAD
+#    market-11th:
+#        build:
+#            context: ./
+#        container_name: market-11th
+#        volumes:
+#          - type: bind
+#            source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-11th/nojournal
+#            target: /nojournal
+#        networks:    
+#            mmitss_vlan:
+#                ipv4_address: 172.16.52.98    
+#
+    market-10th:
+        build:
+            context: ./
+        container_name: market-10th
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-10th/nojournal
+=======
+    speedway-campbell:
+        build:
+            context: ./
+        container_name: speedway-campbell
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-campbell/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.3    
+
+    speedway-cherry:
+        build:
+            context: ./
+        container_name: speedway-cherry
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-cherry/nojournal
+>>>>>>> develop
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.95
+
+<<<<<<< HEAD
+    market-broadway:
+        build:
+            context: ./
+        container_name: market-broadway
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Portland_Field/market-broadway/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 172.16.52.92        
+=======
+    speedway-mountain:
+        build:
+            context: ./
+        container_name: speedway-mountain
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-mountain/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.9
+
+    speedway-park:
+        build:
+            context: ./
+        container_name: speedway-park
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-park/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.12
+>>>>>>> develop
+
+
+networks:
+    mmitss_vlan:
+        driver: macvlan
+        driver_opts:
+            parent: enp4s0 
+        ipam:
+            config:
+              - subnet: 172.16.52.0/24
