@@ -1,12 +1,15 @@
 version: "3.8"
 services:
 
+# Note:  MMITSS_ROOT is an environment variable set to the root location of the configuration repository
+# for example /home/<my_home_directory>
+
     market-11th:
         image: mmitssuarizona/mmitss-mrp-server:1.0
         container_name: market-11th
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-11th/nojournal
+            source: $MMITSS_ROOT/portlandStreetcar/corridors/market-11th/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -17,8 +20,8 @@ services:
         container_name: market-10th
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-10th/nojournal
-                            target: /nojournal
+              source: $MMITSS_ROOT/portlandStreetcar/corridors/market-10th/nojournal
+              target: /nojournal
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.95 
@@ -28,7 +31,7 @@ services:
         container_name: market-broadway
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/portlandStreetcar/corridors/market-broadway/nojournal
+              source: $MMITSS_ROOT/portlandStreetcar/corridors/market-broadway/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
