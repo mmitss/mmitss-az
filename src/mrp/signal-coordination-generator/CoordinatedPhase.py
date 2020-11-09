@@ -1,3 +1,25 @@
+'''
+**********************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+**********************************************************************************
+
+  CoordinatedPhase.py  
+  Created by: Debashis Das
+  University of Arizona   
+  College of Engineering
+
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+
+  Revision History:
+  1. This is the initial revision. CoordinatedPhase class does the following tasks:
+    - stores information about phaseNo, vehicleType, vehicleID, basicVehicleRole, ETA, coordinationSplit, priorityRequestType and requestUpdateTime
+    - provides an API for creating a dictionary for each Coordinated phase (optional function)
+'''
+
 class CoordinatedPhase:
     def __init__(self):
         self.phaseNo = 0

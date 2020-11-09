@@ -59,20 +59,29 @@ def main():
     coordinationRequestManager = CoordinationRequestManager(config)
     
     while True:
-        if bool(coordinationPlanManager.checkactiveCoordinationPlan()):
+        # Check if it is required to obtain active coordination plan or not
+        # Send the split data to the PRSolver
+        if bool(coordinationPlanManager.checkActiveCoordinationPlan()):
             coordinationParametersDictionary = coordinationPlanManager.getActiveCoordinationPlan()
             coordinationRequestManager.getCoordinationParametersDictionary(coordinationParametersDictionary)
             splitData = coordinationPlanManager.getSplitData()
             coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
         
+        # Check if it is required to generate virtual coordination requests at the beginning of each cycle
+        #  Formulate a json string for coordination requests and sends it to the PRS
         if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
             coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
             coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-            
+        
+        # Check if it is required to generate coordination requests to avoid PRS timed-out
+        # Formulate a json string for coordination requests and send it to the PRS 
         elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
             coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
             coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
 
+        # The method will update ETA for each coordination request
+        # The method will delete the old coordination requests.
+        # The method will send the coordination requests list in a JSON formate to the PRS after deleting the old requests
         else:
             coordinationRequestManager.updateETAInCoordinationRequestTable()
             if bool(coordinationRequestManager.deleteTimeOutRequestFromCoordinationRequestTable()):
@@ -81,7 +90,7 @@ def main():
 
                 
         time.sleep(1)
-    # coordinationPlanManager.getSplitData()
+    coordinationSocket.close()
     
     
 if __name__ == "__main__":
