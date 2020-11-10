@@ -35,9 +35,10 @@ using std::vector;
 enum msgType
 {
   priorityRequest = 1,
-  clearRequest = 0,
-  currentPhaseStatus = 3,
-  signalPlan = 4
+  clearRequest = 2,
+  signalPlan = 3,
+  currentPhaseStatus = 4,
+  splitData = 5
 };
 
 class PriorityRequestSolver
@@ -45,34 +46,43 @@ class PriorityRequestSolver
 private:
   int noOfPhase{};
   int noOfEVInList{};
+  int coordinatedPhase1{};
+  int coordinatedPhase2{};
   bool emergencyVehicleStatus{};
+  bool optimalSolutionStatus{};
   bool loggingStatus{};
+  double EmergencyVehicleWeight{};
+  double EmergencyVehicleSplitPhaseWeight{};
+  double TransitWeight{};
+  double TruckWeight{};
+  double DilemmaZoneRequestWeight{};
+  double CoordinationWeight{};
+  double MaximumGreen{};
 
-  vector<RequestList> priorityRequestList;
-  vector<RequestList> dilemmaZoneRequestList;
-  vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
-  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
-  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV;
-  vector<int> PhaseNumber;
-  vector<double> PedWalk;
-  vector<double> PedClear;
-  vector<double> MinGreen;
-  vector<double> Passage;
-  vector<double> MaxGreen;
-  vector<double> YellowChange;
-  vector<double> RedClear;
-  vector<int> PhaseRing;
-  vector<int> P11;
-  vector<int> P12;
-  vector<int> P21;
-  vector<int> P22;
-  vector<int> EV_P11;
-  vector<int> EV_P12;
-  vector<int> EV_P21;
-  vector<int> EV_P22;
-  vector<int> requestedSignalGroup;
-  vector<int> plannedEVPhases;
-  vector<int> inactivePhases;
+  vector<RequestList> priorityRequestList{};
+  vector<RequestList> dilemmaZoneRequestList{};
+  vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
+  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
+  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV{};
+  vector<int> PhaseNumber{};
+  vector<double> PedWalk{};
+  vector<double> PedClear{};
+  vector<double> MinGreen{};
+  vector<double> Passage{};
+  vector<double> MaxGreen{};
+  vector<double> YellowChange{};
+  vector<double> RedClear{};
+  vector<int> PhaseRing{};
+  vector<int> P11{};
+  vector<int> P12{};
+  vector<int> P21{};
+  vector<int> P22{};
+  vector<int> EV_P11{};
+  vector<int> EV_P12{};
+  vector<int> EV_P21{};
+  vector<int> EV_P22{};
+  vector<int> requestedSignalGroup{};
+  vector<int> plannedEVPhases{};
 
 public:
   PriorityRequestSolver();
@@ -91,12 +101,10 @@ public:
   void getRequestedSignalGroup();
   void getEVPhases();
   void getEVTrafficSignalPlan();
-  void getCurrentSignalStatus(string receivedJsonString);
+  void getCurrentSignalStatus(string jsonString);
   void validateTrafficControllerStatus();
   void validateEVTrafficSignalPlan();
-  // void loggingData(string jsonString);
   void loggingSignalPlanData(string jsonString);
-  // void loggingPRSData(string jsonString);
   void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
   void loggingClearRequestData(string jsonString);
   void printSignalPlan();
@@ -108,6 +116,6 @@ public:
   double GetSeconds();
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
+  bool getOptimalSolutionValidationStatus();
   bool logging();
-  
 };

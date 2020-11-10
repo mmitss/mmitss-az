@@ -26,6 +26,8 @@
 #define FORCEOFF_PHASES 3
 #define CALL_VEH_PHASES 1
 #define CALL_PED_PHASES 2
+#define minimum_ETA 6.0
+#define PRS_TimedOutValue 10.0
 
 ScheduleManager::ScheduleManager()
 {
@@ -394,26 +396,18 @@ void ScheduleManager::createEventList()
 
 
     for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
-    {
         leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i - 1] + leftCriticalPoints_PhaseDuration_Ring1[i];
-    }
 
     for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring1.size(); i++)
-    {
         rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_PhaseDuration_Ring1[i];
-    }
 
     for (size_t i = 1; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
-    {
         leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i - 1] + leftCriticalPoints_PhaseDuration_Ring2[i];
-    }
 
     for (size_t i = 1; i < rightCriticalPoints_PhaseDuration_Ring2.size(); i++)
-    {
         rightCriticalPoints_PhaseDuration_Ring2[i] = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_PhaseDuration_Ring2[i];
-    }
 
-    if(trafficControllerStatus[0].initPhase1>0)
+    if(trafficControllerStatus[0].initPhase1 > 0)
     {
         for (size_t i = 0; i < leftCriticalPoints_PhaseDuration_Ring1.size(); i++)
             leftCriticalPoints_PhaseDuration_Ring1[i] = leftCriticalPoints_PhaseDuration_Ring1[i]+trafficControllerStatus[0].initPhase1;
@@ -422,7 +416,7 @@ void ScheduleManager::createEventList()
             rightCriticalPoints_PhaseDuration_Ring1[i] = rightCriticalPoints_PhaseDuration_Ring1[i]+trafficControllerStatus[0].initPhase1;
     }
 
-    if(trafficControllerStatus[0].initPhase2>0)
+    if(trafficControllerStatus[0].initPhase2 > 0)
     {
         for (size_t i = 0; i < leftCriticalPoints_PhaseDuration_Ring2.size(); i++)
             leftCriticalPoints_PhaseDuration_Ring2[i] = leftCriticalPoints_PhaseDuration_Ring2[i]+trafficControllerStatus[0].initPhase2;
@@ -548,8 +542,8 @@ void ScheduleManager::createEventList()
             ring1Schedule.commandPhase = vehicleSignalGroup;
             ring1Schedule.commandType = "call_veh";
             ring1Schedule.commandStartTime = 0.0;
-            if (priorityRequestList[i].vehicleETA <= 6.0)
-                ring1Schedule.commandEndTime = 10.0; //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
+            if (priorityRequestList[i].vehicleETA <= minimum_ETA)
+                ring1Schedule.commandEndTime = PRS_TimedOutValue; //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
             else
                 ring1Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
@@ -561,8 +555,8 @@ void ScheduleManager::createEventList()
             ring2Schedule.commandPhase = vehicleSignalGroup;
             ring2Schedule.commandType = "call_veh";
             ring2Schedule.commandStartTime = 0.0;
-            if (priorityRequestList[i].vehicleETA <= 6.0) //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
-                ring2Schedule.commandEndTime = 10.0;
+            if (priorityRequestList[i].vehicleETA <= minimum_ETA) //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
+                ring2Schedule.commandEndTime = PRS_TimedOutValue;
             else
                 ring2Schedule.commandEndTime = priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration;
 
@@ -602,6 +596,28 @@ void ScheduleManager::createEventList()
 }
 
 /*
+    - The following method is reponsible for validate the soultion
+    - If there is no optimal solution, phase duration and green time value in Results.txt will be zero
+    - The method will check the right critical green time value of ring 1. If all of them are zero, the soulution is not correct
+*/
+bool ScheduleManager::validateOptimalSolution()
+{
+    bool solutionValidity{false};
+
+    for (unsigned int i = 0; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
+    {
+        if (rightCriticalPoints_GreenTime_Ring1.at(i) > 2.0) //For Force-off point commandEndTime is greater than zero. Thus we chose the checking value as 2.0
+        {
+            solutionValidity = true;
+            break;
+        }
+        else
+            continue;
+    }
+    return solutionValidity;
+}
+
+/*
     - Method to write the schedule in JSON format for TCI
 */
 string ScheduleManager::createScheduleJsonString()
@@ -611,16 +627,14 @@ string ScheduleManager::createScheduleJsonString()
     completeSchedule.insert(completeSchedule.end(), ring2_TCISchedule.begin(), ring2_TCISchedule.end());
     string scheduleJsonString{};
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
-    // Json::StyledStreamWriter styledStreamWriter;
-    // ofstream outputter("schedule.json");
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
     jsonObject["MsgType"] = "Schedule";
 
-
     if (ring1_TCISchedule.empty() && ring2_TCISchedule.empty())
-    {
         jsonObject["Schedule"] = "Clear";
-    }
 
     else
     {
@@ -633,8 +647,7 @@ string ScheduleManager::createScheduleJsonString()
         }
     }
 
-    scheduleJsonString = fastWriter.write(jsonObject);
-    // styledStreamWriter.write(outputter, jsonObject);
+    scheduleJsonString = Json::writeString(builder, jsonObject);
 
     return scheduleJsonString;
 }

@@ -21,19 +21,22 @@
 
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
+    Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
 
     PriorityRequestSolver priorityRequestSolver;
     ScheduleManager scheduleManager;
     SolverDataManager solverDataManager;
-    UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt()));
-    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
-    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt());
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
+    UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt()));
+    UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
+    const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["TrafficControllerInterface"].asInt());
+    const string LOCALHOST = jsonObject["HostIp"].asString();
     char receiveBuffer[40960];
     char receivedSignalStatusBuffer[40960];
     int msgType{};
@@ -68,7 +71,8 @@ int main()
                 priorityRequestSolver.getCurrentSignalStatus(receivedSignalStatusString);
 
             tciJsonString = priorityRequestSolver.getScheduleforTCI();
-            priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
+            if(priorityRequestSolver.getOptimalSolutionValidationStatus() == true)
+                priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
 
         }
