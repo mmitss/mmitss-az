@@ -58,6 +58,12 @@ int main()
             priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
         }
 
+        else if (msgType == static_cast<int>(msgType::splitData))
+        {
+            cout << "Received Split Data for Signal Coordination " << endl;
+            priorityRequestSolver.getSignalCoordinationTimingPlan(receivedJsonString);
+        }
+
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);

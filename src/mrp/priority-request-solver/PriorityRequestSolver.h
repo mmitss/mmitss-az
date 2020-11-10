@@ -20,7 +20,6 @@
 #include "ScheduleManager.h"
 #include "SolverDataManager.h"
 #include "TrafficSignalPlan.h"
-// #include "RequestList.h"
 #include "Schedule.h"
 
 using std::cout;
@@ -31,6 +30,8 @@ using std::ofstream;
 using std::string;
 using std::stringstream;
 using std::vector;
+
+#define SignalCoordinationVehicleType 20
 
 enum msgType
 {
@@ -49,6 +50,7 @@ private:
   int coordinatedPhase1{};
   int coordinatedPhase2{};
   bool emergencyVehicleStatus{};
+  bool signalCoordinationRequestStatus{};
   bool optimalSolutionStatus{};
   bool loggingStatus{};
   double EmergencyVehicleWeight{};
@@ -64,6 +66,7 @@ private:
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_EV{};
+  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
   vector<int> PhaseNumber{};
   vector<double> PedWalk{};
   vector<double> PedClear{};
@@ -91,10 +94,11 @@ public:
   void createPriorityRequestList(string jsonString);
   void createDilemmaZoneRequestList();
   void modifyPriorityRequestList();
-  void modifySignalTimingPlan();
+  void modifySignalTimingPlan(vector<TrafficControllerData::TrafficSignalPlan>SignalPlan);
   void deleteSplitPhasesFromPriorityRequestList();
   void GLPKSolver();
   void getCurrentSignalTimingPlan(string jsonString);
+  void getSignalCoordinationTimingPlan(string jsonString);
   void generateModFile();
   void generateEVModFile();
   void setOptimizationInput();
@@ -116,6 +120,7 @@ public:
   double GetSeconds();
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
+  bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
   bool logging();
 };

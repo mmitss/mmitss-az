@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cmath>
 #include <UdpSocket.h>
+#include "msgEnum.h"
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
@@ -556,8 +557,17 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
+    else if (signalCoordinationRequestStatus == true)
+    {   
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
+        solverDataManager.addAssociatedSignalGroup();
+        solverDataManager.modifyGreenMax();
+        solverDataManager.generateDatFile(emergencyVehicleStatus);
+    }
+    
     else
-    {
+    {    
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
@@ -643,6 +653,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     string scheduleJsonString{};
 
     findEVInList();
+    findCoordinationRequestInList();
     setOptimizationInput();
     GLPKSolver();
 
@@ -657,10 +668,19 @@ string PriorityRequestSolver::getScheduleforTCI()
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
 
+    else if (signalCoordinationRequestStatus == true)
+    {    
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
+        scheduleManager.obtainRequiredSignalGroup();
+        scheduleManager.readOptimalSignalPlan();
+        scheduleManager.createEventList();
+        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+        scheduleJsonString = scheduleManager.createScheduleJsonString();
+    }
+
     else
     {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
-
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
         scheduleManager.createEventList();
@@ -1015,7 +1035,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     P21.clear();
     P22.clear();
 
-    const Json::Value values = jsonObject["TimingPlan"];
+    // const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
 
     for (int i = 0; i < noOfPhase; i++)
@@ -1075,7 +1095,37 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     }
 
     generateModFile();
-    modifySignalTimingPlan();
+    modifySignalTimingPlan(trafficSignalPlan);
+}
+
+/*
+    - The following method modify the gmax of the traffic signal plan based on Split data
+*/
+void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
+{
+    TrafficControllerData::TrafficSignalPlan signalPlan;
+    Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
+
+    loggingSignalPlanData(jsonString);
+    trafficSignalPlan_SignalCoordination.clear();
+    int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
+    
+    for (int i = 0; i < noOfSplitData; i++)
+    {
+        signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
+        signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
+        signalPlan.redClear = trafficSignalPlan[i].redClear;
+        signalPlan.minGreen = trafficSignalPlan[i].minGreen;
+        signalPlan.maxGreen = jsonObject["TimingPlan"]["SplitData"][i].asDouble() - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
+        signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
+        trafficSignalPlan_SignalCoordination.push_back(signalPlan);
+    }
+    modifySignalTimingPlan(trafficSignalPlan_SignalCoordination);
 }
 
 /*
@@ -1092,26 +1142,26 @@ void PriorityRequestSolver::printSignalPlan()
     - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
     - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
 */
-void PriorityRequestSolver::modifySignalTimingPlan()
+void PriorityRequestSolver::modifySignalTimingPlan(vector<TrafficControllerData::TrafficSignalPlan>SignalPlan)
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
     
-    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+    for (size_t i = 0; i < SignalPlan.size(); i++)
     {
-        temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
+        temporarySignalGroup = SignalPlan[i].phaseNumber;
 
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(SignalPlan), std::end(SignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
-        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
+        if ((temporarySignalGroup % 2 == 0) && (SignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < 5)
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;
             else if (temporarySignalGroup > 4)
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(SignalPlan), std::end(SignalPlan),
                                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
 
             findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
@@ -1131,6 +1181,7 @@ void PriorityRequestSolver::modifySignalTimingPlan()
 /*
     - Method for generating Mod File for transit and truck
 */
+
 void PriorityRequestSolver::generateModFile()
 {
     // modifySignalTimingPlan();
@@ -1656,7 +1707,7 @@ bool PriorityRequestSolver::findEVInList()
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            if (priorityRequestList[i].vehicleType == 2)
+            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
             {
                 emergencyVehicleStatus = true;
                 break;
@@ -1668,6 +1719,32 @@ bool PriorityRequestSolver::findEVInList()
     }
 
     return emergencyVehicleStatus;
+}
+
+/*
+    - This method checks whether signal coordination priority request is in the list or not
+*/
+bool PriorityRequestSolver::findCoordinationRequestInList()
+{
+    if (priorityRequestList.empty())
+        signalCoordinationRequestStatus = false;
+    
+    else
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if (priorityRequestList[i].vehicleType == SignalCoordinationVehicleType)
+            {
+                signalCoordinationRequestStatus = true;
+                break;
+            }
+
+            else
+                signalCoordinationRequestStatus = false;
+        }
+    }
+
+    return signalCoordinationRequestStatus;
 }
 
 bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
