@@ -68,7 +68,7 @@ int main()
             } 
             else if (msgType == static_cast<int>(msgType::coordinationRequest))
             {
-                cout << "Received coordination Request" << endl;
+                cout << "Received coordination Request" << receivedJsonString << endl;
                 PRS.manageCoordinationRequest(receivedJsonString);
             }
 

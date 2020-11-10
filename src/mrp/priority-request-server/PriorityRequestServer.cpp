@@ -1022,11 +1022,11 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	{
 		activeRequest.minuteOfYear = getMinuteOfYear();
 		activeRequest.secondOfMinute = getMsOfMinute() / SECONDTOMILISECOND;
-		activeRequest.signalGroup = jsonObject["CoordinationRequest"]["requestorInfo"][i]["requestedPhase"].asInt();
-		activeRequest.vehicleID = jsonObject["CoordinationRequest"]["requestorInfo"][i]["vehicleID"].asInt();
-		activeRequest.vehicleType = jsonObject["CoordinationRequest"]["requestorInfo"][i]["vehicleType"].asInt();
-		activeRequest.vehicleETA = jsonObject["CoordinationRequest"]["requestorInfo"][i]["ETA"].asDouble();
-		activeRequest.vehicleETADuration = jsonObject["CoordinationRequest"]["requestorInfo"][i]["ETA_Duration"].asDouble();
+		activeRequest.signalGroup = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["requestedPhase"].asInt();
+		activeRequest.vehicleID = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
+		activeRequest.vehicleType = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
+		activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
+		activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asDouble();
 		ActiveRequestTable.push_back(activeRequest);
 	}
 }
