@@ -50,7 +50,8 @@ def main():
     port = config["PortNumber"]["SignalCoordination"]
     signalCoordination_commInfo = (mrpIp, port)
     coordinationSocket.bind(signalCoordination_commInfo)
-
+    
+    # Get the PRS and PRSolver communication address
     prioritySolverAddress = (mrpIp, config["PortNumber"]["PrioritySolver"])
     priorityRequestServerAddress = (mrpIp, config["PortNumber"]["PriorityRequestServer"])
     
