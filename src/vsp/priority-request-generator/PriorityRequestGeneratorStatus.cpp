@@ -35,7 +35,6 @@ void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenera
 std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
-    // Json::FastWriter fastWriter;
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
     builder["indentation"] = "";
