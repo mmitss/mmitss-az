@@ -30,6 +30,9 @@ import json
 import datetime
 import time
 
+SECONDSINAMINUTE = 60.0
+HourToSecondConversion =  3600.0
+
 class CoordinationPlanManager:
     def __init__(self, data):
         self.data = data
@@ -66,10 +69,8 @@ class CoordinationPlanManager:
         currentTime = self.getCurrentTime()
 
         for parameters in self.data['CoordinationParameters']:
-            coordinationStartTime = parameters['CoordinationStartTime_Hour'] * \
-                3600.0 + parameters['CoordinationStartTime_Minute'] * 60.0
-            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * \
-                3600.0 + parameters['CoordinationEndTime_Minute'] * 60.0
+            coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
+            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
             cycleLength = parameters['CycleLength']
             if currentTime >= coordinationStartTime and currentTime <= coordinationEndTime or abs(coordinationStartTime - currentTime) <= cycleLength:
@@ -89,8 +90,7 @@ class CoordinationPlanManager:
                 }
                 self.coordinationPlanName = parameters['CoordinationPlanName']
 
-                print("Active Coordination Parameter is following: \n",
-                      self.coordinationParametersDictionary)
+                print("\n[" + str(datetime.datetime.now()) + "] " + "Active Coordination Parameter at time " + str(time.time())+ " is following: \n", self.coordinationParametersDictionary)
                 break
 
         return self.coordinationParametersDictionary
@@ -118,7 +118,7 @@ class CoordinationPlanManager:
                 }
         })
 
-        print("Coordination Split Data is following: \n",self.coordinationSplitDataDictionary)
+        print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " + str(time.time())+ " is following: \n", self.coordinationSplitDataDictionary)
         return self.coordinationSplitDataDictionary
 
     def getCurrentTime(self):

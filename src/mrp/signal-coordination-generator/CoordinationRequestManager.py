@@ -35,13 +35,19 @@ import time
 import json
 from CoordinatedPhase import CoordinatedPhase
 
+HOURSINADAY = 24.0
+MINUTESINAHOUR = 60.0
+SECONDSINAMINUTE = 60.0
+HourToSecondConversion =  3600.0
+SECONDTOMILISECOND = 1000.0
+
 class CoordinationRequestManager:
-    def __init__(self,config):
+    def __init__(self, config):
         self.config = config
         self.SRM_GAPOUT_TIME = 2.0
-        self.requestTimedOutValue = self.config['SRMTimedOutTime'] - self.SRM_GAPOUT_TIME       
-        
-        #Define Coordination Parameters
+        self.requestTimedOutValue = self.config['SRMTimedOutTime'] - self.SRM_GAPOUT_TIME
+
+        # Define Coordination Parameters
         self.coordinationParametersDictionary = {}
         self.coordinationVehicleType = 20
         self.basicVehicleRole = 11
@@ -52,7 +58,7 @@ class CoordinationRequestManager:
         self.Minimum_ETA = 0.0
         self.Request_Delete_Time = 0.0
         self.requestSentTime = time.time()
-        
+
     def checkCoordinationRequestSendingRequirement(self):
         """
         If there is active coordination plan, it is not required to check for coordination request sending requirement
@@ -63,19 +69,18 @@ class CoordinationRequestManager:
             sendRequest = False
         else:
             currentTime = self.getCurrentTime()
-            coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * \
-                3600.0 + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * 60.0
+            coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
             cycleLength = self.coordinationParametersDictionary['CycleLength']
-            
+
             remainderTime = currentTime % cycleLength
-            print("Remainder Time is: ", remainderTime)
+            # print("\n[" + str(datetime.datetime.now()) + "] " + "Elapsed Time in the Cycle at time " + str(time.time())+ " is ", remainderTime)
 
             if coordinationStartTime - currentTime >= 0 and coordinationStartTime - currentTime <= cycleLength:
                 sendRequest = True
 
             elif cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
                 sendRequest = True
-            
+
             else:
                 sendRequest = False
 
@@ -86,7 +91,6 @@ class CoordinationRequestManager:
         Following method will generated virtual coordination priority requests at the beginning of each cycle
         """
         coordinationRequestList = []
-        
         coordinationVehicleID = [1, 2, 3, 4]
         coordinatedPhase1 = self.coordinationParametersDictionary['CoordinatedPhase1']
         coordinatedPhase2 = self.coordinationParametersDictionary['CoordinatedPhase2']
@@ -97,6 +101,7 @@ class CoordinationRequestManager:
         coordinatedPhaseETA = [ETAOfFirstCycleCoordinatedPhase, ETAOfFirstCycleCoordinatedPhase,
                                ETAOfSecondCycleCoordinatedPhase, ETAOfSecondCycleCoordinatedPhase]
         coordinationSplit = self.coordinationParametersDictionary['CoordinationSplit']
+                
         for i in range(len(coordinatedPhases)):
             temporaryCoordinationRequest = CoordinatedPhase()
             temporaryCoordinationRequest.phaseNo = coordinatedPhases[i]
@@ -108,75 +113,81 @@ class CoordinationRequestManager:
             temporaryCoordinationRequest.priorityRequestType = self.priorityRequest
             temporaryCoordinationRequest.requestUpdateTime = time.time()
             coordinationRequestList.append(temporaryCoordinationRequest)
-        coordinationRequestDict = [dict() for x in range(len(coordinatedPhases))]
+            
+        coordinationRequestDict = [dict()for x in range(len(coordinatedPhases))]
+        
         for i in range(len(coordinatedPhases)):
             coordinationRequestDict[i] = coordinationRequestList[i].asDict()
+            
         self.coordinationPriorityRequestDictionary = {
             "MsgType": "CoordinationRequest",
             "noOfCoordinationRequest": len(coordinatedPhases),
-            "CoordinationRequestList":
-                {
-                    "minuteOfYear": 0,
-                    "msOfMinute": 0,
-                    "requestorInfo": coordinationRequestDict
-                }
-
+            "minuteOfYear": self.getMinuteOfYear(),
+            "msOfMinute": self.getMsOfMinute(),
+            "CoordinationRequestList":{"requestorInfo": coordinationRequestDict}
         }
-        print("\nVirtual Coordination Request", self.coordinationPriorityRequestDictionary)
+        print("\n[" + str(datetime.datetime.now()) + "] " + "Virtual Coordination Request at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         self.requestSentTime = time.time()
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-        
+
         return coordinationPriorityRequestJsonString
-    
+
     def checkUpdateRequestSendingRequirement(self):
         """
         A boolean function to check whether coordination priority requests is required to send to avoid PRS timed-out
         """
         sendRequest = False
         currentTime_UTC = time.time()
-        
+
         if bool(self.coordinationPriorityRequestDictionary) and currentTime_UTC - self.requestSentTime >= self.requestTimedOutValue:
             sendRequest = True
-            
+
         return sendRequest
-    
+
     def generateUpdatedCoordinationPriorityRequest(self):
         """
         The following method generates updated cooridnation priority request to avoid PRS timed-out.
         The method will set the request type as requestUpdate.
         """
         noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
-        self.coordinationPriorityRequestDictionary['minuteOfYear'] = 0
-        self.coordinationPriorityRequestDictionary['msOfMinute'] = 0
+        
+        self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
+        self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+        
         for i in range(noOfCoordinationRequest):
             self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
             self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
+        
         self.requestSentTime = time.time()
-        print ("\nUpdated Coordination Request to avoid PRS timed-out is following: \n",self.coordinationPriorityRequestDictionary)
+        print("\n[" + str(datetime.datetime.now()) + "] " + "Updated Coordination Request to avoid PRS timed-out at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-    
+
         return coordinationPriorityRequestJsonString
-    
+
     def updateETAInCoordinationRequestTable(self):
         """
         The following method updates the active coordination priority request and sends the updated request to PriorityRequestServer
         If the ETA of a request is greater than the minimum ETA (predefined), the following method only updates the ETA.
         If the ETA of a Request is less or equal to the minimum ETA (preddefined), the following method updates the Coordination Split time and set the ETA as minimum ETA.
         """
-        
+
         if bool(self.coordinationPriorityRequestDictionary):
             currentTime_UTC = time.time()
             noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
             for i in range(noOfCoordinationRequest):
                 temporaryRequestUpdateTime = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime']
+                
                 if currentTime_UTC - temporaryRequestUpdateTime >= self.ETA_Update_Time:
-                    self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] - (currentTime_UTC - temporaryRequestUpdateTime)
+                    self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] = self.coordinationPriorityRequestDictionary[
+                        'CoordinationRequestList']['requestorInfo'][i]['ETA'] - (currentTime_UTC - temporaryRequestUpdateTime)
+                    
                     if self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] <= self.Minimum_ETA:
                         self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] = self.Minimum_ETA
                         self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] - (currentTime_UTC - temporaryRequestUpdateTime)
+                    
                     self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
-                    print("\nUpdate ETA in the Coordination Request List: \n", self.coordinationPriorityRequestDictionary)
-    
+                    # print("\n[" + str(datetime.datetime.now()) + "] " + "Update ETA in the Coordination Request List at time " + str(time.time()))
+
     def deleteTimeOutRequestFromCoordinationRequestTable(self):
         """
         Method to delete the old coordination requests, if coordination split is zero
@@ -184,48 +195,71 @@ class CoordinationRequestManager:
         deleteCoordinationRequest = False
         if bool(self.coordinationPriorityRequestDictionary):
             noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
-            i = 0
-            while i < noOfCoordinationRequest:
-                if self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] <= self.Request_Delete_Time:
-                    del[self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]]
+            requestorIndex = 0
+            while requestorIndex < noOfCoordinationRequest:
+                if self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][requestorIndex]['CoordinationSplit'] <= self.Request_Delete_Time:
+                    del[self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][requestorIndex]]
                     self.coordinationPriorityRequestDictionary['noOfCoordinationRequest'] = noOfCoordinationRequest - 1
-                    i -= 1
-                    noOfCoordinationRequest -= 1 
+                    requestorIndex -= 1
+                    noOfCoordinationRequest -= 1
                     deleteCoordinationRequest = True
-                i += 1
+                requestorIndex += 1
+                
         return deleteCoordinationRequest
-    
+
     def getCoordinationPriorityRequestDictionary(self):
         """
         Method to get the Coordination requests List after the deletion process 
         """
         noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
-        
-        self.coordinationPriorityRequestDictionary['minuteOfYear'] = 0
-        self.coordinationPriorityRequestDictionary['msOfMinute'] = 0
+
+        self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
+        self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
         for i in range(noOfCoordinationRequest):
             self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
             self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
         self.requestSentTime = time.time()
-       
+
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-        print("\nCoordination request List after deletion process is following: \n", self.coordinationPriorityRequestDictionary)
-       
+        print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination request List after deletion process at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
+
         return coordinationPriorityRequestJsonString
-    
+
     def getCoordinationParametersDictionary(self, dictionary):
         """
         Method to load the coordination prarameters dictionary
         """
         self.coordinationParametersDictionary = dictionary
-        
+
         return self.coordinationParametersDictionary
-    
+
     def getCurrentTime(self):
         """
         Compute the current time based on current hour, minute and second of a day in the unit of second
         """
         timeNow = datetime.datetime.now()
-        currentTime = timeNow.hour * 3600.0 + timeNow.minute * 60.0 + timeNow.second
-        
+        currentTime = timeNow.hour * float(HourToSecondConversion) + timeNow.minute * 60.0 + timeNow.second
+
         return currentTime
+
+    def getMinuteOfYear(self):
+        """
+        Method for obtaining minute of a year based on current time
+        """
+        timeNow = datetime.datetime.now()
+        dayOfYear = int(timeNow.strftime("%j"))
+        currentHour = timeNow.hour
+        currentMinute = timeNow.minute
+        minuteOfYear = (dayOfYear - 1) * float(HOURSINADAY) * float(MINUTESINAHOUR) + currentHour * float(MINUTESINAHOUR) + currentMinute
+
+        return minuteOfYear
+
+    def getMsOfMinute(self):
+        """
+        Method for obtaining millisecond of a minute based on current time
+        """
+        timeNow = datetime.datetime.now()
+        currentSecond = timeNow.second
+        msOfMinute = currentSecond * float(SECONDTOMILISECOND)
+
+        return msOfMinute

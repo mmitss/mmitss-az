@@ -60,6 +60,8 @@ def main():
     coordinationRequestManager = CoordinationRequestManager(config)
     
     while True:
+        coordinationRequestManager.getMinuteOfYear()
+        coordinationRequestManager.getMsOfMinute()
         # Check if it is required to obtain active coordination plan or not
         # Send the split data to the PRSolver
         if bool(coordinationPlanManager.checkActiveCoordinationPlan()):
