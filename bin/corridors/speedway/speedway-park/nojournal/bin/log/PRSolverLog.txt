@@ -1,0 +1,535 @@
+File opened at time : 1603411530
+
+Following Signal Plan is received from TCI at time 1603411530
+{"MsgType": "ActiveTimingPlan", "TimingPlan": {"NoOfPhase": 8, "PhaseNumber": [1, 2, 3, 4, 5, 6, 7, 8], "PedWalk": [0, 10, 0, 15, 0, 10, 0, 15], "PedClear": [0, 16, 0, 16, 0, 16, 0, 16], "MinGreen": [8, 10, 0, 10, 8, 10, 0, 10], "Passage": [5.0, 5.0, 0.0, 5.0, 5.0, 5.0, 0.0, 5.0], "MaxGreen": [25, 45, 0, 45, 25, 45, 0, 45], "YellowChange": [3.0, 3.0, 0.0, 3.0, 3.0, 3.0, 0.0, 3.0], "RedClear": [2.0, 2.0, 0.0, 2.0, 2.0, 2.0, 0.0, 2.0], "PhaseRing": [1, 1, 1, 1, 2, 2, 2, 2]}}
+
+Following Clear Request is sent to TCI at time 1603411531
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411629
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411631
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411639
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411643
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411645
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411648
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Clear Request is sent to TCI at time 1603411650
+{"MsgType":"Schedule","Schedule":"Clear"}
+
+
+Following Priority Request is received from PRS at time 1603411653
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424807,"msOfMinute":32000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":24.759244176394841,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.16228704899549,"heading_Degree":269.02529855423154,"inBoundLaneID":3,"latitude_DecimalDegree":32.236057947370043,"longitude_DecimalDegree":-110.95264074336873,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":15.120413100369184,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411653
+{"currentPhases": [{"Phase": 4, "State": "green", "ElapsedTime": 140}, {"Phase": 8, "State": "green", "ElapsedTime": 140}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [0]}
+
+Current Dat File at time : 1603411653
+data;
+param SP1:=4;
+param SP2:=8;
+param init1:=0;
+param init2:=0;
+param Grn1 :=10;
+param Grn2 :=10;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	20.7592	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	28.7592	.	.	
+;
+end;
+
+Current Results File at time : 1603411653
+   4    8 
+  0.00   0.00 10.00  10.00 
+  0.00   0.00   0.00   5.00   0.00   0.00   0.00   5.00   
+ 13.00  15.76   0.00  15.00  13.00  15.76   0.00  15.00   
+ 13.00  15.00   0.00   0.00  13.00  15.00   0.00   0.00   
+  0.00   0.00   0.00   7.76   0.00   0.00   0.00   7.76   
+ 30.00  39.75   0.00  50.00  13.00  56.75   0.00  50.00   
+ 30.00  56.75   0.00   0.00  30.00  56.75   0.00   0.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+  8.00  10.76   0.00  10.00   8.00  10.76   0.00  10.00   
+  8.00  10.00   0.00   0.00   8.00  10.00   0.00   0.00   
+  0.00   0.00   0.00   2.76   0.00   0.00   0.00   2.76   
+ 25.00  34.75   0.00  45.00   8.00  51.75   0.00  45.00   
+ 25.00  51.75   0.00   0.00  25.00  51.75   0.00   0.00   
+   1 
+ 6  20.76  28.76   0.00 2 
+  0.00 
+ 827.04 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411653
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":0.0,"commandPhase":4,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":13.0,"commandPhase":1,"commandStartTime":5.0,"commandType":"hold"},{"commandEndTime":28.759999999999998,"commandPhase":2,"commandStartTime":18.0,"commandType":"hold"},{"commandEndTime":43.759999999999998,"commandPhase":4,"commandStartTime":33.759999999999998,"commandType":"hold"},{"commandEndTime":56.759999999999998,"commandPhase":1,"commandStartTime":48.759999999999998,"commandType":"hold"},{"commandEndTime":71.759999999999991,"commandPhase":2,"commandStartTime":61.759999999999998,"commandType":"hold"},{"commandEndTime":3.7599999999999998,"commandPhase":4,"commandStartTime":2.7599999999999998,"commandType":"forceoff"},{"commandEndTime":33.759999999999998,"commandPhase":1,"commandStartTime":32.759999999999998,"commandType":"forceoff"},{"commandEndTime":73.509999999999991,"commandPhase":2,"commandStartTime":72.509999999999991,"commandType":"forceoff"},{"commandEndTime":123.50999999999999,"commandPhase":4,"commandStartTime":122.50999999999999,"commandType":"forceoff"},{"commandEndTime":153.50999999999999,"commandPhase":1,"commandStartTime":152.50999999999999,"commandType":"forceoff"},{"commandEndTime":210.25999999999999,"commandPhase":2,"commandStartTime":209.25999999999999,"commandType":"forceoff"},{"commandEndTime":0.0,"commandPhase":8,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":13.0,"commandPhase":5,"commandStartTime":5.0,"commandType":"hold"},{"commandEndTime":28.759999999999998,"commandPhase":6,"commandStartTime":18.0,"commandType":"hold"},{"commandEndTime":43.759999999999998,"commandPhase":8,"commandStartTime":33.759999999999998,"commandType":"hold"},{"commandEndTime":56.759999999999998,"commandPhase":5,"commandStartTime":48.759999999999998,"commandType":"hold"},{"commandEndTime":71.759999999999991,"commandPhase":6,"commandStartTime":61.759999999999998,"commandType":"hold"},{"commandEndTime":3.7599999999999998,"commandPhase":8,"commandStartTime":2.7599999999999998,"commandType":"forceoff"},{"commandEndTime":16.759999999999998,"commandPhase":5,"commandStartTime":15.76,"commandType":"forceoff"},{"commandEndTime":73.509999999999991,"commandPhase":6,"commandStartTime":72.509999999999991,"commandType":"forceoff"},{"commandEndTime":123.50999999999999,"commandPhase":8,"commandStartTime":122.50999999999999,"commandType":"forceoff"},{"commandEndTime":153.50999999999999,"commandPhase":5,"commandStartTime":152.50999999999999,"commandType":"forceoff"},{"commandEndTime":210.25999999999999,"commandPhase":6,"commandStartTime":209.25999999999999,"commandType":"forceoff"},{"commandEndTime":28.759244176394841,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411660
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424807,"msOfMinute":40000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":17.295176047312943,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.174949625507,"heading_Degree":270.50284128168215,"inBoundLaneID":3,"latitude_DecimalDegree":32.23605142151861,"longitude_DecimalDegree":-110.95363359033641,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":16.234584674471886,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411660
+{"currentPhases": [{"Phase": 4, "State": "red", "ElapsedTime": 9}, {"Phase": 8, "State": "red", "ElapsedTime": 9}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [1, 5]}
+
+Current Dat File at time : 1603411660
+data;
+param SP1:=1;
+param SP2:=5;
+param init1:=1.1;
+param init2:=1.1;
+param Grn1 :=0;
+param Grn2 :=0;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	13.2952	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	21.2952	.	.	
+;
+end;
+
+Current Results File at time : 1603411660
+   1    5 
+  1.10   1.10  0.00   0.00 
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+ 30.00  39.75   0.00  50.00  13.00  56.75   0.00  50.00   
+ 30.00  56.75   0.00  15.00  30.00  56.75   0.00  15.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+ 25.00  34.75   0.00  45.00   8.00  51.75   0.00  45.00   
+ 25.00  51.75   0.00  10.00  25.00  51.75   0.00  10.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+   1 
+ 6  13.30  21.30   0.80 2 
+  0.80 
+ 1067.00 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411660
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":9.0999999999999996,"commandPhase":1,"commandStartTime":1.1000000000000001,"commandType":"hold"},{"commandEndTime":24.100000000000001,"commandPhase":2,"commandStartTime":14.1,"commandType":"hold"},{"commandEndTime":39.100000000000001,"commandPhase":4,"commandStartTime":29.100000000000001,"commandType":"hold"},{"commandEndTime":52.100000000000001,"commandPhase":1,"commandStartTime":44.100000000000001,"commandType":"hold"},{"commandEndTime":67.099999999999994,"commandPhase":2,"commandStartTime":57.100000000000001,"commandType":"hold"},{"commandEndTime":82.099999999999994,"commandPhase":4,"commandStartTime":72.099999999999994,"commandType":"hold"},{"commandEndTime":27.100000000000001,"commandPhase":1,"commandStartTime":26.100000000000001,"commandType":"forceoff"},{"commandEndTime":66.849999999999994,"commandPhase":2,"commandStartTime":65.849999999999994,"commandType":"forceoff"},{"commandEndTime":116.84999999999999,"commandPhase":4,"commandStartTime":115.84999999999999,"commandType":"forceoff"},{"commandEndTime":146.84999999999999,"commandPhase":1,"commandStartTime":145.84999999999999,"commandType":"forceoff"},{"commandEndTime":203.59999999999999,"commandPhase":2,"commandStartTime":202.59999999999999,"commandType":"forceoff"},{"commandEndTime":218.59999999999999,"commandPhase":4,"commandStartTime":217.59999999999999,"commandType":"forceoff"},{"commandEndTime":9.0999999999999996,"commandPhase":5,"commandStartTime":1.1000000000000001,"commandType":"hold"},{"commandEndTime":24.100000000000001,"commandPhase":6,"commandStartTime":14.1,"commandType":"hold"},{"commandEndTime":39.100000000000001,"commandPhase":8,"commandStartTime":29.100000000000001,"commandType":"hold"},{"commandEndTime":52.100000000000001,"commandPhase":5,"commandStartTime":44.100000000000001,"commandType":"hold"},{"commandEndTime":67.099999999999994,"commandPhase":6,"commandStartTime":57.100000000000001,"commandType":"hold"},{"commandEndTime":82.099999999999994,"commandPhase":8,"commandStartTime":72.099999999999994,"commandType":"hold"},{"commandEndTime":10.1,"commandPhase":5,"commandStartTime":9.0999999999999996,"commandType":"forceoff"},{"commandEndTime":66.849999999999994,"commandPhase":6,"commandStartTime":65.849999999999994,"commandType":"forceoff"},{"commandEndTime":116.84999999999999,"commandPhase":8,"commandStartTime":115.84999999999999,"commandType":"forceoff"},{"commandEndTime":146.84999999999999,"commandPhase":5,"commandStartTime":145.84999999999999,"commandType":"forceoff"},{"commandEndTime":203.59999999999999,"commandPhase":6,"commandStartTime":202.59999999999999,"commandType":"forceoff"},{"commandEndTime":218.59999999999999,"commandPhase":8,"commandStartTime":217.59999999999999,"commandType":"forceoff"},{"commandEndTime":21.295176047312943,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411668
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424807,"msOfMinute":48000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":12.571591581305197,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.19189480040222,"heading_Degree":272.55010466092142,"inBoundLaneID":3,"latitude_DecimalDegree":32.236094994501379,"longitude_DecimalDegree":-110.95482113988443,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":13.422325956796731,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411668
+{"currentPhases": [{"Phase": 1, "State": "green", "ElapsedTime": 68}, {"Phase": 5, "State": "green", "ElapsedTime": 68}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [0]}
+
+Current Dat File at time : 1603411668
+data;
+param SP1:=1;
+param SP2:=5;
+param init1:=0;
+param init2:=0;
+param Grn1 :=6.8;
+param Grn2 :=6.8;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	8.57159	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	16.5716	.	.	
+;
+end;
+
+Current Results File at time : 1603411668
+   1    5 
+  0.00   0.00  6.80   6.80 
+  6.20  15.37   0.00  15.00   6.20  15.37   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+ 23.20  42.12   0.00  50.00   8.57  56.75   0.00  50.00   
+ 30.00  56.75   0.00  15.00  30.00  56.75   0.00  15.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+  1.20  10.37   0.00  10.00   1.20  10.37   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+ 18.20  37.12   0.00  45.00   3.57  51.75   0.00  45.00   
+ 25.00  51.75   0.00  10.00  25.00  51.75   0.00  10.00   
+  0.00   0.00   0.00   0.00   0.00   0.00   0.00   0.00   
+   1 
+ 6   8.57  16.57   0.00 2 
+  0.00 
+ 1093.37 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411668
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":1.2,"commandPhase":1,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":16.57,"commandPhase":2,"commandStartTime":6.2000000000000002,"commandType":"hold"},{"commandEndTime":31.57,"commandPhase":4,"commandStartTime":21.57,"commandType":"hold"},{"commandEndTime":44.57,"commandPhase":1,"commandStartTime":36.57,"commandType":"hold"},{"commandEndTime":59.57,"commandPhase":2,"commandStartTime":49.57,"commandType":"hold"},{"commandEndTime":74.569999999999993,"commandPhase":4,"commandStartTime":64.569999999999993,"commandType":"hold"},{"commandEndTime":19.199999999999999,"commandPhase":1,"commandStartTime":18.199999999999999,"commandType":"forceoff"},{"commandEndTime":61.319999999999993,"commandPhase":2,"commandStartTime":60.319999999999993,"commandType":"forceoff"},{"commandEndTime":111.31999999999999,"commandPhase":4,"commandStartTime":110.31999999999999,"commandType":"forceoff"},{"commandEndTime":141.31999999999999,"commandPhase":1,"commandStartTime":140.31999999999999,"commandType":"forceoff"},{"commandEndTime":198.06999999999999,"commandPhase":2,"commandStartTime":197.06999999999999,"commandType":"forceoff"},{"commandEndTime":213.06999999999999,"commandPhase":4,"commandStartTime":212.06999999999999,"commandType":"forceoff"},{"commandEndTime":1.2,"commandPhase":5,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":16.57,"commandPhase":6,"commandStartTime":6.2000000000000002,"commandType":"hold"},{"commandEndTime":31.57,"commandPhase":8,"commandStartTime":21.57,"commandType":"hold"},{"commandEndTime":44.57,"commandPhase":5,"commandStartTime":36.57,"commandType":"hold"},{"commandEndTime":59.57,"commandPhase":6,"commandStartTime":49.57,"commandType":"hold"},{"commandEndTime":74.569999999999993,"commandPhase":8,"commandStartTime":64.569999999999993,"commandType":"hold"},{"commandEndTime":4.5700000000000003,"commandPhase":5,"commandStartTime":3.5699999999999998,"commandType":"forceoff"},{"commandEndTime":61.32,"commandPhase":6,"commandStartTime":60.32,"commandType":"forceoff"},{"commandEndTime":111.31999999999999,"commandPhase":8,"commandStartTime":110.31999999999999,"commandType":"forceoff"},{"commandEndTime":141.31999999999999,"commandPhase":5,"commandStartTime":140.31999999999999,"commandType":"forceoff"},{"commandEndTime":198.06999999999999,"commandPhase":6,"commandStartTime":197.06999999999999,"commandType":"forceoff"},{"commandEndTime":213.06999999999999,"commandPhase":8,"commandStartTime":212.06999999999999,"commandType":"forceoff"},{"commandEndTime":16.571591581305199,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411673
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424807,"msOfMinute":53000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":11.886369705998137,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.20126542169601,"heading_Degree":276.12662251744757,"inBoundLaneID":2,"latitude_DecimalDegree":32.236147438406554,"longitude_DecimalDegree":-110.95542485720244,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":9.4082552340238923,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411673
+{"currentPhases": [{"Phase": 1, "State": "green", "ElapsedTime": 119}, {"Phase": 5, "State": "yellow", "ElapsedTime": 14}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
+
+Current Dat File at time : 1603411673
+data;
+param SP1:=1;
+param SP2:=6;
+param init1:=0;
+param init2:=3.6;
+param Grn1 :=8;
+param Grn2 :=0;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	7.88637	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	15.8864	.	.	
+;
+end;
+
+Current Results File at time : 1603411673
+   1    6 
+  0.00   3.60  8.00   0.00 
+  5.00  15.89   0.00  15.00   0.00  17.29   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+ 22.00  56.75   0.00  50.00   0.00  75.15   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  10.89   0.00  10.00   0.00  12.29   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+ 17.00  51.75   0.00  45.00   0.00  70.15   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6   7.89  15.89   0.00 2 
+  0.00 
+ 1446.98 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411673
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":0.0,"commandPhase":1,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":15.890000000000001,"commandPhase":2,"commandStartTime":5.0,"commandType":"hold"},{"commandEndTime":30.890000000000001,"commandPhase":4,"commandStartTime":20.890000000000001,"commandType":"hold"},{"commandEndTime":43.890000000000001,"commandPhase":1,"commandStartTime":35.890000000000001,"commandType":"hold"},{"commandEndTime":58.890000000000001,"commandPhase":2,"commandStartTime":48.890000000000001,"commandType":"hold"},{"commandEndTime":73.890000000000001,"commandPhase":4,"commandStartTime":63.890000000000001,"commandType":"hold"},{"commandEndTime":18.0,"commandPhase":1,"commandStartTime":17.0,"commandType":"forceoff"},{"commandEndTime":74.75,"commandPhase":2,"commandStartTime":73.75,"commandType":"forceoff"},{"commandEndTime":124.75,"commandPhase":4,"commandStartTime":123.75,"commandType":"forceoff"},{"commandEndTime":154.75,"commandPhase":1,"commandStartTime":153.75,"commandType":"forceoff"},{"commandEndTime":211.5,"commandPhase":2,"commandStartTime":210.5,"commandType":"forceoff"},{"commandEndTime":261.5,"commandPhase":4,"commandStartTime":260.5,"commandType":"forceoff"},{"commandEndTime":15.889999999999999,"commandPhase":6,"commandStartTime":3.6000000000000001,"commandType":"hold"},{"commandEndTime":30.890000000000001,"commandPhase":8,"commandStartTime":20.890000000000001,"commandType":"hold"},{"commandEndTime":43.890000000000001,"commandPhase":5,"commandStartTime":35.890000000000001,"commandType":"hold"},{"commandEndTime":58.890000000000001,"commandPhase":6,"commandStartTime":48.890000000000001,"commandType":"hold"},{"commandEndTime":73.890000000000001,"commandPhase":8,"commandStartTime":63.890000000000001,"commandType":"hold"},{"commandEndTime":86.889999999999986,"commandPhase":5,"commandStartTime":78.889999999999986,"commandType":"hold"},{"commandEndTime":74.75,"commandPhase":6,"commandStartTime":73.75,"commandType":"forceoff"},{"commandEndTime":124.75,"commandPhase":8,"commandStartTime":123.75,"commandType":"forceoff"},{"commandEndTime":154.75,"commandPhase":5,"commandStartTime":153.75,"commandType":"forceoff"},{"commandEndTime":211.5,"commandPhase":6,"commandStartTime":210.5,"commandType":"forceoff"},{"commandEndTime":261.5,"commandPhase":8,"commandStartTime":260.5,"commandType":"forceoff"},{"commandEndTime":274.5,"commandPhase":5,"commandStartTime":273.5,"commandType":"forceoff"},{"commandEndTime":15.886369705998137,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411678
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424807,"msOfMinute":58000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":13.917730234787619,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.20727983769029,"heading_Degree":269.35046713852273,"inBoundLaneID":2,"latitude_DecimalDegree":32.236153365012875,"longitude_DecimalDegree":-110.95579618931077,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":5.5195781714454419,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411678
+{"currentPhases": [{"Phase": 1, "State": "green", "ElapsedTime": 171}, {"Phase": 6, "State": "green", "ElapsedTime": 11}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [0]}
+
+Current Dat File at time : 1603411678
+data;
+param SP1:=1;
+param SP2:=6;
+param init1:=0;
+param init2:=0;
+param Grn1 :=8;
+param Grn2 :=1.1;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	9.91773	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	17.9177	.	.	
+;
+end;
+
+Current Results File at time : 1603411678
+   1    6 
+  0.00   0.00  8.00   1.10 
+  5.00  17.92   0.00  15.00   0.00  22.92   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+ 22.00  56.75   0.00  50.00   0.00  78.75   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  12.92   0.00  10.00   0.00  17.92   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+ 17.00  51.75   0.00  45.00   0.00  73.75   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6   9.92  17.92   0.00 2 
+  0.00 
+ 1420.57 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411678
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":0.0,"commandPhase":1,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":17.920000000000002,"commandPhase":2,"commandStartTime":5.0,"commandType":"hold"},{"commandEndTime":32.920000000000002,"commandPhase":4,"commandStartTime":22.920000000000002,"commandType":"hold"},{"commandEndTime":45.920000000000002,"commandPhase":1,"commandStartTime":37.920000000000002,"commandType":"hold"},{"commandEndTime":60.920000000000002,"commandPhase":2,"commandStartTime":50.920000000000002,"commandType":"hold"},{"commandEndTime":75.920000000000002,"commandPhase":4,"commandStartTime":65.920000000000002,"commandType":"hold"},{"commandEndTime":18.0,"commandPhase":1,"commandStartTime":17.0,"commandType":"forceoff"},{"commandEndTime":74.75,"commandPhase":2,"commandStartTime":73.75,"commandType":"forceoff"},{"commandEndTime":124.75,"commandPhase":4,"commandStartTime":123.75,"commandType":"forceoff"},{"commandEndTime":154.75,"commandPhase":1,"commandStartTime":153.75,"commandType":"forceoff"},{"commandEndTime":211.5,"commandPhase":2,"commandStartTime":210.5,"commandType":"forceoff"},{"commandEndTime":261.5,"commandPhase":4,"commandStartTime":260.5,"commandType":"forceoff"},{"commandEndTime":17.920000000000002,"commandPhase":6,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":32.920000000000002,"commandPhase":8,"commandStartTime":22.920000000000002,"commandType":"hold"},{"commandEndTime":45.920000000000002,"commandPhase":5,"commandStartTime":37.920000000000002,"commandType":"hold"},{"commandEndTime":60.920000000000002,"commandPhase":6,"commandStartTime":50.920000000000002,"commandType":"hold"},{"commandEndTime":75.920000000000002,"commandPhase":8,"commandStartTime":65.920000000000002,"commandType":"hold"},{"commandEndTime":88.920000000000002,"commandPhase":5,"commandStartTime":80.920000000000002,"commandType":"hold"},{"commandEndTime":74.75,"commandPhase":6,"commandStartTime":73.75,"commandType":"forceoff"},{"commandEndTime":124.75,"commandPhase":8,"commandStartTime":123.75,"commandType":"forceoff"},{"commandEndTime":154.75,"commandPhase":5,"commandStartTime":153.75,"commandType":"forceoff"},{"commandEndTime":211.5,"commandPhase":6,"commandStartTime":210.5,"commandType":"forceoff"},{"commandEndTime":261.5,"commandPhase":8,"commandStartTime":260.5,"commandType":"forceoff"},{"commandEndTime":274.5,"commandPhase":5,"commandStartTime":273.5,"commandType":"forceoff"},{"commandEndTime":17.917730234787619,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411680
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424808,"msOfMinute":0,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":22.240813648293965,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.20886258594692,"heading_Degree":269.26715321978565,"inBoundLaneID":2,"latitude_DecimalDegree":32.236152322760127,"longitude_DecimalDegree":-110.95589200410285,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":3.9948230153067676,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411680
+{"currentPhases": [{"Phase": 1, "State": "green", "ElapsedTime": 191}, {"Phase": 6, "State": "green", "ElapsedTime": 31}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [0]}
+
+Current Dat File at time : 1603411680
+data;
+param SP1:=1;
+param SP2:=6;
+param init1:=0;
+param init2:=0;
+param Grn1 :=8;
+param Grn2 :=3.1;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	18.2408	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	26.2408	.	.	
+;
+end;
+
+Current Results File at time : 1603411680
+   1    6 
+  0.00   0.00  8.00   3.10 
+  5.00  26.24   0.00  15.00   0.00  31.24   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+ 22.00  56.65   0.00  50.00   0.00  78.65   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+  0.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  21.24   0.00  10.00   0.00  26.24   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+ 17.00  51.65   0.00  45.00   0.00  73.65   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  0.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6  18.24  26.24   0.00 2 
+ -0.00 
+ 1311.07 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411680
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":0.0,"commandPhase":1,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":26.239999999999998,"commandPhase":2,"commandStartTime":5.0,"commandType":"hold"},{"commandEndTime":41.239999999999995,"commandPhase":4,"commandStartTime":31.239999999999998,"commandType":"hold"},{"commandEndTime":54.239999999999995,"commandPhase":1,"commandStartTime":46.239999999999995,"commandType":"hold"},{"commandEndTime":69.239999999999995,"commandPhase":2,"commandStartTime":59.239999999999995,"commandType":"hold"},{"commandEndTime":84.239999999999995,"commandPhase":4,"commandStartTime":74.239999999999995,"commandType":"hold"},{"commandEndTime":18.0,"commandPhase":1,"commandStartTime":17.0,"commandType":"forceoff"},{"commandEndTime":74.650000000000006,"commandPhase":2,"commandStartTime":73.650000000000006,"commandType":"forceoff"},{"commandEndTime":124.65000000000001,"commandPhase":4,"commandStartTime":123.65000000000001,"commandType":"forceoff"},{"commandEndTime":154.65000000000001,"commandPhase":1,"commandStartTime":153.65000000000001,"commandType":"forceoff"},{"commandEndTime":211.40000000000001,"commandPhase":2,"commandStartTime":210.40000000000001,"commandType":"forceoff"},{"commandEndTime":261.39999999999998,"commandPhase":4,"commandStartTime":260.39999999999998,"commandType":"forceoff"},{"commandEndTime":26.239999999999998,"commandPhase":6,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":41.239999999999995,"commandPhase":8,"commandStartTime":31.239999999999998,"commandType":"hold"},{"commandEndTime":54.239999999999995,"commandPhase":5,"commandStartTime":46.239999999999995,"commandType":"hold"},{"commandEndTime":69.239999999999995,"commandPhase":6,"commandStartTime":59.239999999999995,"commandType":"hold"},{"commandEndTime":84.239999999999995,"commandPhase":8,"commandStartTime":74.239999999999995,"commandType":"hold"},{"commandEndTime":97.239999999999995,"commandPhase":5,"commandStartTime":89.239999999999995,"commandType":"hold"},{"commandEndTime":74.650000000000006,"commandPhase":6,"commandStartTime":73.650000000000006,"commandType":"forceoff"},{"commandEndTime":124.65000000000001,"commandPhase":8,"commandStartTime":123.65000000000001,"commandType":"forceoff"},{"commandEndTime":154.65000000000001,"commandPhase":5,"commandStartTime":153.65000000000001,"commandType":"forceoff"},{"commandEndTime":211.40000000000001,"commandPhase":6,"commandStartTime":210.40000000000001,"commandType":"forceoff"},{"commandEndTime":261.39999999999998,"commandPhase":8,"commandStartTime":260.39999999999998,"commandType":"forceoff"},{"commandEndTime":274.39999999999998,"commandPhase":5,"commandStartTime":273.39999999999998,"commandType":"forceoff"},{"commandEndTime":26.240813648293965,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411688
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424808,"msOfMinute":8000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":18.277559055118111,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.21100037638098,"heading_Degree":269.24522572426076,"inBoundLaneID":2,"latitude_DecimalDegree":32.236150880128953,"longitude_DecimalDegree":-110.95602020997448,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":1.4553525696310388,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411688
+{"currentPhases": [{"Phase": 1, "State": "yellow", "ElapsedTime": 28}, {"Phase": 6, "State": "green", "ElapsedTime": 108}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [2]}
+
+Current Dat File at time : 1603411688
+data;
+param SP1:=2;
+param SP2:=6;
+param init1:=2.2;
+param init2:=0;
+param Grn1 :=0;
+param Grn2 :=10;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	14.2776	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	22.2776	.	.	
+;
+end;
+
+Current Results File at time : 1603411688
+   2    6 
+  2.20   0.00  0.00  10.00 
+  0.00  25.08   0.00  15.00   0.00  27.28   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  44.55   0.00  50.00   0.00  46.75   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  20.08   0.00  10.00   0.00  22.28   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+  0.00  39.55   0.00  45.00   0.00  41.75   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6  14.28  22.28   0.00 2 
+ -0.00 
+ 1079.11 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411688
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":22.279999999999998,"commandPhase":2,"commandStartTime":2.2000000000000002,"commandType":"hold"},{"commandEndTime":37.280000000000001,"commandPhase":4,"commandStartTime":27.279999999999998,"commandType":"hold"},{"commandEndTime":50.280000000000001,"commandPhase":1,"commandStartTime":42.280000000000001,"commandType":"hold"},{"commandEndTime":65.280000000000001,"commandPhase":2,"commandStartTime":55.280000000000001,"commandType":"hold"},{"commandEndTime":80.280000000000001,"commandPhase":4,"commandStartTime":70.280000000000001,"commandType":"hold"},{"commandEndTime":93.280000000000001,"commandPhase":1,"commandStartTime":85.280000000000001,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":2,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":4,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":1,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":2,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":4,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":1,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":22.280000000000001,"commandPhase":6,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":37.280000000000001,"commandPhase":8,"commandStartTime":27.280000000000001,"commandType":"hold"},{"commandEndTime":50.280000000000001,"commandPhase":5,"commandStartTime":42.280000000000001,"commandType":"hold"},{"commandEndTime":65.280000000000001,"commandPhase":6,"commandStartTime":55.280000000000001,"commandType":"hold"},{"commandEndTime":80.280000000000001,"commandPhase":8,"commandStartTime":70.280000000000001,"commandType":"hold"},{"commandEndTime":93.280000000000001,"commandPhase":5,"commandStartTime":85.280000000000001,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":6,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":8,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":5,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":6,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":8,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":5,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":22.277559055118111,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411690
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424808,"msOfMinute":10000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":9.9062961214681096,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.21245240233839,"heading_Degree":269.24265217328599,"inBoundLaneID":2,"latitude_DecimalDegree":32.236149902366826,"longitude_DecimalDegree":-110.95610651705334,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":4.8030060293562737,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411690
+{"currentPhases": [{"Phase": 1, "State": "permissive_yellow", "ElapsedTime": 20}, {"Phase": 6, "State": "green", "ElapsedTime": 135}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [2]}
+
+Current Dat File at time : 1603411690
+data;
+param SP1:=2;
+param SP2:=6;
+param init1:=0;
+param init2:=0;
+param Grn1 :=10;
+param Grn2 :=10;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	5.9063	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	13.9063	.	.	
+;
+end;
+
+Current Results File at time : 1603411690
+   2    6 
+  0.00   0.00 10.00  10.00 
+  0.00  18.91   0.00  15.00   0.00  18.91   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  46.75   0.00  50.00   0.00  46.75   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  13.91   0.00  10.00   0.00  13.91   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+  0.00  41.75   0.00  45.00   0.00  41.75   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6   5.91  13.91   0.00 2 
+  0.00 
+ 1196.31 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411690
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":13.91,"commandPhase":2,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":28.91,"commandPhase":4,"commandStartTime":18.91,"commandType":"hold"},{"commandEndTime":41.909999999999997,"commandPhase":1,"commandStartTime":33.909999999999997,"commandType":"hold"},{"commandEndTime":56.909999999999997,"commandPhase":2,"commandStartTime":46.909999999999997,"commandType":"hold"},{"commandEndTime":71.909999999999997,"commandPhase":4,"commandStartTime":61.909999999999997,"commandType":"hold"},{"commandEndTime":84.909999999999997,"commandPhase":1,"commandStartTime":76.909999999999997,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":2,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":4,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":1,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":2,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":4,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":1,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":13.91,"commandPhase":6,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":28.91,"commandPhase":8,"commandStartTime":18.91,"commandType":"hold"},{"commandEndTime":41.909999999999997,"commandPhase":5,"commandStartTime":33.909999999999997,"commandType":"hold"},{"commandEndTime":56.909999999999997,"commandPhase":6,"commandStartTime":46.909999999999997,"commandType":"hold"},{"commandEndTime":71.909999999999997,"commandPhase":8,"commandStartTime":61.909999999999997,"commandType":"hold"},{"commandEndTime":84.909999999999997,"commandPhase":5,"commandStartTime":76.909999999999997,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":6,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":8,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":5,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":6,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":8,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":5,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":13.90629612146811,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Priority Request is received from PRS at time 1603411694
+{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":26679,"minuteOfYear":424808,"msOfMinute":13000,"noOfRequest":1,"regionalID":0,"requestorInfo":[{"ETA":2.9346422322402033,"ETA_Duration":4.0,"basicVehicleRole":16,"elevation_Meter":540.21643663290888,"heading_Degree":277.26855535915024,"inBoundLaneID":1,"latitude_DecimalDegree":32.236173482495602,"longitude_DecimalDegree":-110.95634004176024,"priorityRequestStatus":4,"requestedSignalGroup":6,"speed_MeterPerSecond":8.9176117321881314,"vehicleID":158,"vehicleType":6}]}}
+
+
+Following Signal Status is received from TCI at time 1603411694
+{"currentPhases": [{"Phase": 2, "State": "green", "ElapsedTime": 32}, {"Phase": 6, "State": "green", "ElapsedTime": 168}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [0]}
+
+Current Dat File at time : 1603411694
+data;
+param SP1:=2;
+param SP2:=6;
+param init1:=0;
+param init2:=0;
+param Grn1 :=3.2;
+param Grn2 :=10;
+param y          	:=	1	3	2	3	3	0	4	3	5	3	6	3	7	0	8	3;
+param red          	:=	1	2	2	2	3	0	4	2	5	2	6	2	7	0	8	2;
+param gmin      	:=	1	8	2	10	3	0	4	10	5	8	6	10	7	0	8	10;
+param gmax      	:=	1	25	2	51.75	3	0	4	45	5	25	6	51.75	7	0	8	45;
+param priorityType:= 1 2 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
+param PrioWeigth:=  1 0 2 1 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; 
+param Rl (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	1	.	.	
+;
+param Ru (tr): 1 2 3 4 5 6 7 8:=
+1  .	.	.	.	.	6.93464	.	.	
+;
+end;
+
+Current Results File at time : 1603411694
+   2    6 
+  0.00   0.00  3.20  10.00 
+  0.00  11.93   0.00  15.00   0.00  11.93   0.00  15.00   
+ 13.00  15.00   0.00  15.00  13.00  15.00   0.00  15.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00  46.75   0.00  50.00   0.00  46.75   0.00  50.00   
+ 30.00  56.75   0.00  50.00  30.00  56.75   0.00  50.00   
+ 13.00   0.00   0.00   0.00  13.00   0.00   0.00   0.00   
+  0.00   6.93   0.00  10.00   0.00   6.93   0.00  10.00   
+  8.00  10.00   0.00  10.00   8.00  10.00   0.00  10.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+  0.00  41.75   0.00  45.00   0.00  41.75   0.00  45.00   
+ 25.00  51.75   0.00  45.00  25.00  51.75   0.00  45.00   
+  8.00   0.00   0.00   0.00   8.00   0.00   0.00   0.00   
+   1 
+ 6   1.00   6.93   0.00 2 
+  0.00 
+ 1293.92 
+  
+ 
+
+Following Schedule will send to TCI at time 1603411694
+{"MsgType":"Schedule","Schedule":[{"commandEndTime":6.9299999999999997,"commandPhase":2,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":21.93,"commandPhase":4,"commandStartTime":11.93,"commandType":"hold"},{"commandEndTime":34.93,"commandPhase":1,"commandStartTime":26.93,"commandType":"hold"},{"commandEndTime":49.93,"commandPhase":2,"commandStartTime":39.93,"commandType":"hold"},{"commandEndTime":64.930000000000007,"commandPhase":4,"commandStartTime":54.93,"commandType":"hold"},{"commandEndTime":77.930000000000007,"commandPhase":1,"commandStartTime":69.930000000000007,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":2,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":4,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":1,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":2,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":4,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":1,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":6.9299999999999997,"commandPhase":6,"commandStartTime":0.0,"commandType":"hold"},{"commandEndTime":21.93,"commandPhase":8,"commandStartTime":11.93,"commandType":"hold"},{"commandEndTime":34.93,"commandPhase":5,"commandStartTime":26.93,"commandType":"hold"},{"commandEndTime":49.93,"commandPhase":6,"commandStartTime":39.93,"commandType":"hold"},{"commandEndTime":64.930000000000007,"commandPhase":8,"commandStartTime":54.93,"commandType":"hold"},{"commandEndTime":77.930000000000007,"commandPhase":5,"commandStartTime":69.930000000000007,"commandType":"hold"},{"commandEndTime":42.75,"commandPhase":6,"commandStartTime":41.75,"commandType":"forceoff"},{"commandEndTime":92.75,"commandPhase":8,"commandStartTime":91.75,"commandType":"forceoff"},{"commandEndTime":122.75,"commandPhase":5,"commandStartTime":121.75,"commandType":"forceoff"},{"commandEndTime":179.5,"commandPhase":6,"commandStartTime":178.5,"commandType":"forceoff"},{"commandEndTime":229.5,"commandPhase":8,"commandStartTime":228.5,"commandType":"forceoff"},{"commandEndTime":242.5,"commandPhase":5,"commandStartTime":241.5,"commandType":"forceoff"},{"commandEndTime":10.0,"commandPhase":6,"commandStartTime":0.0,"commandType":"call_veh"}]}
+
+
+Following Clear Request is sent to TCI at time 1603411696
+{"MsgType":"Schedule","Schedule":"Clear"}
+
