@@ -27,121 +27,142 @@ This is an html file that contains the presentation for:
 {% block content %}
 <div class="container">
     <div class="page-header">
-        <h1>Local Configuration</h1>
-        <h1> </h1>
-    </div>
-    <div class="page-header">
         <h2> {{ pageTitle }}</h2>
     </div>
 
     <form method="post">
-        {{ renderfield(form.hostIp)}}
-        {{ renderfield(form.sourceDsrcDeviceIp)}}
-        {{ renderfield(form.intersectionName)}}
-        {{ renderfield(form.intersectionID)}}
-        {{ renderfield(form.regionalID)}}
-        {{ renderfield(form.dataCollectorIP)}}
-        {{ renderfield(form.hmiControllerIP)}}
-        {{ renderfield(form.messageDistributorIP)}}
+
+      <div role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#intersection" aria-controls="intersection" role="tab" data-toggle="tab">Intersection</a></li>
+          <li role="presentation"><a href="#network" aria-controls="network_configuration" role="tab" data-toggle="tab">Network</a></li>
+          <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages and PSID</a></li>
+          <li role="presentation"><a href="#controller" aria-controls="controller" role="tab" data-toggle="tab">Controller</a></li>
+          <li role="presentation"><a href="#simulation" aria-controls="simulation" role="tab" data-toggle="tab">Simulation</a></li>
+      
+        </ul>
+      
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane fade in active" id="intersection">
+            {{ renderfield(form.intersectionName)}}
+            {{ renderfield(form.intersectionID)}}
+            {{ renderfield(form.regionalID)}}
+           </div>
+  
+          <div role="tabpanel" class="tab-pane fade" id="network_configuration">
+            {{ renderfield(form.hostIp)}}
+            {{ renderfield(form.sourceDsrcDeviceIp)}}
+            {{ renderfield(form.dataCollectorIP)}}
+            {{ renderfield(form.hmiControllerIP)}}
+            {{ renderfield(form.messageDistributorIP)}}
+          </div>
         
-        {{ renderfield(form.priorityRequestGeneratorServerIP)}}
-        {{ renderfield(form.vehicleType)}}
-        {{ renderfield(form.logging)}}
-        {{ renderfield(form.srmTimedOutTime)}}
-        {{ renderfield(form.scheduleExecutionBuffer)}}
-        {{ renderfield(form.systemPerformanceTimeInterval)}}
-        {{ renderfield(form.applicationPlatform)}}
-        {{ renderfield(form.peerDataDecoding)}}
+      
+          <div role="tabpanel" class="tab-pane fade" id="messages">
+      
+            {{ renderfield(form.priorityRequestGeneratorServerIP)}}
+            {{ renderfield(form.vehicleType)}}
+            {{ renderfield(form.logging)}}
+            {{ renderfield(form.srmTimedOutTime)}}
+            {{ renderfield(form.scheduleExecutionBuffer)}}
+            {{ renderfield(form.systemPerformanceTimeInterval)}}
+            {{ renderfield(form.applicationPlatform)}}
+            {{ renderfield(form.peerDataDecoding)}}
 
-        {{ renderfield(form.portNumberMTMessageSender)}}
-        {{ renderfield(form.portNumberMTMessageReceiver)}}
-        {{ renderfield(form.portNumberMTMessageEncoder)}}
-        {{ renderfield(form.portNumberMTMessageDecoder)}}
+            {{ renderfield(form.portNumberMTMessageSender)}}
+            {{ renderfield(form.portNumberMTMessageReceiver)}}
+            {{ renderfield(form.portNumberMTMessageEncoder)}}
+            {{ renderfield(form.portNumberMTMessageDecoder)}}
 
-        {{ renderfield(form.portNumberMessageDistributor)}}
-        {{ renderfield(form.portNumberRSMDecoder)}}
-        {{ renderfield(form.portNumberOBUBSMReceiver)}}
-        {{ renderfield(form.portNumberHostBsmDecoder)}}
-        {{ renderfield(form.portNumberTrajectoryAware)}}
+            {{ renderfield(form.portNumberMessageDistributor)}}
+            {{ renderfield(form.portNumberRSMDecoder)}}
+            {{ renderfield(form.portNumberOBUBSMReceiver)}}
+            {{ renderfield(form.portNumberHostBsmDecoder)}}
+            {{ renderfield(form.portNumberTrajectoryAware)}}
 
-        {{ renderfield(form.portNumberPriorityRequestServer)}}
-        {{ renderfield(form.portNumberPrioritySolver)}}
-        {{ renderfield(form.portNumberPriorityRequestGenerator)}}
+            {{ renderfield(form.portNumberPriorityRequestServer)}}
+            {{ renderfield(form.portNumberPrioritySolver)}}
+            {{ renderfield(form.portNumberPriorityRequestGenerator)}}
 
-        {{ renderfield(form.portNumberTrafficControllerInterface)}}
-        {{ renderfield(form.portNumberTrafficControllerCurrPhaseListener)}}
-        {{ renderfield(form.portNumberTrafficControllerTimingPlanSender)}}
+            {{ renderfield(form.portNumberTrafficControllerInterface)}}
+            {{ renderfield(form.portNumberTrafficControllerCurrPhaseListener)}}
+            {{ renderfield(form.portNumberTrafficControllerTimingPlanSender)}}
 
-        {{ renderfield(form.portNumberPerformanceObserver)}}
-        {{ renderfield(form.portNumberHMIController)}}
-        {{ renderfield(form.portNumberPrioritySolverToTCIInterface)}}
-        {{ renderfield(form.portNumberSignalCoordination)}}
-        {{ renderfield(form.portNumberMapSPaTBroadcaster)}}
-        {{ renderfield(form.portNumberDsrcImmediateForwarder)}}
-        {{ renderfield(form.portNumberPriorityRequestServer_SendSSM)}}
-        {{ renderfield(form.portNumberDataCollector)}}
-        {{ renderfield(form.portNumberSnmpEngine)}}
-        {{ renderfield(form.portNumberSnmpEngineInterface)}}
-        {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
-        {{ renderfield(form.portNumberTrajectoryAware_MapEngineInterface)}}
-        {{ renderfield(form.portNumberMapEngine)}}
-        {{ renderfield(form.portNumberLightSirenStatusManager)}}
-        {{ renderfield(form.portNumberPeerToPeerPriority)}}
-        {{ renderfield(form.psidMap)}}
-        {{ renderfield(form.psidSPaT)}}
-        {{ renderfield(form.psidRSM)}}
-        {{ renderfield(form.psidSRM)}}
-        {{ renderfield(form.psidSSM)}}
-        {{ renderfield(form.psidBSM)}}
-        {{ renderfield(form.msgIdMap)}}
-        {{ renderfield(form.msgIdSPaT)}}
-        {{ renderfield(form.msgIdRSM)}}
-        {{ renderfield(form.msgIdSRMLower)}}
-        {{ renderfield(form.msgIdSRMUpper)}}
-        {{ renderfield(form.msgIdSSMLower)}}
-        {{ renderfield(form.msgIdSSMUpper)}}
+            {{ renderfield(form.portNumberPerformanceObserver)}}
+            {{ renderfield(form.portNumberHMIController)}}
+            {{ renderfield(form.portNumberPrioritySolverToTCIInterface)}}
+            {{ renderfield(form.portNumberSignalCoordination)}}
+            {{ renderfield(form.portNumberMapSPaTBroadcaster)}}
+            {{ renderfield(form.portNumberDsrcImmediateForwarder)}}
+            {{ renderfield(form.portNumberPriorityRequestServer_SendSSM)}}
+            {{ renderfield(form.portNumberDataCollector)}}
+            {{ renderfield(form.portNumberSnmpEngine)}}
+            {{ renderfield(form.portNumberSnmpEngineInterface)}}
+            {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
+            {{ renderfield(form.portNumberTrajectoryAware_MapEngineInterface)}}
+            {{ renderfield(form.portNumberMapEngine)}}
+            {{ renderfield(form.portNumberLightSirenStatusManager)}}
+            {{ renderfield(form.portNumberPeerToPeerPriority)}}
+            {{ renderfield(form.psidMap)}}
+            {{ renderfield(form.psidSPaT)}}
+            {{ renderfield(form.psidRSM)}}
+            {{ renderfield(form.psidSRM)}}
+            {{ renderfield(form.psidSSM)}}
+            {{ renderfield(form.psidBSM)}}
+            {{ renderfield(form.msgIdMap)}}
+            {{ renderfield(form.msgIdSPaT)}}
+            {{ renderfield(form.msgIdRSM)}}
+            {{ renderfield(form.msgIdSRMLower)}}
+            {{ renderfield(form.msgIdSRMUpper)}}
+            {{ renderfield(form.msgIdSSMLower)}}
+            {{ renderfield(form.msgIdSSMUpper)}}
 
-        {{ renderfield(form.txChannelMap)}}
-        {{ renderfield(form.txChannelSPaT)}}
-        {{ renderfield(form.txChannelRSM)}}
-        {{ renderfield(form.txChannelSRM)}}
-        {{ renderfield(form.txChannelSSM)}}
-        {{ renderfield(form.txChannelBSM)}}
+            {{ renderfield(form.txChannelMap)}}
+            {{ renderfield(form.txChannelSPaT)}}
+            {{ renderfield(form.txChannelRSM)}}
+            {{ renderfield(form.txChannelSRM)}}
+            {{ renderfield(form.txChannelSSM)}}
+            {{ renderfield(form.txChannelBSM)}}
 
-        {{ renderfield(form.txModeMap)}}
-        {{ renderfield(form.txModeSPaT)}}
-        {{ renderfield(form.txModeRSM)}}
-        {{ renderfield(form.txModeSRM)}}
-        {{ renderfield(form.txModeSSM)}}
-        {{ renderfield(form.txModeBSM)}}
+            {{ renderfield(form.txModeMap)}}
+            {{ renderfield(form.txModeSPaT)}}
+            {{ renderfield(form.txModeRSM)}}
+            {{ renderfield(form.txModeSRM)}}
+            {{ renderfield(form.txModeSSM)}}
+            {{ renderfield(form.txModeBSM)}}
 
-        {{ renderfield(form.signalControllerIP)}}
-        {{ renderfield(form.signalControllerNTCIPPort)}}
-        {{ renderfield(form.signalControllerUpdateInterval)}}
-        {{ renderfield(form.signalControllerNtcipBackupTime_sec)}}
-        {{ renderfield(form.signalControllerVendor)}}
-        {{ renderfield(form.signalControllerTimingPlanMib)}}
-        {{ renderfield(form.signalControllerInactiveVehPhases)}}
-        {{ renderfield(form.signalControllerInactivePedPhases)}}
-        {{ renderfield(form.signalControllerSplitPhases1)}}
-        {{ renderfield(form.signalControllerSplitPhases3)}}
-        {{ renderfield(form.signalControllerSplitPhases5)}}
-        {{ renderfield(form.signalControllerSplitPhases7)}}
-        {{ renderfield(form.signalControllerPermissiveEnabled1)}}
-        {{ renderfield(form.signalControllerPermissiveEnabled3)}}
-        {{ renderfield(form.signalControllerPermissiveEnabled5)}}
-        {{ renderfield(form.signalControllerPermissiveEnabled7)}}
-        
-        {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
-        {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
-        {{ renderfield(form.intersectionReferencePointElevationMeter)}}
-        {{ renderfield(form.dataTransferFtpServerPort)}}
-        {{ renderfield(form.dataTransferStartTimeHour)}}
-        {{ renderfield(form.dataTransferStartTimeMinute)}}
-        {{ renderfield(form.dataTransferEndTimeHour)}}
-        {{ renderfield(form.dataTransferEndTimeMinute)}}
-        {{ renderfield(form.dataTransferMaxRetries)}}
-        
+            {{ renderfield(form.signalControllerIP)}}
+            {{ renderfield(form.signalControllerNTCIPPort)}}
+            {{ renderfield(form.signalControllerUpdateInterval)}}
+            {{ renderfield(form.signalControllerNtcipBackupTime_sec)}}
+            {{ renderfield(form.signalControllerVendor)}}
+            {{ renderfield(form.signalControllerTimingPlanMib)}}
+            {{ renderfield(form.signalControllerInactiveVehPhases)}}
+            {{ renderfield(form.signalControllerInactivePedPhases)}}
+            {{ renderfield(form.signalControllerSplitPhases1)}}
+            {{ renderfield(form.signalControllerSplitPhases3)}}
+            {{ renderfield(form.signalControllerSplitPhases5)}}
+            {{ renderfield(form.signalControllerSplitPhases7)}}
+            {{ renderfield(form.signalControllerPermissiveEnabled1)}}
+            {{ renderfield(form.signalControllerPermissiveEnabled3)}}
+            {{ renderfield(form.signalControllerPermissiveEnabled5)}}
+            {{ renderfield(form.signalControllerPermissiveEnabled7)}}
+            
+            {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
+            {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
+            {{ renderfield(form.intersectionReferencePointElevationMeter)}}
+            {{ renderfield(form.dataTransferFtpServerPort)}}
+            {{ renderfield(form.dataTransferStartTimeHour)}}
+            {{ renderfield(form.dataTransferStartTimeMinute)}}
+            {{ renderfield(form.dataTransferEndTimeHour)}}
+            {{ renderfield(form.dataTransferEndTimeMinute)}}
+            {{ renderfield(form.dataTransferMaxRetries)}}
+          </div>
+        </div>
+       
         <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -156,6 +177,7 @@ This is an html file that contains the presentation for:
         </div>
         <div>
 	        <input type="submit" value="Save Changes" onclick="window.location='/configuration';" />
+	        <input type="cancel" value="Cancel" onclick="window.location='/configuration';" />
         </div>
   </form>
 
