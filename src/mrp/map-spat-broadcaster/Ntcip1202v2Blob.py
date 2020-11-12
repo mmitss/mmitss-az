@@ -148,6 +148,9 @@ class Ntcip1202v2Blob:
             if self.permissiveEnabled[str(leftTurn)] == True:
                 if ((self.vehCurrState[leftTurn-1] == RED) and (self.vehCurrState[self.splitPhases[str(leftTurn)]-1] == GREEN)):
                     self.vehCurrState[leftTurn-1] = PERMISSIVE
+                
+                elif ((self.vehCurrState[leftTurn-1] == RED) and (self.vehCurrState[self.splitPhases[str(leftTurn)]-1] == YELLOW)):
+                    self.vehCurrState[leftTurn-1] = YELLOW    
    
         # Time since change to current state - check inactive phases first:
         for i in range(0,self.numVehPhases):
