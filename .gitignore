@@ -28,5 +28,5 @@ CMake*
 *.map.payload
 *.log
 *mmitss-system-performance-roadside-log-data.csv
-
+bin/corridors/*.csv
 
