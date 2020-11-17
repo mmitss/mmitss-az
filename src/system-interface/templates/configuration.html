@@ -38,6 +38,7 @@ This is an html file that contains the presentation for:
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a href="#intersection" aria-controls="intersection" role="tab" data-toggle="tab">Intersection</a></li>
           <li role="presentation"><a href="#network" aria-controls="network_configuration" role="tab" data-toggle="tab">Network</a></li>
+          <li role="presentation"><a href="#ports" aria-controls="ports" role="tab" data-toggle="tab">Ports</a></li>
           <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages and PSID</a></li>
           <li role="presentation"><a href="#controller" aria-controls="controller" role="tab" data-toggle="tab">Controller</a></li>
           <li role="presentation"><a href="#simulation" aria-controls="simulation" role="tab" data-toggle="tab">Simulation</a></li>
@@ -52,26 +53,17 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.regionalID)}}
            </div>
   
-          <div role="tabpanel" class="tab-pane fade" id="network_configuration">
+
+          <div role="tabpanel" class="tab-pane fade" id="network">
             {{ renderfield(form.hostIp)}}
             {{ renderfield(form.sourceDsrcDeviceIp)}}
             {{ renderfield(form.dataCollectorIP)}}
             {{ renderfield(form.hmiControllerIP)}}
             {{ renderfield(form.messageDistributorIP)}}
-          </div>
-        
-      
-          <div role="tabpanel" class="tab-pane fade" id="messages">
-      
             {{ renderfield(form.priorityRequestGeneratorServerIP)}}
-            {{ renderfield(form.vehicleType)}}
-            {{ renderfield(form.logging)}}
-            {{ renderfield(form.srmTimedOutTime)}}
-            {{ renderfield(form.scheduleExecutionBuffer)}}
-            {{ renderfield(form.systemPerformanceTimeInterval)}}
-            {{ renderfield(form.applicationPlatform)}}
-            {{ renderfield(form.peerDataDecoding)}}
+          </div>
 
+          <div role="tabpanel" class="tab-pane fade" id="ports">
             {{ renderfield(form.portNumberMTMessageSender)}}
             {{ renderfield(form.portNumberMTMessageReceiver)}}
             {{ renderfield(form.portNumberMTMessageEncoder)}}
@@ -106,12 +98,17 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.portNumberMapEngine)}}
             {{ renderfield(form.portNumberLightSirenStatusManager)}}
             {{ renderfield(form.portNumberPeerToPeerPriority)}}
+          </div>
+      
+          <div role="tabpanel" class="tab-pane fade" id="messages">
+      
             {{ renderfield(form.psidMap)}}
             {{ renderfield(form.psidSPaT)}}
             {{ renderfield(form.psidRSM)}}
             {{ renderfield(form.psidSRM)}}
             {{ renderfield(form.psidSSM)}}
             {{ renderfield(form.psidBSM)}}
+            
             {{ renderfield(form.msgIdMap)}}
             {{ renderfield(form.msgIdSPaT)}}
             {{ renderfield(form.msgIdRSM)}}
@@ -120,20 +117,9 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.msgIdSSMLower)}}
             {{ renderfield(form.msgIdSSMUpper)}}
 
-            {{ renderfield(form.txChannelMap)}}
-            {{ renderfield(form.txChannelSPaT)}}
-            {{ renderfield(form.txChannelRSM)}}
-            {{ renderfield(form.txChannelSRM)}}
-            {{ renderfield(form.txChannelSSM)}}
-            {{ renderfield(form.txChannelBSM)}}
+          </div>
 
-            {{ renderfield(form.txModeMap)}}
-            {{ renderfield(form.txModeSPaT)}}
-            {{ renderfield(form.txModeRSM)}}
-            {{ renderfield(form.txModeSRM)}}
-            {{ renderfield(form.txModeSSM)}}
-            {{ renderfield(form.txModeBSM)}}
-
+          <div role="tabpanel" class="tab-pane fade" id="controller">
             {{ renderfield(form.signalControllerIP)}}
             {{ renderfield(form.signalControllerNTCIPPort)}}
             {{ renderfield(form.signalControllerUpdateInterval)}}
@@ -150,6 +136,31 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.signalControllerPermissiveEnabled3)}}
             {{ renderfield(form.signalControllerPermissiveEnabled5)}}
             {{ renderfield(form.signalControllerPermissiveEnabled7)}}
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="simulation">
+            <!-- Not Sure Where to Place -->
+            {{ renderfield(form.vehicleType)}}
+            {{ renderfield(form.logging)}}
+            {{ renderfield(form.srmTimedOutTime)}}
+            {{ renderfield(form.scheduleExecutionBuffer)}}
+            {{ renderfield(form.systemPerformanceTimeInterval)}}
+            {{ renderfield(form.applicationPlatform)}}
+            {{ renderfield(form.peerDataDecoding)}}
+
+            {{ renderfield(form.txChannelMap)}}
+            {{ renderfield(form.txChannelSPaT)}}
+            {{ renderfield(form.txChannelRSM)}}
+            {{ renderfield(form.txChannelSRM)}}
+            {{ renderfield(form.txChannelSSM)}}
+            {{ renderfield(form.txChannelBSM)}}
+
+            {{ renderfield(form.txModeMap)}}
+            {{ renderfield(form.txModeSPaT)}}
+            {{ renderfield(form.txModeRSM)}}
+            {{ renderfield(form.txModeSRM)}}
+            {{ renderfield(form.txModeSSM)}}
+            {{ renderfield(form.txModeBSM)}}
             
             {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
             {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
