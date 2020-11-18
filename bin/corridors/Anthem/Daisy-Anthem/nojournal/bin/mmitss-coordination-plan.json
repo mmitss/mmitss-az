@@ -1,0 +1,77 @@
+{
+    "IntersectionName": "Daisy-Anthem",
+    "CoordinationParameters": [
+        {
+            "CoordinationPlanName": "AM-Plan",
+            "CoordinationPatternNo": 1,
+            "SplitPatternNo": 1,
+            "CycleLength": 100,
+            "Offset": 45,
+            "CoordinationStartTime_Hour": 7.0,
+            "CoordinationStartTime_Minute": 30.0,
+            "CoordinationEndTime_Hour": 14.0,
+            "CoordinationEndTime_Minute": 30.0,
+            "CoordinationSplit": 20.0,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "SplitPatternData": {
+                "PhaseNumber": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "Split": [
+                    10,
+                    46,
+                    14,
+                    30,
+                    10,
+                    46,
+                    14,
+                    30
+                ]
+            }
+        },
+        {
+            "CoordinationPlanName" :"PM-Plan",
+            "CoordinationPatternNo": 2,
+            "SplitPatternNo": 2,
+            "CycleLength": 100,
+            "Offset": 45,
+            "CoordinationStartTime_Hour": 14.0,
+            "CoordinationStartTime_Minute": 30.0,
+            "CoordinationEndTime_Hour": 23.0,
+            "CoordinationEndTime_Minute": 30.0,
+            "CoordinationSplit": 25.0,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "SplitPatternData": {
+                "PhaseNumber": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "Split": [
+                    12,
+                    41,
+                    19,
+                    28,
+                    12,
+                    41,
+                    12,
+                    35
+                ]
+            }
+        }
+    ]
+}
