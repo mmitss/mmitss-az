@@ -22,6 +22,7 @@ The methods available from this class are the following:
 - checkActiveCoordinationPlan(): A boolean function to check whether active coordination plan is available or not 
 - getActiveCoordinationPlan(): Method to obtain the coordination parameters for the active coordination Plan
 - getSplitData(): Method to obtain the split data for the active coordination Plan
+- checkTimedOutCoordinationPlanClearingRequirement(): Method to check whether current coordination plan is old or not 
 - getCurrentTime(): Method to obtain the current time of today
 ***************************************************************************************
 """
@@ -120,7 +121,24 @@ class CoordinationPlanManager:
 
         print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " + str(time.time())+ " is following: \n", self.coordinationSplitDataDictionary)
         return self.coordinationSplitDataDictionary
+    
+    def checkTimedOutCoordinationPlanClearingRequirement(self):
+        """
+        Get the current time and compute the End time of the current coordination plan.
+        If current Time greater than the coordination End Time clear out the current coordination plan.
+        """
+        clearTimedOutCoordinationPlan = False
+        currentTime = self.getCurrentTime()
+        for parameters in self.data['CoordinationParameters']:
+            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
+            if currentTime > coordinationEndTime:
+                self.coordinationPlanName = ""
+                self.coordinationParametersDictionary.clear()
+                clearTimedOutCoordinationPlan = True
+                
+        return clearTimedOutCoordinationPlan
+                
     def getCurrentTime(self):
         """
         Compute the current time based on current hour, minute and second of a day in the unit of second

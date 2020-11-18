@@ -20,7 +20,10 @@ Description:
 ------------
 This is a wrapper module for generating signal coordination request software. It performs
 following functions:
-(1) 
+(1) Check whether there is active coordination plan or not
+(2) Generate Virtual coordination plan for active coordination plan
+(3) Update the coordination request and delete served coordination request
+(4) Delete old coordination plan
 ***************************************************************************************
 """
 
@@ -82,15 +85,18 @@ def main():
             coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
             coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
 
-        # The method will update ETA for each coordination request
-        # The method will delete the old coordination requests.
-        # The method will send the coordination requests list in a JSON formate to the PRS after deleting the old requests
+        # The method updates ETA for each coordination request
+        # The method deletes the old coordination requests.
+        # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests
+        # The method deletes old coordination Plan
         else:
             coordinationRequestManager.updateETAInCoordinationRequestTable()
             if bool(coordinationRequestManager.deleteTimeOutRequestFromCoordinationRequestTable()):
                 coordinationPriorityRequestJsonString = coordinationRequestManager.getCoordinationPriorityRequestDictionary()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-
+            
+            if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
+                coordinationRequestManager.clearTimedOutCoordinationPlan()
                 
         time.sleep(1)
     coordinationSocket.close()

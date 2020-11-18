@@ -25,6 +25,7 @@ The methods available from this class are the following:
 - generateUpdatedCoordinationPriorityRequest():  Method to generate updated cooridnation priority request to avoid PRS timed-out
 - updateETAInCoordinationRequestTable(): Method to update ETA and coordination split for each coordination priority request
 - deleteTimeOutRequestFromCoordinationRequestTable(): Method to delete the coordination priority requestfor whom coordination split value is zero
+- clearTimedOutCoordinationPlan(): Method to clear coordination parameters for old coordination plan
 - getCoordinationPriorityRequestDictionary(): Method to obtain json string for the coordination priority requests after deleting the old requests.
 - getCoordinationParametersDictionary(dictionary): Method to load the coordination prarameters dictionary
 - getCurrentTime(): Method to obtain the current time of today
@@ -224,6 +225,12 @@ class CoordinationRequestManager:
         print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination request List after deletion process at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
 
         return coordinationPriorityRequestJsonString
+    
+    def clearTimedOutCoordinationPlan(self):
+        """
+        Method to clear timed-out the coordination prarameters dictionary
+        """
+        self.coordinationParametersDictionary.clear()
 
     def getCoordinationParametersDictionary(self, dictionary):
         """
