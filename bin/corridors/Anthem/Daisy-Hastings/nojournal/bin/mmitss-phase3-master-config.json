@@ -15,6 +15,7 @@
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
+	"CoordinationPlanCheckingTimeInterval": 300,
 	"PeerDataDecoding": false,
 	"PortNumber": {
 		"MessageTransceiver": {
@@ -122,5 +123,13 @@
 			"Minute": 30
 		},
 		"MaxRetries": 3
+	},
+	"PriorityParameter": {
+		"EmergencyVehicleWeight": 1.0,
+		"EmergencyVehicleSplitPhaseWeight": 0.1,
+		"TransitWeight": 1.0,
+		"TruckWeight": 1.0,
+		"DilemmaZoneRequestWeight": 20.0,
+		"CoordinationWeight": 1.0
 	}
 }
