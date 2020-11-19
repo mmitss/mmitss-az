@@ -231,6 +231,7 @@ class CoordinationRequestManager:
         Method to clear timed-out the coordination prarameters dictionary
         """
         self.coordinationParametersDictionary.clear()
+        self.coordinationPriorityRequestDictionary.clear()
 
     def getCoordinationParametersDictionary(self, dictionary):
         """

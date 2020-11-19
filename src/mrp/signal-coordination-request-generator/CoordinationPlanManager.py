@@ -129,14 +129,19 @@ class CoordinationPlanManager:
         """
         clearTimedOutCoordinationPlan = False
         currentTime = self.getCurrentTime()
-        for parameters in self.data['CoordinationParameters']:
-            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
+        if not bool(self.coordinationParametersDictionary):
+            clearTimedOutCoordinationPlan = False
+        
+        else:         
+            for parameters in self.data['CoordinationParameters']:
+                coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
-            if currentTime > coordinationEndTime:
-                self.coordinationPlanName = ""
-                self.coordinationParametersDictionary.clear()
-                clearTimedOutCoordinationPlan = True
-                
+                if currentTime > coordinationEndTime:
+                    self.coordinationPlanName = ""
+                    self.coordinationParametersDictionary.clear()
+                    clearTimedOutCoordinationPlan = True
+                    break
+                    
         return clearTimedOutCoordinationPlan
                 
     def getCurrentTime(self):

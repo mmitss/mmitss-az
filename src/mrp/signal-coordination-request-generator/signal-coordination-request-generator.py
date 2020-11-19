@@ -71,8 +71,9 @@ def main():
             coordinationParametersDictionary = coordinationPlanManager.getActiveCoordinationPlan()
             coordinationRequestManager.getCoordinationParametersDictionary(coordinationParametersDictionary)
             splitData = coordinationPlanManager.getSplitData()
-            coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
-        
+            if bool(splitData):
+                coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
+                
         # Check if it is required to generate virtual coordination requests at the beginning of each cycle
         #  Formulate a json string for coordination requests and sends it to the PRS
         if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
