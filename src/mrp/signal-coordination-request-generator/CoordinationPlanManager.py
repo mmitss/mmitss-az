@@ -69,7 +69,7 @@ class CoordinationPlanManager:
         Store active coordination plan name
         """
         currentTime = self.getCurrentTime()
-
+        self.coordinationParametersDictionary.clear()
         for parameters in self.coordinationConfigData['CoordinationParameters']:
             coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
             coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
@@ -103,6 +103,7 @@ class CoordinationPlanManager:
         """
         phaseNumber = []
         splitTime = []
+        self.coordinationSplitDataDictionary.clear()
         for parameters in self.coordinationConfigData['CoordinationParameters']:
             if self.coordinationPlanName == parameters['CoordinationPlanName']:
                 for splitData in parameters['SplitPatternData']['PhaseNumber']:
@@ -110,15 +111,16 @@ class CoordinationPlanManager:
                 for splitData in parameters['SplitPatternData']['Split']:
                     splitTime.append(splitData)
 
-        self.coordinationSplitDataDictionary = json.dumps({
-            "MsgType": "ActiveCoordinationPlan",
-            "TimingPlan":
-                {
-                    "NoOfPhase": 8,
-                    "PhaseNumber": phaseNumber,
-                    "SplitData": splitTime
-                }
-        })
+        if len(splitTime):
+            self.coordinationSplitDataDictionary = json.dumps({
+                "MsgType": "ActiveCoordinationPlan",
+                "TimingPlan":
+                    {
+                        "NoOfPhase": 8,
+                        "PhaseNumber": phaseNumber,
+                        "SplitData": splitTime
+                    }
+            })
 
         print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " + str(time.time())+ " is following: \n", self.coordinationSplitDataDictionary)
         return self.coordinationSplitDataDictionary
