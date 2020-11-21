@@ -9,6 +9,7 @@ COPY PriorityRequestSolver/x86/M_PriorityRequestSolver /mmitss
 COPY PriorityRequestServer/x86/M_PriorityRequestServer /mmitss
 COPY MapSpatBroadcaster/x86/M_MapSpatBroadcaster /mmitss
 COPY V2XDataCollector/x86/M_V2XDataCollector /mmitss
+COPY SignalCoordinationRequestGenerator/x86/M_SignalCoordinationRequestGenerator /mmitss
 
 COPY supervisord.conf /mmitss
 CMD ["/usr/bin/supervisord"]
