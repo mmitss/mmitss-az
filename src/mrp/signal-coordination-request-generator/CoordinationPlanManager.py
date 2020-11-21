@@ -35,10 +35,11 @@ SECONDSINAMINUTE = 60.0
 HourToSecondConversion =  3600.0
 
 class CoordinationPlanManager:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, coordinationConfigData, config):
+        self.coordinationConfigData = coordinationConfigData
+        self.config = config
         self.activePlanCheckingTime = 0.0
-        self.timeGapBetweenActivePlanChecking = 1800
+        self.timeGapBetweenActivePlanChecking = self.config['CoordinationPlanCheckingTimeInterval']
         self.coordinationPlanName = ""
         self.coordinationParametersDictionary = {}
         self.coordinationSplitDataDictionary = {}
@@ -69,7 +70,7 @@ class CoordinationPlanManager:
         """
         currentTime = self.getCurrentTime()
 
-        for parameters in self.data['CoordinationParameters']:
+        for parameters in self.coordinationConfigData['CoordinationParameters']:
             coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
             coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
@@ -102,7 +103,7 @@ class CoordinationPlanManager:
         """
         phaseNumber = []
         splitTime = []
-        for parameters in self.data['CoordinationParameters']:
+        for parameters in self.coordinationConfigData['CoordinationParameters']:
             if self.coordinationPlanName == parameters['CoordinationPlanName']:
                 for splitData in parameters['SplitPatternData']['PhaseNumber']:
                     phaseNumber.append(splitData)
@@ -133,7 +134,7 @@ class CoordinationPlanManager:
             clearTimedOutCoordinationPlan = False
         
         else:         
-            for parameters in self.data['CoordinationParameters']:
+            for parameters in self.coordinationConfigData['CoordinationParameters']:
                 coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
                 if currentTime > coordinationEndTime:

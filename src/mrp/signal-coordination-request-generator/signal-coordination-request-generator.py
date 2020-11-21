@@ -59,7 +59,7 @@ def main():
     priorityRequestServerAddress = (mrpIp, config["PortNumber"]["PriorityRequestServer"])
     
     #Create instances for the class
-    coordinationPlanManager = CoordinationPlanManager(coordinationConfigData)
+    coordinationPlanManager = CoordinationPlanManager(coordinationConfigData, config)
     coordinationRequestManager = CoordinationRequestManager(config)
     
     while True:
