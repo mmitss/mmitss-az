@@ -15,7 +15,7 @@
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
-	"CoordinationPlanCheckingTimeInterval": 300,
+	"CoordinationPlanCheckingTimeInterval": 300.0,
 	"PeerDataDecoding": false,
 	"PortNumber": {
 		"MessageTransceiver": {

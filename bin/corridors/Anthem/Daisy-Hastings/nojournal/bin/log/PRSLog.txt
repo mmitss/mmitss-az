@@ -1,5 +1,0 @@
-File opened at time : 1603398629
-
-JsonString is sent or received at time : 1603398630
-{"MsgType":"ClearRequest"}
-1603398630
