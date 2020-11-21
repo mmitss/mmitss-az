@@ -1,53 +1,77 @@
 version: "3.8"
 services:
 
-    speedway-campbell:
+    daisy-gavilan:
         build:
             context: ./
-        container_name: speedway-campbell
+        container_name: daisy-gavilan
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-campbell/nojournal
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Gavilan/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
                 ipv4_address: 10.12.6.3    
 
-    speedway-cherry:
+    daisy-dedication:
         build:
             context: ./
-        container_name: speedway-cherry
+        container_name: daisy-dedication
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-cherry/nojournal
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
                 ipv4_address: 10.12.6.6
 
-    speedway-mountain:
+    daisy-meridian:
         build:
             context: ./
-        container_name: speedway-mountain
+        container_name: daisy-meridian
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-mountain/nojournal
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
                 ipv4_address: 10.12.6.9
-
-    speedway-park:
+        
+    daisy-hastings:
         build:
             context: ./
-        container_name: speedway-park
+        container_name: daisy-hastings
         volumes:
-            - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-park/nojournal
-              target: /nojournal
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Hastings/nojournal
+            target: /nojournal
         networks:    
             mmitss_vlan:
                 ipv4_address: 10.12.6.12
+        
+    daisy-memorial:
+        build:
+            context: ./
+        container_name: daisy-memorial
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Memorial/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.15
+        
+    daisy-anthem:
+        build:
+            context: ./
+        container_name: daisy-anthem
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+              target: /nojournal
+        networks:
+            mmitss_vlan:
+                ipv4_address: 10.12.6.18
 
     simulation-tools:
         build:
@@ -66,7 +90,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: enp4s0 
+            parent: enp4s0
         ipam:
             config:
               - subnet: 10.12.6.0/24
