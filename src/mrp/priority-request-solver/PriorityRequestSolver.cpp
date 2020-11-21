@@ -1095,7 +1095,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     }
 
     generateModFile();
-    modifySignalTimingPlan(trafficSignalPlan);
+    modifySignalTimingPlan();
 }
 
 /*
@@ -1104,6 +1104,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
+    double splitValue{};
     Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -1117,15 +1118,21 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     
     for (int i = 0; i < noOfSplitData; i++)
     {
+        splitValue = jsonObject["TimingPlan"]["SplitData"][i].asDouble();
+        signalPlan.reset();
+       
         signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
         signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
         signalPlan.redClear = trafficSignalPlan[i].redClear;
         signalPlan.minGreen = trafficSignalPlan[i].minGreen;
-        signalPlan.maxGreen = jsonObject["TimingPlan"]["SplitData"][i].asDouble() - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
         signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
+        if(splitValue != 0)
+            signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
+            
         trafficSignalPlan_SignalCoordination.push_back(signalPlan);
+        
     }
-    modifySignalTimingPlan(trafficSignalPlan_SignalCoordination);
+    modifyCoordinationSignalTimingPlan();
 }
 
 /*
@@ -1138,30 +1145,72 @@ void PriorityRequestSolver::printSignalPlan()
         cout << trafficSignalPlan[i].phaseNumber << " " << trafficSignalPlan[i].phaseRing << " " << trafficSignalPlan[i].minGreen << endl;
     }
 }
+
 /*
     - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
     - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
 */
-void PriorityRequestSolver::modifySignalTimingPlan(vector<TrafficControllerData::TrafficSignalPlan>SignalPlan)
+void PriorityRequestSolver::modifySignalTimingPlan()
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
     
-    for (size_t i = 0; i < SignalPlan.size(); i++)
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
-        temporarySignalGroup = SignalPlan[i].phaseNumber;
+        temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
 
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(SignalPlan), std::end(SignalPlan),
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
-        if ((temporarySignalGroup % 2 == 0) && (SignalPlan[i].minGreen == 0))
+        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < 5)
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;
             else if (temporarySignalGroup > 4)
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(SignalPlan), std::end(SignalPlan),
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+
+            findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
+            findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
+            findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
+            findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
+            findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
+            findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
+            findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+        }
+
+        else 
+            continue;
+    }
+}
+
+/*
+    - The method contains the same kind of logic as modifySignalTimingPlan(). This method modifies coordination signal timing plan.
+    - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
+    - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
+*/
+void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
+{
+    int temporarySignalGroup{};
+    int temporaryCompitableSignalGroup{};
+    
+    for (size_t i = 0; i < trafficSignalPlan_SignalCoordination.size(); i++)
+    {
+        temporarySignalGroup = trafficSignalPlan_SignalCoordination[i].phaseNumber;
+
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
+
+        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0m))
+        {
+            if (temporarySignalGroup < 5)
+                temporaryCompitableSignalGroup = temporarySignalGroup + 4;
+            else if (temporarySignalGroup > 4)
+                temporaryCompitableSignalGroup = temporarySignalGroup - 4;
+
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
 
             findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;

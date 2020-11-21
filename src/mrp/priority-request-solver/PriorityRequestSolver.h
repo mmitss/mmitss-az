@@ -94,7 +94,8 @@ public:
   void createPriorityRequestList(string jsonString);
   void createDilemmaZoneRequestList();
   void modifyPriorityRequestList();
-  void modifySignalTimingPlan(vector<TrafficControllerData::TrafficSignalPlan>SignalPlan);
+  void modifySignalTimingPlan();
+  void modifyCoordinationSignalTimingPlan();
   void deleteSplitPhasesFromPriorityRequestList();
   void GLPKSolver();
   void getCurrentSignalTimingPlan(string jsonString);
