@@ -116,12 +116,6 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.vehicleDistanceFromStopBar = requestList.vehicleSpeed * 3.28084 * requestList.vehicleETA;
         priorityRequestList.push_back(requestList);
     }
-
-    //This is optional. For priniting few attributes of the priority request list in the console
-    // for (size_t i = 0; i < priorityRequestList.size(); i++)
-    // {
-    //     cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
-    // }
 }
 
 /*
@@ -1203,7 +1197,7 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
-        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0m))
+        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0))
         {
             if (temporarySignalGroup < 5)
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;

@@ -67,12 +67,12 @@ int main()
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-
+            cout << "Received Priority Request from PRS" << endl;
             priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
             priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
 
             std::string receivedSignalStatusString(receivedSignalStatusBuffer);
-            // cout << "Received Signal Status" << endl;
+            cout << "Received Signal Status" << endl;
             if (priorityRequestSolver.getMessageType(receivedSignalStatusString) == static_cast<int>(msgType::currentPhaseStatus))
                 priorityRequestSolver.getCurrentSignalStatus(receivedSignalStatusString);
 
@@ -80,15 +80,14 @@ int main()
             if(priorityRequestSolver.getOptimalSolutionValidationStatus() == true)
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
-
+            
         }
 
         else if (msgType == static_cast<int>(msgType::clearRequest))
         {
-            // cout << "Received Clear Request " << endl;
+            cout << "Received Clear Request " << endl;
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-            // cout << "Sent Clear Request " << endl;
             priorityRequestSolver.loggingClearRequestData(tciJsonString);
         }
     }
