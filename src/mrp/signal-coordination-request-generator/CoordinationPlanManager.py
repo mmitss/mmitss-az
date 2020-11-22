@@ -103,7 +103,9 @@ class CoordinationPlanManager:
         """
         phaseNumber = []
         splitTime = []
-        self.coordinationSplitDataDictionary.clear()
+        if bool(self.coordinationSplitDataDictionary):
+            self.coordinationSplitDataDictionary = {}
+            
         for parameters in self.coordinationConfigData['CoordinationParameters']:
             if self.coordinationPlanName == parameters['CoordinationPlanName']:
                 for splitData in parameters['SplitPatternData']['PhaseNumber']:
@@ -139,7 +141,7 @@ class CoordinationPlanManager:
             for parameters in self.coordinationConfigData['CoordinationParameters']:
                 coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
 
-                if currentTime > coordinationEndTime:
+                if currentTime > coordinationEndTime and parameters['CoordinationPlanName'] == self.coordinationPlanName:
                     self.coordinationPlanName = ""
                     self.coordinationParametersDictionary.clear()
                     clearTimedOutCoordinationPlan = True
