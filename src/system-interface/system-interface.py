@@ -64,12 +64,12 @@ def local_console():
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
     hostIp = StringField('Host IP', validators=[ip_address()])
-    sourceDsrcDeviceIp      = StringField('Source DSRC Device IP', validators=[ip_address()])
+    sourceDsrcDeviceIp      = StringField('Wireless Device IP (RSU or OBU)', validators=[ip_address()])
     intersectionName        = StringField('Intersection Name')
     intersectionID          = IntegerField('Intersection ID')
     regionalID              = IntegerField('Regional ID')
     mapPayload              = StringField('Map Payload')
-    dataCollectorIP         = StringField('Data Collector IP')
+    dataCollectorIP         = StringField('Remote Data Collector Server IP')
     hmiControllerIP         = StringField('HMI Controller IP')
     messageDistributorIP    = StringField('Message Distributor IP')
     priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
@@ -137,13 +137,13 @@ class ConfigurationForm(FlaskForm):
     txModeSSM       = StringField('Tx Mode: SSM')    
     txModeBSM       = StringField('Tx Mode: BSM')
     signalControllerIP                  = StringField('Signal Controller IP Address')
-    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Address')
-    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval')
+    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Port')
+    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval (seconds)')
     signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time')
     signalControllerVendor              = StringField('Signal Controller Vendor')
     signalControllerTimingPlanMib       = StringField('Signal Controller Timing Plan MIB')
-    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases')
-    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases')
+    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases  (e.g., [1,3,5])')
+    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases  (e.g., [1,3,5])')
     signalControllerSplitPhases1        = IntegerField('Signal Controller Split Phases 1')
     signalControllerSplitPhases3        = IntegerField('Signal Controller Split Phases 3')
     signalControllerSplitPhases5        = IntegerField('Signal Controller Split Phases 5')
@@ -160,7 +160,13 @@ class ConfigurationForm(FlaskForm):
     dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
     dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
     dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
-    dataTransferMaxRetries            = IntegerField('Data Transfer Max Retries')    
+    dataTransferMaxRetries               = IntegerField('Data Transfer Max Retries')    
+    priorityEVWeight                    = IntegerField('Emergency Vehicle Weight')    
+    priorityEVSplitPhaseWeight          = IntegerField('Emergency Vehicle Split Phase Weight')    
+    priorityTransitWeight                = IntegerField('Transit Weight')    
+    priorityTruckWeight                 = IntegerField('Truck Weight')    
+    priorityDilemmaZoneRequestWeight      = IntegerField('Dilemma Zone Request Weight')    
+    priorityCoordinationWeight            = IntegerField('Coordination Weight')    
 
 # System Configuration data object
 class SysConfig:
@@ -263,6 +269,12 @@ class SysConfig:
         self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
         self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
         self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
+        self.priorityEVWeight                   = data['PriorityParameter']['EmergencyVehicleWeight']
+        self.priorityEVSplitPhaseWeight         = data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']
+        self.priorityTransitWeight              = data['PriorityParameter']['TransitWeight']
+        self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
+        self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
+        self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
 
 def convertToList(formString):
     # remove any brackets
@@ -378,7 +390,12 @@ def prepareJSONData(data, form):
     data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
     data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
     data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
-
+    data['PriorityParameter']['EmergencyVehicleWeight']             = form.priorityEVWeight.data
+    data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = form.priorityEVSplitPhaseWeight.data
+    data['PriorityParameter']['TransitWeight']                      = form.priorityTransitWeight.data
+    data['PriorityParameter']['TruckWeight']                        = form.priorityTruckWeight.data
+    data['PriorityParameter']['DilemmaZoneRequestWeight']           = form.priorityDilemmaZoneRequestWeight.data
+    data['PriorityParameter']['CoordinationWeight']                 = form.priorityCoordinationWeight.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])
@@ -386,9 +403,9 @@ def configuration():
     import json
 
     #field location
-    #with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    #with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         sysConfig = SysConfig(data)    
         pageTitle = data['IntersectionName']
@@ -398,9 +415,9 @@ def configuration():
     if request.method == 'POST':
         # Serialize the edited data
         #field location
-        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
-        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+        #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
             dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  

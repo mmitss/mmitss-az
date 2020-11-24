@@ -37,12 +37,16 @@ This is an html file that contains the presentation for:
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a href="#intersection" aria-controls="intersection" role="tab" data-toggle="tab">Intersection</a></li>
+          <li role="presentation"><a href="#vehicle" aria-controls="vehicle" role="tab" data-toggle="tab">Vehicle</a></li>
+          <li role="presentation"><a href="#system" aria-controls="system" role="tab" data-toggle="tab">System</a></li>          
           <li role="presentation"><a href="#network" aria-controls="network_configuration" role="tab" data-toggle="tab">Network</a></li>
           <li role="presentation"><a href="#ports" aria-controls="ports" role="tab" data-toggle="tab">Ports</a></li>
-          <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages and PSID</a></li>
+          <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Wireless</a></li>
           <li role="presentation"><a href="#controller" aria-controls="controller" role="tab" data-toggle="tab">Controller</a></li>
+          <li role="presentation"><a href="#coordination" aria-controls="coordination" role="tab" data-toggle="tab">Coordination</a></li>
+          <li role="presentation"><a href="#data_transfer" aria-controls="data_transfer" role="tab" data-toggle="tab">Data Transfer</a></li>
           <li role="presentation"><a href="#simulation" aria-controls="simulation" role="tab" data-toggle="tab">Simulation</a></li>
-      
+     
         </ul>
       
         <!-- Tab panes -->
@@ -51,19 +55,39 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.intersectionName)}}
             {{ renderfield(form.intersectionID)}}
             {{ renderfield(form.regionalID)}}
-           </div>
+            {{ renderfield(form.mapPayload)}}          
+            {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
+            {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
+            {{ renderfield(form.intersectionReferencePointElevationMeter)}}
+          </div>
   
+
+          <div role="tabpanel" class="tab-pane fade" id="vehicle">
+            {{ renderfield(form.vehicleType)}}
+            {{ renderfield(form.hmiControllerIP)}}          
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="system">
+            {{ renderfield(form.logging)}}
+            {{ renderfield(form.srmTimedOutTime)}}
+            {{ renderfield(form.systemPerformanceTimeInterval)}}
+            {{ renderfield(form.applicationPlatform)}}
+            {{ renderfield(form.peerDataDecoding)}}
+            {{ renderfield(form.txChannelMap)}}
+          </div>
 
           <div role="tabpanel" class="tab-pane fade" id="network">
             {{ renderfield(form.hostIp)}}
             {{ renderfield(form.sourceDsrcDeviceIp)}}
             {{ renderfield(form.dataCollectorIP)}}
-            {{ renderfield(form.hmiControllerIP)}}
-            {{ renderfield(form.messageDistributorIP)}}
             {{ renderfield(form.priorityRequestGeneratorServerIP)}}
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="ports">
+            <div class="page-header">
+              <h2> Network configuration administration only </h2>
+            </div>  
+            
             {{ renderfield(form.portNumberMTMessageSender)}}
             {{ renderfield(form.portNumberMTMessageReceiver)}}
             {{ renderfield(form.portNumberMTMessageEncoder)}}
@@ -93,7 +117,7 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.portNumberDataCollector)}}
             {{ renderfield(form.portNumberSnmpEngine)}}
             {{ renderfield(form.portNumberSnmpEngineInterface)}}
-            {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
+ 
             {{ renderfield(form.portNumberTrajectoryAware_MapEngineInterface)}}
             {{ renderfield(form.portNumberMapEngine)}}
             {{ renderfield(form.portNumberLightSirenStatusManager)}}
@@ -117,6 +141,18 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.msgIdSSMLower)}}
             {{ renderfield(form.msgIdSSMUpper)}}
 
+            {{ renderfield(form.txChannelSPaT)}}
+            {{ renderfield(form.txChannelRSM)}}
+            {{ renderfield(form.txChannelSRM)}}
+            {{ renderfield(form.txChannelSSM)}}
+            {{ renderfield(form.txChannelBSM)}}
+
+            {{ renderfield(form.txModeMap)}}
+            {{ renderfield(form.txModeSPaT)}}
+            {{ renderfield(form.txModeRSM)}}
+            {{ renderfield(form.txModeSRM)}}
+            {{ renderfield(form.txModeSSM)}}
+            {{ renderfield(form.txModeBSM)}}
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="controller">
@@ -138,39 +174,29 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.signalControllerPermissiveEnabled7)}}
           </div>
 
-          <div role="tabpanel" class="tab-pane fade" id="simulation">
-            <!-- Not Sure Where to Place -->
-            {{ renderfield(form.vehicleType)}}
-            {{ renderfield(form.logging)}}
-            {{ renderfield(form.srmTimedOutTime)}}
-            {{ renderfield(form.scheduleExecutionBuffer)}}
-            {{ renderfield(form.systemPerformanceTimeInterval)}}
-            {{ renderfield(form.applicationPlatform)}}
-            {{ renderfield(form.peerDataDecoding)}}
+          <div role="tabpanel" class="tab-pane fade" id="coordination">
+            {{ renderfield(form.priorityEVWeight)}}
+            {{ renderfield(form.priorityEVSplitPhaseWeight)}}
+            {{ renderfield(form.priorityTransitWeight)}}
+            {{ renderfield(form.priorityTruckWeight)}}
+            {{ renderfield(form.priorityDilemmaZoneRequestWeight)}}
+            {{ renderfield(form.priorityCoordinationWeight)}}
+          </div>
 
-            {{ renderfield(form.txChannelMap)}}
-            {{ renderfield(form.txChannelSPaT)}}
-            {{ renderfield(form.txChannelRSM)}}
-            {{ renderfield(form.txChannelSRM)}}
-            {{ renderfield(form.txChannelSSM)}}
-            {{ renderfield(form.txChannelBSM)}}
-
-            {{ renderfield(form.txModeMap)}}
-            {{ renderfield(form.txModeSPaT)}}
-            {{ renderfield(form.txModeRSM)}}
-            {{ renderfield(form.txModeSRM)}}
-            {{ renderfield(form.txModeSSM)}}
-            {{ renderfield(form.txModeBSM)}}
-            
-            {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
-            {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
-            {{ renderfield(form.intersectionReferencePointElevationMeter)}}
+          <div role="tabpanel" class="tab-pane fade" id="data_transfer">
             {{ renderfield(form.dataTransferFtpServerPort)}}
             {{ renderfield(form.dataTransferStartTimeHour)}}
             {{ renderfield(form.dataTransferStartTimeMinute)}}
             {{ renderfield(form.dataTransferEndTimeHour)}}
             {{ renderfield(form.dataTransferEndTimeMinute)}}
             {{ renderfield(form.dataTransferMaxRetries)}}
+          </div>
+
+          <div role="tabpanel" class="tab-pane fade" id="simulation">
+            {{ renderfield(form.messageDistributorIP)}}
+            {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
+
+
           </div>
         </div>
        
