@@ -7,10 +7,10 @@
             "SplitPatternNo": 1,
             "CycleLength": 100,
             "Offset": 45,
-            "CoordinationStartTime_Hour": 7.0,
-            "CoordinationStartTime_Minute": 30.0,
-            "CoordinationEndTime_Hour": 14.0,
-            "CoordinationEndTime_Minute": 30.0,
+            "CoordinationStartTime_Hour": 6,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 10,
+            "CoordinationEndTime_Minute": 0,
             "CoordinationSplit": 20.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
@@ -38,15 +38,15 @@
             }
         },
         {
-            "CoordinationPlanName" :"PM-Plan",
+            "CoordinationPlanName": "PM-Plan",
             "CoordinationPatternNo": 2,
             "SplitPatternNo": 2,
             "CycleLength": 100,
-            "Offset": 45,
-            "CoordinationStartTime_Hour": 14.0,
-            "CoordinationStartTime_Minute": 30.0,
-            "CoordinationEndTime_Hour": 23.0,
-            "CoordinationEndTime_Minute": 30.0,
+            "Offset": 51,
+            "CoordinationStartTime_Hour": 15,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 19,
+            "CoordinationEndTime_Minute": 0,
             "CoordinationSplit": 25.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
@@ -62,14 +62,14 @@
                     8
                 ],
                 "Split": [
-                    12,
-                    41,
-                    19,
-                    28,
-                    12,
-                    41,
-                    12,
-                    35
+                    10,
+                    46,
+                    18,
+                    26,
+                    10,
+                    46,
+                    13,
+                    31
                 ]
             }
         }

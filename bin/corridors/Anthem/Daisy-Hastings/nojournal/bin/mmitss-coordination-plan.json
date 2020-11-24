@@ -1,4 +1,4 @@
-{
+    {
     "IntersectionName": "Daisy-Hastings",
     "CoordinationParameters": [
         {
@@ -6,11 +6,11 @@
             "CoordinationPatternNo": 1,
             "SplitPatternNo": 1,
             "CycleLength": 90,
-            "Offset": 45,
-            "CoordinationStartTime_Hour": 0.0,
-            "CoordinationStartTime_Minute": 0.0,
-            "CoordinationEndTime_Hour": 14.0,
-            "CoordinationEndTime_Minute": 30.0,
+            "Offset": 32,
+            "CoordinationStartTime_Hour": 6,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 10,
+            "CoordinationEndTime_Minute": 0,
             "CoordinationSplit": 20.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
@@ -42,12 +42,12 @@
             "CoordinationPatternNo": 2,
             "SplitPatternNo": 2,
             "CycleLength": 100,
-            "Offset": 25,
-            "CoordinationStartTime_Hour": 14.0,
-            "CoordinationStartTime_Minute": 30.0,
-            "CoordinationEndTime_Hour": 23.0,
-            "CoordinationEndTime_Minute": 30.0,
-            "CoordinationSplit": 25.0,
+            "Offset": 24,
+            "CoordinationStartTime_Hour": 15,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 19,
+            "CoordinationEndTime_Minute": 0,
+            "CoordinationSplit": 20.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
             "SplitPatternData": {
@@ -62,14 +62,14 @@
                     8
                 ],
                 "Split": [
-                    18,
-                    37,
+                    15,
+                    52,
                     0,
                     0,
                     0,
-                    55,
+                    67,
                     0,
-                    45
+                    23
                 ]
             }
         }
