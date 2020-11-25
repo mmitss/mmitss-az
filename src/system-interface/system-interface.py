@@ -72,12 +72,12 @@ class ConfigurationForm(FlaskForm):
     dataCollectorIP         = StringField('Remote Data Collector Server IP')
     hmiControllerIP         = StringField('HMI Controller IP')
     messageDistributorIP    = StringField('Message Distributor IP')
-    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
+    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address (optional)')
     vehicleType                     = StringField('Vehicle Type')
-    logging                         = StringField('Logging')
-    srmTimedOutTime                 = StringField('SRM Timed Out Time')
+    logging                         = StringField('Logging (True / False)')
+    srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
-    systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
+    systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
     applicationPlatform             = StringField('Application Platform')
     peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
@@ -139,7 +139,7 @@ class ConfigurationForm(FlaskForm):
     signalControllerIP                  = StringField('Signal Controller IP Address')
     signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Port')
     signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval (seconds)')
-    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time')
+    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time (seconds)')
     signalControllerVendor              = StringField('Signal Controller Vendor')
     signalControllerTimingPlanMib       = StringField('Signal Controller Timing Plan MIB')
     signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases  (e.g., [1,3,5])')
@@ -161,12 +161,13 @@ class ConfigurationForm(FlaskForm):
     dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
     dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
     dataTransferMaxRetries               = IntegerField('Data Transfer Max Retries')    
-    priorityEVWeight                    = IntegerField('Emergency Vehicle Weight')    
-    priorityEVSplitPhaseWeight          = IntegerField('Emergency Vehicle Split Phase Weight')    
-    priorityTransitWeight                = IntegerField('Transit Weight')    
-    priorityTruckWeight                 = IntegerField('Truck Weight')    
-    priorityDilemmaZoneRequestWeight      = IntegerField('Dilemma Zone Request Weight')    
-    priorityCoordinationWeight            = IntegerField('Coordination Weight')    
+    priorityEVWeight                    = StringField('Emergency Vehicle Weight')    
+    priorityEVSplitPhaseWeight          = StringField('Emergency Vehicle Split Phase Weight')    
+    priorityTransitWeight                = StringField('Transit Weight')    
+    priorityTruckWeight                 = StringField('Truck Weight')    
+    priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight')    
+    priorityCoordinationWeight            = StringField('Coordination Weight')    
+    coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Checking Time Interval (seconds)')    
 
 # System Configuration data object
 class SysConfig:
@@ -275,6 +276,7 @@ class SysConfig:
         self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
         self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
         self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
+        self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
 
 def convertToList(formString):
     # remove any brackets
@@ -396,6 +398,7 @@ def prepareJSONData(data, form):
     data['PriorityParameter']['TruckWeight']                        = form.priorityTruckWeight.data
     data['PriorityParameter']['DilemmaZoneRequestWeight']           = form.priorityDilemmaZoneRequestWeight.data
     data['PriorityParameter']['CoordinationWeight']                 = form.priorityCoordinationWeight.data
+    data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])

@@ -36,14 +36,13 @@ This is an html file that contains the presentation for:
 
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="#intersection" aria-controls="intersection" role="tab" data-toggle="tab">Intersection</a></li>
+          <li role="presentation" class="active"><a href="#system" aria-controls="system" role="tab" data-toggle="tab">System</a></li>          
+          <li role="presentation" ><a href="#intersection" aria-controls="intersection" role="tab" data-toggle="tab">Intersection</a></li>
           <li role="presentation"><a href="#vehicle" aria-controls="vehicle" role="tab" data-toggle="tab">Vehicle</a></li>
-          <li role="presentation"><a href="#system" aria-controls="system" role="tab" data-toggle="tab">System</a></li>          
           <li role="presentation"><a href="#network" aria-controls="network_configuration" role="tab" data-toggle="tab">Network</a></li>
-          <li role="presentation"><a href="#ports" aria-controls="ports" role="tab" data-toggle="tab">Ports</a></li>
-          <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Wireless</a></li>
+          <li role="presentation"><a href="#wireless" aria-controls="wireless" role="tab" data-toggle="tab">Wireless</a></li>
           <li role="presentation"><a href="#controller" aria-controls="controller" role="tab" data-toggle="tab">Controller</a></li>
-          <li role="presentation"><a href="#coordination" aria-controls="coordination" role="tab" data-toggle="tab">Coordination</a></li>
+          <li role="presentation"><a href="#priority" aria-controls="priority" role="tab" data-toggle="tab">Priority</a></li>
           <li role="presentation"><a href="#data_transfer" aria-controls="data_transfer" role="tab" data-toggle="tab">Data Transfer</a></li>
           <li role="presentation"><a href="#simulation" aria-controls="simulation" role="tab" data-toggle="tab">Simulation</a></li>
      
@@ -51,7 +50,17 @@ This is an html file that contains the presentation for:
       
         <!-- Tab panes -->
         <div class="tab-content">
-          <div role="tabpanel" class="tab-pane fade in active" id="intersection">
+          <div role="tabpanel" class="tab-pane fade in active" id="system">
+          {{ renderfield(form.logging)}}
+          {{ renderfield(form.srmTimedOutTime)}}
+          {{ renderfield(form.systemPerformanceTimeInterval)}}
+          {{ renderfield(form.applicationPlatform)}}
+          {{ renderfield(form.peerDataDecoding)}}
+
+        </div>
+
+
+          <div role="tabpanel" class="tab-pane fade" id="intersection">
             {{ renderfield(form.intersectionName)}}
             {{ renderfield(form.intersectionID)}}
             {{ renderfield(form.regionalID)}}
@@ -67,23 +76,13 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.hmiControllerIP)}}          
           </div>
 
-          <div role="tabpanel" class="tab-pane fade" id="system">
-            {{ renderfield(form.logging)}}
-            {{ renderfield(form.srmTimedOutTime)}}
-            {{ renderfield(form.systemPerformanceTimeInterval)}}
-            {{ renderfield(form.applicationPlatform)}}
-            {{ renderfield(form.peerDataDecoding)}}
-            {{ renderfield(form.txChannelMap)}}
-          </div>
-
+ 
           <div role="tabpanel" class="tab-pane fade" id="network">
             {{ renderfield(form.hostIp)}}
             {{ renderfield(form.sourceDsrcDeviceIp)}}
             {{ renderfield(form.dataCollectorIP)}}
-            {{ renderfield(form.priorityRequestGeneratorServerIP)}}
-          </div>
-
-          <div role="tabpanel" class="tab-pane fade" id="ports">
+ 
+ 
             <div class="page-header">
               <h2> Network configuration administration only </h2>
             </div>  
@@ -121,12 +120,26 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.portNumberTrajectoryAware_MapEngineInterface)}}
             {{ renderfield(form.portNumberMapEngine)}}
             {{ renderfield(form.portNumberLightSirenStatusManager)}}
-            {{ renderfield(form.portNumberPeerToPeerPriority)}}
+            {{ renderfield(form.portNumberPeerToPeerPriority)}}         
           </div>
+
+     
+          <div role="tabpanel" class="tab-pane fade" id="wireless">
       
-          <div role="tabpanel" class="tab-pane fade" id="messages">
-      
-            {{ renderfield(form.psidMap)}}
+            {{ renderfield(form.txChannelMap)}}
+            {{ renderfield(form.txChannelSPaT)}}
+            {{ renderfield(form.txChannelRSM)}}
+            {{ renderfield(form.txChannelSRM)}}
+            {{ renderfield(form.txChannelSSM)}}
+            {{ renderfield(form.txChannelBSM)}}
+
+            {{ renderfield(form.txModeMap)}}
+            {{ renderfield(form.txModeSPaT)}}
+            {{ renderfield(form.txModeRSM)}}
+            {{ renderfield(form.txModeSRM)}}
+            {{ renderfield(form.txModeSSM)}}
+            {{ renderfield(form.txModeBSM)}}
+             {{ renderfield(form.psidMap)}}
             {{ renderfield(form.psidSPaT)}}
             {{ renderfield(form.psidRSM)}}
             {{ renderfield(form.psidSRM)}}
@@ -141,19 +154,7 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.msgIdSSMLower)}}
             {{ renderfield(form.msgIdSSMUpper)}}
 
-            {{ renderfield(form.txChannelSPaT)}}
-            {{ renderfield(form.txChannelRSM)}}
-            {{ renderfield(form.txChannelSRM)}}
-            {{ renderfield(form.txChannelSSM)}}
-            {{ renderfield(form.txChannelBSM)}}
-
-            {{ renderfield(form.txModeMap)}}
-            {{ renderfield(form.txModeSPaT)}}
-            {{ renderfield(form.txModeRSM)}}
-            {{ renderfield(form.txModeSRM)}}
-            {{ renderfield(form.txModeSSM)}}
-            {{ renderfield(form.txModeBSM)}}
-          </div>
+        </div>
 
           <div role="tabpanel" class="tab-pane fade" id="controller">
             {{ renderfield(form.signalControllerIP)}}
@@ -174,7 +175,8 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.signalControllerPermissiveEnabled7)}}
           </div>
 
-          <div role="tabpanel" class="tab-pane fade" id="coordination">
+          <div role="tabpanel" class="tab-pane fade" id="priority">
+            {{ renderfield(form.coordinationPlanCheckingTimeInterval)}}
             {{ renderfield(form.priorityEVWeight)}}
             {{ renderfield(form.priorityEVSplitPhaseWeight)}}
             {{ renderfield(form.priorityTransitWeight)}}
@@ -194,6 +196,7 @@ This is an html file that contains the presentation for:
 
           <div role="tabpanel" class="tab-pane fade" id="simulation">
             {{ renderfield(form.messageDistributorIP)}}
+            {{ renderfield(form.priorityRequestGeneratorServerIP)}}           
             {{ renderfield(form.portNumberPriorityRequestGeneratorServer)}}
 
 
