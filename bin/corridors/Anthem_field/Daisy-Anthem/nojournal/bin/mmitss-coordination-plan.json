@@ -1,17 +1,17 @@
 {
-    "IntersectionName": "Daisy-Anthem",
+    "IntersectionName": "Daisy-Hastings",
     "CoordinationParameters": [
         {
             "CoordinationPlanName": "AM-Plan",
             "CoordinationPatternNo": 1,
             "SplitPatternNo": 1,
-            "CycleLength": 100,
-            "Offset": 45,
+            "CycleLength": 90,
+            "Offset": 32,
             "CoordinationStartTime_Hour": 6,
             "CoordinationStartTime_Minute": 30,
-            "CoordinationEndTime_Hour": 10,
-            "CoordinationEndTime_Minute": 0,
-            "CoordinationSplit": 20.0,
+            "CoordinationEndTime_Hour": 8,
+            "CoordinationEndTime_Minute": 30,
+            "CoordinationSplit": 30.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
             "SplitPatternData": {
@@ -26,28 +26,28 @@
                     8
                 ],
                 "Split": [
-                    10,
-                    46,
-                    14,
-                    30,
-                    10,
-                    46,
-                    14,
+                    12,
+                    48,
+                    0,
+                    0,
+                    0,
+                    60,
+                    0,
                     30
                 ]
             }
         },
         {
-            "CoordinationPlanName": "PM-Plan",
+            "CoordinationPlanName" :"PM-Plan",
             "CoordinationPatternNo": 2,
             "SplitPatternNo": 2,
             "CycleLength": 100,
-            "Offset": 51,
+            "Offset": 24,
             "CoordinationStartTime_Hour": 15,
-            "CoordinationStartTime_Minute": 30,
-            "CoordinationEndTime_Hour": 19,
-            "CoordinationEndTime_Minute": 0,
-            "CoordinationSplit": 25.0,
+            "CoordinationStartTime_Minute": 0,
+            "CoordinationEndTime_Hour": 18,
+            "CoordinationEndTime_Minute": 30,
+            "CoordinationSplit": 30.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
             "SplitPatternData": {
@@ -62,14 +62,14 @@
                     8
                 ],
                 "Split": [
-                    10,
-                    46,
-                    18,
-                    26,
-                    10,
-                    46,
-                    13,
-                    31
+                    15,
+                    52,
+                    0,
+                    0,
+                    0,
+                    67,
+                    0,
+                    23
                 ]
             }
         }

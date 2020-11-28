@@ -130,6 +130,6 @@
 		"TransitWeight": 1.0,
 		"TruckWeight": 1.0,
 		"DilemmaZoneRequestWeight": 20.0,
-		"CoordinationWeight": 1.0
+		"CoordinationWeight": 0.1
 	}
 }
