@@ -123,8 +123,9 @@ class CoordinationPlanManager:
                         "SplitData": splitTime
                     }
             })
-
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " + str(time.time())+ " is following: \n", self.coordinationSplitDataDictionary)
+        if bool (self.coordinationSplitDataDictionary):
+            print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " + str(time.time())+ " is following: \n", self.coordinationSplitDataDictionary)
+        
         return self.coordinationSplitDataDictionary
     
     def checkTimedOutCoordinationPlanClearingRequirement(self):

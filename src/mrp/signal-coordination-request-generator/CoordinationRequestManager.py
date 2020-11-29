@@ -76,7 +76,7 @@ class CoordinationRequestManager:
             remainderTime = currentTime % cycleLength
             # print("\n[" + str(datetime.datetime.now()) + "] " + "Elapsed Time in the Cycle at time " + str(time.time())+ " is ", remainderTime)
 
-            if coordinationStartTime - currentTime >= 0 and coordinationStartTime - currentTime <= cycleLength:
+            if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and (coordinationStartTime - currentTime <= cycleLength):
                 sendRequest = True
 
             elif cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
@@ -140,7 +140,7 @@ class CoordinationRequestManager:
         sendRequest = False
         currentTime_UTC = time.time()
 
-        if bool(self.coordinationPriorityRequestDictionary) and currentTime_UTC - self.requestSentTime >= self.requestTimedOutValue:
+        if bool(self.coordinationPriorityRequestDictionary) and (currentTime_UTC - self.requestSentTime) >= self.requestTimedOutValue:
             sendRequest = True
 
         return sendRequest
@@ -178,7 +178,7 @@ class CoordinationRequestManager:
             for i in range(noOfCoordinationRequest):
                 temporaryRequestUpdateTime = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime']
                 
-                if currentTime_UTC - temporaryRequestUpdateTime >= self.ETA_Update_Time:
+                if (currentTime_UTC - temporaryRequestUpdateTime) >= self.ETA_Update_Time:
                     self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] = self.coordinationPriorityRequestDictionary[
                         'CoordinationRequestList']['requestorInfo'][i]['ETA'] - (currentTime_UTC - temporaryRequestUpdateTime)
                     

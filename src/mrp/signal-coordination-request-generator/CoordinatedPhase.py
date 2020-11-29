@@ -26,7 +26,7 @@ class CoordinatedPhase:
         self.vehicleType = 0
         self.vehicleID = 0
         self.basicVehicleRole = 0
-        self.ETA = 0.0 //
+        self.ETA = 0.0
         self.coordinationSplit = 0.0
         self.priorityRequestType = 0
         self.requestUpdateTime = 0.0
