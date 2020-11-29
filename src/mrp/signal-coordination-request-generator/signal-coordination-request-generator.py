@@ -96,8 +96,7 @@ def main():
             
             if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
                 coordinationRequestManager.clearTimedOutCoordinationPlan()
-                coordinationSocket.sendto(coordinationPlanManager.getTimedOutSplitDataClearingRequest().encode(), prioritySolverAddress)
-                
+                                
         time.sleep(1)
     coordinationSocket.close()
     

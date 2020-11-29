@@ -23,7 +23,6 @@ The methods available from this class are the following:
 - getActiveCoordinationPlan(): Method to obtain the coordination parameters for the active coordination Plan
 - getSplitData(): Method to obtain the split data for the active coordination Plan
 - checkTimedOutCoordinationPlanClearingRequirement(): Method to check whether current coordination plan is timed-out or not 
-- getTimedOutSplitDataClearingRequest(): Method to create a json string for solver to clear the split data for timed-out Signal Coordination Plan
 - getCurrentTime(): Method to obtain the current time of today
 ***************************************************************************************
 """
@@ -150,17 +149,6 @@ class CoordinationPlanManager:
                     break
                     
         return clearTimedOutCoordinationPlan
-    
-    def getTimedOutSplitDataClearingRequest(self):
-        """
-        get a json string for solver to clear old split data
-        """
-        oldSplitDataClearingDictionary = json.dumps({
-                "MsgType": "ClearSplitData"
-            })
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Clear Old Coordination Plan with a message to Solver at time " + str(time.time())+ " is following: \n", oldSplitDataClearingDictionary)
-        
-        return oldSplitDataClearingDictionary
                 
     def getCurrentTime(self):
         """
