@@ -73,7 +73,7 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 
         else if ((jsonObject["MsgType"]).asString() == "ActiveCoordinationPlan")
             messageType = static_cast<int>(msgType::splitData); 
-
+        
         else
             std::cout << "Message type is unknown" << std::endl;
     }
@@ -589,6 +589,8 @@ void PriorityRequestSolver::GLPKSolver()
     double startOfSolve{};
     double endOfSolve{};
 
+    startOfSolve = GetSeconds();
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     char modFile[128] = "/nojournal/bin/NewModel.mod";
     glp_prob *mip;
     glp_tran *tran;
@@ -629,6 +631,8 @@ void PriorityRequestSolver::GLPKSolver()
     endOfSolve = GetSeconds();
     cout << "Success=" << success << endl;
     cout << "Time of Solve" << endOfSolve - startOfSolve << endl;
+    cout << "Time Now " << currentTime << endl;
+    cout << "GetSeconds" << GetSeconds() << endl;
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");
@@ -1895,40 +1899,6 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
     }
 }
 
-// void PriorityRequestSolver::loggingData(string jsonString)
-// {
-//     ofstream outputfile;
-//     ifstream infile;
-
-//     if (loggingStatus == true)
-//     {
-//         // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-//         outputfile << "\nCurrent Dat File at time : " << timenow << endl;
-//         infile.open("/nojournal/bin/NewModelData.dat");
-//         for (string line; getline(infile, line);)
-//         {
-//             outputfile << line << endl;
-//         }
-//         infile.close();
-
-//         outputfile << "\nCurrent Results File at time : " << timenow << endl;
-//         infile.open("/nojournal/bin/Results.txt");
-//         for (std::string line; getline(infile, line);)
-//         {
-//             outputfile << line << endl;
-//         }
-//         infile.close();
-
-//         outputfile << "\nFollowing Schedule will send to TCI at time " << timenow << endl;
-//         outputfile << jsonString << endl;
-
-//         outputfile.close();
-//     }
-// }
-
 /*
     - Loggers to log static signal timing plan data
 */
@@ -1945,20 +1915,6 @@ void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
         outputfile.close();
     }
 }
-
-// void PriorityRequestSolver::loggingPRSData(string jsonString)
-// {
-//     if (loggingStatus == true)
-//     {
-//         ofstream outputfile;
-//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-//         outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
-//         outputfile << jsonString << endl;
-//         outputfile.close();
-//     }
-// }
 
 /*
     - Loggers to log clear request string

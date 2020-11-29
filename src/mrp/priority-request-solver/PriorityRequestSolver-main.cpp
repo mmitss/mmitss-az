@@ -54,25 +54,27 @@ int main()
 
         if (msgType == static_cast<int>(msgType::signalPlan))
         {
-            cout << "Received Signal Timing Plan " << endl;
+            cout << "Received Signal Timing Plan " << priorityRequestSolver.GetSeconds() << endl;
             priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
         }
 
         else if (msgType == static_cast<int>(msgType::splitData))
         {
-            cout << "Received Split Data for Signal Coordination " << endl;
+            cout << "Received Split Data for Signal Coordination at time " << priorityRequestSolver.GetSeconds() << endl;
             priorityRequestSolver.getSignalCoordinationTimingPlan(receivedJsonString);
         }
 
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-            cout << "Received Priority Request from PRS" << endl;
+            cout << "Received Priority Request from PRS at time " << priorityRequestSolver.GetSeconds() << endl;
+
+
             priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
             priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
 
             std::string receivedSignalStatusString(receivedSignalStatusBuffer);
-            cout << "Received Signal Status" << endl;
+            cout << "Received Signal Status at time " << priorityRequestSolver.GetSeconds() << endl;
             if (priorityRequestSolver.getMessageType(receivedSignalStatusString) == static_cast<int>(msgType::currentPhaseStatus))
                 priorityRequestSolver.getCurrentSignalStatus(receivedSignalStatusString);
 
@@ -85,7 +87,7 @@ int main()
 
         else if (msgType == static_cast<int>(msgType::clearRequest))
         {
-            cout << "Received Clear Request " << endl;
+            cout << "Received Clear Request at time " << priorityRequestSolver.GetSeconds() << endl;
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             priorityRequestSolver.loggingClearRequestData(tciJsonString);
