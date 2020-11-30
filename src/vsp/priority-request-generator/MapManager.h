@@ -21,6 +21,9 @@
 #include "Position3D.h"
 #include "Map.h"
 
+using std::cout;
+using std::endl;
+
 class MapManager
 {
 private:

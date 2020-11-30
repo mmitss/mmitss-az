@@ -1,23 +1,24 @@
 {
-    "HostIp": "10.12.6.6",
-    "SourceDsrcDeviceIp": "10.12.6.7",
-    "IntersectionName": "speedway-cherry",
-    "MapPayload": "001282853802302030cfc20948dbbb6c29287a782c2a02dc051870a96008a000001400062df5e3d675eb068014144c35a03f2d3e2c01c96d04603a452250000c916200062c02140000020000c5c83954ce9920d60282898ca40ca5a7f2803f2d99a405e8244600018b00c500000080003171dd9eb3a6a84200a0a26425006969e360194b669b017a0910800062c0414000001400005cdb3d4da37381470282852168000290510001180522000002000005d72ca6daec281080282860188800000800001756260b6bb6e051c0a0a180722000002000005df06a8dae83814702828b020d000000200001d104ecc37e090d4120e4001058126800000400010e4107981c1944c8c7c0c9be027d9aff04a49a04f60245a00020b028d000000400011c2ccefe38130a25506607804fb0244100020602d0800000800001bc14f16c8160a93027d8b0315000000a0003118919db56e0dfc1009f66ad043fed013d8d5e148058027d9ab7b8ff6a04fb0a41e0000921640004581aa8000004000188b7d23dab6ecfe3c04fb3569b5ff9c09ec6aeabc025813ecd5c4d7f9b027d8120d00004581ca8000004000188b4d759ab6d4fe3c04fb35691dffcc09ec6aed7c025813ecd5c0e7fce027d8120b00004581ea8000002800088ab5dd5ab378fe5404fb2c6a0f9b027d8522c8000a9101000518106200000200000445d5e4c03f9f5c027d86045880000080000112a623300bf7da409f61812620000020000043f9bfcc02fdf11027d8b04dd000000200001b4332aa37e0f3b01224400085828e800000400020dcf596e1c00397437e6f1898e26680004fb11f4ffd349000731a090b800042c15740000010000470e5cd08df69e0e1bda343e0905400041816820000020000072c6d1c11e9ee118",
-    "IntersectionID" : 26593,
-    "RegionalID" : 0,
+	"HostIp": "10.12.6.6",
+	"SourceDsrcDeviceIp": "10.12.6.7",
+	"IntersectionName": "speedway-cherry",
+	"MapPayload": "001282853802302030cfc20948dbbb6c29287a782c2a02dc051870a96008a000001400062df5e3d675eb068014144c35a03f2d3e2c01c96d04603a452250000c916200062c02140000020000c5c83954ce9920d60282898ca40ca5a7f2803f2d99a405e8244600018b00c500000080003171dd9eb3a6a84200a0a26425006969e360194b669b017a0910800062c0414000001400005cdb3d4da37381470282852168000290510001180522000002000005d72ca6daec281080282860188800000800001756260b6bb6e051c0a0a180722000002000005df06a8dae83814702828b020d000000200001d104ecc37e090d4120e4001058126800000400010e4107981c1944c8c7c0c9be027d9aff04a49a04f60245a00020b028d000000400011c2ccefe38130a25506607804fb0244100020602d0800000800001bc14f16c8160a93027d8b0315000000a0003118919db56e0dfc1009f66ad043fed013d8d5e148058027d9ab7b8ff6a04fb0a41e0000921640004581aa8000004000188b7d23dab6ecfe3c04fb3569b5ff9c09ec6aeabc025813ecd5c4d7f9b027d8120d00004581ca8000004000188b4d759ab6d4fe3c04fb35691dffcc09ec6aed7c025813ecd5c0e7fce027d8120b00004581ea8000002800088ab5dd5ab378fe5404fb2c6a0f9b027d8522c8000a9101000518106200000200000445d5e4c03f9f5c027d86045880000080000112a623300bf7da409f61812620000020000043f9bfcc02fdf11027d8b04dd000000200001b4332aa37e0f3b01224400085828e800000400020dcf596e1c00397437e6f1898e26680004fb11f4ffd349000731a090b800042c15740000010000470e5cd08df69e0e1bda343e0905400041816820000020000072c6d1c11e9ee118",
+	"IntersectionID": 26593,
+	"RegionalID": 0,
 	"DataCollectorIP": "172.3.1.91",
-    "HMIControllerIP": "10.12.6.56",
-    "MessageDistributorIP": "10.12.6.20",
+	"HMIControllerIP": "10.12.6.56",
+	"MessageDistributorIP": "10.12.6.20",
 	"PriorityRequestGeneratorServerIP": "10.12.6.20",
-    "VehicleType": "Transit",
+	"VehicleType": "Transit",
 	"Logging": "True",
 	"SRMTimedOutTime": 10.0,
+	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
-    "PortNumber":
-	{
-		"MessageTransceiver":
-		{
+	"CoordinationPlanCheckingTimeInterval": 300,
+	"PeerDataDecoding": false,
+	"PortNumber": {
+		"MessageTransceiver": {
 			"MessageSender": 10003,
 			"MessageReceiver": 10002,
 			"MessageEncoder": 10003,
@@ -26,7 +27,7 @@
 		"MessageDistributor": 5000,
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
-        "HostBsmDecoder": 10005,
+		"HostBsmDecoder": 10005,
 		"TrajectoryAware": 20001,
 		"PriorityRequestServer": 20002,
 		"PrioritySolver": 20003,
@@ -35,23 +36,22 @@
 		"TrafficControllerCurrPhaseListener": 20006,
 		"TrafficControllerTimingPlanSender": 20007,
 		"PerformanceObserver": 20008,
-        "HMIController": 20009,
-        "PrioritySolverToTCIInterface": 20010,
-        "SignalCoordination": 20011,
+		"HMIController": 20009,
+		"PrioritySolverToTCIInterface": 20010,
+		"SignalCoordination": 20011,
 		"MapSPaTBroadcaster": 6053,
 		"DsrcImmediateForwarder": 1516,
-        "PriorityRequestServer_SendSSM": 50003,
-        "DataCollector": 30006,
-        "SnmpEngine": 20020,
+		"PriorityRequestServer_SendSSM": 50003,
+		"DataCollector": 30006,
+		"SnmpEngine": 20020,
 		"SnmpEngineInterface": 20021,
 		"PriorityRequestGeneratorServer": 20022,
 		"TrajectoryAware_MapEngineInterface": 20023,
 		"MapEngine": 20024,
 		"LightSirenStatusManager": 20025,
-		"PeerToPeerPriority": 20026,
-		"SystemPerformanceDataCollector": 20027
+		"PeerToPeerPriority": 20026
 	},
-    "psid": {
+	"psid": {
 		"map": "8002",
 		"spat": "8002",
 		"rsm": "8002",
@@ -85,55 +85,51 @@
 		"ssm": "ALT",
 		"bsm": "CONT"
 	},
-	"SignalController": 
-	{
+	"SignalController": {
 		"IpAddress": "10.12.6.104",
 		"NtcipPort": 503,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
-        "Vendor": "Econolite",
-        "TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
-        "InactiveVehPhases":[],
-        "InactivePedPhases":[],
-		"SplitPhases":
-        {
-            "1": 6,
-            "3": 8,
-            "5": 2,
-            "7": 4       
-        },
-	    "PermissiveEnabled":
-        {
-            "1": true,
-            "3": true,
-            "5": true,
-            "7": true
-        }
+		"Vendor": "Econolite",
+		"TimingPlanMib": "/nojournal/bin/EconoliteMib.py",
+		"InactiveVehPhases": [],
+		"InactivePedPhases": [],
+		"SplitPhases": {
+			"1": 6,
+			"3": 8,
+			"5": 2,
+			"7": 4
+		},
+		"PermissiveEnabled": {
+			"1": true,
+			"3": true,
+			"5": true,
+			"7": true
+		}
 	},
-     "IntersectionReferencePoint":
-    {
-        "Latitude_DecimalDegree":123,
-        "Longitude_DecimalDegree":321,
-        "Elevation_Meter":213
-    },
-    "PriorityParameter": {
-        "EmergencyVehicleWeight":1.0,
-        "EmergencyVehicleSplitPhaseWeight":0.1,        
-        "TransitWeight":1.0,
-        "TruckWeight":1.0,
-        "DilemmaZoneRequestWeight": 20.0,
-        "CoordinationWeight":1,
-        "CoordinationPhase1":2,
-        "CoordinationPhase2":6,
-        "VirtualPriorityRequestPhase":1,
-        "VirtualPriorityRequestETA":90,
-        "CoordinationStartTime_Hour": 0.0,
-        "CoordinationEndTime_Hour": 24.0,
-        "CoordinationStartTime_Minute": 30.0,
-        "CoordinationEndTime_Minute": 30.0,
-        "Offset": 25.0,
-        "CycleLength":105.0,
-        "CoordinationDuration":25.0,
-        "MaxGreen":100.0    
-    }
+	"IntersectionReferencePoint": {
+		"Latitude_DecimalDegree": 123,
+		"Longitude_DecimalDegree": 321,
+		"Elevation_Meter": 213
+	},
+	"DataTransfer": {
+		"FtpServerPort": 9090,
+		"StartTime": {
+			"Hour": 18,
+			"Minute": 30
+		},
+		"EndTime": {
+			"Hour": 19,
+			"Minute": 30
+		},
+		"MaxRetries": 3
+	},
+	"PriorityParameter": {
+		"EmergencyVehicleWeight": 1.0,
+		"EmergencyVehicleSplitPhaseWeight": 0.1,
+		"TransitWeight": 1.0,
+		"TruckWeight": 1.0,
+		"DilemmaZoneRequestWeight": 20.0,
+		"CoordinationWeight": 1.0
+	}
 }

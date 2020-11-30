@@ -25,11 +25,12 @@ int main()
 {
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
 
     PriorityRequestGenerator PRG;
     MapManager mapManager;
@@ -39,7 +40,6 @@ int main()
     SignalRequest signalRequest;
 
     //Socket Communication
-
     UdpSocket priorityRequestGeneratorSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestGenerator"].asInt()));
     const string HostIP = jsonObject["HostIp"].asString();
     const string HMIControllerIP = jsonObject["HMIControllerIP"].asString();
@@ -47,10 +47,10 @@ int main()
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
         
-    delete reader;
+    
     char receiveBuffer[40960];
-    std::string srmJsonString{};
-    std::string prgStatusJsonString{};
+    string srmJsonString{};
+    string prgStatusJsonString{};
     int msgType{};
     PRG.getLoggingStatus();
     PRG.setVehicleType();
@@ -58,7 +58,7 @@ int main()
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        std::string receivedJsonString(receiveBuffer);
+        string receivedJsonString(receiveBuffer);
         msgType = PRG.getMessageType(receivedJsonString);
 
         if (msgType == static_cast<int>(msgType::lightSirenStatus))
@@ -89,7 +89,7 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            std::cout << "SSM is received " << std::endl;
+            cout << "SSM is received " << endl;
             signalStatus.reset();
         }
     }

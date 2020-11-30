@@ -23,9 +23,25 @@
 #include <algorithm>
 #include <cmath>
 #include <UdpSocket.h>
+#include "msgEnum.h"
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
+    Json::Value jsonObject;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
+
+    EmergencyVehicleWeight = jsonObject["PriorityParameter"]["EmergencyVehicleWeight"].asDouble();
+    EmergencyVehicleSplitPhaseWeight = jsonObject["PriorityParameter"]["EmergencyVehicleSplitPhaseWeight"].asDouble();
+    TransitWeight = jsonObject["PriorityParameter"]["TransitWeight"].asDouble();
+    TruckWeight = jsonObject["PriorityParameter"]["TruckWeight"].asDouble();
+    DilemmaZoneRequestWeight = jsonObject["PriorityParameter"]["DilemmaZoneRequestWeight"].asDouble();
+    CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
 }
 
 /*
@@ -35,31 +51,32 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 {
     int messageType{};
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
-    if ((jsonObject["MsgType"]).asString() == "PriorityRequest")
+	if (parsingSuccessful == true)
     {
-        messageType = static_cast<int>(msgType::priorityRequest);
-    }
+        if ((jsonObject["MsgType"]).asString() == "PriorityRequest")
+            messageType = static_cast<int>(msgType::priorityRequest);
 
-    else if ((jsonObject["MsgType"]).asString() == "ClearRequest")
-    {
-        messageType = static_cast<int>(msgType::clearRequest);
-    }
+        else if ((jsonObject["MsgType"]).asString() == "ClearRequest")
+            messageType = static_cast<int>(msgType::clearRequest);
 
-    else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseStatus")
-    {
-        messageType = static_cast<int>(msgType::currentPhaseStatus);
-    }
+        else if ((jsonObject["MsgType"]).asString() == "ActiveTimingPlan")
+            messageType = static_cast<int>(msgType::signalPlan);
 
-    else if ((jsonObject["MsgType"]).asString() == "ActiveTimingPlan")
-    {
-        messageType = static_cast<int>(msgType::signalPlan);
-    }
+        else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseStatus")
+            messageType = static_cast<int>(msgType::currentPhaseStatus); 
 
-    else
-        std::cout << "Message type is unknown" << std::endl;
+        else if ((jsonObject["MsgType"]).asString() == "ActiveCoordinationPlan")
+            messageType = static_cast<int>(msgType::splitData); 
+        
+        else
+            std::cout << "Message type is unknown" << std::endl;
+    }
 
     return messageType;
 }
@@ -69,16 +86,17 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 */
 void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 {
-    int noOfRequest{};
     RequestList requestList;
-    Json::Value jsonObject;
-    Json::Reader reader;
-
     priorityRequestList.clear();
-    // loggingPRSData(jsonString);
+    Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
-    reader.parse(jsonString.c_str(), jsonObject);
-    noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
+    int noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
+    
     for (int i = 0; i < noOfRequest; i++)
     {
         requestList.reset();
@@ -98,12 +116,6 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.vehicleDistanceFromStopBar = requestList.vehicleSpeed * 3.28084 * requestList.vehicleETA;
         priorityRequestList.push_back(requestList);
     }
-
-    //This is optional. For priniting few attributes of the priority request list in the console
-    // for (size_t i = 0; i < priorityRequestList.size(); i++)
-    // {
-    //     cout << priorityRequestList[i].vehicleID << " " << priorityRequestList[i].basicVehicleRole << " " << priorityRequestList[i].vehicleETA << endl;
-    // }
 }
 
 /*
@@ -526,7 +538,6 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
 */
 void PriorityRequestSolver::setOptimizationInput()
 {
-
     if (emergencyVehicleStatus == true)
     {
         createDilemmaZoneRequestList();
@@ -536,13 +547,22 @@ void PriorityRequestSolver::setOptimizationInput()
         getEVPhases();
         getEVTrafficSignalPlan();
         generateEVModFile();
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV,EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
+    else if (signalCoordinationRequestStatus == true)
+    {   
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
+        solverDataManager.addAssociatedSignalGroup();
+        solverDataManager.modifyGreenMax();
+        solverDataManager.generateDatFile(emergencyVehicleStatus);
+    }
+    
     else
-    {
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan);
+    {    
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
@@ -569,6 +589,8 @@ void PriorityRequestSolver::GLPKSolver()
     double startOfSolve{};
     double endOfSolve{};
 
+    startOfSolve = GetSeconds();
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     char modFile[128] = "/nojournal/bin/NewModel.mod";
     glp_prob *mip;
     glp_tran *tran;
@@ -609,6 +631,8 @@ void PriorityRequestSolver::GLPKSolver()
     endOfSolve = GetSeconds();
     cout << "Success=" << success << endl;
     cout << "Time of Solve" << endOfSolve - startOfSolve << endl;
+    cout << "Time Now " << currentTime << endl;
+    cout << "GetSeconds" << GetSeconds() << endl;
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");
@@ -627,6 +651,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     string scheduleJsonString{};
 
     findEVInList();
+    findCoordinationRequestInList();
     setOptimizationInput();
     GLPKSolver();
 
@@ -637,16 +662,27 @@ string PriorityRequestSolver::getScheduleforTCI()
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
         scheduleManager.createEventList();
+        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+        scheduleJsonString = scheduleManager.createScheduleJsonString();
+    }
+
+    else if (signalCoordinationRequestStatus == true)
+    {    
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
+        scheduleManager.obtainRequiredSignalGroup();
+        scheduleManager.readOptimalSignalPlan();
+        scheduleManager.createEventList();
+        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
 
     else
     {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
-
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
         scheduleManager.createEventList();
+        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
 
@@ -803,11 +839,13 @@ void PriorityRequestSolver::validateEVTrafficSignalPlan()
 string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 {
     string currentPhaseStatusRequestJsonString{};
-    Json::FastWriter fastWriter;
     Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
 
     jsonObject["MsgType"] = "CurrNextPhaseRequest";
-    currentPhaseStatusRequestJsonString = fastWriter.write(jsonObject);
+    currentPhaseStatusRequestJsonString = Json::writeString(builder, jsonObject);
 
     return currentPhaseStatusRequestJsonString;
 }
@@ -819,7 +857,7 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
     - If red clearance time for both phases are not same, one phase can be in red rest. In that case init time can be negative. The method sets init time same as the init time of other starting phase..
     - If starting phase is on rest or elapsed green time is more than gmax, the method sets the elapsed green time min green time.
 */
-void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
+void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
     int temporaryPhase{};
     int temporaryCurrentPhase{};
@@ -830,12 +868,15 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
 
-    Json::Value jsonObject_PhaseStatus;
-    Json::Reader reader_PhaseStatus;
-    reader_PhaseStatus.parse(receivedJsonString.c_str(), jsonObject_PhaseStatus);
-    const Json::Value values = jsonObject_PhaseStatus["currentPhases"];
+    Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
+      
+    const Json::Value values = jsonObject["currentPhases"];
 
-    // loggingTCIData(receivedJsonString);
     for (int i = 0; i < 2; i++)
     {
         for (size_t j = 0; j < values[i].getMemberNames().size(); j++)
@@ -868,7 +909,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
         {
             for (int k = 0; k < 2; k++)
             {
-                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][k]).asInt();
+                temporaryNextPhase = (jsonObject["nextPhases"][k]).asInt();
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
                 if (temporaryNextPhase > 0 && temporaryNextPhase < 5)
@@ -890,7 +931,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string receivedJsonString)
         {
             for (int k = 0; k < 2; k++)
             {
-                temporaryNextPhase = (jsonObject_PhaseStatus["nextPhases"][k]).asInt();
+                temporaryNextPhase = (jsonObject["nextPhases"][k]).asInt();
                 if (temporaryCurrentPhase == temporaryNextPhase) //current phase and next phase can be same in case of T intersection.
                                                                  //Like the scenario when phase 4 is only yellow/red since phase 8 is missing. phase 2 and 6 was green before phase 4.
                                                                  //In this case current phase can be following :{"currentPhases": [{"Phase": 4, "State": "yellow", "ElapsedTime": 5}, {"Phase": 6, "State": "red", "ElapsedTime": 136}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
@@ -970,7 +1011,11 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     TrafficControllerData::TrafficSignalPlan signalPlan;
 
     Json::Value jsonObject;
-    Json::Reader reader;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
     loggingSignalPlanData(jsonString);
     trafficSignalPlan.clear();
@@ -987,55 +1032,36 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     P12.clear();
     P21.clear();
     P22.clear();
-    reader.parse(jsonString.c_str(), jsonObject);
-    const Json::Value values = jsonObject["TimingPlan"];
+
+    // const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
-    // cout << "Total Phase No: " << noOfPhase << endl;
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         PhaseNumber.push_back((jsonObject["TimingPlan"]["PhaseNumber"][i]).asInt());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         PedWalk.push_back((jsonObject["TimingPlan"]["PedWalk"][i]).asDouble());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         PedClear.push_back((jsonObject["TimingPlan"]["PedClear"][i]).asDouble());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         MinGreen.push_back((jsonObject["TimingPlan"]["MinGreen"][i]).asDouble());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         Passage.push_back(((jsonObject["TimingPlan"]["Passage"][i]).asDouble()));
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         MaxGreen.push_back((jsonObject["TimingPlan"]["MaxGreen"][i]).asDouble());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         YellowChange.push_back(((jsonObject["TimingPlan"]["YellowChange"][i]).asDouble()));
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         RedClear.push_back(((jsonObject["TimingPlan"]["RedClear"][i]).asDouble()));
-    }
 
     for (int i = 0; i < noOfPhase; i++)
-    {
         PhaseRing.push_back((jsonObject["TimingPlan"]["PhaseRing"][i]).asInt());
-    }
 
     for (int i = 0; i < noOfPhase; i++)
     {
@@ -1071,6 +1097,43 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 }
 
 /*
+    - The following method modify the gmax of the traffic signal plan based on Split data
+*/
+void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
+{
+    TrafficControllerData::TrafficSignalPlan signalPlan;
+    double splitValue{};
+    Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
+
+    loggingSignalPlanData(jsonString);
+    trafficSignalPlan_SignalCoordination.clear();
+    int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
+    
+    for (int i = 0; i < noOfSplitData; i++)
+    {
+        splitValue = jsonObject["TimingPlan"]["SplitData"][i].asDouble();
+        signalPlan.reset();
+       
+        signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
+        signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
+        signalPlan.redClear = trafficSignalPlan[i].redClear;
+        signalPlan.minGreen = trafficSignalPlan[i].minGreen;
+        signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
+        if(splitValue != 0)
+            signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
+            
+        trafficSignalPlan_SignalCoordination.push_back(signalPlan);
+        
+    }
+    modifyCoordinationSignalTimingPlan();
+}
+
+/*
     - Method printing the traffic signal plan
 */
 void PriorityRequestSolver::printSignalPlan()
@@ -1080,6 +1143,7 @@ void PriorityRequestSolver::printSignalPlan()
         cout << trafficSignalPlan[i].phaseNumber << " " << trafficSignalPlan[i].phaseRing << " " << trafficSignalPlan[i].minGreen << endl;
     }
 }
+
 /*
     - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
     - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
@@ -1121,8 +1185,50 @@ void PriorityRequestSolver::modifySignalTimingPlan()
 }
 
 /*
+    - The method contains the same kind of logic as modifySignalTimingPlan(). This method modifies coordination signal timing plan.
+    - If Phase information is missing (for example T-intersection) for the through phases, the following method will fill the information based on through or associated phases
+    - The method finds the missing through phases and copy the data of associated through phases. For example if phase 4 data is missing, then fill the missing data with phase 8 data.
+*/
+void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
+{
+    int temporarySignalGroup{};
+    int temporaryCompitableSignalGroup{};
+    
+    for (size_t i = 0; i < trafficSignalPlan_SignalCoordination.size(); i++)
+    {
+        temporarySignalGroup = trafficSignalPlan_SignalCoordination[i].phaseNumber;
+
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
+
+        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0))
+        {
+            if (temporarySignalGroup < 5)
+                temporaryCompitableSignalGroup = temporarySignalGroup + 4;
+            else if (temporarySignalGroup > 4)
+                temporaryCompitableSignalGroup = temporarySignalGroup - 4;
+
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+
+            findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
+            findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
+            findSignalGroupOnList->minGreen = findCompitableSignalGroupOnList->minGreen;
+            findSignalGroupOnList->passage = findCompitableSignalGroupOnList->passage;
+            findSignalGroupOnList->maxGreen = findCompitableSignalGroupOnList->maxGreen;
+            findSignalGroupOnList->yellowChange = findCompitableSignalGroupOnList->yellowChange;
+            findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
+        }
+
+        else 
+            continue;
+    }
+}
+
+/*
     - Method for generating Mod File for transit and truck
 */
+
 void PriorityRequestSolver::generateModFile()
 {
     // modifySignalTimingPlan();
@@ -1188,9 +1294,9 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
 
     FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
-    FileMod << "param PrioWeigth { t in T}, >=0, default 0;  \n";
+    FileMod << "param PrioWeight { t in T}, >=0, default 0;  \n";
     FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
-    FileMod << "param priorityTypeWeigth{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeigth[t] else 0);  \n";
+    FileMod << "param priorityTypeWeight{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeight[t] else 0);  \n";
     FileMod << "param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);\n";
     FileMod << "param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);\n";
     FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
@@ -1270,7 +1376,7 @@ void PriorityRequestSolver::generateModFile()
     FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
     //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
@@ -1409,9 +1515,9 @@ void PriorityRequestSolver::generateEVModFile()
     // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
     FileMod << "param cycle, :=" << 100 << ";\n";
     FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
-    FileMod << "param PrioWeigth { t in T}, >=0, default 0;  \n";
+    FileMod << "param PrioWeight { t in T}, >=0, default 0;  \n";
     FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
-    FileMod << "param priorityTypeWeigth{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeigth[t] else 0);  \n";
+    FileMod << "param priorityTypeWeight{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeight[t] else 0);  \n";
     FileMod << "param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);\n";
     FileMod << "param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);\n";
     FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
@@ -1559,7 +1665,7 @@ void PriorityRequestSolver::generateEVModFile()
     FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeigth[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     /****************************************DilemmaZone Constraints ************************************/
     FileMod << "s.t. DilemmaZoneDelay1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
@@ -1648,7 +1754,7 @@ bool PriorityRequestSolver::findEVInList()
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            if (priorityRequestList[i].vehicleType == 2)
+            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
             {
                 emergencyVehicleStatus = true;
                 break;
@@ -1663,6 +1769,37 @@ bool PriorityRequestSolver::findEVInList()
 }
 
 /*
+    - This method checks whether signal coordination priority request is in the list or not
+*/
+bool PriorityRequestSolver::findCoordinationRequestInList()
+{
+    if (priorityRequestList.empty())
+        signalCoordinationRequestStatus = false;
+    
+    else
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if (priorityRequestList[i].vehicleType == SignalCoordinationVehicleType)
+            {
+                signalCoordinationRequestStatus = true;
+                break;
+            }
+
+            else
+                signalCoordinationRequestStatus = false;
+        }
+    }
+
+    return signalCoordinationRequestStatus;
+}
+
+bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
+{
+    return optimalSolutionStatus;
+}
+
+/*
     - PRSolver obtains the signal timing plan from the TCI. At the start of the program it asks TCI to send the static signal timing plan 
     - This method creats that signal timing plan request string.
 */
@@ -1670,9 +1807,12 @@ string PriorityRequestSolver::getSignalTimingPlanRequestString()
 {
     std::string jsonString{};
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
     jsonObject["MsgType"] = "TimingPlanRequest";
-    jsonString = fastWriter.write(jsonObject);
+    jsonString = Json::writeString(builder, jsonObject);
 
     return jsonString;
 }
@@ -1692,11 +1832,14 @@ bool PriorityRequestSolver::logging()
     string logging{};
     ofstream outputfile;
     Json::Value jsonObject;
-    Json::Reader reader;
-    ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
 
-    string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);
     logging = (jsonObject["Logging"]).asString();
 
     if (logging == "True")
@@ -1756,40 +1899,6 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
     }
 }
 
-// void PriorityRequestSolver::loggingData(string jsonString)
-// {
-//     ofstream outputfile;
-//     ifstream infile;
-
-//     if (loggingStatus == true)
-//     {
-//         // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-//         outputfile << "\nCurrent Dat File at time : " << timenow << endl;
-//         infile.open("/nojournal/bin/NewModelData.dat");
-//         for (string line; getline(infile, line);)
-//         {
-//             outputfile << line << endl;
-//         }
-//         infile.close();
-
-//         outputfile << "\nCurrent Results File at time : " << timenow << endl;
-//         infile.open("/nojournal/bin/Results.txt");
-//         for (std::string line; getline(infile, line);)
-//         {
-//             outputfile << line << endl;
-//         }
-//         infile.close();
-
-//         outputfile << "\nFollowing Schedule will send to TCI at time " << timenow << endl;
-//         outputfile << jsonString << endl;
-
-//         outputfile.close();
-//     }
-// }
-
 /*
     - Loggers to log static signal timing plan data
 */
@@ -1806,20 +1915,6 @@ void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
         outputfile.close();
     }
 }
-
-// void PriorityRequestSolver::loggingPRSData(string jsonString)
-// {
-//     if (loggingStatus == true)
-//     {
-//         ofstream outputfile;
-//         outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
-//         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-//         outputfile << "\nFollowing data is received from PRS at time " << timenow << endl;
-//         outputfile << jsonString << endl;
-//         outputfile.close();
-//     }
-// }
 
 /*
     - Loggers to log clear request string
