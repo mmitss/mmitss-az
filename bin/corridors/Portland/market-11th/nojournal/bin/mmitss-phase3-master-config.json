@@ -1,0 +1,126 @@
+{
+	"HostIp": "10.12.6.3",
+	"SourceDsrcDeviceIp": "10.12.6.4",
+	"IntersectionName": "market-11th",
+	"MapPayload": "001280a438013020311cbe0550c5d65322295e76110402dc05187028c0091000001000001df0bcd7911668813ec300444000004000007351ba5e50199804fb16021a00000100000113f6e5832ad3bc050f0240600010b00cd00000080000082286ec18869f302878120500008580c280000020000871d7cb149afe02ebb7fa0027b0120280004580a2800000200010646fd00b43df418bde5d93d9628404f60a405000152028000c",
+	"IntersectionID": 36447,
+	"RegionalID": 0,
+	"DataCollectorIP": "172.3.1.91",
+	"HMIControllerIP": "10.12.7.3",
+	"MessageDistributorIP": "10.12.6.20",
+	"PriorityRequestGeneratorServerIP": "10.12.6.20",
+	"VehicleType": "Transit",
+	"Logging": "True",
+	"SRMTimedOutTime": 10.0,
+	"ScheduleExecutionBuffer": 1.0,
+	"SystemPerformanceTimeInterval": 300.0,
+	"ApplicationPlatform": "roadside",
+	"PeerDataDecoding": false,
+	"PortNumber": {
+		"MessageTransceiver": {
+			"MessageSender": 10003,
+			"MessageReceiver": 10002,
+			"MessageEncoder": 10003,
+			"MessageDecoder": 10002
+		},
+		"MessageDistributor": 5000,
+		"RsmDecoder": 10006,
+		"OBUBSMReceiver": 10005,
+		"HostBsmDecoder": 10005,
+		"TrajectoryAware": 20001,
+		"PriorityRequestServer": 20002,
+		"PrioritySolver": 20003,
+		"PriorityRequestGenerator": 20004,
+		"TrafficControllerInterface": 20005,
+		"TrafficControllerCurrPhaseListener": 20006,
+		"TrafficControllerTimingPlanSender": 20007,
+		"PerformanceObserver": 20008,
+		"HMIController": 20009,
+		"PrioritySolverToTCIInterface": 20010,
+		"SignalCoordination": 20011,
+		"MapSPaTBroadcaster": 6053,
+		"DsrcImmediateForwarder": 1516,
+		"PriorityRequestServer_SendSSM": 50003,
+		"DataCollector": 30001,
+		"SnmpEngine": 20020,
+		"SnmpEngineInterface": 20021,
+		"PriorityRequestGeneratorServer": 20022,
+		"TrajectoryAware_MapEngineInterface": 20023,
+		"MapEngine": 20024,
+		"LightSirenStatusManager": 20025,
+		"PeerToPeerPriority": 20026
+	},
+	"psid": {
+		"map": "8002",
+		"spat": "8002",
+		"rsm": "8002",
+		"srm": "8002",
+		"ssm": "8002",
+		"bsm": "20"
+	},
+	"msgId": {
+		"map": "0012",
+		"spat": "0013",
+		"rsm": "0021",
+		"srm_lower": "001d",
+		"srm_upper": "001D",
+		"ssm_lower": "001e",
+		"ssm_upper": "001E",
+		"bsm": "0014"
+	},
+	"TxChannel": {
+		"map": 172,
+		"spat": 172,
+		"rsm": 172,
+		"srm": 182,
+		"ssm": 182,
+		"bsm": 172
+	},
+	"TxMode": {
+		"map": "CONT",
+		"spat": "CONT",
+		"rsm": "CONT",
+		"srm": "ALT",
+		"ssm": "ALT",
+		"bsm": "CONT"
+	},
+	"SignalController": {
+		"IpAddress": "10.12.6.104",
+		"NtcipPort": 501,
+		"TimingPlanUpdateInterval_sec": 600,
+		"NtcipBackupTime_sec": 300,
+		"Vendor": "MaxTime",
+		"TimingPlanMib": "StandardMib",
+		"InactiveVehPhases": [],
+		"InactivePedPhases": [],
+		"SplitPhases": {
+			"1": 6,
+			"3": 8,
+			"5": 2,
+			"7": 4
+		},
+		"PermissiveEnabled": {
+			"1": true,
+			"3": true,
+			"5": true,
+			"7": true
+		}
+	},
+	"IntersectionReferencePoint": {
+		"Latitude_DecimalDegree": 45.51427385044077,
+		"Longitude_DecimalDegree": -122.68634973316247,
+		"Elevation_Meter": 260
+	},
+	"DataTransfer": {
+		"FtpServerPort": 9090,
+		"StartTime": {
+			"Hour": 18,
+			"Minute": 30
+		},
+		"EndTime": {
+			"Hour": 19,
+			"Minute": 30
+		},
+		"MaxRetries": 3
+	}
+}

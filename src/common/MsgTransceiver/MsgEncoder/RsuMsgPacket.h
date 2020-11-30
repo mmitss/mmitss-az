@@ -10,7 +10,7 @@ class RsuMsgPacket
         int priority = 7;
         std::string txMode{};
         int txChannel{};
-        std::string txInterval = "";
+        std::string txInterval = 0;
         std::string deliveryStart = "";
         std::string deliveryStop = "";
         std::string signature = "False";
