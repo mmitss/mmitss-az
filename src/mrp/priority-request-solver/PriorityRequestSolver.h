@@ -107,6 +107,7 @@ public:
   void getEVPhases();
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string jsonString);
+  void modifyTrafficControllerStatus();
   void validateTrafficControllerStatus();
   void validateEVTrafficSignalPlan();
   void loggingSignalPlanData(string jsonString);
