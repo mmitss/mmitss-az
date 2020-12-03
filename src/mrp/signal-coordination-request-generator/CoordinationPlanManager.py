@@ -43,6 +43,8 @@ class CoordinationPlanManager:
         self.coordinationPlanName = ""
         self.coordinationParametersDictionary = {}
         self.coordinationSplitDataDictionary = {}
+        self.coordinatedPhase1 = 0
+        self.coordinatedPhase2 = 0
 
     def checkActiveCoordinationPlan(self):
         """
@@ -108,6 +110,8 @@ class CoordinationPlanManager:
             
         for parameters in self.coordinationConfigData['CoordinationParameters']:
             if self.coordinationPlanName == parameters['CoordinationPlanName']:
+                self.coordinatedPhase1 = parameters['CoordinatedPhase1']
+                self.coordinatedPhase2 = parameters['CoordinatedPhase2']
                 for splitData in parameters['SplitPatternData']['PhaseNumber']:
                     phaseNumber.append(splitData)
                 for splitData in parameters['SplitPatternData']['Split']:
@@ -116,6 +120,8 @@ class CoordinationPlanManager:
         if len(splitTime):
             self.coordinationSplitDataDictionary = json.dumps({
                 "MsgType": "ActiveCoordinationPlan",
+                "CoordinatedPhase1": self.coordinatedPhase1,
+                "CoordinatedPhase2": self.coordinatedPhase2,
                 "TimingPlan":
                     {
                         "NoOfPhase": 8,
