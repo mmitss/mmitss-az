@@ -859,7 +859,7 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 */
 void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
-    int temporaryPhase{};
+    // int temporaryPhase{};
     int temporaryCurrentPhase{};
     int temporaryNextPhase{};
     string temporaryPhaseState{};
@@ -965,20 +965,88 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 
     trafficControllerStatus.push_back(tcStatus);
     validateTrafficControllerStatus();
-    // If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
-    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-    {
-        temporaryPhase = trafficControllerStatus[i].startingPhase1;
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-        if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-            trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+    modifyTrafficControllerStatus();    
+}
+/* 
+- If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
+*/
+void PriorityRequestSolver::modifyTrafficControllerStatus()
+{
+    bool coordinationRequestStatus{false};
+    int temporaryPhase{};
 
-        temporaryPhase = trafficControllerStatus[i].startingPhase2;
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-        if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-            trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        if (priorityRequestList[i].vehicleType == SignalCoordinationVehicleType)
+        {
+            coordinationRequestStatus = true;
+            break;
+        }
+
+        else
+            coordinationRequestStatus = false;
+    }
+
+    if (coordinationRequestStatus == true)
+    {
+        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+        {
+            if (trafficControllerStatus[i].startingPhase1 == coordinatedPhase1)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase1;
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+            }
+            // For non-coordinated phases
+            else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase1;
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen)
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - 1.0;
+            }
+            // For coordinated phases
+            if (trafficControllerStatus[i].startingPhase2 == coordinatedPhase2)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase2;
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+            }
+            // For non-coordinated phases
+            else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2)
+            {
+                temporaryPhase = trafficControllerStatus[i].startingPhase2;
+                vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen)
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - 1.0;
+            }
+        }
+
+
+    }
+
+    else
+    {   
+        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+        {
+            temporaryPhase = trafficControllerStatus[i].startingPhase1;
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+            temporaryPhase = trafficControllerStatus[i].startingPhase2;
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+        }
     }
 }
 
@@ -1113,6 +1181,8 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     loggingSignalPlanData(jsonString);
     trafficSignalPlan_SignalCoordination.clear();
     int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
+    coordinatedPhase1 = jsonObject["CoordinatedPhase1"].asInt();
+    coordinatedPhase2 = jsonObject["CoordinatedPhase2"].asInt();
     
     for (int i = 0; i < noOfSplitData; i++)
     {
