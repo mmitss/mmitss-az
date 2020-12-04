@@ -77,7 +77,7 @@ def main():
         if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
             coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
             coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-        
+            
         # Check if it is required to generate coordination requests to avoid PRS timed-out
         # Formulate a json string for coordination requests and send it to the PRS 
         elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):

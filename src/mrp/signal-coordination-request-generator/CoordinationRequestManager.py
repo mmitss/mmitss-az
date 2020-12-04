@@ -38,7 +38,7 @@ from CoordinatedPhase import CoordinatedPhase
 
 HOURSINADAY = 24.0
 MINUTESINAHOUR = 60.0
-SECONDSINAMINUTE = 60.0
+MinuteToSecondCoversion = 60.0
 HourToSecondConversion =  3600.0
 SECONDTOMILISECOND = 1000.0
 
@@ -70,16 +70,16 @@ class CoordinationRequestManager:
             sendRequest = False
         else:
             currentTime = self.getCurrentTime()
-            coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
+            coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
             cycleLength = self.coordinationParametersDictionary['CycleLength']
 
-            remainderTime = currentTime % cycleLength
+            remainderTime = (currentTime - coordinationStartTime) % cycleLength
             # print("\n[" + str(datetime.datetime.now()) + "] " + "Elapsed Time in the Cycle at time " + str(time.time())+ " is ", remainderTime)
 
             if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and (coordinationStartTime - currentTime <= cycleLength):
                 sendRequest = True
 
-            elif cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
+            elif (currentTime > coordinationStartTime) and cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
                 sendRequest = True
 
             else:
