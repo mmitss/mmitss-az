@@ -32,6 +32,17 @@ using std::stringstream;
 using std::vector;
 
 #define SignalCoordinationVehicleType 20
+#define Initialize 0.0
+#define Tolerance 1.0
+#define NumberOfStartingPhase 2
+#define NumberOfPhasePerRing 4
+#define FirstPhaseOfRing1 1
+#define FirstPhaseOfRing2 5
+#define LastPhaseOfRing1 4
+#define LastPhaseOfRing2 8
+#define MinuteToSecondCoversion 60.0
+#define HourToSecondConversion 3600.0
+
 
 enum msgType
 {
@@ -60,6 +71,9 @@ private:
   double DilemmaZoneRequestWeight{};
   double CoordinationWeight{};
   double MaximumGreen{};
+  double cycleLength{};
+  double offset{};
+  double coordinationStartTime{};
 
   vector<RequestList> priorityRequestList{};
   vector<RequestList> dilemmaZoneRequestList{};
@@ -111,6 +125,7 @@ public:
   void validateTrafficControllerStatus();
   void validateEVTrafficSignalPlan();
   void loggingSignalPlanData(string jsonString);
+  void loggingSplitData(string jsonString);
   void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
   void loggingClearRequestData(string jsonString);
   void printSignalPlan();
@@ -119,7 +134,8 @@ public:
   string getSignalTimingPlanRequestString();
   string getCurrentSignalStatusRequestString();
   int getMessageType(string jsonString);
-  double GetSeconds();
+  double getSeconds();
+  double getCurrentTime();
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
   bool findCoordinationRequestInList();

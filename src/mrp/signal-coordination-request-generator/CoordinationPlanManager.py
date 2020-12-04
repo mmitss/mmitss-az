@@ -31,7 +31,7 @@ import json
 import datetime
 import time
 
-SECONDSINAMINUTE = 60.0
+MinuteToSecondCoversion = 60.0
 HourToSecondConversion =  3600.0
 
 class CoordinationPlanManager:
@@ -45,6 +45,10 @@ class CoordinationPlanManager:
         self.coordinationSplitDataDictionary = {}
         self.coordinatedPhase1 = 0
         self.coordinatedPhase2 = 0
+        self.cycleLength = 0.0
+        self.offset = 0.0
+        self.coordinationStartTime_Hour = 0
+        self.coordinationStartTime_Minute = 0
 
     def checkActiveCoordinationPlan(self):
         """
@@ -73,11 +77,14 @@ class CoordinationPlanManager:
         currentTime = self.getCurrentTime()
         self.coordinationParametersDictionary.clear()
         for parameters in self.coordinationConfigData['CoordinationParameters']:
-            coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(SECONDSINAMINUTE)
-            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
+            coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
+            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(MinuteToSecondCoversion)
 
             cycleLength = parameters['CycleLength']
             if currentTime >= coordinationStartTime and currentTime <= coordinationEndTime or abs(coordinationStartTime - currentTime) <= cycleLength:
+                self.coordinationStartTime_Hour = parameters['CoordinationStartTime_Hour']
+                self.coordinationStartTime_Minute = parameters['CoordinationStartTime_Minute']
+                
                 self.coordinationParametersDictionary = {
                     "CoordinationPlanName": parameters['CoordinationPlanName'],
                     "CoordinationPatternNo": parameters['CoordinationPatternNo'],
@@ -112,6 +119,8 @@ class CoordinationPlanManager:
             if self.coordinationPlanName == parameters['CoordinationPlanName']:
                 self.coordinatedPhase1 = parameters['CoordinatedPhase1']
                 self.coordinatedPhase2 = parameters['CoordinatedPhase2']
+                self.cycleLength = parameters['CycleLength']
+                self.offset = parameters['Offset']
                 for splitData in parameters['SplitPatternData']['PhaseNumber']:
                     phaseNumber.append(splitData)
                 for splitData in parameters['SplitPatternData']['Split']:
@@ -120,6 +129,10 @@ class CoordinationPlanManager:
         if len(splitTime):
             self.coordinationSplitDataDictionary = json.dumps({
                 "MsgType": "ActiveCoordinationPlan",
+                "CycleLength": self.cycleLength,
+                "Offset": self.offset,
+                "CoordinationStartTime_Hour": self.coordinationStartTime_Hour,
+                "CoordinationStartTime_Minute" :self.coordinationStartTime_Minute,
                 "CoordinatedPhase1": self.coordinatedPhase1,
                 "CoordinatedPhase2": self.coordinatedPhase2,
                 "TimingPlan":
@@ -146,7 +159,7 @@ class CoordinationPlanManager:
         
         else:         
             for parameters in self.coordinationConfigData['CoordinationParameters']:
-                coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(SECONDSINAMINUTE)
+                coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(MinuteToSecondCoversion)
 
                 if currentTime > coordinationEndTime and parameters['CoordinationPlanName'] == self.coordinationPlanName:
                     self.coordinationPlanName = ""

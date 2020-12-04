@@ -4,41 +4,98 @@
         "intersectionID": 44383,
         "minuteOfYear": 485059,
         "msOfMinute": 59000,
-        "noOfRequest": 5,
+        "noOfRequest": 2,
         "regionalID": 0,
-        "requestorInfo": [
+        "requestorInfo": [{
+            "MsgType": "PriorityRequest",
+            "PriorityRequestList": {
+                "intersectionID": 44383,
+                "minuteOfYear": 485059,
+                "msOfMinute": 59000,
+                "noOfRequest": 5,
+                "regionalID": 0,
+                "requestorInfo": [
+                    {
+                        "ETA": 1.0,
+                        "ETA_Duration": 20.0,
+                        "basicVehicleRole": 11,
+                        "elevation_Meter": 0.0,
+                        "heading_Degree": 0.0,
+                        "inBoundLaneID": 0,
+                        "latitude_DecimalDegree": 0.0,
+                        "longitude_DecimalDegree": 0.0,
+                        "priorityRequestStatus": 0,
+                        "requestedSignalGroup": 2,
+                        "speed_MeterPerSecond": 0.0,
+                        "vehicleID": 1,
+                        "vehicleType": 20
+                    },
+                    {
+                        "ETA": 1.0,
+                        "ETA_Duration": 20.0,
+                        "basicVehicleRole": 11,
+                        "elevation_Meter": 0.0,
+                        "heading_Degree": 0.0,
+                        "inBoundLaneID": 0,
+                        "latitude_DecimalDegree": 0.0,
+                        "longitude_DecimalDegree": 0.0,
+                        "priorityRequestStatus": 0,
+                        "requestedSignalGroup": 6,
+                        "speed_MeterPerSecond": 0.0,
+                        "vehicleID": 2,
+                        "vehicleType": 20
+                    },
+                    {
+                        "ETA": 101.0,
+                        "ETA_Duration": 20.0,
+                        "basicVehicleRole": 11,
+                        "elevation_Meter": 0.0,
+                        "heading_Degree": 0.0,
+                        "inBoundLaneID": 0,
+                        "latitude_DecimalDegree": 0.0,
+                        "longitude_DecimalDegree": 0.0,
+                        "priorityRequestStatus": 0,
+                        "requestedSignalGroup": 2,
+                        "speed_MeterPerSecond": 0.0,
+                        "vehicleID": 3,
+                        "vehicleType": 20
+                    },
+                    {
+                        "ETA": 101.0,
+                        "ETA_Duration": 20.0,
+                        "basicVehicleRole": 11,
+                        "elevation_Meter": 0.0,
+                        "heading_Degree": 0.0,
+                        "inBoundLaneID": 0,
+                        "latitude_DecimalDegree": 0.0,
+                        "longitude_DecimalDegree": 0.0,
+                        "priorityRequestStatus": 0,
+                        "requestedSignalGroup": 6,
+                        "speed_MeterPerSecond": 0.0,
+                        "vehicleID": 4,
+                        "vehicleType": 20
+                    },
+                    {
+                        "ETA": 20.0,
+                        "ETA_Duration": 4.0,
+                        "basicVehicleRole": 16,
+                        "elevation_Meter": 0.0,
+                        "heading_Degree": 0.0,
+                        "inBoundLaneID": 0,
+                        "latitude_DecimalDegree": 0.0,
+                        "longitude_DecimalDegree": 0.0,
+                        "priorityRequestStatus": 0,
+                        "requestedSignalGroup": 5,
+                        "speed_MeterPerSecond": 0.0,
+                        "vehicleID": 605,
+                        "vehicleType": 6
+                    }
+        
+                ]
+            }
+        }
             {
-                "ETA": 1.0,
-                "ETA_Duration": 20.0,
-                "basicVehicleRole": 11,
-                "elevation_Meter": 0.0,
-                "heading_Degree": 0.0,
-                "inBoundLaneID": 0,
-                "latitude_DecimalDegree": 0.0,
-                "longitude_DecimalDegree": 0.0,
-                "priorityRequestStatus": 0,
-                "requestedSignalGroup": 2,
-                "speed_MeterPerSecond": 0.0,
-                "vehicleID": 1,
-                "vehicleType": 20
-            },
-            {
-                "ETA": 1.0,
-                "ETA_Duration": 20.0,
-                "basicVehicleRole": 11,
-                "elevation_Meter": 0.0,
-                "heading_Degree": 0.0,
-                "inBoundLaneID": 0,
-                "latitude_DecimalDegree": 0.0,
-                "longitude_DecimalDegree": 0.0,
-                "priorityRequestStatus": 0,
-                "requestedSignalGroup": 6,
-                "speed_MeterPerSecond": 0.0,
-                "vehicleID": 2,
-                "vehicleType": 20
-            },
-            {
-                "ETA": 101.0,
+                "ETA": 81.0,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "elevation_Meter": 0.0,
@@ -53,7 +110,7 @@
                 "vehicleType": 20
             },
             {
-                "ETA": 101.0,
+                "ETA": 81.0,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "elevation_Meter": 0.0,
@@ -66,23 +123,7 @@
                 "speed_MeterPerSecond": 0.0,
                 "vehicleID": 4,
                 "vehicleType": 20
-            },
-            {
-                "ETA": 20.0,
-                "ETA_Duration": 4.0,
-                "basicVehicleRole": 16,
-                "elevation_Meter": 0.0,
-                "heading_Degree": 0.0,
-                "inBoundLaneID": 0,
-                "latitude_DecimalDegree": 0.0,
-                "longitude_DecimalDegree": 0.0,
-                "priorityRequestStatus": 0,
-                "requestedSignalGroup": 5,
-                "speed_MeterPerSecond": 0.0,
-                "vehicleID": 605,
-                "vehicleType": 6
             }
-
         ]
     }
 }
