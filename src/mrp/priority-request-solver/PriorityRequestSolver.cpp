@@ -967,8 +967,12 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     validateTrafficControllerStatus();
     modifyTrafficControllerStatus();    
 }
-/* 
-- If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
+/*
+- If there is coordination request for coordinated phases:
+    - phase elapsed time will be gmin if elapsed time in cycle is less than the coordinated phases upper limit of Green Time
+    - otherwise phase elapsed time will be gmax - tolerace(say 1 second) 
+- If there is no coordination request then- 
+    If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
 */
 void PriorityRequestSolver::modifyTrafficControllerStatus()
 {
@@ -993,7 +997,6 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
     if (coordinationRequestStatus == true)
     {
         currentTime = getCurrentTime();
-        cout << "Current Time is: " << currentTime << endl;
         elapsedTimeInCycle = fmod((currentTime-coordinationStartTime), cycleLength);
         
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
