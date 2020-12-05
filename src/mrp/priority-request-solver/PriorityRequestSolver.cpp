@@ -590,7 +590,7 @@ void PriorityRequestSolver::GLPKSolver()
     double endOfSolve{};
 
     startOfSolve = getSeconds();
-    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
     char modFile[128] = "/nojournal/bin/NewModel.mod";
     glp_prob *mip;
     glp_tran *tran;
@@ -630,9 +630,7 @@ void PriorityRequestSolver::GLPKSolver()
     success = glp_intopt(mip, NULL);
     endOfSolve = getSeconds();
     cout << "Success=" << success << endl;
-    cout << "Time of Solve" << endOfSolve - startOfSolve << endl;
-    cout << "Time Now " << currentTime << endl;
-    cout << "getSeconds" << getSeconds() << endl;
+    cout << "Time of Solve " << endOfSolve - startOfSolve << endl;
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");

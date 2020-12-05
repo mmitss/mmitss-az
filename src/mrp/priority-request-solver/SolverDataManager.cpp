@@ -53,13 +53,16 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 
 /*
     - This method will obtain requested signal group information from the priority request list and store them in requestedSignalGroup list.
+    - If the request is for signal coordination, it will not be added in the list. 
+    - The list will be used to increase the gmax by 15% for transit and truck priority requests. If gmax is stretched for coordination, coordinated phases remain green even after the splits.
 */
 vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
-    //vector<int>requestedSignalGroup;
     for (size_t i = 0; i < priorityRequestList.size(); i++)
-        requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
-
+    {
+        if (priorityRequestList[i].vehicleType != SignalCoordinationVehicleType)
+            requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
+    }
     removeDuplicateSignalGroup();
 
     return requestedSignalGroup;

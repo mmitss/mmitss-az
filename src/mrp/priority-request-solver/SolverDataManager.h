@@ -29,6 +29,7 @@ using std::endl;
 #define VehicleClass_Truck 3
 #define VehicleClass_EmergencyVehicleSplitRequest 4
 #define VehicleClass_Coordination 5
+#define SignalCoordinationVehicleType 20
 
 class SolverDataManager
 {
