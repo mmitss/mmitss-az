@@ -968,13 +968,15 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 /*
 - If there is coordination request for coordinated phases:
     - phase elapsed time will be gmin if elapsed time in cycle is less than the coordinated phases upper limit of Green Time
-    - otherwise phase elapsed time will be gmax - tolerace(say 1 second) 
+    - for coordinated phases amount early retun time is deducted from the elapsed time after passing the gmin
+    - otherwise phase elapsed time will be gmax - tolerace(say 1 second)
 - If there is no coordination request then- 
     If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
 */
 void PriorityRequestSolver::modifyTrafficControllerStatus()
 {
     double currentTime{};
+    double earlyReturnedValue{};
     double upperLimitOfGreenTimeForCoordinatedPhase{};
     double elapsedTimeInCycle{};
     bool coordinationRequestStatus{false};
@@ -996,6 +998,18 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
     {
         currentTime = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTime-coordinationStartTime), cycleLength);
+
+        //Temporary logging code for debugging coordination
+        ofstream outputfile;
+        ifstream infile;
+
+        if (loggingStatus == true)
+        {
+            outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+            auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+            outputfile << "\nThe elapsed time in a cycle at time " << timenow << " is " << elapsedTimeInCycle << endl;
+        }
         
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
@@ -1005,13 +1019,19 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            //compute the early returned and upper limit of green time
+                earlyReturnedValue = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
                 
-                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
+                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
+                
+                else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen && earlyReturnedValue > 0)
+                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1 - earlyReturnedValue;
 
-                else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+                //If early return value is greater than the gmin, elapsed green time value may become negative. Then set the elaped green time as min green
+                if (trafficControllerStatus[i].elapsedGreen1 < 0) 
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen; 
             }
             // For non-coordinated phases
             else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1)
@@ -1019,7 +1039,8 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-                if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen)
+                
+                if (trafficControllerStatus[i].elapsedGreen1 >= findSignalGroup1->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
             }
             // For coordinated phase
@@ -1028,13 +1049,20 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                //compute the early returned and upper limit of green time
+                earlyReturnedValue = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
                 
-                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase)
+                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
-                else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+                else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen && earlyReturnedValue > 0)
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2 - earlyReturnedValue;
+
+                //If early return value is greater than the gmin, elapsed green time value may become negative. Then set the elaped green time as min green
+                if (trafficControllerStatus[i].elapsedGreen2 < 0) 
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen; 
+            
             }
             // For non-coordinated phases
             else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2)
@@ -1042,7 +1070,7 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-                if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen)
+                if (trafficControllerStatus[i].elapsedGreen2 >= findSignalGroup2->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
             }
         }
