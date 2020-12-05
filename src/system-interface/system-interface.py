@@ -392,12 +392,12 @@ def prepareJSONData(data, form):
     data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
     data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
     data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
-    data['PriorityParameter']['EmergencyVehicleWeight']             = form.priorityEVWeight.data
-    data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = form.priorityEVSplitPhaseWeight.data
-    data['PriorityParameter']['TransitWeight']                      = form.priorityTransitWeight.data
-    data['PriorityParameter']['TruckWeight']                        = form.priorityTruckWeight.data
-    data['PriorityParameter']['DilemmaZoneRequestWeight']           = form.priorityDilemmaZoneRequestWeight.data
-    data['PriorityParameter']['CoordinationWeight']                 = form.priorityCoordinationWeight.data
+    data['PriorityParameter']['EmergencyVehicleWeight']             = float(form.priorityEVWeight.data)
+    data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = float(form.priorityEVSplitPhaseWeight.data)
+    data['PriorityParameter']['TransitWeight']                      = float(form.priorityTransitWeight.data)
+    data['PriorityParameter']['TruckWeight']                        = float(form.priorityTruckWeight.data)
+    data['PriorityParameter']['DilemmaZoneRequestWeight']           = float(form.priorityDilemmaZoneRequestWeight.data)
+    data['PriorityParameter']['CoordinationWeight']                 = float(form.priorityCoordinationWeight.data)
     data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
