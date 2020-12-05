@@ -33,7 +33,7 @@ using std::vector;
 
 #define SignalCoordinationVehicleType 20
 #define Initialize 0.0
-#define Tolerance 1.0
+#define Tolerance 2.0
 #define NumberOfStartingPhase 2
 #define NumberOfPhasePerRing 4
 #define FirstPhaseOfRing1 1
@@ -42,6 +42,7 @@ using std::vector;
 #define LastPhaseOfRing2 8
 #define MinuteToSecondCoversion 60.0
 #define HourToSecondConversion 3600.0
+#define PRSTimedOutValue 10.0
 
 
 enum msgType
