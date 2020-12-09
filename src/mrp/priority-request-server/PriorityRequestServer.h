@@ -67,6 +67,7 @@ private:
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
+    string fileName{};
 
 public:
     PriorityRequestServer();
