@@ -86,11 +86,12 @@ PriorityRequestServer::PriorityRequestServer()
 	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
 	//Check the logging requirement
 	logging = (jsonObject["Logging"]).asString();
+	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + ".txt";
 	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	if (logging == "True")
 	{
 		bLogging = true;
-		outputfile.open("/nojournal/bin/log/PRSLog.txt");
+		outputfile.open(fileName);
 		outputfile << "File opened at time : " << currentTime << endl;
 		outputfile.close();
 	}
@@ -937,11 +938,11 @@ void PriorityRequestServer::loggingData(string jsonString)
 	if (bLogging == true)
 	{
 		// outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(currentTime) + ".txt");
-		outputfile.open("/nojournal/bin/log/PRSLog.txt", std::ios_base::app);
+		outputfile.open(fileName, std::ios_base::app);
 		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 		outputfile << "\nJsonString is sent or received at time : " << currentTime << endl;
-		outputfile << jsonString << currentTime << endl;
+		outputfile << jsonString << endl;
 		outputfile.close();
 	}
 }

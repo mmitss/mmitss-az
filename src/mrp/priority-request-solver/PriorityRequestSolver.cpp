@@ -1005,10 +1005,11 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
 
         if (loggingStatus == true)
         {
-            outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+            outputfile.open(fileName, std::ios_base::app);
             auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
             outputfile << "\nThe elapsed time in a cycle at time " << timenow << " is " << elapsedTimeInCycle << endl;
+            outputfile.close();
         }
         
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
@@ -1967,6 +1968,7 @@ double PriorityRequestSolver::getCurrentTime()
 bool PriorityRequestSolver::logging()
 {
     string logging{};
+    string intersectionName{};
     ofstream outputfile;
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
@@ -1977,13 +1979,14 @@ bool PriorityRequestSolver::logging()
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
     delete reader;
 
-    logging = (jsonObject["Logging"]).asString();
-
+    logging = jsonObject["Logging"].asString();
+    intersectionName = jsonObject["IntersectionName"].asString();
+    fileName = "/nojournal/bin/log/PRSolverLog-" + intersectionName + ".txt";
     if (logging == "True")
     {
         loggingStatus = true;
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt");
+        outputfile.open(fileName);
         outputfile << "File opened at time : " << timenow << std::endl;
         outputfile.close();
     }
@@ -2004,7 +2007,7 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
     if (loggingStatus == true)
     {
         // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        outputfile.open(fileName, std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Priority Request is received from PRS at time " << timenow << endl;
@@ -2044,7 +2047,7 @@ void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
     if (loggingStatus == true)
     {
         ofstream outputfile;
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        outputfile.open(fileName, std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Signal Plan is received from TCI at time " << timenow << endl;
@@ -2062,7 +2065,7 @@ void PriorityRequestSolver::loggingSplitData(string jsonString)
     if (loggingStatus == true)
     {
         ofstream outputfile;
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        outputfile.open(fileName, std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << timenow << endl;
@@ -2078,7 +2081,7 @@ void PriorityRequestSolver::loggingClearRequestData(string jsonString)
     if (loggingStatus == true)
     {
         ofstream outputfile;
-        outputfile.open("/nojournal/bin/log/PRSolverLog.txt", std::ios_base::app);
+        outputfile.open(fileName, std::ios_base::app);
         auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         outputfile << "\nFollowing Clear Request is sent to TCI at time " << timenow << endl;
         outputfile << jsonString << endl;

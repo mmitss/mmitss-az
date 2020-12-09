@@ -75,6 +75,7 @@ private:
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
+  string fileName{};
 
   vector<RequestList> priorityRequestList{};
   vector<RequestList> dilemmaZoneRequestList{};
