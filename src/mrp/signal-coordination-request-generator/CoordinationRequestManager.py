@@ -152,7 +152,8 @@ class CoordinationRequestManager:
         """
         self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
         self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
-        self.updateETAInCoordinationRequestTable()        
+        self.updateETAInCoordinationRequestTable()
+        self.deleteTimeOutRequestFromCoordinationRequestTable        
         self.requestSentTime = time.time()
         print("\n[" + str(datetime.datetime.now()) + "] " + "Updated Coordination Request to avoid PRS timed-out at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
