@@ -148,17 +148,11 @@ class CoordinationRequestManager:
     def generateUpdatedCoordinationPriorityRequest(self):
         """
         The following method generates updated cooridnation priority request to avoid PRS timed-out.
-        The method will set the request type as requestUpdate.
+        The method calls updateETAInCoordinationRequestTable() to update the ETA.
         """
-        noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
-        
         self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
         self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
-        
-        for i in range(noOfCoordinationRequest):
-            self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
-            self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
-        
+        self.updateETAInCoordinationRequestTable()        
         self.requestSentTime = time.time()
         print("\n[" + str(datetime.datetime.now()) + "] " + "Updated Coordination Request to avoid PRS timed-out at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
@@ -169,7 +163,8 @@ class CoordinationRequestManager:
         """
         The following method updates the active coordination priority request and sends the updated request to PriorityRequestServer
         If the ETA of a request is greater than the minimum ETA (predefined), the following method only updates the ETA.
-        If the ETA of a Request is less or equal to the minimum ETA (preddefined), the following method updates the Coordination Split time and set the ETA as minimum ETA.
+        If the ETA of a Request is less or equal to the minimum ETA (preddefined), the following method updates (reduces) the Coordination Split time and set the ETA as minimum ETA.
+        The method will set the request type as requestUpdate
         """
 
         if bool(self.coordinationPriorityRequestDictionary):
@@ -177,6 +172,7 @@ class CoordinationRequestManager:
             noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
             for i in range(noOfCoordinationRequest):
                 temporaryRequestUpdateTime = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime']
+                self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
                 
                 if (currentTime_UTC - temporaryRequestUpdateTime) >= self.ETA_Update_Time:
                     self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] = self.coordinationPriorityRequestDictionary[
