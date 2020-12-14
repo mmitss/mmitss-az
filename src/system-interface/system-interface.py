@@ -20,7 +20,7 @@ This is a web-based Python Flask application that has the following functionalit
 
 from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
+from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators, SelectField
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 import os
@@ -73,12 +73,12 @@ class ConfigurationForm(FlaskForm):
     hmiControllerIP         = StringField('HMI Controller IP')
     messageDistributorIP    = StringField('Message Distributor IP')
     priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address (optional)')
-    vehicleType                     = StringField('Vehicle Type')
-    logging                         = StringField('Logging (True / False)')
+    vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
+    logging                         = SelectField('Logging', choices = ["True", "False"])
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
-    applicationPlatform             = StringField('Application Platform')
+    applicationPlatform             = SelectField('Application Platform', choices = ["roadside", "vehicle"])
     peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
