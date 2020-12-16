@@ -77,9 +77,10 @@ By contributing to the Multi-Modal Intelligent Traffic Signal Systems (MMITSS) o
 # Contributions
 
 ## Issue tracker
-Contributors will use Github's issue tracking system to record and manage issues that are reported by users of MMITSS AZ in the field. These may include performance requests, defects, and new feature requests. The follow operating procedure highlights how the MMITSS AZ development team will address and respond to reported issues.
 
-Issue Repository: (https://github.com/mmitss/mmitss-az/issues)
+[MMITSS AZ GitHub Issue Tracker Page](https://github.com/mmitss/mmitss-az/issues)
+
+Contributors will use Github's issue tracking system to record and manage issues that are reported by users of MMITSS AZ in the field. These may include performance requests, defects, and new feature requests. The follow operating procedure highlights how the MMITSS AZ development team will address and respond to reported issues.
 
 ## Pull requests
 
