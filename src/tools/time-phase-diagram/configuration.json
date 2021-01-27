@@ -1,15 +1,15 @@
 {
     "MultipleTypesofRequest":false,
     "NoOfRequest": 1,
-    "ETA":[30],
+    "ETA":[38],
     "NoOfRequiredPhase": 1,
-    "RequestedPhase":[6],
-    "NoOfDilemmaZoneRequest": 2,
-    "DilemmaZoneETA":[28.96,28.96],
+    "RequestedPhase":[8],
+    "NoOfDilemmaZoneRequest": 1,
+    "DilemmaZoneETA":[30],
     "NoOfRequiredDilemmaZonePhase": 1,
-    "DilemmaZonePhases":[6],
-    "NoOfPhasesInRing1": 6,
-    "PhasesInRing1":[1,2,4,1,2,4],
-    "NoOfPhasesInRing2": 6,
-    "PhasesInRing2":[5,6,8,5,6,8]
+    "DilemmaZonePhases":[7],
+    "NoOfPhasesInRing1": 8,
+    "PhasesInRing1":[1,2,3,4,1,2,3,4],
+    "NoOfPhasesInRing2": 8,
+    "PhasesInRing2":[5,6,7,8,5,6,7,8]
 }

@@ -408,9 +408,9 @@ def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring
         x = dilemmaZone_ETA[i]
         y = requestedPhasePosition[i]
         if i == 0:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = 'yellow',linewidth = 4, label = 'Truck Priority Request'))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = '#0099FF',linewidth = 2, label = 'Transit Priority Request'))
         else:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = 'yellow', linewidth = 4))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = '#0099FF', linewidth = 2))
     
     ax1.legend(loc='upper right', bbox_to_anchor=(1, 1), prop={"size":18})
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
