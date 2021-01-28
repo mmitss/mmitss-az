@@ -135,6 +135,7 @@ public:
   string getClearCommandScheduleforTCI();
   string getSignalTimingPlanRequestString();
   string getCurrentSignalStatusRequestString();
+  string getSignalCoordinationTimingPlanRequestString();
   int getMessageType(string jsonString);
   double getSeconds();
   double getCurrentTime();
@@ -142,5 +143,6 @@ public:
   bool findEVInList();
   bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
+  bool checkSignalCoordinationTimingPlan();
   bool logging();
 };

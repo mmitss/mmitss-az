@@ -36,9 +36,11 @@ int main()
     UdpSocket priorityRequestSolverSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt()));
     UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["TrafficControllerInterface"].asInt());
+    const int signalCoordinationRequestGeneratorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["SignalCoordination"].asInt());
     const string LOCALHOST = jsonObject["HostIp"].asString();
     char receiveBuffer[40960];
     char receivedSignalStatusBuffer[40960];
+    char receivedCoordinationPlanBuffer[40960];
     int msgType{};
     string tciJsonString{};
 
@@ -68,6 +70,17 @@ int main()
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
             cout << "Received Priority Request from PRS at time " << priorityRequestSolver.getSeconds() << endl;
+
+            if (priorityRequestSolver.checkSignalCoordinationTimingPlan() == true)
+            {
+                priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(signalCoordinationRequestGeneratorPortNo),priorityRequestSolver.getSignalCoordinationTimingPlanRequestString());
+                priorityRequestSolverSocket.receiveData(receivedCoordinationPlanBuffer, sizeof(receivedCoordinationPlanBuffer));
+                std::string receivedCoordinationPlanString(receivedCoordinationPlanBuffer);
+                cout << "Received Split Data for Signal Coordination at time " << priorityRequestSolver.getSeconds() << endl;
+                msgType = priorityRequestSolver.getMessageType(receivedCoordinationPlanString);
+                if (msgType == static_cast<int>(msgType::splitData))
+                    priorityRequestSolver.getSignalCoordinationTimingPlan(receivedCoordinationPlanString);
+            }
 
             priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
             priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
