@@ -5,7 +5,7 @@
         {
             "name": "DaisyMountain_GavilanPeak",
             "ip_address": "10.12.6.3",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -17,7 +17,7 @@
         {
             "name": "DaisyMountain_DedicationTrail",
             "ip_address": "10.12.6.6",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -29,7 +29,7 @@
         {
             "name": "DaisyMountain_MeridianDrive",
             "ip_address": "10.12.6.9",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -41,7 +41,7 @@
         {
             "name": "DaisyMountain_HastingsWay",
             "ip_address": "10.12.6.12",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -53,7 +53,7 @@
         {
             "name": "DaisyMountain_MemorialDrive",
             "ip_address": "10.12.6.15",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -65,7 +65,7 @@
         {
             "name": "DaisyMountain_AnthemWay",
             "ip_address": "10.12.6.18",
-            "bsm_client_port": 20001,
+            "bsm_client_port": 30001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
