@@ -1029,8 +1029,10 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 		activeRequest.vehicleType = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
 		activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
 		activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asDouble();
+		activeRequest.vehicleLaneID = coordinationLaneID;
 		ActiveRequestTable.push_back(activeRequest);
 	}
+	setPriorityRequestStatus();
 }
 
 /*

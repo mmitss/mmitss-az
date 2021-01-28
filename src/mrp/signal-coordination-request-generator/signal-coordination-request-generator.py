@@ -53,6 +53,7 @@ def main():
     port = config["PortNumber"]["SignalCoordination"]
     signalCoordination_commInfo = (mrpIp, port)
     coordinationSocket.bind(signalCoordination_commInfo)
+    coordinationSocket.settimeout(0)
     
     # Get the PRS and PRSolver communication address
     prioritySolverAddress = (mrpIp, config["PortNumber"]["PrioritySolver"])
@@ -63,41 +64,54 @@ def main():
     coordinationRequestManager = CoordinationRequestManager(config)
     
     while True:
+        # Receive data on the socket
+        # Load the received data into a json object
+        # Send the split data to the PRSolver
+        try:
+            data, address = coordinationSocket.recvfrom(10240)
+            data = data.decode()
+            receivedMessage = json.loads(data)
+            if receivedMessage["MsgType"]=="CoordinationPlanRequest":
+                splitData = coordinationPlanManager.getSplitData()
+                if bool(splitData):
+                    coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
+                
         # Check if it is required to obtain active coordination plan or not
         # Send the split data to the PRSolver
-        if bool(coordinationPlanManager.checkActiveCoordinationPlan()):
-            coordinationParametersDictionary = coordinationPlanManager.getActiveCoordinationPlan()
-            coordinationRequestManager.getCoordinationParametersDictionary(coordinationParametersDictionary)
-            splitData = coordinationPlanManager.getSplitData()
-            if bool(splitData):
-                coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
-                
-        # Check if it is required to generate virtual coordination requests at the beginning of each cycle
-        #  Formulate a json string for coordination requests and sends it to the PRS
-        if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
-            coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
-            coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-            
-        # Check if it is required to generate coordination requests to avoid PRS timed-out
-        # Formulate a json string for coordination requests and send it to the PRS 
-        elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
-            coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
-            coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-
-        # The method updates ETA for each coordination request
-        # The method deletes the old coordination requests.
-        # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests
-        # The method deletes old coordination Plan
-        else:
-            coordinationRequestManager.updateETAInCoordinationRequestTable()
-            if bool(coordinationRequestManager.deleteTimeOutRequestFromCoordinationRequestTable()):
-                coordinationPriorityRequestJsonString = coordinationRequestManager.getCoordinationPriorityRequestDictionary()
+        except:
+            if bool(coordinationPlanManager.checkActiveCoordinationPlan()):
+                coordinationParametersDictionary = coordinationPlanManager.getActiveCoordinationPlan()
+                coordinationRequestManager.getCoordinationParametersDictionary(coordinationParametersDictionary)
+                splitData = coordinationPlanManager.getSplitData()
+                if bool(splitData):
+                    coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
+                    
+            # Check if it is required to generate virtual coordination requests at the beginning of each cycle
+            #  Formulate a json string for coordination requests and sends it to the PRS
+            if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
+                coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-            
-            if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
-                coordinationRequestManager.clearTimedOutCoordinationPlan()
-                                
-        time.sleep(1)
+                
+            # Check if it is required to generate coordination requests to avoid PRS timed-out
+            # Formulate a json string for coordination requests and send it to the PRS 
+            elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
+                coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
+                coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
+
+            # The method updates ETA for each coordination request
+            # The method deletes the old coordination requests.
+            # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests
+            # The method deletes old coordination Plan
+            else:
+                coordinationRequestManager.updateETAInCoordinationRequestTable()
+                if bool(coordinationRequestManager.deleteTimeOutRequestFromCoordinationRequestTable()):
+                    coordinationPriorityRequestJsonString = coordinationRequestManager.getCoordinationPriorityRequestDictionary()
+                    coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
+                
+                if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
+                    coordinationRequestManager.clearTimedOutCoordinationPlan()
+                                    
+            time.sleep(1)
     coordinationSocket.close()
     
     

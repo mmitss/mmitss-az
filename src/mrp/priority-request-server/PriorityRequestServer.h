@@ -27,6 +27,7 @@ using std::string;
 using std::vector;
 
 #define coordinationVehicleType 20
+#define coordinationLaneID 1.0
 #define Minimum_ETA 1.0
 #define ETA_Delete_Time 1.0
 #define TIME_GAP_BETWEEN_ETA_Update 1

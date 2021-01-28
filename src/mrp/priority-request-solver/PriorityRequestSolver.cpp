@@ -1938,6 +1938,24 @@ string PriorityRequestSolver::getSignalTimingPlanRequestString()
     return jsonString;
 }
 
+/*
+    - PRSolver obtains the coordination Coordination plan (split data) from the Signal Coordination Request Generator. At the start of the program it asks Signal Coordination Request Generator to send the active split data if it has
+    - This method creats that split data request string.
+*/
+string PriorityRequestSolver::getSignalCoordinationTimingPlanRequestString()
+{
+    std::string jsonString{};
+    Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
+    jsonObject["MsgType"] = "CoordinationPlanRequest";
+    jsonString = Json::writeString(builder, jsonObject);
+
+    return jsonString;
+}
+
 double PriorityRequestSolver::getSeconds()
 {
     struct timeval tv_tt;
@@ -1960,6 +1978,33 @@ double PriorityRequestSolver::getCurrentTime()
     currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
     
     return currentTime;
+}
+
+/*
+    -Check whether active signal coordination timing plan is available or not
+*/
+bool PriorityRequestSolver::checkSignalCoordinationTimingPlan()
+{
+    bool sendCoordinationPlanRequest{false};
+    
+    if (priorityRequestList.empty())
+        sendCoordinationPlanRequest = false;
+    else
+    {
+        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        {
+            if ((priorityRequestList[i].vehicleType == SignalCoordinationVehicleType) && trafficSignalPlan_SignalCoordination.size() == 0)
+            {
+                sendCoordinationPlanRequest = true;
+                break;
+            }
+
+            else
+                sendCoordinationPlanRequest = false;
+        }
+    }
+    
+    return sendCoordinationPlanRequest;
 }
 
 /*
