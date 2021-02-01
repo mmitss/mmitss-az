@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     std::string outputFilename = std::regex_replace(inputFilename, std::regex(".csv"), "_processed.csv");
     std::ofstream outputFile(outputFilename);
 
-    outputFile << "log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width,position_on_map,current_approach,current_lane,current_signal_group,dist_to_stopbar,onmap_status\n";
+    outputFile << "log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width,position_on_map,current_approach,current_lane,current_signal_group,dist_to_stopbar\n";
 
     double log_timestamp_posix{},timestamp_posix{}, secMark{}, elevation{}, speed{}, heading{}, length{}, width{};
     double latitude{}, longitude{};

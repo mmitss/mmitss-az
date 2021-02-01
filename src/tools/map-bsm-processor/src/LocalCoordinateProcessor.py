@@ -22,6 +22,9 @@ class LocalCoordinatesProcessor:
 
         return Position3D(latitude, longitude, elevation)
 
+    def process_onmap_status(self):
+        self.bsmDf["onmap_status"] = True
+
     def process_in_queue_status(self):
         def in_queue_status(row, speed_threshold):
             if (row["speed"] < speed_threshold and row["position_on_map"] == "inbound"):
@@ -130,6 +133,7 @@ if __name__ == "__main__":
     inputFile = sys.argv[1]
     lcp = LocalCoordinatesProcessor(inputFile)
     
+    lcp.process_onmap_status()
     lcp.process_local_coordinates()
     lcp.process_distance_along_path()
     lcp.process_in_queue_status()
