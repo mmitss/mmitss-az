@@ -1,18 +1,16 @@
 # PRG Makefile 
-BUILD_ROOT=../../../../..
+BUILD_ROOT= ../../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk
 
-
-INCLUDES    := -I$(MAPENGINE_INCL) -I$(JSONCPP_INCL) -I$(J2735_INCL)# tell the compiler where to find theinclude directories
+INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(COMMON_INCL) -I$(BUILD_ROOT)/3rdparty/ -I$(MAPENGINE_INCL)  # tell the compiler where to find theinclude directories
 CPPFLAGS += -DLOGGING
 #LDFLAGS     := -fPIC -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the j2735 shared lib 
 #LDFLAGS     := -Wl,-rpath=$(J2735_SO_DIR) # tell the linker to add a path to the j2735 shared lib 
 #-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
-LIBS        := -L$(J2735_LIB) -L$(MAPENGINE_LIB) -llocAware  -ldsrc -lasn #tell the linker where to find the libraries
-
+LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -L$(NETSNMP_LIB) -llocAware -ldsrc -lasn -lmmitss-common -lnetsnmp 
 #cpp's go here
-SRC += MapBsmProcessor.cpp MapEngine.cpp jsoncpp.cpp
+SRC += MapBsmProcessor.cpp MapEngine.cpp
 #the name of the executable goes here
 TARGET = MapBsmProcessor
 

@@ -24,7 +24,7 @@
 #include <regex>
 #include <unistd.h>
 #include <iomanip>
-#include "json.h"
+#include "json/json.h"
 #include "MapEngine.h"
 #include "CSV.h"
 
@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     std::string inputFilename = argv[1];
     std::ifstream inputFile(inputFilename);
 
-    std::string outputFilename = std::regex_replace(inputFilename, std::regex("remoteBsmLog"), "processedRemoteBsmLog");
+    std::string outputFilename = std::regex_replace(inputFilename, std::regex(".csv"), "_processed.csv");
     std::ofstream outputFile(outputFilename);
 
     outputFile << "log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width,position_on_map,approach,lane,signal_group,dist_from_stopbar\n";

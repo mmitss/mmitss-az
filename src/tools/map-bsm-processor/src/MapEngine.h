@@ -20,7 +20,7 @@
 
 #pragma once
 #include <string>
-#include <json.h>
+#include <json/json.h>
 #include "locAware.h"
 /* This class uses the local copy of locAware.h, as getControlPhaseByLaneId is provate in the global locAware.h file. It needs to be made sure that this class uses the global locAware.h  file once the 3rdparty changes are made and are in the main codeline */
 
