@@ -159,7 +159,7 @@ std::string MapEngine::getOnMapCsv(double latitude, double longitude, double ele
     }   
 
     std::stringstream ss{};
-    ss << locationOnMap << "," << vehApproachId << "," << vehLaneId << "," << vehSignalGroup << "," << vehDistanceToStopBar;
+    ss << locationOnMap << "," << vehApproachId << "," << vehLaneId << "," << vehSignalGroup << "," << vehDistanceToStopBar << "," << true;
 
     std::string outgoingCsv = ss.str();
 
