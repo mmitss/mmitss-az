@@ -29,9 +29,9 @@
 using namespace GeoUtils;
 using namespace MsgEnum;
 
-MapEngine::MapEngine()
+MapEngine::MapEngine(std::string configFilename)
 {
-    fmap = readIntersectionMapConfig();
+    fmap = readIntersectionMapConfig(configFilename);
     bool singleFrame = false; /// TRUE to encode speed limit in lane, FALSE to encode in approach
     LocAware *tempPlocAwareLib = (new LocAware(fmap, singleFrame));
     plocAwareLib = (tempPlocAwareLib);
@@ -68,14 +68,14 @@ bool MapEngine::isVehicleOnMap(double latitude, double longitude, double elevati
     return isOnMap;
 }
 
-std::string MapEngine::readIntersectionMapConfig()
+std::string MapEngine::readIntersectionMapConfig(std::string configFilename)
 {
 	Json::Value jsonObject;
 	// Json::Reader reader;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	std::string errors{};
-	std::ifstream jsonconfigfile("../config/map-bsm-processor-config.json");
+	std::ifstream jsonconfigfile(configFilename);
     std::string mapPayload{};
 	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	// reader.parse(configJsonString.c_str(), jsonObject);

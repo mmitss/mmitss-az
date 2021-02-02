@@ -7,13 +7,14 @@ from Position3D import Position3D
 from geoCoord import GeoCoord
 
 class LocalCoordinatesProcessor:
-    def __init__(self, inputFile:str):
+    def __init__(self, inputFile:str, configFile:str):
         self.inputFile = inputFile
+        self.configFile = configFile
         self.bsmDf = pd.read_csv(inputFile)
         self.referenceLocation = self.get_reference_location()
 
     def get_reference_location(self):
-        with open("./../config/map-bsm-processor-config.json", 'r') as configFile:
+        with open(self.configFile, 'r') as configFile:
             config = json.load(configFile)
 
         latitude = config["ReferenceLocation"]["Latitude_DecimalDegree"]
@@ -122,16 +123,22 @@ class LocalCoordinatesProcessor:
 if __name__ == "__main__":
 
     if len(sys.argv) == 1:
-        print("Missing argument: input file!")
+        print("Two arguments are required: input file and config file!")
         exit()
-    elif len(sys.argv) > 2:
-        print("Too many arguments. Only required argument is the location of the input file!")
+    elif len(sys.argv) > 3:
+        print("Too many arguments. Only required arguments are the locations of the input file and config file")
         exit()
     elif not os.path.exists(sys.argv[1]):
         print("Input file does not exist!")
         exit()
+    elif not os.path.exists(sys.argv[2]):
+        print("Config file does not exist!")
+        exit()
+    
     inputFile = sys.argv[1]
-    lcp = LocalCoordinatesProcessor(inputFile)
+    configFile = sys.argv[2]
+
+    lcp = LocalCoordinatesProcessor(inputFile, configFile)
     
     lcp.process_onmap_status()
     lcp.process_local_coordinates()

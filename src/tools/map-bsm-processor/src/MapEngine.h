@@ -38,14 +38,14 @@ class MapEngine
 
     public:
         /*The MapEngine class reads the map paylod from the mmitss-master-config file, and stores it into a file. Using this file, an instance of the LocAware is created in the constructor, and is made available for rest of member functions, by pointing the class attribute pointer to this memory location. This instance of LocAware is reused for all LocateVehicleOnMapRequests.*/
-        MapEngine();
+        MapEngine(std::string configFilename);
 
         /*The destructor of the MapEngine cllass deletes the instance of LocAware class that was created in the constructor.*/
         ~MapEngine();
         
         /*This function reads the intersection map payload from the mmitss-phase3-master-config.json file, and stores it into a *.map.payload file. The name of the *.map.payload file is returned from this function.
         This function also reads the lla coordinates of the intersection from the configuration file and stores them into the class attributes.*/
-        std::string readIntersectionMapConfig();
+        std::string readIntersectionMapConfig(std::string configFilename);
 
         bool isVehicleOnMap(double latitude, double longitude, double elevation, double speed, double heading);
 

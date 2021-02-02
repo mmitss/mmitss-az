@@ -30,14 +30,16 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
-        std::cout << "Please provide the path/name of remoteBsmLog file in the argument" << std::endl;
+        std::cout << "Please provide the path/name of raw BSM data file and the config file in the argument" << std::endl;
         return 0;
     }
     
     std::string inputFilename = argv[1];
     std::ifstream inputFile(inputFilename);
+
+    std::string configFilename = argv[2];
 
     std::string outputFilename = std::regex_replace(inputFilename, std::regex(".csv"), "_processed.csv");
     std::ofstream outputFile(outputFilename);
@@ -48,9 +50,7 @@ int main(int argc, char *argv[])
     double latitude{}, longitude{};
     int temporaryId{}, type{};
 
-
-
-    MapEngine mapEngine;
+    MapEngine mapEngine(configFilename);
 
     bool isOnMap{};
     std::string onmapCsv{};
