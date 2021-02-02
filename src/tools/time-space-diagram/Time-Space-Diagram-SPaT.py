@@ -93,7 +93,7 @@ def timeSpaceDiagram(greenRectangleStartPoint, clearanceRectangleStartPoint, gre
     max_x_limit = xAxisRange-100
     plt.xlim([0, max_x_limit])
     plt.ylim([0, max(distance_Green)+200])
-    plt.xticks(np.arange(0, xAxisRange-100, 20),fontsize = 24)
+    plt.xticks(np.arange(0, xAxisRange-75, 25),fontsize = 24)
     ax1.tick_params(axis='y',  labelsize=18)
     for axis in ['top','bottom','left','right']:
             ax1.spines[axis].set_linewidth(4)

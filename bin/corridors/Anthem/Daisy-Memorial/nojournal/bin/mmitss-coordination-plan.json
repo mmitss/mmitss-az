@@ -6,12 +6,12 @@
             "CoordinationPatternNo": 1,
             "SplitPatternNo": 1,
             "CycleLength": 90,
-            "Offset": 0,
+            "Offset": 64,
             "CoordinationStartTime_Hour": 0,
             "CoordinationStartTime_Minute": 10,
             "CoordinationEndTime_Hour": 15,
             "CoordinationEndTime_Minute": 0,
-            "CoordinationSplit": 30.0,
+            "CoordinationSplit": 20.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
             "SplitPatternData": {
@@ -26,12 +26,12 @@
                     8
                 ],
                 "Split": [
-                    12,
-                    52,
+                    17,
+                    47,
                     0,
                     26,
-                    12,
-                    52,
+                    14,
+                    50,
                     0,
                     26
                 ]
@@ -47,7 +47,7 @@
             "CoordinationStartTime_Minute": 0,
             "CoordinationEndTime_Hour": 18,
             "CoordinationEndTime_Minute": 30,
-            "CoordinationSplit": 30.0,
+            "CoordinationSplit": 20.0,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
             "SplitPatternData": {

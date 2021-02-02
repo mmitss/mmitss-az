@@ -289,7 +289,7 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
 
 
 # Plotting time-phase diagram Method 2
-def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, req_phase, dilemmaZone_phases, dilemmaZone_ETA, ringNo):
+def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, ETA_Duration, req_phase, dilemmaZone_phases, dilemmaZone_ETA, dilemmaZone_ETA_Duration, ringNo):
     fig, ax1 = plt.subplots()
     if ringNo == 'Ring1&2':
         #Ring1
@@ -369,10 +369,11 @@ def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring
     for i in range(0,req_phase_length):
         x = ETA[i]
         y = requestedPhasePosition[i]
+        z = ETA_Duration[i]
         if i == 0:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = 'green',linewidth = 2, label = 'Truck Priority Request'))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = 'green',linewidth = 2, label = 'Coordination Priority Request'))
         else:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = 'green',linewidth = 2))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = 'green',linewidth = 2))
     #     patches.append(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'red'))
     # ax1.add_collection(PatchCollection(patches))
     
@@ -407,10 +408,11 @@ def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring
     for i in range(0,req_phase_length):
         x = dilemmaZone_ETA[i]
         y = requestedPhasePosition[i]
+        z = dilemmaZone_ETA_Duration[i]
         if i == 0:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = '#0099FF',linewidth = 2, label = 'Transit Priority Request'))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = '#0099FF',linewidth = 2, label = 'Truck Priority Request'))
         else:
-            ax1.add_patch(matplotlib.patches.Rectangle((x, y),4,10,angle=0.0,color = '#0099FF', linewidth = 2))
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = '#0099FF', linewidth = 2))
     
     ax1.legend(loc='upper right', bbox_to_anchor=(1, 1), prop={"size":18})
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -535,16 +537,19 @@ def main():
 
     ETA = []
     req_phase = []
-    
+    ETA_Duration = []
     
     count = 0
     noOfIteration = config["NoOfRequest"]
  
     while (count < noOfIteration):
             ETA_Val = config["ETA"][count]
+            ETA_Duration_Val = config ["ETA_Duration"][count]
             #Append the same ETA value twice for draw two rectangles for two cycle
             ETA.append(ETA_Val)
             ETA.append(ETA_Val)
+            ETA_Duration.append(ETA_Duration_Val)
+            ETA_Duration.append(ETA_Duration_Val)
             count = count + 1
     print("ETA", ETA)
     
@@ -562,6 +567,7 @@ def main():
     #For Differentiating two types of request
     dilemmaZone_phases = []
     dilemmaZone_ETA = []
+    dilemmaZone_ETA_Duration = []
     #Dilemma-Zone Information
     multipleTypesofRequest = config["MultipleTypesofRequest"]
     if bool(multipleTypesofRequest): 
@@ -570,9 +576,12 @@ def main():
     
         while (count < noOfIteration):
                 ETA_Val = config["DilemmaZoneETA"][count]
+                ETA_Duration_Val = config["DilemmaZoneETA_Duration"][count]
                 #Append the same ETA value twice for draw two rectangles for two cycle
                 dilemmaZone_ETA.append(ETA_Val)
                 dilemmaZone_ETA.append(ETA_Val)
+                dilemmaZone_ETA_Duration.append(ETA_Duration_Val)
+                dilemmaZone_ETA_Duration.append(ETA_Duration_Val)
                 count = count + 1
         print("DilemmaZone ETA", dilemmaZone_ETA)
         
@@ -750,7 +759,7 @@ def main():
     
     timePhaseDiagramMethod2(SP1, SP2,cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
                      cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
-                     cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, req_phase, dilemmaZone_phases, dilemmaZone_ETA, 'Ring1&2')
+                     cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, ETA_Duration, req_phase, dilemmaZone_phases, dilemmaZone_ETA, dilemmaZone_ETA_Duration, 'Ring1&2')
 
 
 

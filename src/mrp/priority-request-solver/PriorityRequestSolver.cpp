@@ -1021,7 +1021,10 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
             //compute the early returned and upper limit of green time
-                earlyReturnedValue = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
+                if (elapsedTimeInCycle > offset)
+                    earlyReturnedValue = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
+                else
+                    earlyReturnedValue = 0.0;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
                 
                 if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
@@ -1051,7 +1054,10 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
                 //compute the early returned and upper limit of green time
-                earlyReturnedValue = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
+                if (elapsedTimeInCycle > offset)
+                    earlyReturnedValue = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
+                else
+                    earlyReturnedValue = 0.0;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
                 
                 if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
