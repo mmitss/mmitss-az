@@ -545,7 +545,7 @@ bool PriorityRequestGenerator::findNearestBusStopLocation()
 */
 bool PriorityRequestGenerator::checkPassedNearestBusStop()
 {
-	double busStopDistanceDistanceFromStopBar{};
+	double busStopDistanceFromStopBar{};
 	string fmap{};
 	string intersectionName{};
 	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
@@ -577,10 +577,10 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 
 		plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
 		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
-		busStopDistanceDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
+		busStopDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 		delete plocAwareLib;
 		
-		if (busStopDistanceDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
+		if (busStopDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
 			busStopPassedStatus = true;
 		else
 			busStopPassedStatus = false;
