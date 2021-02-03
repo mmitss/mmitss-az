@@ -71,7 +71,6 @@ private:
   bool busStopPassedStatus{false};
   string mapFileDirectory{};
   string mapFileName{};
-  int messageType{};
   int temporaryVehicleID{};
   int vehicleLaneID{};
   int vehicleAprroachID{};
@@ -103,7 +102,7 @@ public:
   ~PriorityRequestGenerator();
   std::vector<Map::AvailableMap> availableMapList;
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
-  std::string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+  string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
   bool addToActiveRequestTable(SignalStatus signalStatus);
   bool shouldSendOutRequest();
   bool checkRequestSendingRequirement();                                         //This overloading function will be used for Truck
@@ -112,7 +111,7 @@ public:
   bool findNearestBusStopLocation();
   bool checkPassedNearestBusStop();
   bool getLoggingStatus();
-  void loggingData(std::string jsonString);
+  void loggingData(string jsonString);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
   void setVehicleID(BasicVehicle basicVehicle);
@@ -123,11 +122,11 @@ public:
   void setTime2Go(double distance2go, double vehicle_Speed);
   void setVehicleIntersectionStatus(int vehIntersectionStatus);
   void setVehicleType();
-  void setSimulationVehicleType(std::string vehType); //For PRGServer
+  void setSimulationVehicleType(string vehType); //For PRGServer
   void setPriorityRequestType(int priority_Request_Type);
-  void setLightSirenStatus(std::string jsonString);
+  void setLightSirenStatus(string jsonString);
   void setMsgCount(int msg_count);
-  int getMessageType(std::string jsonString);
+  int getMessageType(string jsonString);
   std::vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
   void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
   int getIntersectionID();
@@ -147,8 +146,8 @@ public:
   int getMsgCount();
   int getActiveMapStatus();
   double getRequestTimedOutValue();
-  std::string getVehicleMapStatus();
-  std::string getVehicleRequestSentStatus();
+  string getVehicleMapStatus();
+  string getVehicleRequestSentStatus();
   std::vector<ActiveRequest> getActiveRequestTable();
   void printART();
   std::vector<Map::AvailableMap> manageMapStatusInAvailableMapList(MapManager mapManager);

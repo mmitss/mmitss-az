@@ -20,11 +20,33 @@
 #include "SignalStatus.h"
 #include "ActiveRequest.h"
 
+using std::cout;
+using std::endl;
+using std::ifstream;
+using std::string;
+using std::vector;
+
+#define coordinationVehicleType 20
+#define coordinationLaneID 1.0
+#define Minimum_ETA 1.0
+#define ETA_Delete_Time 1.0
+#define TIME_GAP_BETWEEN_ETA_Update 1
+#define SEQUENCE_NUMBER_MINLIMIT 1
+#define SEQUENCE_NUMBER_MAXLIMIT 127
+#define HOURSINADAY 24
+#define MINUTESINAHOUR 60
+#define SECONDSINAMINUTE 60
+#define SECONDTOMILISECOND 1000
+
+enum msgType
+{
+    coordinationRequest = 1,
+};
+
 class PriorityRequestServer
 {
 private:
-    std::vector<ActiveRequest> ActiveRequestTable;
-    // int messageType{};
+    vector<ActiveRequest> ActiveRequestTable;
     int minuteOfYear{};
     int msOfMinute{};
     int regionalID;
@@ -45,28 +67,29 @@ private:
     bool bLogging{};
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
-    std::string intersectionName{};
+    string intersectionName{};
+    string fileName{};
 
 public:
     PriorityRequestServer();
     ~PriorityRequestServer();
 
-    std::string createSSMJsonString(SignalStatus signalStatus);
-    std::string createJsonStringForPrioritySolver();
-    std::string createJsonStringForSystemPerformanceDataLog();
-    void managingSignalRequestTable(SignalRequest signalRequest);
+    string createSSMJsonString(SignalStatus signalStatus);
+    string createJsonStringForPrioritySolver();
+    string createJsonStringForSystemPerformanceDataLog();
+    void manageSignalRequestTable(SignalRequest signalRequest);
+    void manageCoordinationRequest(string jsonString);
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
-    void writeMAPPayloadInFile();
-    void deleteMapPayloadFile();
-    void printvector();
+    void deleteCoordinationRequestFromList();
+    void printActiveRequestTable();
     void setRequestTimedOutVehicleID(int timedOutVehicleID);
     void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
-    void loggingData(std::string jsonString);
-    int getMessageType(std::string jsonString);
+    void loggingData(string jsonString);
+    int getMessageType(string jsonString);
     int getIntersectionID();
     int getRegionalID();
     int getRequestTimedOutVehicleID();
@@ -76,7 +99,6 @@ public:
     int getPRSUpdateCount();
     int getSignalGroup(SignalRequest signalRequest);
     int getSplitPhase(int signalGroup);
-    double getRequestTimedOutValue();
     bool acceptSignalRequest(SignalRequest signalRequest);
     bool addToActiveRequestTable(SignalRequest signalRequest);
     bool updateActiveRequestTable(SignalRequest signalRequest);

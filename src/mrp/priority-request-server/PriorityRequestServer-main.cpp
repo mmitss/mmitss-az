@@ -22,35 +22,35 @@
 
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
+    Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
 
     PriorityRequestServer PRS;
     SignalRequest signalRequest;
     SignalStatus signalStatus;
 
-    UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()), 1, 0);
-    const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
-    const int solverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
-    const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
-    const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
-
+    UdpSocket PRSSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestServer"].asInt()), 1, 0);
+    const int ssmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
+    const int solverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt());
+    const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
+    const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
    
     char receiveBuffer[15360];
 
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
+    const string LOCALHOST = jsonObject["HostIp"].asString();
+    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
 
     int msgType{};
     bool timedOutOccur{};
-    std::string ssmJsonString{};
-    std::string solverJsonString{};
-    std::string systemPerformanceDataCollectorJsonString{};
-
-
+    string ssmJsonString{};
+    string solverJsonString{};
+    string systemPerformanceDataCollectorJsonString{};
 
     while (true)
     {
@@ -58,21 +58,28 @@ int main()
 
         if (timedOutOccur == false)
         {
-            std::string receivedJsonString(receiveBuffer);
+            string receivedJsonString(receiveBuffer);
             msgType = PRS.getMessageType(receivedJsonString);
 
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
-                PRS.loggingData(receivedJsonString);
                 signalRequest.json2SignalRequest(receivedJsonString);
-                PRS.managingSignalRequestTable(signalRequest); 
-                ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-                PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
-                solverJsonString = PRS.createJsonStringForPrioritySolver();
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+                PRS.manageSignalRequestTable(signalRequest);
+            } 
+            else if (msgType == static_cast<int>(msgType::coordinationRequest))
+            {
+                cout << "Received coordination Request" << receivedJsonString << endl;
+                PRS.manageCoordinationRequest(receivedJsonString);
             }
+
+            PRS.loggingData(receivedJsonString);
+            ssmJsonString = PRS.createSSMJsonString(signalStatus);
+            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+            PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+            solverJsonString = PRS.createJsonStringForPrioritySolver();
+            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+            PRS.printActiveRequestTable();
         }
 
         else
@@ -86,7 +93,7 @@ int main()
                 PRS.deleteTimedOutRequestfromActiveRequestTable();
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-                PRS.printvector();
+                PRS.printActiveRequestTable();
             }
             
             if (PRS.sendClearRequest() == true)
@@ -99,7 +106,7 @@ int main()
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), systemPerformanceDataCollectorJsonString);
-                std::cout << "System Performance Data Log" << systemPerformanceDataCollectorJsonString << std::endl;
+                cout << "System Performance Data Log" << systemPerformanceDataCollectorJsonString << endl;
             }
 
             if (PRS.updateETA() == true)

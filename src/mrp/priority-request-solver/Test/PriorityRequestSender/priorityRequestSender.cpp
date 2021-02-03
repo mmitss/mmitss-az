@@ -14,14 +14,18 @@ using std::vector;
 
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
+    Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    const int priorityRequestSolverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
-    UdpSocket prioritySenderSocket = (static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestServer"].asInt()));
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
+
+    const string LOCALHOST = jsonObject["HostIp"].asString();
+    const int priorityRequestSolverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt());
+    UdpSocket prioritySenderSocket = (static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestServer"].asInt()));
 
   
     std::ifstream jsonfile("priorityRequest.json");
@@ -29,5 +33,5 @@ int main()
     std::istreambuf_iterator<char>());
     std::cout << "JsonString: " << sendingJsonString << std::endl;
     
-    prioritySenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo, sendingJsonString);
+    prioritySenderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(priorityRequestSolverPortNo), sendingJsonString);
 }
