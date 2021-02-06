@@ -180,22 +180,12 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
     return phase_Times
 
 
-# def getCummulativePhaseTimes(ring_Phase_Times):
-#     """
-#     Compute cumulative phase duration using cumsum method from numpy
-#     Appending 0 in the  beiginning of the list to define the starting point of the diagram
-#     """
-#     cum_Ring_Phase_Times = []
-#     cum_Ring_Phase_Times = np.cumsum(ring_Phase_Times)
-
-#     # First 0 is index in the list
-#     cum_Ring_Phase_Times = np.insert(cum_Ring_Phase_Times, 0, 0)
-#     return cum_Ring_Phase_Times
-
 def getCummulativePhaseTimes(startingPhase1, startingPhase2, left_ring_Phase_Times, right_ring_Phase_Times, phasesInRing, cum_phaseInRing, ringNo):
     """
     Compute cumulative phase duration using cumsum method from numpy
     Appending 0 in the  beiginning of the list to define the starting point of the diagram
+    check the special condition of starting phase (for example phase 1&6, phase 2&5, phase 3&8, phase 4&7)
+    Append starting in the beginning of phasesInRing list if require. For example, if Starting phase is 4 and 7 then append phase 3 in the beginning of the list
     """
     cum_left_Ring_Phase_Times = []
     cum_right_Ring_Phase_Times = []
@@ -205,47 +195,34 @@ def getCummulativePhaseTimes(startingPhase1, startingPhase2, left_ring_Phase_Tim
     # First 0 is index in the list
     cum_left_Ring_Phase_Times = np.insert(cum_left_Ring_Phase_Times, 0, 0)
     cum_right_Ring_Phase_Times = np.insert(cum_right_Ring_Phase_Times, 0, 0)
-    
+
     if ringNo == 'Ring1':
         if startingPhase2-startingPhase1 == 3:  # For example, if starting phase 4,7
             cum_left_Ring_Phase_Times = np.insert(
                 cum_left_Ring_Phase_Times, 0, 0.0)
-            
+
             cum_right_Ring_Phase_Times = np.insert(
                 cum_right_Ring_Phase_Times, 0, 0.0)
 
             # If Starting phase is 4 and 7 then append phase 3 in the beginning of the list
             phasesInRing = np.insert(phasesInRing, 0, startingPhase1-1)
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
 
         elif startingPhase2-startingPhase1 == 5:  # starting phase 3,8
             cum_left_Ring_Phase_Times = np.insert(cum_left_Ring_Phase_Times, len(
                 cum_left_Ring_Phase_Times), cum_left_Ring_Phase_Times[-1]+10)
-            
+
             cum_right_Ring_Phase_Times = np.insert(cum_right_Ring_Phase_Times, len(
                 cum_right_Ring_Phase_Times), cum_right_Ring_Phase_Times[-1]+10)
-            
+
             phasesInRing = np.insert(
                 phasesInRing, len(phasesInRing), startingPhase1)
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
-
-        else:
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
+                
+        x = 0
+        cum_phaseInRing = [x]
+        length = len(cum_left_Ring_Phase_Times)-1
+        for i in range(length):
+            x = x+10
+            cum_phaseInRing.append(x)
 
     if ringNo == 'Ring2':
         if startingPhase2-startingPhase1 == 3:
@@ -254,38 +231,25 @@ def getCummulativePhaseTimes(startingPhase1, startingPhase2, left_ring_Phase_Tim
 
             cum_right_Ring_Phase_Times = np.insert(cum_right_Ring_Phase_Times, len(
                 cum_right_Ring_Phase_Times), cum_right_Ring_Phase_Times[-1]+10)
-            
+
             phasesInRing = np.insert(
                 phasesInRing, len(phasesInRing), startingPhase2)
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
 
         elif startingPhase2-startingPhase1 == 5:
             cum_left_Ring_Phase_Times = np.insert(
                 cum_left_Ring_Phase_Times, 0, 0.0)
-            
+
             cum_right_Ring_Phase_Times = np.insert(
                 cum_right_Ring_Phase_Times, 0, 0.0)
 
             phasesInRing = np.insert(phasesInRing, 0, startingPhase2 - 1)
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
 
-        else:
-            x = 0
-            cum_phaseInRing = [x]
-            length = len(cum_left_Ring_Phase_Times)-1
-            for i in range(length):
-                x = x+10
-                cum_phaseInRing.append(x)
+        x = 0
+        cum_phaseInRing = [x]
+        length = len(cum_left_Ring_Phase_Times)-1
+        for i in range(length):
+            x = x+10
+            cum_phaseInRing.append(x)
 
     return cum_left_Ring_Phase_Times, cum_right_Ring_Phase_Times, phasesInRing, cum_phaseInRing
 
@@ -573,63 +537,6 @@ def main():
     cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, phasesInRing1, cum_phaseInRing1 = getCummulativePhaseTimes(
         startingPhase1, startingPhase2, left_R1_CP_phase_times, right_R1_CP_phase_times, phasesInRing1, cum_phaseInRing1, "Ring1")
 
-
-    # if startingPhase2-startingPhase1 == 3:  # For example, if starting phase 4,7
-    #     cum_Left_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         left_R1_CP_phase_times)
-
-    #     cum_Right_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         right_R1_CP_phase_times)
-
-    #     cum_Left_Ring1_Phase_Times = np.insert(
-    #         cum_Left_Ring1_Phase_Times, 0, 0.0)
-    #     cum_Right_Ring1_Phase_Times = np.insert(
-    #         cum_Right_Ring1_Phase_Times, 0, 0.0)
-    #     # cum_Left_Ring1_Phase_Times[0] = 10.0
-    #     # cum_Right_Ring1_Phase_Times[0] =10.0
-
-    #     # If Starting phase is 4 and 7 then append phase 3 in the beginning of the list
-    #     phasesInRing1 = np.insert(phasesInRing1, 0, startingPhase1-1)
-    #     x = 0
-    #     cum_phaseInRing1 = [x]
-    #     length = len(cum_Left_Ring1_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing1.append(x)
-
-    # elif startingPhase2-startingPhase1 == 5:  # starting phase 3,8
-    #     cum_Left_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         left_R1_CP_phase_times)
-
-    #     cum_Right_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         right_R1_CP_phase_times)
-
-    #     cum_Left_Ring1_Phase_Times = np.insert(cum_Left_Ring1_Phase_Times, len(
-    #         cum_Left_Ring1_Phase_Times), cum_Left_Ring1_Phase_Times[-1]+10)
-    #     cum_Right_Ring1_Phase_Times = np.insert(cum_Right_Ring1_Phase_Times, len(
-    #         cum_Right_Ring1_Phase_Times), cum_Right_Ring1_Phase_Times[-1]+10)
-
-    #     phasesInRing1 = np.insert(
-    #         phasesInRing1, len(phasesInRing1), startingPhase1)
-    #     x = 0
-    #     cum_phaseInRing1 = [x]
-    #     length = len(cum_Left_Ring1_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing1.append(x)
-
-    # else:
-    #     cum_Left_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         left_R1_CP_phase_times)
-    #     cum_Right_Ring1_Phase_Times = getCummulativePhaseTimes(
-    #         right_R1_CP_phase_times)
-    #     x = 0
-    #     cum_phaseInRing1 = [x]
-    #     length = len(cum_Left_Ring1_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing1.append(x)
-
     print("Phases In Ring1", phasesInRing1)
     print("Cumulative Left Critical Points Phase times for Ring1 =",
           cum_Left_Ring1_Phase_Times)
@@ -648,60 +555,6 @@ def main():
 
     cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, phasesInRing2, cum_phaseInRing2 = getCummulativePhaseTimes(
         startingPhase1, startingPhase2, left_R2_CP_phase_times, right_R2_CP_phase_times, phasesInRing2, cum_phaseInRing2, "Ring2")
-    # #creating cumulative list
-    # if startingPhase2-startingPhase1 == 3:
-    #     cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         left_R2_CP_phase_times)
-
-    #     cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         right_R2_CP_phase_times)
-
-    #     cum_Left_Ring2_Phase_Times = np.insert(cum_Left_Ring2_Phase_Times, len(
-    #         cum_Left_Ring2_Phase_Times), cum_Left_Ring2_Phase_Times[-1]+10)
-    #     cum_Right_Ring2_Phase_Times = np.insert(cum_Right_Ring2_Phase_Times, len(
-    #         cum_Right_Ring2_Phase_Times), cum_Right_Ring2_Phase_Times[-1]+10)
-
-    #     phasesInRing2 = np.insert(
-    #         phasesInRing2, len(phasesInRing2), startingPhase2)
-    #     x = 0
-    #     cum_phaseInRing2 = [x]
-    #     length = len(cum_Left_Ring2_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing2.append(x)
-
-    # elif startingPhase2-startingPhase1 == 5:
-    #     cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         left_R2_CP_phase_times)
-
-    #     cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         right_R2_CP_phase_times)
-
-    #     cum_Left_Ring2_Phase_Times = np.insert(
-    #         cum_Left_Ring2_Phase_Times, 0, 0.0)
-    #     cum_Right_Ring2_Phase_Times = np.insert(
-    #         cum_Right_Ring2_Phase_Times, 0, 0.0)
-
-    #     phasesInRing2 = np.insert(phasesInRing2, 0, startingPhase2-1)
-    #     x = 0
-    #     cum_phaseInRing2 = [x]
-    #     length = len(cum_Left_Ring2_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing2.append(x)
-
-    # else:
-    #     cum_Left_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         left_R2_CP_phase_times)
-    #     cum_Right_Ring2_Phase_Times = getCummulativePhaseTimes(
-    #         right_R2_CP_phase_times)
-
-    #     x = 0
-    #     cum_phaseInRing2 = [x]
-    #     length = len(cum_Left_Ring2_Phase_Times)-1
-    #     for i in range(length):
-    #         x = x+10
-    #         cum_phaseInRing2.append(x)
 
     print("Phases In Ring2", phasesInRing2)
     print("Cumulative Left Critical Points Phase times for Ring2 =",
