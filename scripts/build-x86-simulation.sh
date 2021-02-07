@@ -316,3 +316,23 @@ rm -r __pycache__ &> /dev/null
 cd - &> /dev/null
 sleep 1s
 #######################################################################################
+
+#######################################################################################
+echo "Building Signal Coordination Request Generator..."
+cd ./../src/mrp/signal-coordination-request-generator
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed signal-coordination-request-generator.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/signal-coordination-request-generator  ../../../bin/SignalCoordinationRequestGenerator/x86/M_SignalCoordinationRequestGenerator
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################

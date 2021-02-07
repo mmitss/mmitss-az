@@ -17,23 +17,26 @@ int getMessageType(std::string jsonString);
 std::string getJsonString(std::string fileName);
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
+    Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    const int priorityRequestSolverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolver"].asInt());
-    const int priorityRequestSolver_To_TCI_Interface_PortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PrioritySolverToTCIInterface"].asInt());
-    UdpSocket tciMsgSenderSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["TrafficControllerInterface"].asInt()));
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
+    
+    const string LOCALHOST = jsonObject["HostIp"].asString();
+    const int priorityRequestSolverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt());
+    const int priorityRequestSolver_To_TCI_Interface_PortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolverToTCIInterface"].asInt());
+    UdpSocket tciMsgSenderSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["TrafficControllerInterface"].asInt()));
 
     char receiveBuffer[5120];
-    char receivedSignalStatusBuffer[5120];
     int msgType{};
     std::string sendingJsonString{};
 
     sendingJsonString = getJsonString("signalPlan.json");
-    tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo, sendingJsonString);
+    tciMsgSenderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(priorityRequestSolverPortNo), sendingJsonString);
     std::cout << "Sent Signal Plan to Solver " << sendingJsonString << std::endl;
     while (true)
     {
@@ -46,7 +49,7 @@ int main()
         {
             sendingJsonString = getJsonString("signalPlan.json");
         
-            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolverPortNo,  sendingJsonString);
+            tciMsgSenderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(priorityRequestSolverPortNo),  sendingJsonString);
             std::cout << "Sent Signal Plan to Solver " << std::endl;
         }
 
@@ -54,7 +57,7 @@ int main()
         {
             sendingJsonString = getJsonString("currPhase.json");
             
-            tciMsgSenderSocket.sendData(LOCALHOST, priorityRequestSolver_To_TCI_Interface_PortNo, sendingJsonString);
+            tciMsgSenderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(priorityRequestSolver_To_TCI_Interface_PortNo), sendingJsonString);
             std::cout << "Sent Current Phase Status to Solver" << std::endl;
         }
         else if (msgType == static_cast<int>(msgType::schedule))
@@ -66,21 +69,26 @@ int getMessageType(std::string jsonString)
 {
     int messageType{};
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
-    if ((jsonObject["MsgType"]).asString() == "TimingPlanRequest")
-        messageType = static_cast<int>(msgType::signalPlanRequest);
+    if (parsingSuccessful == true)
+    {
+        if ((jsonObject["MsgType"]).asString() == "TimingPlanRequest")
+            messageType = static_cast<int>(msgType::signalPlanRequest);
 
-    else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseRequest")
-        messageType = static_cast<int>(msgType::currentPhaseRequest);
+        else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseRequest")
+            messageType = static_cast<int>(msgType::currentPhaseRequest);
 
-    else if ((jsonObject["MsgType"]).asString() == "Schedule")
-        messageType = static_cast<int>(msgType::schedule);
+        else if ((jsonObject["MsgType"]).asString() == "Schedule")
+            messageType = static_cast<int>(msgType::schedule);
 
-    else
-        std::cout << "Message type is unknown" << std::endl;
-    //std::cout << "Received Message" << jsonString << std::endl;
+        else
+            std::cout << "Message type is unknown" << std::endl;
+    }
 
     return messageType;
 }

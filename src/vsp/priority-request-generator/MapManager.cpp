@@ -172,7 +172,7 @@ void MapManager::writeMAPPayloadInFile()
 
     outputfile << "payload"
                << " "
-               << intersectionMapName << " " << mapPayload << std::endl;
+               << intersectionMapName << " " << mapPayload << endl;
     outputfile.close();
 }
 
@@ -271,7 +271,7 @@ void MapManager::printAvailableMapList()
 {
     for (size_t i = 0; i < availableMapList.size(); i++)
     {
-        std::cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].activeMapStatus << std::endl;
+        cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].activeMapStatus << endl;
     }
 }
 
@@ -329,7 +329,7 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 
     else if (!activeMapList.empty())
     {
-        std::cout << "There is a an active MAP in list" << std::endl;
+        cout << "There is a an active MAP in list" << endl;
     }
 }
 

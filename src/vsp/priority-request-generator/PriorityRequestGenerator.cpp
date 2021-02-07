@@ -48,14 +48,12 @@ using namespace MsgEnum;
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
 	Json::Value jsonObject;
-	// Json::Reader reader;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
-	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-	// reader.parse(configJsonString.c_str(), jsonObject);
+	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	// set the request timed out value to avoid clearing the old request in PRS
 	if (parsingSuccessful == true)
@@ -125,9 +123,9 @@ std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(
 /*
 	- Create srm json string based on te bsm and associated information obtained based on the active map (laneID, approachID, ETA)
 */
-std::string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
+string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
 {
-	std::string srmJsonString{};
+	string srmJsonString{};
 	int vehExpectedTimeOfArrival_Minute{};
 	double vehExpectedTimeOfArrival_Second{};
 	double vehicleETA_Duration{};
@@ -210,7 +208,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << endl;
 	}
 
 	//If there is an active map but vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -219,7 +217,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << endl;
 	}
 
 	//If there is an active map and vehilce ID is available in the ART but vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -228,7 +226,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << endl;
 	}
 
 	else if (activeMapStatus == true && vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound) && (currentTime - SrmSendingTime) >= SrmTimeGapValue)
@@ -239,7 +237,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityRequest));
-			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << endl;
 		}
 		//If vehicle signal group changed it is required to send SRM
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
@@ -247,7 +245,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << endl;
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
@@ -256,7 +254,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << endl;
 		}
 
 		//If vehicleID is in ART and vehicle ETA changes by threshold value, vehicle should send srm
@@ -265,7 +263,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << endl;
 		}
 
 		//If vehicleID is in the ART and the message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
@@ -274,7 +272,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << endl;
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
@@ -283,7 +281,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << endl;
 		}
 	}
 	if (requestSendingRequirement == true)
@@ -314,7 +312,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << endl;
 	}
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -323,7 +321,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << endl;
 	}
 
 	//If there is an active map and vehilce ID is available in the ART but vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -332,7 +330,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << endl;
 	}
 
 	else if (activeMapStatus == true && busStopPassedStatus == true && vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound) && (currentTime - SrmSendingTime) >= SrmTimeGapValue)
@@ -343,7 +341,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityRequest));
-			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << endl;
 		}
 		//If vehicle's signal group is changed it is required to send SRM
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
@@ -351,7 +349,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << endl;
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
@@ -360,7 +358,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << endl;
 		}
 
 		//If vehicleID is in the ART and its ETA is changed by threshold value, vehicle should send srm
@@ -369,7 +367,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << endl;
 		}
 
 		//If vehicleID is in the ART and the message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
@@ -378,7 +376,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << endl;
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
@@ -387,7 +385,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << endl;
 		}
 	}
 
@@ -397,7 +395,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << endl;
 	}
 
 	if (requestSendingRequirement == true)
@@ -424,7 +422,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is out off the map" << endl;
 	}
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -433,7 +431,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is either leaving or not in inBoundlane of the Intersection" << endl;
 	}
 
 	//If there is an active map and vehilce ID is available in the ART but vehicle is leaving the intersection, it is required to send a cancellation request.
@@ -442,7 +440,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since vehicle is leaving the Intersection" << endl;
 	}
 
 	else if (activeMapStatus == true && lightSirenStatus == true && vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound) && (currentTime - SrmSendingTime) >= SrmTimeGapValue)
@@ -453,7 +451,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityRequest));
-			std::cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since ART is empty at time" << endl;
 		}
 		//If vehicle signal group changed it is required to send SRM
 		else if (findVehicleIDOnTable != ActiveRequestTable.end() && tempVehicleSignalGroup != getSignalGroup())
@@ -461,7 +459,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle signalGroup has been changed " << endl;
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
@@ -470,7 +468,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle speed has been changed" << endl;
 		}
 
 		//If vehicleID is in the ART and its ETA is changed by threshold value, vehicle should send srm
@@ -479,7 +477,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since vehicle ETAhas been changed from " << findVehicleIDOnTable->vehicleETA << " to " << vehicleETA << endl;
 		}
 
 		//If vehicleID is in the ART and the message count of the last sent out srm and message count in the ART doesn't match, vehicle should send srm
@@ -488,7 +486,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << std::endl;
+			cout << "[" << currentTime << "] SRM is sent since msgCount doesn't match" << endl;
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
@@ -497,7 +495,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 			requestSendingRequirement = true;
 			requestSendStatus = true;
 			setPriorityRequestType(static_cast<int>(MsgEnum::requestType::requestUpdate));
-			std::cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << std::endl;
+			cout << "[" << currentTime << "] SRM is sent to avoid PRS timed out " << endl;
 		}
 	}
 
@@ -507,7 +505,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		std::cout << "[" << currentTime << "] SRM is sent since light-siren is off " << std::endl;
+		cout << "[" << currentTime << "] SRM is sent since light-siren is off " << endl;
 	}
 
 	if (requestSendingRequirement == true)
@@ -547,9 +545,9 @@ bool PriorityRequestGenerator::findNearestBusStopLocation()
 */
 bool PriorityRequestGenerator::checkPassedNearestBusStop()
 {
-	double busStopDistanceDistanceFromStopBar{};
-	std::string fmap{};
-	std::string intersectionName{};
+	double busStopDistanceFromStopBar{};
+	string fmap{};
+	string intersectionName{};
 	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 
 	if (findNearestBusStopLocation() == true)
@@ -579,10 +577,10 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 
 		plocAwareLib->locateVehicleInMap(connectedVehicle_t_1, vehicleTracking_t_1);
 		plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
-		busStopDistanceDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
+		busStopDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
 		delete plocAwareLib;
 		
-		if (busStopDistanceDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
+		if (busStopDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
 			busStopPassedStatus = true;
 		else
 			busStopPassedStatus = false;
@@ -657,12 +655,13 @@ void PriorityRequestGenerator::setVehicleIntersectionStatus(int vehIntersectionS
 /*
 	-Get the message type based on the received json string from Transceiver
 */
-int PriorityRequestGenerator::getMessageType(std::string jsonString)
+int PriorityRequestGenerator::getMessageType(string jsonString)
 {
+	int messageType{};	
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 
 	if (parsingSuccessful == true)
@@ -700,8 +699,8 @@ std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManage
 void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle)
 {
 
-	std::string fmap{};
-	std::string intersectionName{};
+	string fmap{};
+	string intersectionName{};
 	bool singleFrame{false}; /// TRUE to encode speed limit in lane, FALSE to encode in approach
 	//If active map list is empty, look for active map
 	if (activeMapList.empty())
@@ -854,13 +853,11 @@ int PriorityRequestGenerator::getVehicleIntersectionStatus()
 void PriorityRequestGenerator::setVehicleType()
 {
 	Json::Value jsonObject;
-	// Json::Reader reader;
 	std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-	std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-	// reader.parse(configJsonString.c_str(), jsonObject);
+	string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 
 	if (parsingSuccessful == true)
@@ -883,7 +880,7 @@ void PriorityRequestGenerator::setVehicleType()
 	delete reader;
 }
 
-void PriorityRequestGenerator::setSimulationVehicleType(std::string vehType)
+void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 {
 	lightSirenStatus = true;
 	if (vehType == "transit")
@@ -1019,9 +1016,9 @@ int PriorityRequestGenerator::getMsgCount()
 /*
 	- Get vehicle status on current map (Whether on map or not) for HMI Controller
 */
-std::string PriorityRequestGenerator::getVehicleMapStatus()
+string PriorityRequestGenerator::getVehicleMapStatus()
 {
-	std::string vehicleMapStatus{"False"};
+	string vehicleMapStatus{"False"};
 
 	if (activeMapStatus == true)
 		vehicleMapStatus = "True";
@@ -1035,9 +1032,9 @@ std::string PriorityRequestGenerator::getVehicleMapStatus()
 /*
 	- Get information whether SRM is sent or not for HMI Controller
 */
-std::string PriorityRequestGenerator::getVehicleRequestSentStatus()
+string PriorityRequestGenerator::getVehicleRequestSentStatus()
 {
-	std::string vehicleSRMStatus{"False"};
+	string vehicleSRMStatus{"False"};
 
 	if (requestSendStatus == true)
 		vehicleSRMStatus = "True";
@@ -1092,13 +1089,13 @@ std::vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvaila
 void PriorityRequestGenerator::printART()
 {
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
-		std::cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << " " << std::endl;
+		cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << " " << endl;
 }
 
 /*
 	- This method will open the log file and store the data in the file based on the logging requirements.
 */
-void PriorityRequestGenerator::loggingData(std::string jsonString)
+void PriorityRequestGenerator::loggingData(string jsonString)
 {
 	std::ofstream outputfile;
 
@@ -1107,8 +1104,8 @@ void PriorityRequestGenerator::loggingData(std::string jsonString)
 		outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
 		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-		outputfile << "\nFollowing data is either sent or received at time " << timenow << std::endl;
-		outputfile << jsonString << std::endl;
+		outputfile << "\nFollowing data is either sent or received at time " << timenow << endl;
+		outputfile << jsonString << endl;
 	}
 }
 
@@ -1118,15 +1115,15 @@ void PriorityRequestGenerator::loggingData(std::string jsonString)
 */
 bool PriorityRequestGenerator::getLoggingStatus()
 {
-	std::string logging{};
+	string logging{};
 	std::ofstream outputfile;
 	Json::Value jsonObject;
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
-	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 
 	if (parsingSuccessful == true)
@@ -1137,7 +1134,7 @@ bool PriorityRequestGenerator::getLoggingStatus()
 		loggingStatus = true;
 		auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		outputfile.open("/nojournal/bin/log/PRGLog.txt");
-		outputfile << "File opened at time : " << timenow << std::endl;
+		outputfile << "File opened at time : " << timenow << endl;
 		outputfile.close();
 	}
 	else
@@ -1151,12 +1148,12 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	- Method to set the light-siren status based on the received message
 	- If the vehicle type is emergencyVehicle(2), the following method will not change the lightSirenStatus value.
 */
-void PriorityRequestGenerator::setLightSirenStatus(std::string jsonString)
+void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 {
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 
 	if (parsingSuccessful == true)
@@ -1175,9 +1172,9 @@ void PriorityRequestGenerator::getBusStopInformation()
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
-	std::string errors{};
+	string errors{};
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-bus-stop-location.json");
-	std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	int noOfBusStop = jsonObject["NoOfBusStop"].asInt();
 	BusStopInformation busStopInformation;

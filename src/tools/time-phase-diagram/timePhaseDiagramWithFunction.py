@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.collections import PatchCollection
+import json
 
 #Get the stating phase information
 def getStartingPhases():
-    with open('nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/Results.txt') as f:
         first_line = f.readline()
     return first_line
 
@@ -35,7 +36,7 @@ def phaseGroupInRing(SP, ring_phases, phasesInRing):
 
 
 def getInitToPhasesAndElaspedGreenTime():
-    with open('nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/Results.txt') as f:
 
         for i, line in enumerate(f):
             if i == 1:
@@ -45,7 +46,7 @@ def getInitToPhasesAndElaspedGreenTime():
 #Find the phase duration for all the planned phases.
 def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
     if(CP == 'Left'):
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 2:
                     break
@@ -62,7 +63,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
                 left_r2_k1_Phase_Times = left_r2_k1_Phase_Times[SP-5:]
 
         # For cycle2 Left CP
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 3:
                     break
@@ -77,7 +78,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
             left_r2_k1_Phase_Times.extend(left_r2_k2_Phase_Times)
 
         # For cycle3 Left CP
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 4:
                     break
@@ -98,7 +99,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
 
     # # # For cycle1 Right CP
     if(CP == 'Right'):
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 5:
                     break
@@ -117,7 +118,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
 
 
         # For cycle2 Right CP
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 6:
                     break
@@ -132,7 +133,7 @@ def getPhaseTimesForCycle1(phase_Times, SP, CP, RingNo):
             right_r2_k1_Phase_Times.extend(right_r2_k2_Phase_Times)
 
         # For cycle3 Right CP
-        with open('nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/Results.txt') as f:
             for i, line in enumerate(f):
                 if i == 7:
                     break
@@ -165,7 +166,7 @@ def getCummulativePhaseTimes(ring_Phase_Times):
 
 def getPriorityRequest():
     eta = []
-    with open('nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/Results.txt') as f:
         for i, line in enumerate(f):
             if i == 14:
                 break
@@ -175,7 +176,7 @@ def getPriorityRequest():
     noOfReq = int(noOfReq)
     print("No of Request", noOfReq)
     reqInfoLineNo = 15+noOfReq
-    with open('nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/Results.txt') as f:
         for i, line in enumerate(f):
             if i<15:
                 continue
@@ -196,25 +197,27 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
     if ringNo == 'Ring1&2':
         #Ring1
         color = 'tab:red'
-        ax1.set_xlabel('time (s)',fontsize=20)
-        ax1.set_ylabel('Ring 1', color=color, fontsize=20)
-        ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-        ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color)
-        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10),fontsize = 18) 
+        ax1.set_xlabel('time (s)',fontsize=24,fontweight = 'bold')
+        ax1.set_ylabel('Ring 1', color=color, fontsize=28,fontweight = 'bold')
+        ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color, linewidth = 4)
+        ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color, linewidth = 4)
+        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 20),fontsize = 24) 
         ax1.set_yticks(ticks=np.arange(cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  
         ax1.set_yticklabels(phasesInRing1)  
         ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
+        for axis in ['top','bottom','left','right']:
+            ax1.spines[axis].set_linewidth(4)
         
 
         #Ring2
         ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
         color = 'tab:blue'
-        ax2.set_ylabel('Ring 2', color=color, fontsize=20)
-        ax2.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
-        ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
+        ax2.set_ylabel('Ring 2', color=color, fontsize=28, fontweight = 'bold')
+        ax2.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color, linewidth = 4)
+        ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color, linewidth = 4)
         ax2.set_yticks(ticks=np.arange(cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
         ax2.set_yticklabels(phasesInRing2)
-        ax2.tick_params(axis='y', labelcolor=color,labelsize=18)
+        ax2.tick_params(axis='y', labelcolor=color,labelsize=24)
     
     elif ringNo == 'Ring1':
         color = 'tab:red'
@@ -270,11 +273,152 @@ def timePhaseDiagram(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase
     for i in range(0,req_phase_length):
         x = ETA[i]
         y = requestedPhasePosition[i]
-        ax1.add_patch(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'green'))
+        
+        if i==0:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'green', linewidth = 2, label = 'Coordination Priority Request'))
+        
+        else:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'green', linewidth = 2))
     #     patches.append(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'red'))
     # ax1.add_collection(PatchCollection(patches))
+    ax1.legend(loc='upper right', bbox_to_anchor=(.9, 1), prop={"size":18})
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.grid()
+    plt.show()
+
+
+
+# Plotting time-phase diagram Method 2
+def timePhaseDiagramMethod2(SP1, SP2, cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times, cum_phaseInRing1, cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times, cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, ETA_Duration, req_phase, dilemmaZone_phases, dilemmaZone_ETA, dilemmaZone_ETA_Duration, ringNo):
+    fig, ax1 = plt.subplots()
+    if ringNo == 'Ring1&2':
+        #Ring1
+        color = 'tab:red'
+        ax1.set_xlabel('Time (s)',fontsize=24, fontweight = 'bold')
+        ax1.set_ylabel('Ring 1', color=color, fontsize=28,fontweight = 'bold')
+        ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color,linewidth = 4)
+        ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color,linewidth = 4)
+        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 20),fontsize = 24) 
+        ax1.set_yticks(ticks=np.arange(cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  
+        ax1.set_yticklabels(phasesInRing1)  
+        ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
+        for axis in ['top','bottom','left','right']:
+            ax1.spines[axis].set_linewidth(4)
+        
+
+        #Ring2
+        ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
+        color = 'tab:blue'
+        ax2.set_ylabel('Ring 2', color=color, fontsize=28, fontweight = 'bold')
+        ax2.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color,linewidth = 4)
+        ax2.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color, linewidth = 4)
+        ax2.set_yticks(ticks=np.arange(cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
+        ax2.set_yticklabels(phasesInRing2)
+        ax2.tick_params(axis='y', labelcolor=color,labelsize=24)
+    
+    elif ringNo == 'Ring1':
+        color = 'tab:red'
+        ax1.set_xlabel('time (s)', fontsize=20)
+        ax1.set_ylabel('Ring 1', color=color, fontsize=20)
+        ax1.plot(cum_Left_Ring1_Phase_Times, cum_phaseInRing1, color=color)
+        ax1.plot(cum_Right_Ring1_Phase_Times, cum_phaseInRing1, color=color)
+        plt.xticks(np.arange(cum_Right_Ring1_Phase_Times[0], cum_Right_Ring1_Phase_Times[-1], 10),fontsize = 18) 
+        ax1.set_yticks(ticks=np.arange(cum_phaseInRing1[0], cum_phaseInRing1[-1], 10))  
+        ax1.set_yticklabels(phasesInRing1)  
+        ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
+        
+    
+    elif ringNo == 'Ring2':
+        color = 'tab:blue'
+        ax1.set_xlabel('time (s)', fontsize=20)
+        ax1.set_ylabel('Ring 2', color=color, fontsize=20)
+        ax1.plot(cum_Left_Ring2_Phase_Times, cum_phaseInRing2, color=color)
+        ax1.plot(cum_Right_Ring2_Phase_Times, cum_phaseInRing2, color=color)
+        plt.xticks(np.arange(cum_Right_Ring2_Phase_Times[0], cum_Right_Ring2_Phase_Times[-1], 10),fontsize = 18) 
+        ax1.set_yticks(ticks=np.arange(cum_phaseInRing2[0], cum_phaseInRing2[-1], 10))  
+        ax1.set_yticklabels(phasesInRing2)  
+        ax1.tick_params(axis='y', labelcolor=color,labelsize=18)
+        
+    # Requested phase of First Type Priority Request
+    requestedPhasePosition =[]
+    indexPosList =[]
+    indexPos = 0
+    #Get the requested phases index
+    for i in req_phase:
+        if i<5:
+            for j in range(len(phasesInRing1)): 
+                if phasesInRing1[j] == i:
+                    indexPosList.append(j)
+        elif i>4:
+            for j in range(len(phasesInRing2)): 
+                if phasesInRing2[j] == i:
+                    indexPosList.append(j)
+    # Get the cumulative phase duration value of requested phases based on the index 
+    if i<5:
+        for i in indexPosList:
+            pos = cum_phaseInRing1[i]
+            requestedPhasePosition.append(pos)
+    elif i>4:
+        for i in indexPosList:
+            pos = cum_phaseInRing2[i]
+            requestedPhasePosition.append(pos)
+                        
+    #Draw the rectangles to denote priority request
+    patches =[]
+    req_phase_length = len(requestedPhasePosition)
+    for i in range(0,req_phase_length):
+        x = ETA[i]
+        y = requestedPhasePosition[i]
+        z = ETA_Duration[i]
+        if i == 0:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = 'green',linewidth = 2, label = 'Coordination Priority Request'))
+        else:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = 'green',linewidth = 2))
+    #     patches.append(matplotlib.patches.Rectangle((x, y),25,10,angle=0.0,color = 'red'))
+    # ax1.add_collection(PatchCollection(patches))
+    
+    # Requested phase of Second Type Priority Request
+    requestedPhasePosition =[]
+    indexPosList =[]
+    indexPos = 0
+    for i in dilemmaZone_phases:
+        if i<5:
+            for j in range(len(phasesInRing1)): 
+                if phasesInRing1[j] == i:
+                    indexPosList.append(j)
+        elif i>4:
+            for j in range(len(phasesInRing2)): 
+                if phasesInRing2[j] == i:
+                    indexPosList.append(j)
+  
+
+    if i<5:
+        for i in indexPosList:
+            pos = cum_phaseInRing1[i]
+            requestedPhasePosition.append(pos)
+    elif i>4:
+        for i in indexPosList:
+            pos = cum_phaseInRing2[i]
+            requestedPhasePosition.append(pos)
+                        
+
+
+    patches =[]
+    req_phase_length = len(requestedPhasePosition)
+    for i in range(0,req_phase_length):
+        x = dilemmaZone_ETA[i]
+        y = requestedPhasePosition[i]
+        z = dilemmaZone_ETA_Duration[i]
+        if i == 0:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = '#0099FF',linewidth = 2, label = 'Truck Priority Request'))
+        else:
+            ax1.add_patch(matplotlib.patches.Rectangle((x, y),z,10,angle=0.0,color = '#0099FF', linewidth = 2))
+    
+    ax1.legend(loc='upper right', bbox_to_anchor=(1, 1), prop={"size":18})
+    fig.tight_layout()  # otherwise the right y-label is slightly clipped
+    plt.grid(color='black', linestyle='-', linewidth=2)
+    # plt.legend(loc='best', bbox_to_anchor=(1.1, 1.1))
+    # plt.legend()
     plt.show()
 
 
@@ -372,6 +516,11 @@ def subplotTimePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Ti
 
 
 def main():
+    configFile = open("configuration.json", 'r')
+    config = (json.load(configFile))
+    # Close the config file:
+    configFile.close()
+    
     r1_phases = [1, 2, 3, 4]
     r2_phases = [5, 6, 7, 8]
     left_R1_CP_phase_times = []
@@ -387,11 +536,63 @@ def main():
     cum_phaseInRing2 = []
 
     ETA = []
-    req_phase = [2, 2]
+    req_phase = []
+    ETA_Duration = []
+    
+    count = 0
+    noOfIteration = config["NoOfRequest"]
+ 
+    while (count < noOfIteration):
+            ETA_Val = config["ETA"][count]
+            ETA_Duration_Val = config ["ETA_Duration"][count]
+            #Append the same ETA value twice for draw two rectangles for two cycle
+            ETA.append(ETA_Val)
+            ETA.append(ETA_Val)
+            ETA_Duration.append(ETA_Duration_Val)
+            ETA_Duration.append(ETA_Duration_Val)
+            count = count + 1
+    print("ETA", ETA)
+    
+    count = 0
+    noOfIteration = config["NoOfRequiredPhase"]
+    while (count < noOfIteration):
+            phaseVal = config["RequestedPhase"][count]
+            req_phase.append(phaseVal)
+            count = count + 1
+    print("Requested Phase", req_phase)
 
     # ETA = getPriorityRequest()
-    ETA = [20.0, 20.0, 140.0, 140.0]
-    print("ETA", ETA)
+    # ETA = [25.0, 25.0, 20.0, 20.0]
+    # print("ETA", ETA)
+    #For Differentiating two types of request
+    dilemmaZone_phases = []
+    dilemmaZone_ETA = []
+    dilemmaZone_ETA_Duration = []
+    #Dilemma-Zone Information
+    multipleTypesofRequest = config["MultipleTypesofRequest"]
+    if bool(multipleTypesofRequest): 
+        count = 0
+        noOfIteration = config["NoOfDilemmaZoneRequest"]
+    
+        while (count < noOfIteration):
+                ETA_Val = config["DilemmaZoneETA"][count]
+                ETA_Duration_Val = config["DilemmaZoneETA_Duration"][count]
+                #Append the same ETA value twice for draw two rectangles for two cycle
+                dilemmaZone_ETA.append(ETA_Val)
+                dilemmaZone_ETA.append(ETA_Val)
+                dilemmaZone_ETA_Duration.append(ETA_Duration_Val)
+                dilemmaZone_ETA_Duration.append(ETA_Duration_Val)
+                count = count + 1
+        print("DilemmaZone ETA", dilemmaZone_ETA)
+        
+        count = 0
+        noOfIteration = config["NoOfRequiredDilemmaZonePhase"]
+        while (count < noOfIteration):
+                phaseVal = config["DilemmaZonePhases"][count]
+                dilemmaZone_phases.append(phaseVal)
+                count = count + 1
+        print("DilemmaZone Requested Phase", dilemmaZone_phases)
+    
 
     SP1, SP2 = getStartingPhases().split() #Get the stating phase information
     print("SP1 =", SP1)
@@ -556,11 +757,15 @@ def main():
     print("Cumulative Phases in Ring2 =", cum_phaseInRing2)
 
     
-    
-
-    timePhaseDiagram(SP1, SP2,cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
+    timePhaseDiagramMethod2(SP1, SP2,cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
                      cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
-                     cum_phaseInRing2, ETA, phasesInRing1, phasesInRing2,req_phase, 'Ring1&2')
+                     cum_phaseInRing2, phasesInRing1, phasesInRing2, ETA, ETA_Duration, req_phase, dilemmaZone_phases, dilemmaZone_ETA, dilemmaZone_ETA_Duration, 'Ring1&2')
+
+
+
+    # timePhaseDiagram(SP1, SP2,cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
+    #                  cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
+    #                  cum_phaseInRing2, ETA, phasesInRing1, phasesInRing2,req_phase, 'Ring1&2')
 
     # subplotTimePhaseDiagram(cum_Left_Ring1_Phase_Times, cum_Right_Ring1_Phase_Times,
     #                  cum_phaseInRing1,cum_Left_Ring2_Phase_Times, cum_Right_Ring2_Phase_Times,
