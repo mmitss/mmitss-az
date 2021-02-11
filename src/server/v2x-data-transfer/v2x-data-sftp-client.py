@@ -67,15 +67,14 @@ if __name__ == "__main__":
     import time
     from apscheduler.schedulers.background import BackgroundScheduler
     from apscheduler.triggers import interval
+    from V2XDataTransferConfig import V2XDataTransferConfig
 
     # Read the config file to store the information in variables
-    with open("./v2x-data-transfer-config.json", 'r') as configFile:
-        config = json.load(configFile)
-
-    localDataDirectory = config["local_data_directory"]
-    intersections = config["intersections"]
-    startHour = config["data_transfer_start_24h"]["from_intersections"]["hour"]
-    startMinute = config["data_transfer_start_24h"]["from_intersections"]["minute"]
+    config = V2XDataTransferConfig("./v2x-data-transfer-config.json")
+    localDataDirectory = config.localDataDirectory
+    intersections = config.intersections
+    startHour = config.dataTransferStart["from_intersections"]["hour"]
+    startMinute = config.dataTransferStart["from_intersections"]["minute"]    
 
     # If invalid start time is detected, default to the midnight:
     if startHour < 0 or startHour > 23 or startMinute < 0 or startMinute > 59:
@@ -95,7 +94,6 @@ if __name__ == "__main__":
             dataElementDirectory = intersectionDirectory + "/" + dataElement 
             if not os.path.isdir(dataElementDirectory):
                 os.makedirs(dataElementDirectory)
-
 
     # Create an instance of the background scheduler and start it
     backgroundScheduler = BackgroundScheduler()
