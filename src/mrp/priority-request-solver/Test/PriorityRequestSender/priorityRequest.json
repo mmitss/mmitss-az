@@ -1,1 +1,42 @@
-{"MsgType":"PriorityRequest","PriorityRequestList":{"intersectionID":44383,"minuteOfYear":368491,"msOfMinute":45000,"noOfRequest":2,"regionalID":0,"requestorInfo":[{"ETA":27.0,"ETA_Duration":4.0,"basicVehicleRole":13,"elevation_Meter":540.20000000000005,"heading_Degree":67.0,"inBoundLaneID":16,"latitude_DecimalDegree":33.842067299999997,"longitude_DecimalDegree":-112.1393138,"priorityRequestStatus":4,"requestedSignalGroup":2,"speed_MeterPerSecond":14.0,"vehicleID":240,"vehicleType":2},{"ETA":27.0,"ETA_Duration":4.0,"basicVehicleRole":13,"elevation_Meter":540.20000000000005,"heading_Degree":67.0,"inBoundLaneID":16,"latitude_DecimalDegree":33.842067299999997,"longitude_DecimalDegree":-112.1393138,"priorityRequestStatus":4,"requestedSignalGroup":5,"speed_MeterPerSecond":14.0,"vehicleID":240,"vehicleType":2}]}}
+{
+    "MsgType": "PriorityRequest",
+    "PriorityRequestList": {
+        "intersectionID": 44383,
+        "minuteOfYear": 487593,
+        "msOfMinute": 21000,
+        "noOfRequest": 2,
+        "regionalID": 0,
+        "requestorInfo": [
+            {
+                "ETA": 35.0,
+                "ETA_Duration": 4.0,
+                "basicVehicleRole": 9,
+                "elevation_Meter": 0.0,
+                "heading_Degree": 0.0,
+                "inBoundLaneID": 0,
+                "latitude_DecimalDegree": 0.0,
+                "longitude_DecimalDegree": 0.0,
+                "priorityRequestStatus": 0,
+                "requestedSignalGroup": 4,
+                "speed_MeterPerSecond": 14.5,
+                "vehicleID": 601,
+                "vehicleType": 9
+            },
+            {
+                "ETA": 25.0,
+                "ETA_Duration": 4.0,
+                "basicVehicleRole": 16,
+                "elevation_Meter": 0.0,
+                "heading_Degree": 0.0,
+                "inBoundLaneID": 0,
+                "latitude_DecimalDegree": 0.0,
+                "longitude_DecimalDegree": 0.0,
+                "priorityRequestStatus": 0,
+                "requestedSignalGroup": 2,
+                "speed_MeterPerSecond": 15.0,
+                "vehicleID": 602,
+                "vehicleType": 6
+            }
+        ]
+    }
+}

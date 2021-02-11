@@ -20,7 +20,7 @@ This is a web-based Python Flask application that has the following functionalit
 
 from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
+from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators, SelectField
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 import os
@@ -64,21 +64,21 @@ def local_console():
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
     hostIp = StringField('Host IP', validators=[ip_address()])
-    sourceDsrcDeviceIp      = StringField('Source DSRC Device IP', validators=[ip_address()])
+    sourceDsrcDeviceIp      = StringField('Wireless Device IP (RSU or OBU)', validators=[ip_address()])
     intersectionName        = StringField('Intersection Name')
     intersectionID          = IntegerField('Intersection ID')
     regionalID              = IntegerField('Regional ID')
     mapPayload              = StringField('Map Payload')
-    dataCollectorIP         = StringField('Data Collector IP')
+    dataCollectorIP         = StringField('Remote Data Collector Server IP')
     hmiControllerIP         = StringField('HMI Controller IP')
     messageDistributorIP    = StringField('Message Distributor IP')
-    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
-    vehicleType                     = StringField('Vehicle Type')
-    logging                         = StringField('Logging')
-    srmTimedOutTime                 = StringField('SRM Timed Out Time')
+    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address (optional)')
+    vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
+    logging                         = SelectField('Logging', choices = ["True", "False"])
+    srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
-    systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
-    applicationPlatform             = StringField('Application Platform')
+    systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
+    applicationPlatform             = SelectField('Application Platform', choices = ["roadside", "vehicle"])
     peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
@@ -137,13 +137,13 @@ class ConfigurationForm(FlaskForm):
     txModeSSM       = StringField('Tx Mode: SSM')    
     txModeBSM       = StringField('Tx Mode: BSM')
     signalControllerIP                  = StringField('Signal Controller IP Address')
-    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Address')
-    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval')
-    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time')
+    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Port')
+    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval (seconds)')
+    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time (seconds)')
     signalControllerVendor              = StringField('Signal Controller Vendor')
     signalControllerTimingPlanMib       = StringField('Signal Controller Timing Plan MIB')
-    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases')
-    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases')
+    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases  (e.g., [1,3,5])')
+    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases  (e.g., [1,3,5])')
     signalControllerSplitPhases1        = IntegerField('Signal Controller Split Phases 1')
     signalControllerSplitPhases3        = IntegerField('Signal Controller Split Phases 3')
     signalControllerSplitPhases5        = IntegerField('Signal Controller Split Phases 5')
@@ -160,7 +160,14 @@ class ConfigurationForm(FlaskForm):
     dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
     dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
     dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
-    dataTransferMaxRetries            = IntegerField('Data Transfer Max Retries')    
+    dataTransferMaxRetries               = IntegerField('Data Transfer Max Retries')    
+    priorityEVWeight                    = StringField('Emergency Vehicle Weight')    
+    priorityEVSplitPhaseWeight          = StringField('Emergency Vehicle Split Phase Weight')    
+    priorityTransitWeight                = StringField('Transit Weight')    
+    priorityTruckWeight                 = StringField('Truck Weight')    
+    priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight')    
+    priorityCoordinationWeight            = StringField('Coordination Weight')    
+    coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Checking Time Interval (seconds)')    
 
 # System Configuration data object
 class SysConfig:
@@ -263,6 +270,13 @@ class SysConfig:
         self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
         self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
         self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
+        self.priorityEVWeight                   = data['PriorityParameter']['EmergencyVehicleWeight']
+        self.priorityEVSplitPhaseWeight         = data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']
+        self.priorityTransitWeight              = data['PriorityParameter']['TransitWeight']
+        self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
+        self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
+        self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
+        self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
 
 def convertToList(formString):
     # remove any brackets
@@ -378,7 +392,13 @@ def prepareJSONData(data, form):
     data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
     data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
     data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
-
+    data['PriorityParameter']['EmergencyVehicleWeight']             = float(form.priorityEVWeight.data)
+    data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = float(form.priorityEVSplitPhaseWeight.data)
+    data['PriorityParameter']['TransitWeight']                      = float(form.priorityTransitWeight.data)
+    data['PriorityParameter']['TruckWeight']                        = float(form.priorityTruckWeight.data)
+    data['PriorityParameter']['DilemmaZoneRequestWeight']           = float(form.priorityDilemmaZoneRequestWeight.data)
+    data['PriorityParameter']['CoordinationWeight']                 = float(form.priorityCoordinationWeight.data)
+    data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])

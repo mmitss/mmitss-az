@@ -1,0 +1,17 @@
+{
+    "MultipleTypesofRequest":true,
+    "NoOfRequest": 1,
+    "ETA":[35],
+    "ETA_Duration": [4],
+    "NoOfRequiredPhase": 1,
+    "RequestedPhase":[4],
+    "NoOfDilemmaZoneRequest": 1,
+    "DilemmaZoneETA":[25],
+    "DilemmaZoneETA_Duration": [4],
+    "NoOfRequiredDilemmaZonePhase": 1,
+    "DilemmaZonePhases":[2],
+    "NoOfPhasesInRing1": 8,
+    "PhasesInRing1":[1,2,3,4,1,2,3,4],
+    "NoOfPhasesInRing2": 8,
+    "PhasesInRing2":[5,6,7,8,5,6,7,8]
+}
