@@ -18,28 +18,30 @@
 
 int main()
 {
-    Json::Value jsonObject_config;
-    Json::Reader reader;
-    ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    Json::Value jsonObject;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 
     PriorityRequestGeneratorServer priorityRequestGeneratorServer;
     BasicVehicle basicVehicle;
     SignalStatus signalStatus;
     SignalRequest signalRequest;
     MapManager mapManager;
-    UdpSocket priorityRequestGeneratorServerSocket(static_cast<short unsigned int>(jsonObject_config["PortNumber"]["PriorityRequestGeneratorServer"].asInt()), 1, 0);
+    UdpSocket priorityRequestGeneratorServerSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestGeneratorServer"].asInt()), 1, 0);
     // UdpSocket priorityRequestGeneratorServerSocket(50010,1,0);
-    const string LOCALHOST = jsonObject_config["HostIp"].asString();
-    const string HMIControllerIP = jsonObject_config["HMIControllerIP"].asString();
-    const string messageDistributorIP = jsonObject_config["MessageDistributorIP"].asString();
-    const int dataCollectorPort = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["DataCollector"].asInt());
-    const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
-    // const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["HMIController"].asInt());
-    const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject_config["PortNumber"]["MessageDistributor"].asInt());
-   
-    char receiveBuffer[5120];
+    const string LOCALHOST = jsonObject["HostIp"].asString();
+    const string HMIControllerIP = jsonObject["HMIControllerIP"].asString();
+    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
+    const int dataCollectorPort = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
+    const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
+    // const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
+    const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
+    delete reader;
+    char receiveBuffer[40960];
     int msgType{};
     string srmJsonString{};
     string prgStatusJsonString{};

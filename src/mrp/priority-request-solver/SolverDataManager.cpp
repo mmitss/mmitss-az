@@ -1,11 +1,22 @@
+/*
+**********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  SolverDataManager.cpp
+  Created by: Debashis Das
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. This script manage the data required for solving the optimization model.
+  2. This script writes the dat file required for solving the optimization model.
+*/
 #include <algorithm>
 #include "SolverDataManager.h"
+#include "msgEnum.h"
 
-const double TRANSIT_WEIGHT = 1.0;
-const double TRUCK_WEIGHT = 1.0;
-const double EV_WEIGHT = 1.0;
-const double EV_SPLIT_PHASE_WEIGHT = 0.1;
-const double DILEMMA_ZONE_REQUEST_WEIGHT = 20.0;
 const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()
@@ -18,7 +29,7 @@ SolverDataManager::SolverDataManager(vector<RequestList> requestList)
         priorityRequestList = requestList;
 }
 
-SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan)
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight)
 {
     if (!requestList.empty())
         priorityRequestList = requestList;
@@ -31,17 +42,27 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 
     if (!dilemmaZoneList.empty())
         dilemmaZoneRequestList = dilemmaZoneList;
+
+    EmergencyVehicleWeight = EV_Weight; 
+    EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
+    TransitWeight = Transit_Weight; 
+    TruckWeight = Truck_Weight; 
+    DilemmaZoneRequestWeight = DZ_Request_Weight;
+    CoordinationWeight = Coordination_Weight;
 }
 
 /*
     - This method will obtain requested signal group information from the priority request list and store them in requestedSignalGroup list.
+    - If the request is for signal coordination, it will not be added in the list. 
+    - The list will be used to increase the gmax by 15% for transit and truck priority requests. If gmax is stretched for coordination, coordinated phases remain green even after the splits.
 */
 vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
-    //vector<int>requestedSignalGroup;
     for (size_t i = 0; i < priorityRequestList.size(); i++)
-        requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
-
+    {
+        if (priorityRequestList[i].vehicleType != SignalCoordinationVehicleType)
+            requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
+    }
     removeDuplicateSignalGroup();
 
     return requestedSignalGroup;
@@ -199,7 +220,9 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 {
     vector<int>::iterator it;
     int vehicleClass{};
+    int coordinationVehicleType = 20;
     int numberOfRequest{};
+    int numberOfCoordinationRequest{};
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
     double ETA_Range{};
@@ -265,22 +288,28 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             vehicleClass = 0;
             numberOfRequest++;
 
-            if (priorityRequestList[i].basicVehicleRole == 13)
+            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
             {
                 numberOfEVInList++;
-                vehicleClass = 1;
+                vehicleClass = VehicleClass_EmergencyVehicle;
             }
 
-            else if (priorityRequestList[i].basicVehicleRole == 16)
+            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
             {
                 numberOfTransitInList++;
-                vehicleClass = 2;
+                vehicleClass = VehicleClass_Transit;
             }
 
-            else if (priorityRequestList[i].basicVehicleRole == 9)
+            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
             {
                 numberOfTruckInList++;
-                vehicleClass = 3;
+                vehicleClass = VehicleClass_Truck;
+            }
+
+            else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
+            {
+                numberOfCoordinationRequest++;
+                vehicleClass = VehicleClass_Coordination;
             }
 
             fs << numberOfRequest;
@@ -304,29 +333,36 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             vehicleClass = 0;
             numberOfRequest++;
 
-            if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 == 0)
+            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 == 0)
             {
                 numberOfEVInList++;
-                vehicleClass = 1;
+                vehicleClass = VehicleClass_EmergencyVehicle;
             }
 
-            else if (priorityRequestList[i].basicVehicleRole == 13 && priorityRequestList[i].requestedPhase % 2 != 0)
+            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 != 0)
             {
                 numberOfEVSplitRequestInList++;
-                vehicleClass = 4;
+                vehicleClass = VehicleClass_EmergencyVehicleSplitRequest;
             }
 
-            else if (priorityRequestList[i].basicVehicleRole == 16)
+            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
             {
                 numberOfTransitInList++;
-                vehicleClass = 2;
+                vehicleClass = VehicleClass_Transit;
             }
 
-            else if (priorityRequestList[i].basicVehicleRole == 9)
+            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
             {
                 numberOfTruckInList++;
-                vehicleClass = 3;
+                vehicleClass = VehicleClass_Truck;
             }
+
+            else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
+            {
+                numberOfCoordinationRequest++;
+                vehicleClass = VehicleClass_Coordination;
+            }
+
             fs << numberOfRequest;
             fs << " " << vehicleClass << " ";
         }
@@ -344,41 +380,48 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     else
         fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
 
-    fs << "param PrioWeigth:= ";
+    fs << "param PrioWeight:= ";
 
     fs << " 1 ";
     if (numberOfEVInList > 0)
-        fs << EV_WEIGHT;
+        fs << EmergencyVehicleWeight;
 
     else
         fs << 0;
 
     fs << " 2 ";
     if (numberOfTransitInList > 0)
-        fs << TRANSIT_WEIGHT;
+        fs << TransitWeight;
 
     else
         fs << 0;
 
     fs << " 3 ";
     if (numberOfTruckInList > 0)
-        fs << TRUCK_WEIGHT;
+        fs << TruckWeight;
 
     else
         fs << 0;
 
     fs << " 4 ";
     if (numberOfEVSplitRequestInList > 0)
-        fs << EV_SPLIT_PHASE_WEIGHT;
+        fs << EmergencyVehicleSplitPhaseWeight;
 
     else
         fs << 0;
 
-    fs << " 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+    fs << " 5 ";
+    if (numberOfCoordinationRequest > 0)
+        fs << CoordinationWeight;
+
+    else
+        fs << 0;
+
+    fs << " 6 0 7 0 8 0 9 0 10 0 ; \n"; 
 
     if (!dilemmaZoneRequestList.empty())
     {
-        fs << "param DilemmaZoneWeight:= " << DILEMMA_ZONE_REQUEST_WEIGHT << ";\n";
+        fs << "param DilemmaZoneWeight:= " << DilemmaZoneRequestWeight << ";\n";
         fs << "param Dl (tr): 1 2 3 4 5 6 7 8:=\n";
         for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
         {
@@ -431,13 +474,16 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             fs << ReqSeq << "  ";
             for (size_t j = 1; j < 9; j++)
             {
-                if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
+                if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType != coordinationVehicleType)
                 {
                     if (priorityRequestList[i].vehicleETA <= ETA_Range + 1.0)
                         fs << 1.0 << "\t";
                     else
                         fs << priorityRequestList[i].vehicleETA - ETA_Range << "\t";
                 }
+                else if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType == coordinationVehicleType)
+                    fs << priorityRequestList[i].vehicleETA << "\t";
+                
                 else
                     fs << ".\t";
             }

@@ -1,10 +1,10 @@
 Version=0.7
 Type=MAP
-PSID=0xE0000017
+PSID=0x8002
 Priority=7
 TxMode=CONT
 TxChannel=172
-TxInterval=0
+TxInterval=
 DeliveryStart=
 DeliveryStop=
 Signature=False

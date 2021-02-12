@@ -72,53 +72,13 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Host BSM Decoder..."
-cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux ARM=1 &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/arm
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building System Performance Data Collector..."
-cd ./../src/common/system-performance-data-collector
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed system-performance-data-collector.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/system-performance-data-collector  ../../../bin/SystemPerformanceDataCollector/arm/M_SystemPerformanceDataCollector
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm -r build dist *.spec &> /dev/null
-rm -r __pycache__ &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
 echo "Building V2X Data Collector..."
 cd ./../src/common/v2x-data-collector
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
+    mv dist/v2x-data-collector-main  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -131,41 +91,19 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
-################################# VEHICLE APPLICATIONS ################################
-
 #######################################################################################
-echo "Building Priority Request Generator..."
-cd ./../src/vsp/priority-request-generator
+echo "Building System Interface..."
+cd ./../src/system-interface
 # Clean the folder and build for linux.
-make clean &> /dev/null
-make linux ARM=1 &> /dev/null
+pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/arm
+    mv dist/system-interface  ../../bin/SystemInterface/arm/M_SystemInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building Light Siren Status Manager..."
-cd ./../src/vsp/light-siren-status-manager
-# Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed light-siren-status-manager.py  &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv dist/light-siren-status-manager  ../../../bin/LightSirenStatusManager/arm/M_LightSirenStatusManager
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
+# Remove the files to keep the folders clean
 rm -r build dist *.spec &> /dev/null
 rm -r __pycache__ &> /dev/null
 # Return back to original directory to go over the process again for another one
@@ -173,7 +111,7 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
-# ############################### INTERSECTION APPLICATIONS #############################
+############################### INTERSECTION APPLICATIONS #############################
 
 #######################################################################################
 echo "Building Priority Request Server..."
@@ -276,18 +214,18 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building System Interface..."
-cd ./../src/system-interface
+echo "Building V2X Data Ftp Client..."
+cd ./../src/mrp/v2x-data-ftp-client
 # Clean the folder and build for linux.
-pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/system-interface  ../../bin/SystemInterface/arm/M_SystemInterface
+    mv dist/v2x-data-ftp-client-main  ../../../bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
 fi
-# Remove the files to keep the folders clean
+# Remove the .o files to keep the folders clean
 rm -r build dist *.spec &> /dev/null
 rm -r __pycache__ &> /dev/null
 # Return back to original directory to go over the process again for another one
@@ -295,4 +233,104 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
+################################# VEHICLE APPLICATIONS ################################
 
+#######################################################################################
+echo "Building Host BSM Decoder..."
+cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
+# Clean the folder and build for linux.
+make clean &> /dev/null
+make linux ARM=1 &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/arm
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm ./*.o &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Priority Request Generator..."
+cd ./../src/vsp/priority-request-generator
+# Clean the folder and build for linux.
+make clean &> /dev/null
+make linux ARM=1 &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/arm
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm ./*.o &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Light Siren Status Manager..."
+cd ./../src/vsp/light-siren-status-manager
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed light-siren-status-manager.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/light-siren-status-manager  ../../../bin/LightSirenStatusManager/arm/M_LightSirenStatusManager
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Data Compressor..."
+cd ./../src/vsp/data-compressor
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed data-compressor.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/data-compressor  ../../../bin/DataCompressor/arm/M_DataCompressor
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################
+
+#######################################################################################
+echo "Building Signal Coordination Request Generator..."
+cd ./../src/mrp/signal-coordination-request-generator
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed signal-coordination-request-generator.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/signal-coordination-request-generator  ../../../bin/SignalCoordinationRequestGenerator/arm/M_SignalCoordinationRequestGenerator
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+#######################################################################################

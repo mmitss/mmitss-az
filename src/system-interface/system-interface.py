@@ -20,7 +20,7 @@ This is a web-based Python Flask application that has the following functionalit
 
 from flask import Flask, render_template, request, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators
+from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators, SelectField
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 import os
@@ -63,22 +63,23 @@ def local_console():
 
 # Configuration Viewer / Editor combined form
 class ConfigurationForm(FlaskForm):
-    hostIp = StringField(validators=[ip_address()])
-    sourceDsrcDeviceIp      = StringField(validators=[ip_address()])
-    intersectionName        = StringField()
-    intersectionID          = IntegerField()
-    regionalID              = IntegerField()
+    hostIp = StringField('Host IP', validators=[ip_address()])
+    sourceDsrcDeviceIp      = StringField('Wireless Device IP (RSU or OBU)', validators=[ip_address()])
+    intersectionName        = StringField('Intersection Name')
+    intersectionID          = IntegerField('Intersection ID')
+    regionalID              = IntegerField('Regional ID')
     mapPayload              = StringField('Map Payload')
-    dataCollectorIP         = StringField()
-    hmiControllerIP         = StringField()
-    messageDistributorIP    = StringField()
-    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address')
-    vehicleType                     = StringField('Vehicle Type')
-    logging                         = StringField('Logging')
-    srmTimedOutTime                 = StringField('SRM Timed Out Time')
+    dataCollectorIP         = StringField('Remote Data Collector Server IP')
+    hmiControllerIP         = StringField('HMI Controller IP')
+    messageDistributorIP    = StringField('Message Distributor IP')
+    priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address (optional)')
+    vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
+    logging                         = SelectField('Logging', choices = ["True", "False"])
+    srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
-    systemPerformanceTimeInterval   = StringField('System Performance Time Interval')
-    applicationPlatform             = StringField('Application Platform')
+    systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
+    applicationPlatform             = SelectField('Application Platform', choices = ["roadside", "vehicle"])
+    peerDataDecoding                = BooleanField('Peer Data Decoding')
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
     portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
@@ -109,7 +110,6 @@ class ConfigurationForm(FlaskForm):
     portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
     portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
     portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
-    portNumberSystemPerformanceDataCollector        = IntegerField('Port Number: System Performance Data Collector')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -137,13 +137,13 @@ class ConfigurationForm(FlaskForm):
     txModeSSM       = StringField('Tx Mode: SSM')    
     txModeBSM       = StringField('Tx Mode: BSM')
     signalControllerIP                  = StringField('Signal Controller IP Address')
-    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Address')
-    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval')
-    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time')
+    signalControllerNTCIPPort           = IntegerField('Signal Controller NTCIP Port')
+    signalControllerUpdateInterval      = IntegerField('Signal Controller Timing Plan Update Interval (seconds)')
+    signalControllerNtcipBackupTime_sec = IntegerField('Signal Controller NTCIP Backup Time (seconds)')
     signalControllerVendor              = StringField('Signal Controller Vendor')
     signalControllerTimingPlanMib       = StringField('Signal Controller Timing Plan MIB')
-    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases')
-    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases')
+    signalControllerInactiveVehPhases   = StringField('Signal Controller Inactive Vehicle Phases  (e.g., [1,3,5])')
+    signalControllerInactivePedPhases   = StringField('Signal Controller Inactive Pedestrian Phases  (e.g., [1,3,5])')
     signalControllerSplitPhases1        = IntegerField('Signal Controller Split Phases 1')
     signalControllerSplitPhases3        = IntegerField('Signal Controller Split Phases 3')
     signalControllerSplitPhases5        = IntegerField('Signal Controller Split Phases 5')
@@ -155,7 +155,19 @@ class ConfigurationForm(FlaskForm):
     intersectionReferencePointLatitudeDecimalDegree     = StringField('Intersection Reference Point Latitude Decimal Degree')
     intersectionReferencePointLongitudeDecimalDegree    = StringField('Intersection Reference Point Longitude Decimal Degree')
     intersectionReferencePointElevationMeter            = IntegerField('Intersection Reference Point Elevation Meter')
-    
+    dataTransferFtpServerPort            = IntegerField('Data Transfer Server Port')
+    dataTransferStartTimeHour            = IntegerField('Data Transfer Start Time Hour')
+    dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
+    dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
+    dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
+    dataTransferMaxRetries               = IntegerField('Data Transfer Max Retries')    
+    priorityEVWeight                    = StringField('Emergency Vehicle Weight')    
+    priorityEVSplitPhaseWeight          = StringField('Emergency Vehicle Split Phase Weight')    
+    priorityTransitWeight                = StringField('Transit Weight')    
+    priorityTruckWeight                 = StringField('Truck Weight')    
+    priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight')    
+    priorityCoordinationWeight            = StringField('Coordination Weight')    
+    coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Checking Time Interval (seconds)')    
 
 # System Configuration data object
 class SysConfig:
@@ -176,6 +188,7 @@ class SysConfig:
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
         self.applicationPlatform = data['ApplicationPlatform']
+        self.peerDataDecoding = data['PeerDataDecoding']
         self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
         self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
         self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
@@ -206,7 +219,6 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
-        self.portNumberSystemPerformanceDataCollector = data['PortNumber']['SystemPerformanceDataCollector']
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -252,6 +264,19 @@ class SysConfig:
         self.intersectionReferencePointLatitudeDecimalDegree = data['IntersectionReferencePoint']['Latitude_DecimalDegree']
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
+        self.dataTransferFtpServerPort      = data['DataTransfer']['FtpServerPort']
+        self.dataTransferStartTimeHour      = data['DataTransfer']['StartTime']['Hour']
+        self.dataTransferStartTimeMinute    = data['DataTransfer']['StartTime']['Minute']
+        self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
+        self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
+        self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
+        self.priorityEVWeight                   = data['PriorityParameter']['EmergencyVehicleWeight']
+        self.priorityEVSplitPhaseWeight         = data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']
+        self.priorityTransitWeight              = data['PriorityParameter']['TransitWeight']
+        self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
+        self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
+        self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
+        self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
 
 def convertToList(formString):
     # remove any brackets
@@ -280,10 +305,12 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
+    data['Logging']= form.logging.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
+    data['PeerDataDecoding']= form.peerDataDecoding.data
     data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
     data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
@@ -314,7 +341,6 @@ def prepareJSONData(data, form):
     data['PortNumber']['MapEngine']    = form.portNumberMapEngine.data
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
-    data['PortNumber']['SystemPerformanceDataCollector']    = form.portNumberSystemPerformanceDataCollector.data
     data['psid']['map']    = form.psidMap.data    
     data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
@@ -360,7 +386,19 @@ def prepareJSONData(data, form):
     data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
-
+    data['DataTransfer']['FtpServerPort']               = form.dataTransferFtpServerPort.data
+    data['DataTransfer']['StartTime']['Hour']           = form.dataTransferStartTimeHour.data
+    data['DataTransfer']['StartTime']['Minute']         = form.dataTransferStartTimeMinute.data
+    data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
+    data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
+    data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
+    data['PriorityParameter']['EmergencyVehicleWeight']             = float(form.priorityEVWeight.data)
+    data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = float(form.priorityEVSplitPhaseWeight.data)
+    data['PriorityParameter']['TransitWeight']                      = float(form.priorityTransitWeight.data)
+    data['PriorityParameter']['TruckWeight']                        = float(form.priorityTruckWeight.data)
+    data['PriorityParameter']['DilemmaZoneRequestWeight']           = float(form.priorityDilemmaZoneRequestWeight.data)
+    data['PriorityParameter']['CoordinationWeight']                 = float(form.priorityCoordinationWeight.data)
+    data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
 @app.route('/configuration/', methods = ['GET', 'POST'])

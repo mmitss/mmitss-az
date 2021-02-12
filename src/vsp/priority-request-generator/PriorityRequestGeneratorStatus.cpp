@@ -10,14 +10,13 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
   Revision History:
-  1. 
+  1. Formulate a JSON string for HMI controller to display PriorityRequestGenerator status
 */
 
 #include "PriorityRequestGeneratorStatus.h"
 #include "json/json.h"
 #include <fstream>
 
-// const double ETA_DURATION_SECOND = 2;
 
 PriorityRequestGeneratorStatus::PriorityRequestGeneratorStatus()
 {
@@ -36,7 +35,9 @@ void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenera
 std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
     std::string jsonString{};
 
     setAvailableMapList(priorityRequestGenerator);
@@ -51,15 +52,12 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["heading_Degree"] = basicVehicle.getHeading_Degree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["speed_MeterPerSecond"] = basicVehicle.getSpeed_MeterPerSecond();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"] = priorityRequestGenerator.getLaneID();
-    // jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getVehicleCurrentSignalGroup();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["signalGroup"] = priorityRequestGenerator.getSignalGroup();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["OnMAP"] = priorityRequestGenerator.getVehicleMapStatus();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["priorityStatus"]["requestSent"] = priorityRequestGenerator.getVehicleRequestSentStatus();
 
     if (availableMapList.empty())
-    {
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["availableMaps"]= {};
-    }
     
     else
     {
@@ -73,9 +71,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
     }
 
     if (ActiveRequestTable.empty())
-    {
         jsonObject["PriorityRequestGeneratorStatus"]["infrastructure"]["activeRequestTable"] = {};
-    }
     
     else
     {
@@ -93,11 +89,7 @@ std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(
         }
     }
 
-    // Json::StyledStreamWriter styledStreamWriter;
-    // std::ofstream outputter("output.json");
-    // styledStreamWriter.write(outputter, jsonObject);
-    jsonString = fastWriter.write(jsonObject);
-    // priorityRequestGenerator.loggingData(jsonString);
+    jsonString = Json::writeString(builder, jsonObject);
     return jsonString;
 }
 
