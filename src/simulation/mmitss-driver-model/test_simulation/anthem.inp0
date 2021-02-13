@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<network version="702" vissimVersion="2020.00 - 09 [88203]">
+<network version="801" vissimVersion="2021.00 - 04 [93532]">
 	<anmDefaults colorDistr="1" crosswalkDisplayType="1" hgvPowerDistr="2" hgvWeightDistr="2" level="1" linkDisplayType="1" panmFilename="" panmRoutesFilename="" pedestrianVehicleType="510" zoneConnectorDisplayType="1">
 		<anmDefaultDrivingBehavior>
 			<anmDefaultDrivingBehavior anmDrivBehavDefType="NONE" drivBehav="1"/>
@@ -985,10 +985,10 @@
 		<displayType allSidesSame="true" anisoFilt="true" borderColor="ffa0a0a0" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="ffa0a0a0" fillStyle="SOLIDFILL" invisible="false" name="Escalator balustrade" no="34" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
 		<displayType allSidesSame="true" anisoFilt="true" borderColor="ff808080" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="ff808080" fillStyle="SOLIDFILL" invisible="false" name="Escalator socket" no="35" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
 		<displayType allSidesSame="true" anisoFilt="true" borderColor="ff566176" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="ff566176" fillStyle="SOLIDFILL" invisible="false" name="Elevator shaft" no="41" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
-		<displayType allSidesSame="true" anisoFilt="true" borderColor="ffc0c0c0" borderLineStyle="SOLIDLINE" curved="true" drawOrder3D="MID" fillColor="ffc0c0c0" fillStyle="SOLIDFILL" invisible="false" name="Elevator door" no="42" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.5" textureFilename="#3DModels#Textures\Material\Structure 01 Gray Medium.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
-		<displayType allSidesSame="true" anisoFilt="true" borderColor="fffff4c2" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="fffff4c2" fillStyle="SOLIDFILL" invisible="false" name="Elevator wall" no="43" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.5" textureFilename="#3DModels#Textures\Material\Structure 02 Cream Light.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
-		<displayType allSidesSame="true" anisoFilt="true" borderColor="ff404040" borderLineStyle="SOLIDLINE" curved="true" drawOrder3D="MID" fillColor="ff404040" fillStyle="SOLIDFILL" invisible="false" name="Elevator floor" no="44" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.6" textureFilename="#3DModels#Textures\Material\Structure 03 Gray Dark.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
-		<displayType allSidesSame="true" anisoFilt="true" borderColor="fff0f0f0" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="fff0f0f0" fillStyle="SOLIDFILL" invisible="false" name="Elevator ceiling" no="45" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="#3DModels#Textures\Material\Structure 01 White Dark.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
+		<displayType allSidesSame="true" anisoFilt="true" borderColor="ffc0c0c0" borderLineStyle="SOLIDLINE" curved="true" drawOrder3D="MID" fillColor="ffc0c0c0" fillStyle="SOLIDFILL" invisible="false" name="Elevator door" no="42" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.5" textureFilename="#3dmodels#Textures\Material\Structure 01 Gray Medium.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
+		<displayType allSidesSame="true" anisoFilt="true" borderColor="fffff4c2" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="fffff4c2" fillStyle="SOLIDFILL" invisible="false" name="Elevator wall" no="43" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.5" textureFilename="#3dmodels#Textures\Material\Structure 02 Cream Light.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
+		<displayType allSidesSame="true" anisoFilt="true" borderColor="ff404040" borderLineStyle="SOLIDLINE" curved="true" drawOrder3D="MID" fillColor="ff404040" fillStyle="SOLIDFILL" invisible="false" name="Elevator floor" no="44" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="0.6" textureFilename="#3dmodels#Textures\Material\Structure 03 Gray Dark.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
+		<displayType allSidesSame="true" anisoFilt="true" borderColor="fff0f0f0" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="fff0f0f0" fillStyle="SOLIDFILL" invisible="false" name="Elevator ceiling" no="45" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="#3dmodels#Textures\Material\Structure 01 White Dark.png" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
 		<displayType allSidesSame="false" anisoFilt="true" borderColor="ff800000" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="ff800000" fillStyle="SOLIDFILL" invisible="false" name="Obstacle" no="51" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
 		<displayType allSidesSame="false" anisoFilt="true" borderColor="fffff1b2" borderLineStyle="SOLIDLINE" curved="false" drawOrder3D="MID" fillColor="fffff1b2" fillStyle="NOFILL" invisible="false" name="Section" no="61" noMipmap="false" rail="false" railFlangeHgt="0.013" railFlangeWid="0.15" railGauge="1.435" railHeadHgt="0.043" railHeadWid="0.073" railHgt="0.172" railType="STANDARD" railWebWid="0.016" texHorizLen="1" textureFilename="" tiesHgt="0.02" tiesLen="2.6" tiesSpac="0.6" tiesTexFilename="" tiesTexHorizLen="1" tiesType="STANDARD" tiesWid="0.26"/>
 	</displayTypes>
@@ -1024,6 +1024,10 @@
 		<nodeResults collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<odPairs collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<ptWaitingTimes writeFile="false"/>
+		<parkLotGrps collectData="false" fromTime="0" interval="99999" toTime="99999"/>
+		<parkLots collectData="false" fromTime="0" interval="99999" toTime="99999"/>
+		<parkRoutDecs collectData="false" fromTime="0" interval="99999" toTime="99999"/>
+		<parkSpcs collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<pedGridCell cellSize="1" collectData="false" collectOnlyLastInterval="false" densThresh="0" experDensThresh="0" fromTime="0" interval="99999" rangeOfInfluence="1" speedThresh="0" toTime="99999" velVarThresh="0"/>
 		<pedNetPerf collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<pedRec filterType="ALL" fromTime="0" resolution="1" toTime="99999" writeDatabase="false" writeFile="false">
@@ -1042,6 +1046,7 @@
 		<ssam fromTime="0" toTime="99999" writeFile="false"/>
 		<sigChgs writeDatabase="false" writeFile="false"/>
 		<vehInpData writeFile="false"/>
+		<vehInps collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<vehNetPerf collectData="false" fromTime="0" interval="99999" toTime="99999"/>
 		<vehRec filterType="ALL" fromTime="0" inclParkVehs="false" resolution="1" toTime="99999" writeDatabase="false" writeFile="false">
 			<attributes>
@@ -2771,114 +2776,115 @@
 		</reducedSpeedArea>
 	</reducedSpeedAreas>
 	<signalControllers>
-		<signalController active="true" cycTm="0" cycTmIsVar="false" debug="false" guiFile="#exe#asc3gui.dll" name="DaisyMountain_GavilanPeak" no="1" offset="0" progFile="#exe#asc3.dll" progNo="1" scDetRecLabelDet="PORTNUMBER" scDetRecLabelSG="NUMBER" scDetRecShortNam="false" sigTmsTabAutoConfig="true" sigTmsTabLabelDet="PORTNUMBER" sigTmsTabLabelSG="NUMBER" supplyFile1="0001.db" supplyFile2="" supplyFile3="" type="ECONOLITE">
+		<signalController active="true" cycTm="0" cycTmIsVar="false" debug="false" guiFile="#exe#asc3gui.dll" name="DaisyMountain_GavilanPeak" no="1" offset="0" progFile="#exe#asc3.dll" progNo="1" scDetRecLabelDet="PORTNUMBER" scDetRecLabelSG="NUMBER" scDetRecShortNam="false" sigTmsTabAutoConfig="true" sigTmsTabLabelDet="PORTNUMBER" sigTmsTabLabelSG="NUMBER" supplyFile1="#data#0001.db" supplyFile2="" supplyFile3="" type="ECONOLITE">
+			<rampMeterPara metEvalInt="60" metRateQDisp="0.25" occupDes="0.25" occupQDispAct="0.5" occupQDispDeact="0.1" regPara="0.019444444444444441"/>
 			<sgs>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="1" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="2" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="3" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="4" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="5" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="6" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="7" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="8" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="9" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="10" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="11" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="12" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="13" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="14" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="15" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="16" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="17" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="18" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="19" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="20" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="21" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="22" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="23" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="24" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="25" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="26" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="27" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="28" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="29" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="30" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="31" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="32" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="101" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="102" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="103" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="104" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="105" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="106" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="107" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="108" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="109" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="110" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="111" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="112" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="113" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="114" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="115" redAmber="0" type="NORMAL"/>
-				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearanceTime="0" greenFlsh="0" minGreen="0" minRed="0" name="" no="116" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="1" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="2" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="3" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="4" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="5" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="6" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="7" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="8" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="9" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="10" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="11" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="12" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="13" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="14" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="15" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="16" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="17" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="18" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="19" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="20" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="21" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="22" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="23" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="24" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="25" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="26" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="27" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="28" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="29" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="30" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="31" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="32" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="101" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="102" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="103" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="104" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="105" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="106" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="107" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="108" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="109" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="110" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="111" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="112" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="113" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="114" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="115" redAmber="0" type="NORMAL"/>
+				<signalGroup actuationType="UNDEFINED" amber="0" callDetPortNo="0" chkOutDetPortNo="0" clearTm="0" greenFlsh="0" maxGreen="0" minGreen="0" minRed="0" name="" no="116" redAmber="0" type="NORMAL"/>
 			</sgs>
 			<sigTmsTabConfig>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 1" title="" varNo="1" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 2" title="" varNo="2" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 3" title="" varNo="3" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 4" title="" varNo="4" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 5" title="" varNo="5" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 6" title="" varNo="6" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 7" title="" varNo="7" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 8" title="" varNo="8" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 9" title="" varNo="9" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 10" title="" varNo="10" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 11" title="" varNo="11" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 12" title="" varNo="12" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 13" title="" varNo="13" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 14" title="" varNo="14" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 15" title="" varNo="15" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 16" title="" varNo="16" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 17" title="" varNo="17" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 18" title="" varNo="18" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 19" title="" varNo="19" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 20" title="" varNo="20" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 21" title="" varNo="21" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 22" title="" varNo="22" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 23" title="" varNo="23" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 24" title="" varNo="24" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 25" title="" varNo="25" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 26" title="" varNo="26" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 27" title="" varNo="27" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 28" title="" varNo="28" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 29" title="" varNo="29" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 30" title="" varNo="30" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 31" title="" varNo="31" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 32" title="" varNo="32" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 101" title="" varNo="101" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 102" title="" varNo="102" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 103" title="" varNo="103" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 104" title="" varNo="104" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 105" title="" varNo="105" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 106" title="" varNo="106" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 107" title="" varNo="107" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 108" title="" varNo="108" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 109" title="" varNo="109" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 110" title="" varNo="110" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 111" title="" varNo="111" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 112" title="" varNo="112" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 113" title="" varNo="113" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 114" title="" varNo="114" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 115" title="" varNo="115" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 116" title="" varNo="116" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="1" title="" varNo="1" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="2" title="" varNo="2" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="3" title="" varNo="3" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="4" title="" varNo="4" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="5" title="" varNo="5" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="6" title="" varNo="6" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="7" title="" varNo="7" wttFilename="vissim"/>
-				<signalOutputConfigurationElement configName="DETEKT" detPort="8" title="" varNo="8" wttFilename="vissim"/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 1" title="" varNo="1" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 2" title="" varNo="2" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 3" title="" varNo="3" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 4" title="" varNo="4" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 5" title="" varNo="5" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 6" title="" varNo="6" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 7" title="" varNo="7" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 8" title="" varNo="8" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 9" title="" varNo="9" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 10" title="" varNo="10" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 11" title="" varNo="11" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 12" title="" varNo="12" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 13" title="" varNo="13" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 14" title="" varNo="14" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 15" title="" varNo="15" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 16" title="" varNo="16" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 17" title="" varNo="17" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 18" title="" varNo="18" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 19" title="" varNo="19" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 20" title="" varNo="20" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 21" title="" varNo="21" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 22" title="" varNo="22" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 23" title="" varNo="23" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 24" title="" varNo="24" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 25" title="" varNo="25" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 26" title="" varNo="26" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 27" title="" varNo="27" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 28" title="" varNo="28" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 29" title="" varNo="29" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 30" title="" varNo="30" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 31" title="" varNo="31" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 32" title="" varNo="32" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 101" title="" varNo="101" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 102" title="" varNo="102" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 103" title="" varNo="103" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 104" title="" varNo="104" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 105" title="" varNo="105" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 106" title="" varNo="106" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 107" title="" varNo="107" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 108" title="" varNo="108" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 109" title="" varNo="109" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 110" title="" varNo="110" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 111" title="" varNo="111" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 112" title="" varNo="112" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 113" title="" varNo="113" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 114" title="" varNo="114" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 115" title="" varNo="115" wttFilename=""/>
+				<signalOutputConfigurationElement configName="SIGGRP" detPort="0" sg="1 116" title="" varNo="116" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="1" title="" varNo="1" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="2" title="" varNo="2" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="3" title="" varNo="3" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="4" title="" varNo="4" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="5" title="" varNo="5" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="6" title="" varNo="6" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="7" title="" varNo="7" wttFilename=""/>
+				<signalOutputConfigurationElement configName="DETEKT" detPort="8" title="" varNo="8" wttFilename=""/>
 			</sigTmsTabConfig>
 			<wttFiles>
 				<intObjectRef key="2"/>
@@ -2901,7 +2907,7 @@
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 2" localNo="0" name="" no="13" pos="344.97795724192872" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 1" localNo="0" name="" no="14" pos="344.978" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 	</signalHeads>
-	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="3600" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
+	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="1800" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
 	<stopSigns>
 		<stopSign anmFlag="false" lane="10 1" name="" no="1" pos="64.898110174619319" sg="1 8"/>
 		<stopSign anmFlag="false" lane="13 1" name="" no="2" pos="52.312491412610171" sg="1 6"/>
@@ -3026,10 +3032,7 @@
 	<vehicleCompositions>
 		<vehicleComposition name="Default" no="1">
 			<vehCompRelFlows>
-				<vehicleCompositionRelativeFlow desSpeedDistr="60" relFlow="0.8" vehType="100"/>
-				<vehicleCompositionRelativeFlow desSpeedDistr="50" relFlow="0.05" vehType="200"/>
-				<vehicleCompositionRelativeFlow desSpeedDistr="50" relFlow="0.05" vehType="300"/>
-				<vehicleCompositionRelativeFlow desSpeedDistr="50" relFlow="0.1" vehType="630"/>
+				<vehicleCompositionRelativeFlow desSpeedDistr="60" relFlow="1" vehType="630"/>
 			</vehCompRelFlows>
 		</vehicleComposition>
 	</vehicleCompositions>
@@ -3041,12 +3044,12 @@
 		</vehicleInput>
 		<vehicleInput anmFlag="false" link="4" name="DaisyWestend" no="2">
 			<timeIntVehVols>
-				<timeIntervalVehVolume cont="false" timeInt="1 0" vehComp="1" volType="STOCHASTIC" volume="800"/>
+				<timeIntervalVehVolume cont="false" timeInt="1 0" vehComp="1" volType="STOCHASTIC" volume="900"/>
 			</timeIntVehVols>
 		</vehicleInput>
 		<vehicleInput anmFlag="false" link="2" name="DaisyEastend" no="3">
 			<timeIntVehVols>
-				<timeIntervalVehVolume cont="false" timeInt="1 0" vehComp="1" volType="STOCHASTIC" volume="800"/>
+				<timeIntervalVehVolume cont="false" timeInt="1 0" vehComp="1" volType="STOCHASTIC" volume="900"/>
 			</timeIntVehVols>
 		</vehicleInput>
 		<vehicleInput anmFlag="false" link="14" name="GavilanNorthend" no="4">
@@ -3148,7 +3151,7 @@
 		</vehicleRoutingDecisionStatic>
 	</vehicleRoutingDecisionsStatic>
 	<vehicleTypes>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTm="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="Car" no="100" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="Car" no="100" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3156,7 +3159,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTm="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="HGV" no="200" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTmPT="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="HGV" no="200" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3164,7 +3167,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTm="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="Bus" no="300" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTmPT="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="Bus" no="300" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3172,7 +3175,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0.5" anmFlag="false" boardTm="0.5" capExact="false" capacity="215" category="TRAM" clearTm="12" colorDistr1="1" desAccelFunc="4" desDecelFunc="4" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="4" maxDecelFunc="4" model2D3DDistr="40" name="Tram" no="400" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="0.5" anmFlag="false" boardTm="0.5" capExact="false" capacity="215" category="TRAM" clearTmPT="12" colorDistr1="1" desAccelFunc="4" desDecelFunc="4" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="4" maxDecelFunc="4" model2D3DDistr="40" name="Tram" no="400" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3180,7 +3183,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="PEDESTRIAN" clearTm="0" colorDistr1="101" colorDistr2="102" colorDistr3="103" colorDistr4="104" desAccelFunc="5" desDecelFunc="5" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="5" maxDecelFunc="5" model2D3DDistr="100" name="Man" no="510" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="PEDESTRIAN" clearTmPT="0" colorDistr1="101" colorDistr2="102" colorDistr3="103" colorDistr4="104" desAccelFunc="5" desDecelFunc="5" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="5" maxDecelFunc="5" model2D3DDistr="100" name="Man" no="510" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3188,7 +3191,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="PEDESTRIAN" clearTm="0" colorDistr1="201" colorDistr2="202" colorDistr3="203" colorDistr4="204" desAccelFunc="5" desDecelFunc="5" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="5" maxDecelFunc="5" model2D3DDistr="200" name="Woman" no="520" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="PEDESTRIAN" clearTmPT="0" colorDistr1="201" colorDistr2="202" colorDistr3="203" colorDistr4="204" desAccelFunc="5" desDecelFunc="5" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="5" maxDecelFunc="5" model2D3DDistr="200" name="Woman" no="520" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3196,7 +3199,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="BIKE" clearTm="0" colorDistr1="101" colorDistr2="102" colorDistr3="103" colorDistr4="60" desAccelFunc="6" desDecelFunc="6" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="6" maxDecelFunc="6" model2D3DDistr="61" name="Bike Man" no="610" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="BIKE" clearTmPT="0" colorDistr1="101" colorDistr2="102" colorDistr3="103" colorDistr4="60" desAccelFunc="6" desDecelFunc="6" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="6" maxDecelFunc="6" model2D3DDistr="61" name="Bike Man" no="610" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3204,7 +3207,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="BIKE" clearTm="0" colorDistr1="201" colorDistr2="202" colorDistr3="203" colorDistr4="60" desAccelFunc="6" desDecelFunc="6" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="6" maxDecelFunc="6" model2D3DDistr="62" name="Bike Woman" no="620" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="BIKE" clearTmPT="0" colorDistr1="201" colorDistr2="202" colorDistr3="203" colorDistr4="60" desAccelFunc="6" desDecelFunc="6" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="6" maxDecelFunc="6" model2D3DDistr="62" name="Bike Woman" no="620" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3212,7 +3215,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTm="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="ConnectedCar" no="630" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelSource.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="ConnectedCar" no="630" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3220,7 +3223,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTm="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="ConnectedTruck" no="640" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTmPT="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="ConnectedTruck" no="640" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3228,7 +3231,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTm="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTransit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="ConnectedTransit" no="650" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTmPT="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelSource.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="ConnectedTransit" no="650" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3236,7 +3239,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTm="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelEmergency.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="20" name="ConnectedEmergency" no="660" occupDistr="1" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="false" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelEmergency.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="20" name="ConnectedEmergency" no="660" occupDistr="1" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>

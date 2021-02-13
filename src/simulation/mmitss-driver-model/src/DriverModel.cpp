@@ -19,6 +19,7 @@
 ***************************************************************************************/
 
 #pragma comment(lib, "ws2_32.lib")
+# define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <fstream>
 #include <cstring>
@@ -29,6 +30,7 @@
 #include "json/json-forwards.h"
 #include "geoCoord.h"
 #include "DriverModel.h"
+#include "MsgBlob.h"
 
 constexpr auto PI = 3.14159265;
 
@@ -39,7 +41,8 @@ constexpr auto PI = 3.14159265;
 /****************************************************************************/
 // REPLACE THIS WITH THE DESIRED VEHICLE TYPE
 /****************************************************************************/
-#define VEHICLE_TYPE_STRING "source" 
+// 2: EmergencyVehicle, 6: Transit, 9: Truck, 4: Car
+#define VEHICLE_TYPE 2
 #define CONFIG_FILE_NAME "mmitss_simulation/mmitss_driver_model_config.json"
 
 /*==========================================================================*/
@@ -80,31 +83,12 @@ double width_cm{};
 double veh_timestamp{};
 long intTimestamp{};
 long veh_secmark{};
-
+uint32_t msgCount_in{}; //TBD
 /*==========================================================================*/
 // Vehicle speed
 /*==========================================================================*/
 
 double veh_speed{};
-
-/*==========================================================================*/
-// Variables related to reading configuration file and creating its
-// Json object for further use
-/*==========================================================================*/
-
-Json::Value jsonObject_config;
-Json::Reader reader;
-std::ifstream configFile(CONFIG_FILE_NAME);
-std::string configJsonString((std::istreambuf_iterator<char>(configFile)),
-                             std::istreambuf_iterator<char>());
-
-/*==========================================================================*/
-// Variables related to creating a BSM JSON string
-/*==========================================================================*/
-
-Json::Value jsonObject;
-Json::FastWriter fastWriter;
-std::string jsonString;
 
 /*==========================================================================*/
 // Variables related to UDP socket
@@ -115,7 +99,7 @@ int clientComputerPort{};
 SOCKET socketC;
 WSADATA wsaData;
 struct sockaddr_in clientInfo;
-size_t len = sizeof(clientInfo);
+int len = sizeof(clientInfo);
 
 /*==========================================================================*/
 // geoPoint: an object of GeoCoord class
@@ -160,7 +144,7 @@ DRIVERMODEL_API int DriverModelSetValue(long type,
   case DRIVER_DATA_TIMESTEP:
   case DRIVER_DATA_TIME:
     veh_timestamp = double_value;           // This is timestamp from vissim. Resolution: 0.1 simulation second.
-    intTimestamp = 10 * veh_timestamp;      // This converts the original timestamp into integer for the use of modulo operator (%) later.
+    intTimestamp = static_cast<long>(10 * veh_timestamp);      // This converts the original timestamp into integer for the use of modulo operator (%) later.
     veh_secmark = intTimestamp % 600 * 100; // secMark follows the units from the SAE J2735 standard.
     return 1;
   case DRIVER_DATA_USE_UDA:
@@ -235,23 +219,22 @@ DRIVERMODEL_API int DriverModelSetValue(long type,
     double elevation_Meter{};
     geoPoint.ecef2lla(x_grid, y_grid, z_grid, &longitude_DecimalDegree, &latitude_DecimalDegree, &elevation_Meter); // Convert the current vehicle position from earth-center-earth-fixed to latitude-longitude-altitude co-ordinates.
 
-    // Formulate a JSON string
-    jsonObject["MsgType"] = "BSM";
-    jsonObject["BasicVehicle"]["temporaryID"] = veh_id;
-    jsonObject["BasicVehicle"]["secMark_Second"] = veh_secmark;
-    jsonObject["BasicVehicle"]["position"]["latitude_DecimalDegree"] = latitude_DecimalDegree;
-    jsonObject["BasicVehicle"]["position"]["longitude_DecimalDegree"] = longitude_DecimalDegree;
-    jsonObject["BasicVehicle"]["position"]["elevation_Meter"] = elevation_Meter;
-    jsonObject["BasicVehicle"]["speed_MeterPerSecond"] = veh_speed;
-    jsonObject["BasicVehicle"]["heading_Degree"] = veh_heading;
-    jsonObject["BasicVehicle"]["type"] = VEHICLE_TYPE_STRING;
-    jsonObject["BasicVehicle"]["size"]["length_cm"] = length_cm;
-    jsonObject["BasicVehicle"]["size"]["width_cm"] = width_cm;
-
-    jsonString = fastWriter.write(jsonObject);
-
-    sendto(socketC, jsonString.c_str(), strlen(jsonString.c_str()), 0, (sockaddr *)&clientInfo, len); // Send message over created socket.
-
+    uint64_t temporaryId_in = static_cast<uint64_t>(veh_id);
+    uint16_t secMark_in = static_cast<uint16_t>(veh_secmark);
+    int32_t latitude_DecimalDegree_in = static_cast<int32_t>(latitude_DecimalDegree * MULTIPLIER_LATITUDE);
+    int32_t longitude_DecimalDegree_in = static_cast<int32_t>(longitude_DecimalDegree * MULTIPLIER_LONGITUDE);
+    int32_t elevation_Meter_in = static_cast<int32_t>(elevation_Meter * MULTIPLIER_ELEVATION);
+    uint16_t speed_MetersPerSecond_in = static_cast<uint16_t>(veh_speed * MULTIPLIER_SPEED);
+    uint16_t heading_Degree_in = static_cast<uint16_t>(veh_heading * MULTIPLIER_HEADING);
+    uint16_t length_cm_in = static_cast<uint16_t>(length_cm * MULTIPLIER_LENGTH);
+    uint16_t width_cm_in = static_cast<uint16_t>(width_cm * MULTIPLIER_WIDTH);
+    uint8_t vehicle_Type_in = static_cast<uint8_t>(VEHICLE_TYPE);
+    
+    if (msgCount_in > MAX_MSG_COUNT)
+        msgCount_in = 0;
+    msgCount_in++;
+    MsgBlob msgBlobObject(msgCount_in, temporaryId_in, secMark_in, latitude_DecimalDegree_in, longitude_DecimalDegree_in, elevation_Meter_in, speed_MetersPerSecond_in, heading_Degree_in, length_cm_in, width_cm_in, vehicle_Type_in);
+    sendto(socketC, msgBlobObject.CreateBSMForVissimVehicle(), BSM_BlOB_SIZE, 0, (sockaddr*)&clientInfo, len);
     return 1;
   }
   case DRIVER_DATA_VEH_REAR_Z_COORDINATE:
@@ -456,6 +439,10 @@ DRIVERMODEL_API int DriverModelGetValue3(long type,
   /* DriverModelGetValue (DRIVER_DATA_MAX_NUM_INDICES, ...) needs to set   */
   /* *long_value to 3 or greater in order to activate this function!       */
 
+/* NOTE: THIS FUNCTION CAUSES A WARNINGC4065: switch statement contains 'default' 
+but no 'case' labels. However, no change is planned to be made since this 
+is VISSIM's original source code.*/
+
   switch (type)
   {
   default:
@@ -474,15 +461,22 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
   {
   case DRIVER_COMMAND_INIT:
   {
-      reader.parse(configJsonString.c_str(), jsonObject_config); // Read the configuration file into jsonObject_config
+      Json::Value jsonObject;
+      std::ifstream configJson(CONFIG_FILE_NAME);
+      string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+      Json::CharReaderBuilder builder;
+      Json::CharReader* reader = builder.newCharReader();
+      string errors{};
+      reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+      delete reader;
 
-      double ref_lon_degree = (jsonObject_config["vissim_origin_position"]["longitude"]["Degree"]).asDouble(); // Parse longitude (degrees part) of vissim (0,0) from the configuration file
-      double ref_lon_minutes = (jsonObject_config["vissim_origin_position"]["longitude"]["Minute"]).asDouble(); // Parse longitude (minutes part)  of vissim (0,0) from the configuration file
-      double ref_lon_seconds = (jsonObject_config["vissim_origin_position"]["longitude"]["Second"]).asDouble(); // Parse longitude (seconds part) of vissim (0,0) from the configuration file
-      double ref_lat_degree = (jsonObject_config["vissim_origin_position"]["latitude"]["Degree"]).asDouble(); // Parse latiitude (degrees part) of vissim (0,0) from the configuration file
-      double ref_lat_minutes = (jsonObject_config["vissim_origin_position"]["latitude"]["Minute"]).asDouble(); // Parse latitude (minutes part) of vissim (0,0) from the configuration file
-      double ref_lat_seconds = (jsonObject_config["vissim_origin_position"]["latitude"]["Second"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
-      double ref_elevation_Meter = (jsonObject_config["vissim_origin_position"]["elevation_Meter"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
+      double ref_lon_degree = (jsonObject["vissim_origin_position"]["longitude"]["Degree"]).asDouble(); // Parse longitude (degrees part) of vissim (0,0) from the configuration file
+      double ref_lon_minutes = (jsonObject["vissim_origin_position"]["longitude"]["Minute"]).asDouble(); // Parse longitude (minutes part)  of vissim (0,0) from the configuration file
+      double ref_lon_seconds = (jsonObject["vissim_origin_position"]["longitude"]["Second"]).asDouble(); // Parse longitude (seconds part) of vissim (0,0) from the configuration file
+      double ref_lat_degree = (jsonObject["vissim_origin_position"]["latitude"]["Degree"]).asDouble(); // Parse latiitude (degrees part) of vissim (0,0) from the configuration file
+      double ref_lat_minutes = (jsonObject["vissim_origin_position"]["latitude"]["Minute"]).asDouble(); // Parse latitude (minutes part) of vissim (0,0) from the configuration file
+      double ref_lat_seconds = (jsonObject["vissim_origin_position"]["latitude"]["Second"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
+      double ref_elevation_Meter = (jsonObject["vissim_origin_position"]["elevation_Meter"]).asDouble(); // Parse latitude (secods part) of vissim (0,0) from the configuration file
 
       double ref_longitude_DecimalDegree = geoPoint.dms2d(ref_lon_degree, ref_lon_minutes, ref_lon_seconds); // Convert the longitude of VISSIM (0,0) parsed from the configuration file into decimal format.
       double ref_latitude_DecimalDegree = geoPoint.dms2d(ref_lat_degree, ref_lat_minutes, ref_lat_seconds); // Convert the latitude of VISSIM (0,0) parsed from the configuration file into decimal format.
@@ -490,8 +484,8 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
 
       geoPoint.init(ref_longitude_DecimalDegree, ref_latitude_DecimalDegree, ref_elevation_Meter);                                         // Initialize a geo-point as VISSIM (0,0) point.
 
-      clientComputerIP = (jsonObject_config["msg_distributor_ip"]).asString(); // Parse client computer IP from the configuration file.
-      clientComputerPort = (jsonObject_config["msg_distributor_port"]).asInt(); // Parse client computer IUSP port from the configuration file.
+      clientComputerIP = (jsonObject["msg_distributor_ip"]).asString(); // Parse client computer IP from the configuration file.
+      clientComputerPort = (jsonObject["msg_distributor_port"]).asInt(); // Parse client computer IUSP port from the configuration file.
 
       // Fill up client information:
       clientInfo.sin_family = AF_INET;                                  // Fillup client information: family
@@ -504,6 +498,7 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
       return 1;
   }
   case DRIVER_COMMAND_CREATE_DRIVER:
+
     return 1;
   case DRIVER_COMMAND_KILL_DRIVER:
     return 1;
