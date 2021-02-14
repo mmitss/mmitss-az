@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# build-x86.sh                                                                     
+# build-simulation-arm.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -18,9 +18,9 @@
 # in the Transportation Research Institute.                                                 
 #                                                                                           
 # Operational Description:                                                                   
-# This script builds all mmitss applications (vehicle, intersection, common, and simulation),
-# under the x86 environment. The primary reason for such builds is development and testing.
-# This script can not be used in the ARM architecture based devices.                                                                                                  
+# This script builds all mmitss applications required for simulation (intersection, common, and simulation),
+# under the ARM environment. The primary reason for such builds is development and testing.
+# This script can not be used in the x86 architecture based devices.                                                                                                  
 #############################################################################################
 
 # Define colors:
@@ -37,7 +37,7 @@ echo "Building Priority Request Generator Server..."
 cd ./../src/simulation/priority-request-generator-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_PriorityRequestGeneratorServer ../../../bin/PriorityRequestGeneratorServer/x86
@@ -123,7 +123,7 @@ echo "Building Priority Request Server..."
 cd ./../src/mrp/priority-request-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/x86
@@ -143,7 +143,7 @@ echo "Building Priority Solver..."
 cd ./../src/mrp/priority-request-solver
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_PriorityRequestSolver ../../../bin/PriorityRequestSolver/x86
@@ -163,7 +163,7 @@ echo "Building Snmp Engine..."
 cd ./../src/mrp/snmp-engine
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_SnmpEngine ../../../bin/SnmpEngine/x86
