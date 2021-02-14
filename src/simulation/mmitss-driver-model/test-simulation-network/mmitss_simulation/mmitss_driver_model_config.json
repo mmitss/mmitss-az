@@ -1,6 +1,6 @@
 {
     "msg_distributor_ip": "10.12.6.251",
-    "msg_distributor_port": 5060,
+    "msg_distributor_port": 10005,
     "vissim_origin_position":
     {
         "elevation_Meter": 540.11,
