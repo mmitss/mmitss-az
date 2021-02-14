@@ -40,7 +40,7 @@ make clean &> /dev/null
 make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGeneratorServer ../../../bin/PriorityRequestGeneratorServer/x86
+    mv M_PriorityRequestGeneratorServer ../../../bin/PriorityRequestGeneratorServer/arm
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -59,7 +59,7 @@ cd ./../src/simulation/message-distributor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed message-distributor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/message-distributor  ../../../bin/MessageDistributor/x86/M_MessageDistributor
+    mv dist/message-distributor  ../../../bin/MessageDistributor/arm/M_MessageDistributor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -79,7 +79,7 @@ cd ./../src/simulation/mmitss-driver-model/simulated-bsm-blob-processor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed simulated-bsm-blob-processor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/simulated-bsm-blob-processor  ../../../bin/SimulatedBsmBlobProcessor/x86/M_SimulatedBsmBlobProcessor
+    mv dist/simulated-bsm-blob-processor  ../../../bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -102,7 +102,7 @@ cd ./../src/common/v2x-data-collector
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector-main  ../../../bin/V2XDataCollector/x86/M_V2XDataCollector
+    mv dist/v2x-data-collector-main  ../../../bin/V2XDataCollector/arm/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -126,7 +126,7 @@ make clean &> /dev/null
 make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/x86
+    mv M_PriorityRequestServer ../../../bin/PriorityRequestServer/arm
     echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -146,7 +146,7 @@ make clean &> /dev/null
 make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestSolver ../../../bin/PriorityRequestSolver/x86
+    mv M_PriorityRequestSolver ../../../bin/PriorityRequestSolver/arm
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -166,7 +166,7 @@ make clean &> /dev/null
 make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_SnmpEngine ../../../bin/SnmpEngine/x86
+    mv M_SnmpEngine ../../../bin/SnmpEngine/arm
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -185,7 +185,7 @@ cd ./../src/mrp/traffic-controller-interface
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed traffic-controller-interface.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/traffic-controller-interface  ../../../bin/TrafficControllerInterface/x86/M_TrafficControllerInterface
+    mv dist/traffic-controller-interface  ../../../bin/TrafficControllerInterface/arm/M_TrafficControllerInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -205,7 +205,7 @@ cd ./../src/mrp/map-spat-broadcaster
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat-broadcaster.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/x86/M_MapSpatBroadcaster
+    mv dist/map-spat-broadcaster  ../../../bin/MapSpatBroadcaster/arm/M_MapSpatBroadcaster
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -225,7 +225,7 @@ cd ./../src/mrp/v2x-data-ftp-client
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-ftp-client-main  ../../../bin/V2XDataFtpClient/x86/M_V2XDataFtpClient
+    mv dist/v2x-data-ftp-client-main  ../../../bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -246,7 +246,7 @@ cd ./../src/mrp/signal-coordination-request-generator
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed signal-coordination-request-generator.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/signal-coordination-request-generator  ../../../bin/SignalCoordinationRequestGenerator/x86/M_SignalCoordinationRequestGenerator
+    mv dist/signal-coordination-request-generator  ../../../bin/SignalCoordinationRequestGenerator/arm/M_SignalCoordinationRequestGenerator
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
