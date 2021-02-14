@@ -30,67 +30,6 @@ nocolor='\033[0m'
 
 ################################## COMMON APPLICATIONS ################################
 
-######################################################################################
-echo "Building Message Encoder..."
-cd ./../src/common/MsgTransceiver/MsgEncoder
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux &> /dev/null
-
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_MsgEncoder ../../../../bin/MsgEncoder/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building Wireless Message Decoder..."
-cd ./../src/common/MsgTransceiver/MsgDecoder/WirelessMsgDecoder
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_WirelessMsgDecoder ../../../../../bin/WirelessMsgDecoder/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-#######################################################################################
-echo "Building Host BSM Decoder..."
-cd ./../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../bin/HostBsmDecoder/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
 #######################################################################################
 echo "Building V2X Data Collector..."
 cd ./../src/common/v2x-data-collector
@@ -111,29 +50,7 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
-################################# VEHICLE APPLICATIONS ################################
-
-#######################################################################################
-echo "Building Priority Request Generator..."
-cd ./../src/vsp/priority-request-generator
-# Clean the folder and build for linux.
-make clean &> /dev/null
-make linux &> /dev/null
-# Indicate Success/Failure of the build
-if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../bin/PriorityRequestGenerator/x86
-	echo -e "${green}Successful${nocolor}"
-else
-	echo -e "${red}Failed${nocolor}"
-fi
-# Remove the .o files to keep the folders clean
-rm ./*.o &> /dev/null
-# Return back to original directory to go over the process again for another one
-cd - &> /dev/null
-sleep 1s
-#######################################################################################
-
-# ############################### INTERSECTION APPLICATIONS #############################
+############################### INTERSECTION APPLICATIONS #############################
 
 #######################################################################################
 echo "Building Priority Request Server..."
@@ -298,13 +215,13 @@ sleep 1s
 #######################################################################################
 
 #######################################################################################
-echo "Building Data Compressor..."
-cd ./../src/vsp/data-compressor
+echo "Building Simulated BSM Blob Processor..."
+cd ./../src/simulation/mmitss-driver-model/simulated-bsm-blob-processor
 # Clean the folder and build for linux.
-pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed data-compressor.py  &> /dev/null
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed simulated-bsm-blob-processor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/data-compressor  ../../../bin/DataCompressor/x86/M_DataCompressor
+    mv dist/simulated-bsm-blob-processor  ../../../bin/MessageDistributor/x86/M_SimulatedBsmBlobProcessor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"

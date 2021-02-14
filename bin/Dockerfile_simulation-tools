@@ -5,6 +5,7 @@ FROM mmitssuarizona/mmitss-x86-base:1.0
 
 COPY PriorityRequestGeneratorServer/x86/M_PriorityRequestGeneratorServer /mmitss
 COPY MessageDistributor/x86/M_MessageDistributor /mmitss
+COPY SimulatedBsmBlobProcessor/x86/M_SimulatedBsmBlobProcessor /mmitss
 
 RUN mkdir -p /mmitss/map
 
