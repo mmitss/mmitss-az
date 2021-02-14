@@ -79,7 +79,7 @@ cd ./../src/simulation/mmitss-driver-model/simulated-bsm-blob-processor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed simulated-bsm-blob-processor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/simulated-bsm-blob-processor  ../../../bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor
+    mv dist/simulated-bsm-blob-processor  ../../../../bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
