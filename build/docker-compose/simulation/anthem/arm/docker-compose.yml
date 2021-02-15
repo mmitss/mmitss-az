@@ -96,7 +96,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: enp4s0
+            parent: eth0
         ipam:
             config:
               - subnet: 10.12.6.0/24
