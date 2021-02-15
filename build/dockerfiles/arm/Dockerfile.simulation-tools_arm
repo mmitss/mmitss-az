@@ -1,0 +1,13 @@
+#-----------------------------------------------------------------------------#
+#    Dockerfile to build an arm platform image for an intersection            #
+#-----------------------------------------------------------------------------#
+FROM mmitssuarizona/mmitss-arm-base:1.0
+
+COPY build/bin/PriorityRequestGeneratorServer/arm/M_PriorityRequestGeneratorServer /mmitss
+COPY build/bin/MessageDistributor/arm/M_MessageDistributor /mmitss
+
+RUN mkdir -p /mmitss/map
+
+COPY build/docker-compose/simulation/supervisord_simulation-tools.conf /mmitss/supervisord.conf
+CMD ["/usr/bin/supervisord"]
+
