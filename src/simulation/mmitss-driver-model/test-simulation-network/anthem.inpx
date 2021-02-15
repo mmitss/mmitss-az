@@ -2575,7 +2575,7 @@
 	<ptLines>
 		<ptLine anmid="" color="ff00ff12" desSpeedDistr="50" destLink="1" destPos="299.99633818429538" entTmOffset="0" entryLink="4" name="" no="1" sendTele="false" slackTmFrac="1" teleLine="0" teleManDir="0" telePrio="0" teleRout="0" teleVehLen="0" vehType="650">
 			<depTimes>
-				<departureTime dep="0" occup="10" teleCour="0"/>
+				<departureTime dep="70" occup="10" teleCour="0"/>
 				<departureTime dep="150" occup="10" teleCour="0"/>
 				<departureTime dep="300" occup="10" teleCour="0"/>
 				<departureTime dep="450" occup="10" teleCour="0"/>

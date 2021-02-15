@@ -33,10 +33,10 @@ class MessageDistributor():
         self.intersectionList=config["intersections"]
 
         # BSM Clients:
-        self.transit_client_list=self.getBsmClientsList("transit")
-        self.truck_client_list=self.getBsmClientsList("truck")
-        self.emergency_client_list=self.getBsmClientsList("emergency")
-        self.passenger_client_list=self.getBsmClientsList("passenger")
+        self.transit_client_list=self.getBsmClientsList("Transit")
+        self.truck_client_list=self.getBsmClientsList("Truck")
+        self.emergency_client_list=self.getBsmClientsList("EmergencyVehicle")
+        self.passenger_client_list=self.getBsmClientsList("Passenger")
         self.other_client_list=self.getBsmClientsList("other")
 
         # MAP Clients:
@@ -61,7 +61,7 @@ class MessageDistributor():
         and returns the list of tuples having client information in form of 
         (IpAddress:str, Port:int) 
 
-        ``vehicleType`` can be one of "transit", "truck", "emergency", "passenger" or something else.
+        ``vehicleType`` can be one of "Transit", "Truck", "EmergencyVehicle", "Passenger" or something else.
         """
         clients_list = []
         for client in self.config["bsm_clients"][vehicleType]:
@@ -109,13 +109,13 @@ class MessageDistributor():
         bsmVehicleType = timestampedBsm["BasicVehicle"]["type"]
         clientList=[]
 
-        if bsmVehicleType == "transit":
+        if bsmVehicleType == "Transit":
             clientList = self.transit_client_list
-        elif bsmVehicleType == "truck":
+        elif bsmVehicleType == "Truck":
             clientList = self.truck_client_list
-        elif bsmVehicleType == "emergency":
+        elif bsmVehicleType == "EmergencyVehicle":
             clientList = self.emergency_client_list
-        elif bsmVehicleType == "passenger":
+        elif bsmVehicleType == "Passenger":
             clientList = self.passenger_client_list
         else:clientList = self.other_client_list
         

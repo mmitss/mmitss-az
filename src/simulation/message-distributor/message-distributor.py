@@ -16,25 +16,34 @@
 
 ***************************************************************************************
 '''
+TESTING = True
 import json
 import socket
 import sys
 from MessageDistributor import MessageDistributor
 import datetime
 
-configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+if TESTING: 
+    configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-phase3-master-config.json", 'r')    
+else:
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
 masterConfig = json.load(configFile)
 configFile.close()
 
-#configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
-configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
+if TESTING:
+    configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-message-distributor-config.json", 'r')
+else: 
+    configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
 config = json.load(configFile)
 configFile.close()
 
 msgDist = MessageDistributor(config)
 
 receivingSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-receivingSocket.bind((masterConfig["MessageDistributorIP"], masterConfig["PortNumber"]["MessageDistributor"]))
+if TESTING:
+    receivingSocket.bind(("127.0.0.1", masterConfig["PortNumber"]["MessageDistributor"]))
+else:
+    receivingSocket.bind((masterConfig["MessageDistributorIP"], masterConfig["PortNumber"]["MessageDistributor"]))
 
 rawBsmLogging = config["raw_bsm_logging"]
 if rawBsmLogging == True:
