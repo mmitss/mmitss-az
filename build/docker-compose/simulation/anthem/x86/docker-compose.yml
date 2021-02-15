@@ -3,11 +3,12 @@ services:
 
     daisy-gavilan:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-gavilan
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Gavilan/nojournal
+            source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Gavilan/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -15,11 +16,12 @@ services:
 
     daisy-dedication:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-dedication
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal
+              source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Dedication/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
@@ -27,11 +29,12 @@ services:
 
     daisy-meridian:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-meridian
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal
+              source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Meridian/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
@@ -39,11 +42,12 @@ services:
         
     daisy-hastings:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-hastings
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Hastings/nojournal
+            source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Hastings/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -51,11 +55,12 @@ services:
         
     daisy-memorial:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-memorial
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Memorial/nojournal
+            source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Memorial/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -63,11 +68,12 @@ services:
         
     daisy-anthem:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
         container_name: daisy-anthem
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/Anthem/Daisy-Anthem/nojournal
+              source: $MMITSS_ROOT/mmitss/config/Anthem/Daisy-Anthem/nojournal
               target: /nojournal
         networks:
             mmitss_vlan:
@@ -75,12 +81,12 @@ services:
 
     simulation-tools:
         build:
-            context: ./
-            dockerfile: Dockerfile_simulation-tools
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.simulation-tools_x86
         container_name: simulation-tools
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/simulation-tools/nojournal
+            source: $MMITSS_ROOT/mmitss/config/simulation-tools/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
