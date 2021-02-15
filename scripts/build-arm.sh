@@ -342,7 +342,7 @@ echo "Building Priority Request Generator Server..."
 cd ./../src/simulation/priority-request-generator-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
-make linux &> /dev/null
+make linux ARM=1 &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_PriorityRequestGeneratorServer ../../../build/bin/PriorityRequestGeneratorServer/arm/M_PriorityRequestGeneratorServer
