@@ -12,7 +12,7 @@ COPY build/bin/SystemInterface/arm/M_SystemInterface /mmitss
 COPY build/bin/V2XDataCollector/arm/M_V2XDataCollector /mmitss
 COPY build/bin/SignalCoordinationRequestGenerator/arm/M_SignalCoordinationRequestGenerator /mmitss
 
-COPY build/docker-compose/simulation/supervisord_mrp-simulation.conf /mmitss/supervisord.conf
+COPY build/docker-compose/simulation/supervisord_mrp-simulation.conf /nojournal/bin/supervisord.conf
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 
