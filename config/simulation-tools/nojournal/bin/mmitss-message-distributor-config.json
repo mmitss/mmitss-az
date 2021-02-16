@@ -106,6 +106,12 @@
                 "ip_address": "10.12.6.20",
                 "port":20022
             }
+        ],
+        "other":[
+            {
+                "ip_address": "10.12.6.20",
+                "port":20022
+            }
         ]
     },
     "map_clients":

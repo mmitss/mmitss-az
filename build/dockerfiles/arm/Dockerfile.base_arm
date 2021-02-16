@@ -17,17 +17,17 @@ MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 RUN apt-get update && apt-get install -y supervisor iputils-ping net-tools nano
 RUN mkdir -p /var/log/supervisor
 
-COPY ./lib/arm/system/libssl.so.1.1 /usr/lib/arm-linux-gnueabihf/
-COPY ./lib/arm/system/libcrypto.so.1.1 /usr/lib/arm-linux-gnueabihf/
+COPY lib/arm/system/libssl.so.1.1 /usr/lib/arm-linux-gnueabihf/
+COPY lib/arm/system/libcrypto.so.1.1 /usr/lib/arm-linux-gnueabihf/
 
 # Add the shared libraries mmitss needs in order to run
-COPY ./3rdparty/net-snmp/lib/arm/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
-COPY ./3rdparty/glpk/lib/arm/libglpk.so.40.3.0 /usr/local/lib/mmitss/
-COPY ./lib/arm/libmmitss-common.so /usr/local/lib/mmitss/
-COPY ./3rdparty/mapengine/lib/arm/liblocAware.so.1.0 /usr/local/lib/mmitss/
-COPY ./3rdparty/asn1j2735/lib/arm/libasn.so.1.0 /usr/local/lib/mmitss/
-COPY ./3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
-COPY ./lib/mmitss.conf /etc/ld.so.conf.d/
+COPY 3rdparty/net-snmp/lib/arm/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/
+COPY 3rdparty/glpk/lib/arm/libglpk.so.40.3.0 /usr/local/lib/mmitss/
+COPY lib/arm/libmmitss-common.so /usr/local/lib/mmitss/
+COPY 3rdparty/mapengine/lib/arm/liblocAware.so.1.0 /usr/local/lib/mmitss/
+COPY 3rdparty/asn1j2735/lib/arm/libasn.so.1.0 /usr/local/lib/mmitss/
+COPY 3rdparty/asn1j2735/lib/arm/libdsrc.so.1.0 /usr/local/lib/mmitss/
+COPY lib/mmitss.conf /etc/ld.so.conf.d/
 
 # Create the symbolic links for the copied libraries."
 RUN ln -s /usr/local/lib/mmitss/libnetsnmp.so.35.0.0 /usr/local/lib/mmitss/libnetsnmp.so.35 && ln -s /usr/local/lib/mmitss/libglpk.so.40.3.0 /usr/local/lib/mmitss/libglpk.so.40

@@ -1,13 +1,14 @@
-version: "3.8"
+version: "3.3"
 services:
 
     speedway-campbell:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
         container_name: speedway-campbell
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-campbell/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway/speedway-campbell/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -15,11 +16,12 @@ services:
 
     speedway-cherry:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
         container_name: speedway-cherry
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-cherry/nojournal
+              source: $MMITSS_ROOT/mmitss/config/speedway/speedway-cherry/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
@@ -27,11 +29,12 @@ services:
 
     speedway-mountain:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
         container_name: speedway-mountain
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-mountain/nojournal
+              source: $MMITSS_ROOT/mmitss/config/speedway/speedway-mountain/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
@@ -39,11 +42,12 @@ services:
 
     speedway-park:
         build:
-            context: ./
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
         container_name: speedway-park
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/mmitss/bin/corridors/speedway/speedway-park/nojournal
+              source: $MMITSS_ROOT/mmitss/config/speedway/speedway-park/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
@@ -51,12 +55,12 @@ services:
 
     simulation-tools:
         build:
-            context: ./
-            dockerfile: Dockerfile_simulation-tools
+            context: $MMITSS_ROOT/mmitss
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.simulation-tools_arm
         container_name: simulation-tools
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/bin/corridors/simulation-tools/nojournal
+            source: $MMITSS_ROOT/mmitss/config/simulation-tools/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -66,7 +70,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: enp4s0 
+            parent: eth0
         ipam:
             config:
               - subnet: 10.12.6.0/24

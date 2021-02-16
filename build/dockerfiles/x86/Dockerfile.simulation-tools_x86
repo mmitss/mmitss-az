@@ -3,12 +3,12 @@
 #-----------------------------------------------------------------------------#
 FROM mmitssuarizona/mmitss-x86-base:1.0
 
-COPY PriorityRequestGeneratorServer/x86/M_PriorityRequestGeneratorServer /mmitss
-COPY MessageDistributor/x86/M_MessageDistributor /mmitss
-COPY SimulatedBsmBlobProcessor/x86/M_SimulatedBsmBlobProcessor /mmitss
+COPY build/bin/PriorityRequestGeneratorServer/x86/M_PriorityRequestGeneratorServer /mmitss
+COPY build/bin/MessageDistributor/x86/M_MessageDistributor /mmitss
+COPY build/bin/SimulatedBsmBlobProcessor/x86/M_SimulatedBsmBlobProcessor /mmitss
 
 RUN mkdir -p /mmitss/map
 
-COPY supervisord_simulation-tools.conf /mmitss/supervisord.conf
+COPY build/docker-compose/simulation/supervisord_simulation-tools.conf /mmitss/supervisord.conf
 CMD ["/usr/bin/supervisord"]
 
