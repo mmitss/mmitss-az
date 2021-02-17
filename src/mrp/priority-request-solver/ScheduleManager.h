@@ -12,6 +12,7 @@
   1. Header file for ScheduleManager class
 */
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
 #include "Schedule.h"
@@ -24,9 +25,6 @@ using std::ifstream;
 using std::stringstream;
 using std::string;
 using std::vector;
-
-
-// using std::ios;
 using std::ofstream;
 
 class ScheduleManager
@@ -63,4 +61,5 @@ public:
     void createEventList();
     void getOmitPhases();
     string createScheduleJsonString();
+    bool validateOptimalSolution();
 };

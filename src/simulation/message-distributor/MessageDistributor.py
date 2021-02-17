@@ -37,6 +37,7 @@ class MessageDistributor():
         self.truck_client_list=self.getBsmClientsList("truck")
         self.emergency_client_list=self.getBsmClientsList("emergency")
         self.passenger_client_list=self.getBsmClientsList("passenger")
+        self.other_client_list=self.getBsmClientsList("other")
 
         # MAP Clients:
         self.map_client_list=self.getMapClientsList()
@@ -60,8 +61,7 @@ class MessageDistributor():
         and returns the list of tuples having client information in form of 
         (IpAddress:str, Port:int) 
 
-        ``vehicleType`` can be one of "transit", "truck", "emergency", 
-        or "passenger"
+        ``vehicleType`` can be one of "transit", "truck", "emergency", "passenger" or something else.
         """
         clients_list = []
         for client in self.config["bsm_clients"][vehicleType]:
@@ -117,6 +117,7 @@ class MessageDistributor():
             clientList = self.emergency_client_list
         elif bsmVehicleType == "passenger":
             clientList = self.passenger_client_list
+        else:clientList = self.other_client_list
         
         if len(clientList)>0:
             for client in clientList:

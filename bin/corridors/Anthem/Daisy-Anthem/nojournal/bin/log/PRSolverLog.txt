@@ -1,5 +1,0 @@
-File opened at time : 1603398628
-
-Following Clear Request is sent to TCI at time 1603398629
-{"MsgType":"Schedule","Schedule":"Clear"}
-

@@ -1,0 +1,29 @@
+{
+	"CoordinatedPhase1": 2,
+	"CoordinatedPhase2": 6,
+	"StartTimeOfDiagram": 1611938760,
+	"EndTimeOfDiagram": 1611939360,
+	"NoOfIntersection": 5,
+	"IntersectionName": [
+		"Daisy-Gavilan",
+		"Daisy-Dedication",
+		"Daisy-Meridian",
+		"Daisy-HHastings",
+		"Daisy-Memorial"
+	],
+	"SPaTFileDirectory": [
+		"/home/debashis/Desktop/mmitss/bin/corridors/Anthem/Daisy-Gavilan/nojournal/bin/v2x-data/daisy-gavilan_01292021_161206/daisy-gavilan_spatLog_01292021_161206.csv",
+		"/home/debashis/Desktop/mmitss/bin/corridors/Anthem/Daisy-Dedication/nojournal/bin/v2x-data/daisy-dedication_01292021_161204/daisy-dedication_spatLog_01292021_161204.csv",
+		"/home/debashis/Desktop/mmitss/bin/corridors/Anthem/Daisy-Meridian/nojournal/bin/v2x-data/daisy-meridian_01292021_161204/daisy-meridian_spatLog_01292021_161204.csv",
+		"/home/debashis/Desktop/mmitss/bin/corridors/Anthem/Daisy-Hastings/nojournal/bin/v2x-data/daisy-hastings_01292021_161206/daisy-hastings_spatLog_01292021_161206.csv",
+		"/home/debashis/Desktop/mmitss/bin/corridors/Anthem/Daisy-Memorial/nojournal/bin/v2x-data/daisy-memorial_01292021_161204/daisy-memorial_spatLog_01292021_161204.csv"
+		
+		],
+	"IntersectionDistance": [
+		300,
+		650,
+		1450,
+		2100,
+		2800
+	]
+}

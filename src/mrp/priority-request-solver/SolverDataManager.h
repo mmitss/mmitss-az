@@ -24,6 +24,12 @@ using std::ofstream;
 using std::cout;
 using std::endl;
 
+#define VehicleClass_EmergencyVehicle 1
+#define VehicleClass_Transit 2
+#define VehicleClass_Truck 3
+#define VehicleClass_EmergencyVehicleSplitRequest 4
+#define VehicleClass_Coordination 5
+#define SignalCoordinationVehicleType 20
 
 class SolverDataManager
 {
@@ -32,10 +38,17 @@ private:
     int numberOfTruckInList{};
     int numberOfEVInList{};
     int numberOfEVSplitRequestInList{};
+    int numberOfCoordinationRequestInCycle1{};
+    int numberOfCoordinationRequestInCycle2{};
     double maxEV_ETA{};
     double maxEV_ETA_Duration{};
+    double EmergencyVehicleWeight{1.0};
+    double EmergencyVehicleSplitPhaseWeight{0.1};        
+    double TransitWeight{1.0};
+    double TruckWeight{1.0};
+    double DilemmaZoneRequestWeight{20.0};
+    double CoordinationWeight{1.0};
     vector<int> requestedSignalGroup;
-
     vector<RequestList> priorityRequestList;
     vector<RequestList> dilemmaZoneRequestList;
     vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
@@ -44,7 +57,7 @@ private:
 public:
     SolverDataManager();
     SolverDataManager(vector<RequestList> requestList);
-    SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan);
+    SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight);
     
     ~SolverDataManager();
 
