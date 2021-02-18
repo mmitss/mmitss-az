@@ -16,7 +16,7 @@
 
 ***************************************************************************************
 '''
-TESTING = True
+TESTING = False
 import json
 import socket
 import sys
@@ -24,14 +24,14 @@ from MessageDistributor import MessageDistributor
 import datetime
 
 if TESTING: 
-    configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-phase3-master-config.json", 'r')    
+    configFile = open("../../../config/simulation-tools/nojournal/bin/mmitss-phase3-master-config.json", 'r')    
 else:
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
 masterConfig = json.load(configFile)
 configFile.close()
 
 if TESTING:
-    configFile = open("../../../bin/corridors/simulation-tools/nojournal/bin/mmitss-message-distributor-config.json", 'r')
+    configFile = open("../../../config/simulation-tools/nojournal/bin/mmitss-message-distributor-config.json", 'r')
 else: 
     configFile = open("/nojournal/bin/mmitss-message-distributor-config.json", 'r')
 config = json.load(configFile)
