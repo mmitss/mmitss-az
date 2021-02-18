@@ -377,4 +377,25 @@ cd - &> /dev/null
 sleep 1s
 #######################################################################################
 
+#######################################################################################
+echo "Building Simulated BSM Blob Processor..."
+cd ./../src/simulation/mmitss-driver-model/simulated-bsm-blob-processor
+# Clean the folder and build for linux.
+pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed simulated-bsm-blob-processor.py  &> /dev/null
+# Indicate Success/Failure of the build
+if [ "$?" -eq "0" ]; then
+    mv dist/simulated-bsm-blob-processor  ../../../../build/bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor
+	echo -e "${green}Successful${nocolor}"
+else
+	echo -e "${red}Failed${nocolor}"
+fi
+# Remove the .o files to keep the folders clean
+rm -r build dist *.spec &> /dev/null
+rm -r __pycache__ &> /dev/null
+# Return back to original directory to go over the process again for another one
+cd - &> /dev/null
+sleep 1s
+
+#######################################################################################
+
 
