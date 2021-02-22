@@ -31,7 +31,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: enp0s31f6
+            parent: $MMITSS_NETWORK_ADAPTER
         ipam:
             config:
               - subnet: 10.12.6.0/24
