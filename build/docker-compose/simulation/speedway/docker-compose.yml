@@ -1,10 +1,10 @@
-version: "3.3"
+version: "3.8"
 services:
 
     speedway-campbell:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: speedway-campbell
         volumes:
           - type: bind
@@ -17,7 +17,7 @@ services:
     speedway-cherry:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: speedway-cherry
         volumes:
             - type: bind
@@ -30,7 +30,7 @@ services:
     speedway-mountain:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: speedway-mountain
         volumes:
             - type: bind
@@ -43,7 +43,7 @@ services:
     speedway-park:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation_arm
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: speedway-park
         volumes:
             - type: bind
@@ -56,7 +56,7 @@ services:
     simulation-tools:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/arm/Dockerfile.simulation-tools_arm
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.simulation-tools
         container_name: simulation-tools
         volumes:
           - type: bind
@@ -70,7 +70,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: eth0
+            parent: eno2
         ipam:
             config:
               - subnet: 10.12.6.0/24

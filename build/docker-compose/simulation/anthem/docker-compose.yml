@@ -1,10 +1,10 @@
-version: "3.8"
+version: "3.3"
 services:
 
     daisy-gavilan:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-gavilan
         volumes:
           - type: bind
@@ -17,7 +17,7 @@ services:
     daisy-dedication:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-dedication
         volumes:
             - type: bind
@@ -30,7 +30,7 @@ services:
     daisy-meridian:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-meridian
         volumes:
             - type: bind
@@ -43,7 +43,7 @@ services:
     daisy-hastings:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-hastings
         volumes:
           - type: bind
@@ -56,7 +56,7 @@ services:
     daisy-memorial:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-memorial
         volumes:
           - type: bind
@@ -69,7 +69,7 @@ services:
     daisy-anthem:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.mrp-simulation_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation
         container_name: daisy-anthem
         volumes:
             - type: bind
@@ -82,7 +82,7 @@ services:
     simulation-tools:
         build:
             context: $MMITSS_ROOT/mmitss
-            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/x86/Dockerfile.simulation-tools_x86
+            dockerfile: $MMITSS_ROOT/mmitss/build/dockerfiles/$PROCESSOR/Dockerfile.simulation-tools
         container_name: simulation-tools
         volumes:
           - type: bind
@@ -96,7 +96,7 @@ networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-            parent: eno2
+            parent: eth0
         ipam:
             config:
               - subnet: 10.12.6.0/24
