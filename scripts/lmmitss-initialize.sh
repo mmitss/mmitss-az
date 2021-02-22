@@ -43,7 +43,7 @@ sudo mkdir /usr/local/lib/mmitss
 sleep 1s
 
 echo "Copy the configuration files of the intersection Daisy-Gavilan to /nojournal/bin/"
-sudo cp -r ../bin/corridors/Anthem/Daisy-Gavilan/nojournal/bin /nojournal
+sudo cp -r ../config/Anthem/Daisy-Gavilan/nojournal/bin /nojournal
 sleep 1s
 
 echo "Change the owner and group of the configuration files and provide necessary permissions (chmod 777)"

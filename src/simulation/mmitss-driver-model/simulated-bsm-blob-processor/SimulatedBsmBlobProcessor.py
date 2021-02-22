@@ -39,7 +39,7 @@ class SimulatedBsmBlobProcessor:
     (2) unpack the received blob and develop BSM json string
     """
     def __init__(self):
-        self.blobStructure = 'uint:8, uint:64, uint:16, int:32, int:32, int:32, uint:16, uint:16, uint:16, uint:16, uint:8'
+        self.blobStructure = 'uint:32, uint:64, uint:16, int:32, int:32, int:32, uint:16, uint:16, uint:16, uint:16, uint:8'
 
     def pack_variables_to_blob(self, 
                                 msgCount:int, 
