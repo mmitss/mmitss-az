@@ -33,7 +33,17 @@
 read -p "Username: " username
 read -p "User Group: " usergroup
 read -p "Architecture - x86 or arm: " arch
+read -p "Name of network adapter to be used by MMITSS: " mmitss_network_adapter
+read -p "Copy sample configuration file to /nojournal/bin? (y or n): " copy_sample 
 
+echo "Adding MMITSS_ROOT to ~/.bashrc"
+echo "export MMITSS_ROOT=$(pwd)/../.." >> ~/.bashrc
+
+echo "Adding MMITSS_NETWORK_ADAPTER to ~/.bashrc"
+echo "export MMITSS_NETWORK_ADAPTER=$mmitss_network_adapter" >> ~/.bashrc
+
+echo "Adding PROCESSOR to ~/.bashrc"
+echo "export PROCESSOR=$arch" >> ~/.bashrc
 
 echo "Creating required directories in the root folder."
 sudo rm -r /nojournal/
@@ -42,14 +52,15 @@ sudo mkdir -p /nojournal/bin/log
 sudo mkdir /usr/local/lib/mmitss
 sleep 1s
 
+if [ "$copy_sample" = "y" ]; then
 echo "Copy the configuration files of the intersection Daisy-Gavilan to /nojournal/bin/"
-sudo cp -r ../bin/corridors/Anthem/Daisy-Gavilan/nojournal/bin /nojournal
+sudo cp -r ../config/Anthem/Daisy-Gavilan/nojournal/bin /nojournal
 sleep 1s
-
 echo "Change the owner and group of the configuration files and provide necessary permissions (chmod 777)"
 sudo chown -R $username:$usergroup /nojournal
 sudo chmod -R 777 /nojournal
 sleep 1s
+fi
 
 echo "Add the shared libraries we need to run"
 

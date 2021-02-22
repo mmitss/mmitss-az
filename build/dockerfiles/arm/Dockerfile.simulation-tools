@@ -9,6 +9,5 @@ COPY build/bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor /mmitss
 
 RUN mkdir -p /mmitss/map
 
-COPY build/docker-compose/simulation/supervisord_simulation-tools.conf /mmitss/supervisord.conf
-CMD ["/usr/bin/supervisord"]
+ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 

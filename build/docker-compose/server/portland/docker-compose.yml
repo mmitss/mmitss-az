@@ -42,7 +42,7 @@ networks:
         driver: macvlan
         driver_opts:
 # note: change to local IP address from ifconfig 
-            parent: enp4s0  
+            parent: $MMITSS_NETWORK_ADAPTER  
         ipam:
             config:
               - subnet: 172.16.52.0/24
