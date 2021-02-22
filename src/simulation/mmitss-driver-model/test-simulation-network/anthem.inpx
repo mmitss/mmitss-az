@@ -2573,21 +2573,68 @@
 		<occupancyDistribution mean="1" name="Single Occupancy" no="1" stdDev="0" type="NORMAL"/>
 	</occupancyDistributions>
 	<ptLines>
-		<ptLine anmid="" color="ff00ff12" desSpeedDistr="50" destLink="1" destPos="299.99633818429538" entTmOffset="0" entryLink="4" name="" no="1" sendTele="false" slackTmFrac="1" teleLine="0" teleManDir="0" telePrio="0" teleRout="0" teleVehLen="0" vehType="650">
+		<ptLine anmid="" color="ffbe0000" desSpeedDistr="70" destLink="1" destPos="300.76077150330173" entTmOffset="0" entryLink="4" name="" no="1" sendTele="false" slackTmFrac="1" teleLine="0" teleManDir="0" telePrio="0" teleRout="0" teleVehLen="0" vehType="630">
 			<depTimes>
-				<departureTime dep="70" occup="10" teleCour="0"/>
-				<departureTime dep="150" occup="10" teleCour="0"/>
-				<departureTime dep="300" occup="10" teleCour="0"/>
-				<departureTime dep="450" occup="10" teleCour="0"/>
-				<departureTime dep="600" occup="10" teleCour="0"/>
-				<departureTime dep="750" occup="10" teleCour="0"/>
-				<departureTime dep="900" occup="10" teleCour="0"/>
-				<departureTime dep="1050" occup="10" teleCour="0"/>
-				<departureTime dep="1200" occup="10" teleCour="0"/>
-				<departureTime dep="1350" occup="10" teleCour="0"/>
-				<departureTime dep="1500" occup="10" teleCour="0"/>
-				<departureTime dep="1650" occup="10" teleCour="0"/>
-				<departureTime dep="1800" occup="10" teleCour="0"/>
+				<departureTime dep="50" occup="0" teleCour="0"/>
+				<departureTime dep="110" occup="0" teleCour="0"/>
+				<departureTime dep="170" occup="0" teleCour="0"/>
+				<departureTime dep="230" occup="0" teleCour="0"/>
+				<departureTime dep="290" occup="0" teleCour="0"/>
+				<departureTime dep="350" occup="0" teleCour="0"/>
+				<departureTime dep="410" occup="0" teleCour="0"/>
+				<departureTime dep="470" occup="0" teleCour="0"/>
+				<departureTime dep="530" occup="0" teleCour="0"/>
+				<departureTime dep="590" occup="0" teleCour="0"/>
+				<departureTime dep="650" occup="0" teleCour="0"/>
+				<departureTime dep="710" occup="0" teleCour="0"/>
+				<departureTime dep="770" occup="0" teleCour="0"/>
+				<departureTime dep="830" occup="0" teleCour="0"/>
+				<departureTime dep="890" occup="0" teleCour="0"/>
+				<departureTime dep="950" occup="0" teleCour="0"/>
+				<departureTime dep="1010" occup="0" teleCour="0"/>
+				<departureTime dep="1070" occup="0" teleCour="0"/>
+				<departureTime dep="1130" occup="0" teleCour="0"/>
+				<departureTime dep="1190" occup="0" teleCour="0"/>
+				<departureTime dep="1250" occup="0" teleCour="0"/>
+				<departureTime dep="1310" occup="0" teleCour="0"/>
+				<departureTime dep="1370" occup="0" teleCour="0"/>
+				<departureTime dep="1430" occup="0" teleCour="0"/>
+				<departureTime dep="1490" occup="0" teleCour="0"/>
+				<departureTime dep="1550" occup="0" teleCour="0"/>
+				<departureTime dep="1610" occup="0" teleCour="0"/>
+				<departureTime dep="1670" occup="0" teleCour="0"/>
+				<departureTime dep="1730" occup="0" teleCour="0"/>
+				<departureTime dep="1790" occup="0" teleCour="0"/>
+				<departureTime dep="1850" occup="0" teleCour="0"/>
+				<departureTime dep="1910" occup="0" teleCour="0"/>
+				<departureTime dep="1970" occup="0" teleCour="0"/>
+				<departureTime dep="2030" occup="0" teleCour="0"/>
+				<departureTime dep="2090" occup="0" teleCour="0"/>
+				<departureTime dep="2150" occup="0" teleCour="0"/>
+				<departureTime dep="2210" occup="0" teleCour="0"/>
+				<departureTime dep="2270" occup="0" teleCour="0"/>
+				<departureTime dep="2330" occup="0" teleCour="0"/>
+				<departureTime dep="2390" occup="0" teleCour="0"/>
+				<departureTime dep="2450" occup="0" teleCour="0"/>
+				<departureTime dep="2510" occup="0" teleCour="0"/>
+				<departureTime dep="2570" occup="0" teleCour="0"/>
+				<departureTime dep="2630" occup="0" teleCour="0"/>
+				<departureTime dep="2690" occup="0" teleCour="0"/>
+				<departureTime dep="2750" occup="0" teleCour="0"/>
+				<departureTime dep="2810" occup="0" teleCour="0"/>
+				<departureTime dep="2870" occup="0" teleCour="0"/>
+				<departureTime dep="2930" occup="0" teleCour="0"/>
+				<departureTime dep="2990" occup="0" teleCour="0"/>
+				<departureTime dep="3050" occup="0" teleCour="0"/>
+				<departureTime dep="3110" occup="0" teleCour="0"/>
+				<departureTime dep="3170" occup="0" teleCour="0"/>
+				<departureTime dep="3230" occup="0" teleCour="0"/>
+				<departureTime dep="3290" occup="0" teleCour="0"/>
+				<departureTime dep="3350" occup="0" teleCour="0"/>
+				<departureTime dep="3410" occup="0" teleCour="0"/>
+				<departureTime dep="3470" occup="0" teleCour="0"/>
+				<departureTime dep="3530" occup="0" teleCour="0"/>
+				<departureTime dep="3590" occup="0" teleCour="0"/>
 			</depTimes>
 			<linkSeq>
 				<intObjectRef key="10001"/>
@@ -2692,9 +2739,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10010 1" length="37.238679960251105" name="" no="2" pos="2.7834857295876887" timeFrom="0" timeTo="99999">
@@ -2703,9 +2747,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10007 1" length="37.238679960251105" name="" no="3" pos="1.2014693415625786" timeFrom="0" timeTo="99999">
@@ -2714,9 +2755,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10018 1" length="38.510397049548878" name="" no="4" pos="0" timeFrom="0" timeTo="99999">
@@ -2725,9 +2763,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10016 1" length="14.842382583229107" name="" no="5" pos="0" timeFrom="0" timeTo="99999">
@@ -2736,9 +2771,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10008 1" length="12.09441600741402" name="" no="6" pos="0" timeFrom="0" timeTo="99999">
@@ -2747,9 +2779,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10009 1" length="12.09441600741402" name="" no="7" pos="0" timeFrom="0" timeTo="99999">
@@ -2758,9 +2787,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 		<reducedSpeedArea anmFlag="false" lane="10012 1" length="13.805226919026561" name="" no="8" pos="0" timeFrom="0" timeTo="99999">
@@ -2769,9 +2795,6 @@
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="20"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="30"/>
 				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="70"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="80"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="90"/>
-				<vehClassSpeedReduction decel="2" desSpeedDistr="25" vehClass="100"/>
 			</vehClassSpeedRed>
 		</reducedSpeedArea>
 	</reducedSpeedAreas>
@@ -2907,7 +2930,7 @@
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 2" localNo="0" name="" no="13" pos="344.97795724192872" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 		<signalHead allPedTypes="true" allVehTypes="true" anmFlag="false" complRate="1" dischRecAct="false" isBlockSig="false" lane="14 1" localNo="0" name="" no="14" pos="344.978" sg="1 4" slowDownDist="3" type="CIRCULAR" vAmberBlock="0"/>
 	</signalHeads>
-	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="1800" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
+	<simulation comment="" numCores="1" numRuns="1" randSeed="42" randSeedIncr="1" retroSync="false" simMode="MICRO" simPeriod="3600" simRes="10" simSpeed="1" startTm="0" useAllCores="false" useMaxSimSpeed="false" volumeIncrDynAssign="0"/>
 	<stopSigns>
 		<stopSign anmFlag="false" lane="10 1" name="" no="1" pos="64.898110174619319" sg="1 8"/>
 		<stopSign anmFlag="false" lane="13 1" name="" no="2" pos="52.312491412610171" sg="1 6"/>
@@ -3008,24 +3031,9 @@
 				<intObjectRef key="620"/>
 			</vehTypes>
 		</vehicleClass>
-		<vehicleClass anmid="" color="ff0005ff" name="ConnectedCar" no="70" useVehTypeColor="false">
+		<vehicleClass anmid="" color="ff0005ff" name="ConnectedVehicle" no="70" useVehTypeColor="false">
 			<vehTypes>
 				<intObjectRef key="630"/>
-			</vehTypes>
-		</vehicleClass>
-		<vehicleClass anmid="" color="fffffe00" name="ConnectedTruck" no="80" useVehTypeColor="false">
-			<vehTypes>
-				<intObjectRef key="640"/>
-			</vehTypes>
-		</vehicleClass>
-		<vehicleClass anmid="" color="ff00ff2f" name="ConnectedTransit" no="90" useVehTypeColor="false">
-			<vehTypes>
-				<intObjectRef key="650"/>
-			</vehTypes>
-		</vehicleClass>
-		<vehicleClass anmid="" color="ffff0000" name="ConnectedEmergency" no="100" useVehTypeColor="false">
-			<vehTypes>
-				<intObjectRef key="660"/>
 			</vehTypes>
 		</vehicleClass>
 	</vehicleClasses>
@@ -3215,31 +3223,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="ConnectedCar" no="630" occupDistr="1" travTmCoeff="1">
-			<parkLotSelPars>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC1" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
-			</parkLotSelPars>
-		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTmPT="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="ConnectedTruck" no="640" powerDistr="2" travTmCoeff="1" weightDistr="2">
-			<parkLotSelPars>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC1" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
-			</parkLotSelPars>
-		</vehicleType>
-		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTmPT="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelTransit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="ConnectedTransit" no="650" occupDistr="1" travTmCoeff="1">
-			<parkLotSelPars>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC1" distFromDestM="0" genCost="0" parkFee="0"/>
-				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
-			</parkLotSelPars>
-		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelEmergency.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="20" name="ConnectedEmergency" no="660" occupDistr="1" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\ConnectedVehicle.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="30" name="ConnectedVehicle" no="630" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
