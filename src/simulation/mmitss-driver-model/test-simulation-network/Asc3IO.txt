@@ -1,0 +1,576 @@
+Detector 1
+Detector 2
+Detector 3
+Detector 4
+Detector 5
+Detector 6
+Detector 7
+Detector 8
+Detector 9  (XD 1)
+Detector 10 (XD 2)
+Detector 11 (XD 3)
+Detector 12 (XD 4)
+Detector 13 (XD 5)
+Detector 14 (XD 6)
+Detector 15 (XD 7)
+Detector 16 (XD 8)
+Detector 17 (SD A1)
+Detector 18 (SD A2)
+Detector 19 (SD B1)
+Detector 20 (SD B2)
+Detector 21 (SD C1)
+Detector 22 (SD C2)
+Detector 23 (SD D1)
+Detector 24 (SD D2)
+Detector 25
+Detector 26
+Detector 27
+Detector 28
+Detector 29
+Detector 30
+Detector 31
+Detector 32
+Detector 33
+Detector 34
+Detector 35
+Detector 36
+Detector 37
+Detector 38
+Detector 39
+Detector 40
+Detector 41
+Detector 42
+Detector 43
+Detector 44
+Detector 45
+Detector 46
+Detector 47
+Detector 48
+Detector 49
+Detector 50
+Detector 51
+Detector 52
+Detector 53
+Detector 54
+Detector 55
+Detector 56
+Detector 57
+Detector 58
+Detector 59
+Detector 60
+Detector 61
+Detector 62
+Detector 63
+Detector 64
+Ped Detector 1
+Ped Detector 2
+Ped Detector 3
+Ped Detector 4
+Ped Detector 5
+Ped Detector 6
+Ped Detector 7
+Ped Detector 8
+Ped Detector 9
+Ped Detector 10
+Ped Detector 11
+Ped Detector 12
+Ped Detector 13
+Ped Detector 14
+Ped Detector 15
+Ped Detector 16
+Phase  1 Hold
+Phase  2 Hold
+Phase  3 Hold
+Phase  4 Hold
+Phase  5 Hold
+Phase  6 Hold
+Phase  7 Hold
+Phase  8 Hold
+Phase  9 Hold
+Phase 10 Hold
+Phase 11 Hold
+Phase 12 Hold
+Phase 13 Hold
+Phase 14 Hold
+Phase 15 Hold
+Phase 16 Hold
+Phase  1 Omit
+Phase  2 Omit
+Phase  3 Omit
+Phase  4 Omit
+Phase  5 Omit
+Phase  6 Omit
+Phase  7 Omit
+Phase  8 Omit
+Phase  9 Omit
+Phase 10 Omit
+Phase 11 Omit
+Phase 12 Omit
+Phase 13 Omit
+Phase 14 Omit
+Phase 15 Omit
+Phase 16 Omit
+Ped Omit Phase 1
+Ped Omit Phase 2
+Ped Omit Phase 3
+Ped Omit Phase 4
+Ped Omit Phase 5
+Ped Omit Phase 6
+Ped Omit Phase 7
+Ped Omit Phase 8
+Ped Omit Phase 9
+Ped Omit Phase 10
+Ped Omit Phase 11
+Ped Omit Phase 12
+Ped Omit Phase 13
+Ped Omit Phase 14
+Ped Omit Phase 15
+Ped Omit Phase 16
+Inhibit Max Term      (R1)
+Max 2 Selection       (R1)
+Max 3 Selection       (R1)
+Omit Red Clear        (R1)
+Red Rest              (R1)
+Ped Recycle           (R1)
+Force Off             (R1)
+Stop Time             (R1)
+Inhibit Max Term      (R2)
+Max 2 Selection       (R2)
+Max 3 Selection       (R2)
+Omit Red Clear        (R2)
+Red Rest              (R2)
+Ped Recycle           (R2)
+Force Off             (R2)
+Stop Time             (R2)
+Inhibit Max Term      (R3)
+Max 2 Selection       (R3)
+Max 3 Selection       (R3)
+Omit Red Clear        (R3)
+Red Rest              (R3)
+Ped Recycle           (R3)
+Force Off             (R3)
+Stop Time             (R3)
+Inhibit Max Term      (R4)
+Max 2 Selection       (R4)
+Max 3 Selection       (R4)
+Omit Red Clear        (R4)
+Red Rest              (R4)
+Ped Recycle           (R4)
+Force Off             (R4)
+Stop Time             (R4)
+Test A
+Test B
+Test C
+Test D
+Test E
+I/O Mode Bit A
+I/O Mode Bit B
+I/O Mode Bit C
+Cycle Bit 1 / TP Bit A
+Cycle Bit 2 / TP Bit B
+Cycle Bit 3
+Offset Bit 1
+Offset Bit 2
+Offset Bit 3
+Split Bit 1 / TP Bit C
+Split Bit 2 / TP Bit D
+Address Bit 0
+Address Bit 1
+Address Bit 2
+Address Bit 3
+Address Bit 4
+Track Switch Fail
+Ind. Lamp Control
+External Start
+Automatic (Remote) Flash
+Flash Status/Local Flash
+MMU Status/CMU Flash
+MMU (CMU) Stop Time
+External Time Reset
+TBC On Line
+Dimming Enable
+IM Power Sense 
+Coordinator Sync
+TLM Extern Address Enable
+TLM Maintenance Required
+Disable Pretimed Operation
+*** Undefined ***
+*** Undefined ***
+TLM Spare Input 1
+TLM Spare Input 2
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Alarm 1
+Alarm 2
+Alarm 3
+Alarm 4
+Alarm 5
+Alarm 6
+Alarm 7
+Alarm 8
+Alarm 9
+Alarm 10
+Alarm 11
+Alarm 12
+Alarm 13
+Alarm 14
+Alarm 15
+Alarm 16
+Call Non-Act I        (C1)
+Call Non-Act II       (C1)
+Walk-Rest Modifier    (C1)
+Minimum Recall        (C1)
+Interval Advance      (C1)
+Manual Control Enable (C1)
+Stop Time All Rings   (C1)
+Phase Next in RX      (C1)
+Coordinator Free      (C1)
+Split Demand 1        (C1)
+Split Demand 2        (C1)
+Dual Coordination     (C1)
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Call Non-Act I        (C2)
+Call Non-Act II       (C2)
+Walk-Rest Modifier    (C2)
+Minimum Recall        (C2)
+Interval Advance      (C2)
+Manual Control Enable (C2)
+Stop Time All Rings   (C2)
+Phase Next in RX      (C2)
+Coordinator Free      (C2)
+Split Demand 1        (C2)
+Split Demand 2        (C2)
+Dual Coordination     (C2)
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Call Non-Act I        (C3)
+Call Non-Act II       (C3)
+Walk-Rest Modifier    (C3)
+Minimum Recall        (C3)
+Interval Advance      (C3)
+Manual Control Enable (C3)
+Stop Time All Rings   (C3)
+Phase Next in RX      (C3)
+Coordinator Free      (C3)
+Split Demand 1        (C3)
+Split Demand 2        (C3)
+Dual Coordination     (C3)
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Call Non-Act I        (C4)
+Call Non-Act II       (C4)
+Walk-Rest Modifier    (C4)
+Minimum Recall        (C4)
+Interval Advance      (C4)
+Manual Control Enable (C4)
+Stop Time All Rings   (C4)
+Phase Next in RX      (C4)
+Coordinator Free      (C4)
+Split Demand 1        (C4)
+Split Demand 2        (C4)
+Dual Coordination     (C4)
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Preempt  1 Call
+Preempt  2 Call
+Preempt  3 Call
+Preempt  4 Call
+Preempt  5 Call
+Preempt  6 Call
+Preempt  7 Call
+Preempt  8 Call
+Preempt  9 Call
+Preempt 10 Call
+TSP Check-Out Detector 1
+TSP Check-Out Detector 2
+TSP Check-Out Detector 3
+TSP Check-Out Detector 4
+TSP Check-Out Detector 5
+TSP Check-Out Detector 6
+KBD Locked Preempt  1 Call
+KBD Locked Preempt  2 Call
+KBD Locked Preempt  3 Call
+KBD Locked Preempt  4 Call
+KBD Locked Preempt  5 Call
+KBD Locked Preempt  6 Call
+KBD Locked Preempt  7 Call
+KBD Locked Preempt  8 Call
+KBD Locked Preempt  9 Call
+KBD Locked Preempt 10 Call
+TSP Check-In Detector 1
+TSP Check-In Detector 2
+TSP Check In Detector 3
+TSP Check In Detector 4
+TSP Check In Detector 5
+TSP Check In Detector 6
+Preempt  1 Gate Down
+Preempt  2 Gate Down
+Preempt  3 Gate Down
+Preempt  4 Gate Down
+Preempt  5 Gate Down
+Preempt  6 Gate Down
+Preempt  7 Gate Down
+Preempt  8 Gate Down
+Preempt  9 Gate Down
+Preempt 10 Gate Down
+Reserved (OFF)
+Not Assigned (OFF)
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Preempt  1 Interlock
+Preempt  2 Interlock
+Preempt  3 Interlock
+Preempt  4 Interlock
+Preempt  5 Interlock
+Preempt  6 Interlock
+Preempt  7 Interlock
+Preempt  8 Interlock
+Preempt  9 Interlock
+Preempt 10 Interlock
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Phase  1 Vehicle Call
+Phase  2 Vehicle Call
+Phase  3 Vehicle Call
+Phase  4 Vehicle Call
+Phase  5 Vehicle Call
+Phase  6 Vehicle Call
+Phase  7 Vehicle Call
+Phase  8 Vehicle Call
+Phase  9 Vehicle Call
+Phase 10 Vehicle Call
+Phase 11 Vehicle Call
+Phase 12 Vehicle Call
+Phase 13 Vehicle Call
+Phase 14 Vehicle Call
+Phase 15 Vehicle Call
+Phase 16 Vehicle Call
+Phase  1 Pedestrian Call
+Phase  2 Pedestrian Call
+Phase  3 Pedestrian Call
+Phase  4 Pedestrian Call
+Phase  5 Pedestrian Call
+Phase  6 Pedestrian Call
+Phase  7 Pedestrian Call
+Phase  8 Pedestrian Call
+Phase  9 Pedestrian Call
+Phase 10 Pedestrian Call
+Phase 11 Pedestrian Call
+Phase 12 Pedestrian Call
+Phase 13 Pedestrian Call
+Phase 14 Pedestrian Call
+Phase 15 Pedestrian Call
+Phase 16 Pedestrian Call
+Phase  1 Bike Call
+Phase  2 Bike Call
+Phase  3 Bike Call
+Phase  4 Bike Call
+Phase  5 Bike Call
+Phase  6 Bike Call
+Phase  7 Bike Call
+Phase  8 Bike Call
+Phase  9 Bike Call
+Phase 10 Bike Call
+Phase 11 Bike Call
+Phase 12 Bike Call
+Phase 13 Bike Call
+Phase 14 Bike Call
+Phase 15 Bike Call
+Phase 16 Bike Call
+Database CRC Bit 0
+Database CRC Bit 1
+Database CRC Bit 2
+Database CRC Bit 3
+Database CRC Bit 4
+Database CRC Bit 5
+Database CRC Bit 6
+Database CRC Bit 7
+Database CRC Bit 8
+Database CRC Bit 9
+Database CRC Bit 10
+Database CRC Bit 11
+Database CRC Bit 12
+Database CRC Bit 13
+Database CRC Bit 14
+Database CRC Bit 15
+Sequence A
+Sequence B
+Sequence C
+Sequence D
+Sequence E
+Timing Plan Bit A
+Timing Plan Bit B
+Timing Plan Bit C
+*** Undefined ***
+Enable IDOT 5 Sec Head Ctl
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Ped 2 Detector 1
+Ped 2 Detector 2
+Ped 2 Detector 3
+Ped 2 Detector 4
+Ped 2 Detector 5
+Ped 2 Detector 6
+Ped 2 Detector 7
+Ped 2 Detector 8
+Ped 2 Detector 9
+Ped 2 Detector 10
+Ped 2 Detector 11
+Ped 2 Detector 12
+Ped 2 Detector 13
+Ped 2 Detector 14
+Ped 2 Detector 15
+Ped 2 Detector 16
+28 0   448  Overlap A Terminate Now
+28 1   449  Overlap B Terminate Now
+28 2   450  Overlap C Terminate Now
+28 3   451  Overlap D Terminate Now
+28 4   452  Overlap E Terminate Now
+28 5   453  Overlap F Terminate Now
+28 6   454  Overlap G Terminate Now
+28 7   455  Overlap H Terminate Now
+28 8   456  Overlap I Terminate Now
+28 9   457  Overlap J Terminate Now
+28 10  458  Overlap K Terminate Now
+28 11  459  Overlap L Terminate Now
+28 12  460  Overlap M Terminate Now
+28 13  461  Overlap N Terminate Now
+28 14  462  Overlap O Terminate Now
+28 15  463  Overlap P Terminate Now
+Overlap A Omit
+Overlap B Omit
+Overlap C Omit
+Overlap D Omit
+Overlap E Omit
+Overlap F Omit
+Overlap G Omit
+Overlap H Omit
+Overlap I Omit
+Overlap J Omit
+Overlap K Omit
+Overlap L Omit
+Overlap M Omit
+Overlap N Omit
+Overlap O Omit
+Overlap P Omit
+Preempt  1 Low Priority Call
+Preempt  2 Low Priority Call
+Preempt  3 Low Priority Call
+Preempt  4 Low Priority Call
+Preempt  5 Low Priority Call
+Preempt  6 Low Priority Call
+Preempt  7 Low Priority Call
+Preempt  8 Low Priority Call
+Preempt  9 Low Priority Call
+Preempt 10 Low Priority Call
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Veh Detector Plan Bit A
+Veh Detector Plan Bit B
+Veh Detector Plan Bit C
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Veh Detector Diag Plan Bit A
+Veh Detector Diag Plan Bit B
+Veh Detector Diag Plan Bit C
+Ped Detector Diag Plan Bit A
+Ped Detector Diag Plan Bit B
+Ped Detector Diag Plan Bit C
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+Ped Extend Detector  1
+Ped Extend Detector  2
+Ped Extend Detector  3
+Ped Extend Detector  4
+Ped Extend Detector  5
+Ped Extend Detector  6
+Ped Extend Detector  7
+Ped Extend Detector  8
+Ped Extend Detector  9
+Ped Extend Detector 10
+Ped Extend Detector 11
+Ped Extend Detector 12
+Ped Extend Detector 13
+Ped Extend Detector 14
+Ped Extend Detector 15
+Ped Extend Detector 16
+Red Extend Detector 1
+Red Extend Detector 2
+Red Extend Detector 3
+Red Extend Detector 4
+Red Extend Detector 5
+Red Extend Detector 6
+Red Extend Detector 7
+Red Extend Detector 8
+Red Extend Detector 9
+Red Extend Detector 10
+Red Extend Detector 11
+Red Extend Detector 12
+Red Extend Detector 13
+Red Extend Detector 14
+Red Extend Detector 15
+Red Extend Detector 16
+Ped 2 Call 1
+Ped 2 Call 2
+Ped 2 Call 3
+Ped 2 Call 4
+Ped 2 Call 5
+Ped 2 Call 6
+Ped 2 Call 7
+Ped 2 Call 8
+Ped 2 Call 9
+Ped 2 Call 10
+Ped 2 Call 11
+Ped 2 Call 12
+Ped 2 Call 13
+Ped 2 Call 14
+Ped 2 Call 15
+Ped 2 Call 16
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***
+*** Undefined ***

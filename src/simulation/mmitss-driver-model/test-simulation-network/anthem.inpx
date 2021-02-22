@@ -3032,7 +3032,7 @@
 	<vehicleCompositions>
 		<vehicleComposition name="Default" no="1">
 			<vehCompRelFlows>
-				<vehicleCompositionRelativeFlow desSpeedDistr="60" relFlow="1" vehType="630"/>
+				<vehicleCompositionRelativeFlow desSpeedDistr="60" relFlow="1" vehType="100"/>
 			</vehCompRelFlows>
 		</vehicleComposition>
 	</vehicleCompositions>
@@ -3215,7 +3215,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="ConnectedCar" no="630" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelPassenger.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="10" name="ConnectedCar" no="630" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3223,7 +3223,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTmPT="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="ConnectedTruck" no="640" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="HGV" clearTmPT="0" colorDistr1="1" desAccelFunc="2" desDecelFunc="2" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelTruck.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="2" maxDecelFunc="2" model2D3DDistr="20" name="ConnectedTruck" no="640" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3231,7 +3231,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTmPT="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelTransit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="ConnectedTransit" no="650" occupDistr="1" travTmCoeff="1">
+		<vehicleType alightTm="1" anmFlag="false" boardTm="2" capExact="false" capacity="110" category="BUS" clearTmPT="8" colorDistr1="1" desAccelFunc="3" desDecelFunc="3" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelTransit.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="3" maxDecelFunc="3" model2D3DDistr="30" name="ConnectedTransit" no="650" occupDistr="1" travTmCoeff="1">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
@@ -3239,7 +3239,7 @@
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="ROUTEGUIDANCETACTIC2" distFromDestM="0" genCost="0" parkFee="0"/>
 			</parkLotSelPars>
 		</vehicleType>
-		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="#data#mmitss_simulation\driver_models\M_DriverModelEmergency.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="20" name="ConnectedEmergency" no="660" occupDistr="1" powerDistr="2" travTmCoeff="1" weightDistr="2">
+		<vehicleType alightTm="0" anmFlag="false" boardTm="0" capExact="false" capacity="0" category="CAR" clearTmPT="0" colorDistr1="1" desAccelFunc="1" desDecelFunc="1" distCoeffPerMeter="0" doorClosDur="2" dwellTmIsAdd="true" equip="" extDriver="true" extDriverDLLFile="C:\Users\MMITSS\Desktop\repo\mmitss\src\simulation\mmitss-driver-model\driver-model\x64\Release\M_DriverModelEmergency.dll" extDriverParFile="" extEmissionDLLFile="" linkCostCoeff="1" maxAccelFunc="1" maxDecelFunc="1" model2D3DDistr="20" name="ConnectedEmergency" no="660" occupDistr="1" powerDistr="2" travTmCoeff="1" weightDistr="2">
 			<parkLotSelPars>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DEPARTUREFROMPARKINGLOT" distFromDestM="0" genCost="0" parkFee="0"/>
 				<parkingLotSelectionParameters attrac="0" avail="0" decSituation="DYNAMICROUTINGDECISION" distFromDestM="0" genCost="0" parkFee="0"/>
