@@ -17,4 +17,6 @@ To stop the running containers created via the docker-compose, simply press `ctr
 docker-compose -f build/docker-compose/simulation/<corridor name>/docker-compose.yml down
 ```
 
+# IMPORTANT
+
 While running MMITSS applications in the server-based deployment model, it is necessary to ensure unwavering network connection between intersection signal controller and the server running docker-compose. Also, it is recommended to set the `NTCIP Backup Time` of signal controllers to smaller values such as **5 seconds** to prevent any undesired effects caused due to network disruptions.
