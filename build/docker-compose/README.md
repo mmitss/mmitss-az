@@ -17,7 +17,7 @@ docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         TX packets 11  bytes 1366 (1.3 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-**enp0s31f6**: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+`**`enp0s31f6`**`: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 10.12.6.252  netmask 255.255.255.0  broadcast 10.12.6.255
         inet6 fe80::b417:3aa0:cfac:74fc  prefixlen 64  scopeid 0x20<link>
         ether 64:00:6a:7d:15:c5  txqueuelen 1000  (Ethernet)
