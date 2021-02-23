@@ -1,8 +1,8 @@
 # docker-compose
 
 This directory is a warehouse of docker-compose files customized for two types of deployment environments:
-- Server-based deployment
-- Simulation deployment
+- Server-based deployment, where containers of multiple intersection run on a single machine.
+- Simulation deployment, where containers of multiple simulated intersections, along with a container hosting simulation tools run on a single machine.
 
 To use any of the available docker-compose files under this directory, following environment variables must be added to the ~/.bashrc file:
 1. MMITSS_ROOT: Local path of the directory where the mmitss-az git repository is cloned.
@@ -45,3 +45,8 @@ wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         TX packets 168502  bytes 28321239 (28.3 MB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 </pre>
+3. PROCESSOR: The architecture of the processor. This should take either of the following values:
+    - arm
+    - x86
+
+Above requirements can be automatically satisfied by using the `lmmitss-initialize.sh` script located in the `mmitss/scripts` directory.
