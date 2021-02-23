@@ -1,4 +1,4 @@
-# docker-compose/simulation
+# Docker Compose files for simulation deployment
 
 This directory consists of a dedicated subdirectory for each corridor, where a docker-compose file pertaining to that corridor is located. The simulation docker-compose files do not need any prebuilt docker image, as it builds the required docker image on the go. For building docker images, following dockerfiles are used depending upon the processor architecture:
 - ARM: mmitss/build/dockerfiles/arm/Dockerfile.mrp-simulation and mmitss/build/dockerfiles/arm/Dockerfile.simulation-tools
@@ -17,8 +17,8 @@ docker-compose -f build/docker-compose/simulation/<corridor name>/docker-compose
 ```
 
 Above commands launch following types of containers, and display their console output in the foreground:
-1. A dedicated container for each intersection within the corridor
-2. A container that hosts simulation specific applications (i.e., MessageDistributor, SimulatedBsmBlobProcessor, and PriorityRequestGeneratorServer)
+- A dedicated container for each intersection within the corridor
+- A container that hosts simulation specific applications (i.e., MessageDistributor, SimulatedBsmBlobProcessor, and PriorityRequestGeneratorServer)
 
 To stop the running containers created via the docker-compose, simply press `ctrl+c` in the terminal where the output of docker-compose is being shown. After stopping the running containers, to remove the macvlan network created by the docker-compose file, run the following command:
 ```
