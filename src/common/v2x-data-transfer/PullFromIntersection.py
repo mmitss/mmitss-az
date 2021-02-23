@@ -10,11 +10,31 @@ import pysftp
 from V2XDataTransfer import V2XDataTransfer
 
 class PullFromIntersection(V2XDataTransfer):
+    """
+    provides method to pull the dat a from multiple intersections and store it in local directories.
+    This class is intended to be deployed on the server side.
+    """
     def __init__(self, serverDataDirectory:str, intersectionList:str):
+        
+        # Initialize the parent class
         super().__init__(serverDataDirectory, intersectionList)
+        
+        # Verify and create the expected directory structure on the local machine
         self.verify_or_create_local_directory_structure()
 
     def verify_or_create_local_directory_structure(self):
+        """
+        verifies if the correct directory structure is available locally to store files pertaining to all 
+        data elements from all intersections. The directory structure would look like the following:
+        - RootDataDirectory
+            - Intersection-1
+                - msgCount
+                - remoteBsm
+                - spat
+                - srm
+                - ssm
+        """
+
         # Check if directory structure exists for listed intersections. If not, create the required folders:
         for intersection in self.intersectionList:
             intersectionDirectory = self.serverDataDirectory + "/" + intersection["name"]
@@ -24,21 +44,28 @@ class PullFromIntersection(V2XDataTransfer):
                     os.makedirs(dataElementDirectory)
 
     def transfer_data(self):
+        """
+        transfers the data from multiple intersections and stores them locally (pull from intersections)
+        """
         # For each intersection (remote machine):
         for intersection in self.intersectionList:
             try:
                 # Establish an SFTP connection
                 with pysftp.Connection(intersection["ip_address"], username=intersection["username"], password=intersection["password"]) as sftp:
                     try:
+                        
                         # On remote machine, change the working directory to v2x-data/archive
                         with sftp.cd(intersection["v2x-data_location"] + "/archive/"):
+                            
                             # List archived directories
                             remoteArchivedDirectories = sftp.listdir()
                             
                             # For each archived directory:
                             for directory in remoteArchivedDirectories:
+                               
                                 # On remote machine, change the working directory to v2x-data/archive/archivedDirectory
                                 with sftp.cd(intersection["v2x-data_location"] + "/archive/" + directory):
+                                    
                                     # List all files available in the directory
                                     dataFiles = sftp.listdir()
                                     
@@ -53,13 +80,16 @@ class PullFromIntersection(V2XDataTransfer):
                                     for dataElement in self.dataElements:
                                         # If the file exists:
                                         if not self.dataElementFiles[dataElement] == None:
+                                            
                                             # Set the local path where file needs to be transferred:
                                             localpath=self.serverDataDirectory + "/" + intersection["name"] + "/" + dataElement + "/" + self.dataElementFiles[dataElement]
+                                            
                                             # Transfer the file from the remote machine to the local path defined in previous step
                                             sftp.get(self.dataElementFiles[dataElement], localpath=localpath)
                                 
                                 # Reset the "dataElementFiles" files dictionary 
                                 self.dataElementFiles = {"spat" : None, "srm": None, "remoteBsm": None, "ssm": None, "msgCount": None}
+                                
                                 # Remove the data directory from the remote machine
                                 sftp.rmdir(intersection["v2x-data_location"] + "/archive/" + directory)
                     
@@ -73,24 +103,6 @@ class PullFromIntersection(V2XDataTransfer):
             except: print("Failed to establish SFTP connection with " + intersection["name"] + " at: " + str(datetime.datetime.now()))
 
 if __name__=="__main__":
-    """
-    UNIT TEST MENU:
-    1. Verify or create the directory structure:
-    """
-    TESTS = [1]
-
-    configFilename = "test/v2x-data-transfer-config.json"
-    with open(configFilename, 'r') as configFile:
-        config = json.load(configFile)
-
-    pullFromIntersection = PullFromIntersection(config["server"], config["intersections"])
-
-    for testId in TESTS:
-        if testId == 1:
-            try:
-                pullFromIntersection.verify_or_create_local_directory_structure()
-                print("Test#" + str(testId) + " successful!")
-            except:
-                print("Test#" + str(testId) + " failed!")
+    pass
             
 

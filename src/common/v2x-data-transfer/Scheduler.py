@@ -66,7 +66,7 @@ if __name__ == "__main__":
     args = "hi", "hello"
 
     scheduler = Scheduler()
-    scheduler.schedule_daily_execution(func, args, startHour, startMinute)
+    scheduler.schedule_daily_execution(func, startHour, startMinute)
     while True: time.sleep(3600)
 
 

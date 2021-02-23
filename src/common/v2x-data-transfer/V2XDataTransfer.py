@@ -5,6 +5,10 @@ from abc import ABC, abstractmethod
 import sh
 
 class V2XDataTransfer(ABC):
+    """
+    an abstract class defining a structure for inherited classes, where each child class would be responsinble
+    for performing certain kind of data transfer
+    """
     def __init__(self, server:dict, intersectionList:list):
         self.serverDataDirectory = server["data_directory"]
         self.intersectionList = intersectionList
@@ -14,6 +18,9 @@ class V2XDataTransfer(ABC):
 
     @abstractmethod
     def transfer_data(self):
+        """
+        this method will depend on the desired type of data transfer
+        """
         pass
 
 if __name__=="__main__":

@@ -11,40 +11,89 @@ import pysftp
 from V2XDataTransfer import V2XDataTransfer
 
 class PushToServer(V2XDataTransfer):
+    """
+    provides method for transfering the data from the intersection to the server.
+    This class is intended to be deployed on intersections.
+    """
     def __init__(self, server:dict, intersectionList:str):
+        
+        # Initialize the parent class
         super().__init__(server, intersectionList)
+        
+        # Store the configuration information
         self.name = self.intersectionList[0]["name"]
         self.v2xDataLocation = self.intersectionList[0]["v2x-data_location"]
         self.serverIpAddress = server["ip_address"]
         self.serverUsername = server["username"]
         self.serverPassword = server["password"]
+
+        # Disable host key verification
         self.cnopts = pysftp.CnOpts()
         self.cnopts.hostkeys = None 
+
+        # Create the directory structure on the remote machine if it does not exist:
         self.verify_or_create_remote_directory_structure()
 
 
     def verify_or_create_remote_directory_structure(self):
+        """
+        verifies if the correct directory structure is available on the server to store files 
+        pertaining to all data elements. The directory structure would look like the following:
+        - RootDataDirectory
+            - Intersection-1
+                - msgCount
+                - remoteBsm
+                - spat
+                - srm
+                - ssm
+        """
+
+        # Get the location of the data directory on the remote machine pertaining to the intection
+        # using the information obtained from the configuration
         intersectionDirectory = self.serverDataDirectory + "/" + self.name
-        # Establish an SFTP connection
+        
         try:
+            # Establish an SFTP connection
             with pysftp.Connection(self.serverIpAddress, username=self.serverUsername, password=self.serverPassword, cnopts=self.cnopts) as sftp:
+                
+                # For each data element:
                 for dataElement in self.dataElements:
+                    
+                    # Create the name of the data directory:
                     dataElementDirectory = intersectionDirectory + "/" + dataElement
+                    
+                    # If the directory does not exists:
                     if not sftp.exists(dataElementDirectory):
+                        
+                        # Create the directory on the local machine (alllows recursion)
                         sftp.makedirs(dataElementDirectory)
+
         except Exception as e:
+            # If something is unsuccessful, print the message to the console
             print(e)
 
 
     def transfer_data(self):
+        """
+        from each of the data directories archived on the host machine, transfers the files to their 
+        respective remote paths using SFTP.
+
+        NOTE: Host key verification is disabled here -> could be seen as a security risk
+        """
+
+        # Formulate the archive directory path
         dataArchivePath = self.v2xDataLocation + "/archive"
+        
+        # Change the working directory to the archive directory
         os.chdir(dataArchivePath)
 
+        # Get the list of all archived directories
         localArchivedDirectories = os.listdir()
         try:
             # Establish an SFTP connection
             with pysftp.Connection(self.serverIpAddress, username=self.serverUsername, password=self.serverPassword, cnopts=self.cnopts) as sftp:
-                # For each archived directory:
+                
+                # For each archived directory on the host machine:
                 for directory in localArchivedDirectories:
                     try:
                         # On local machine, change the working directory to v2x-data/archive/archivedDirectory
@@ -66,19 +115,19 @@ class PushToServer(V2XDataTransfer):
                             if not self.dataElementFiles[dataElement] == None:
                                 # Set the remote path where file needs to be transferred:
                                 remotepath=self.serverDataDirectory + "/" + self.name + "/" + dataElement + "/" + self.dataElementFiles[dataElement]
-                                # Transfer the file from the remote machine to the local path defined in previous step
+                                # Transfer the file from the host machine to the remote path defined in previous step
                                 sftp.put(self.dataElementFiles[dataElement],remotepath=remotepath)
                     
-                        # Reset the "dataElementFiles" files dictionary 
+                        # Reset the "dataElementFiles" dictionary 
                         self.dataElementFiles = {"spat" : None, "srm": None, "remoteBsm": None, "ssm": None, "msgCount": None}
                     
                         # Change working directory to original working directory:
                         os.chdir(self.workingDirectory)
 
-                        # Remove the data directory from the remote machine
+                        # Remove the data directory from the host machine
                         shutil.rmtree((self.v2xDataLocation + "/archive/" + directory))
         
-                    # If the v2x-data/archive directory can not be found on the remote machine, print the error message to the console
+                    # If the v2x-data/archive/directory can not be found on the host machine, print the error message to the console
                     except Exception as e: 
                         print("Failed to transfer data from " + directory+ " at:" + str(datetime.datetime.now()))    
                         print(e)
@@ -89,9 +138,4 @@ class PushToServer(V2XDataTransfer):
         except: print("Failed to establish SFTP connection with server " + self.serverIpAddress + " at: " + str(datetime.datetime.now()))
 
 if __name__ == "__main__":
-    configFilename = "test/v2x-data-transfer-config.json"
-    with open(configFilename, 'r') as configFile:
-        config = json.load(configFile)
-
-    pushToServer = PushToServer(config["server"], config["intersections"])
-    pushToServer.transfer_data()
+    pass
