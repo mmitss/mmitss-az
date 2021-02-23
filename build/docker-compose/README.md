@@ -7,7 +7,7 @@ This directory is a warehouse of docker-compose files customized for two types o
 To use any of the available docker-compose files under this directory, following environment variables must be added to the ~/.bashrc file:
 1. MMITSS_ROOT: Local path of the directory where the mmitss-az git repository is cloned.
 2. MMITSS_NETWORK_ADAPTER: Name of the network adapter that will be used by MMITSS containers. This can be obtained from running command `ifconfig` in the console. For example, an output of the `ifconfig` command is shown below, where the name of the network adapter is highlighted with bold text.
-```
+<pre>
 docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
         inet6 fe80::42:61ff:fe79:ad2  prefixlen 64  scopeid 0x20<link>
@@ -17,7 +17,7 @@ docker0: flags=4099<UP,BROADCAST,MULTICAST>  mtu 1500
         TX packets 11  bytes 1366 (1.3 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-<pre><b>enp0s31f6</b>: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500,</pre>
+<b>enp0s31f6</b>: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500,
         inet 10.12.6.252  netmask 255.255.255.0  broadcast 10.12.6.255
         inet6 fe80::b417:3aa0:cfac:74fc  prefixlen 64  scopeid 0x20<link>
         ether 64:00:6a:7d:15:c5  txqueuelen 1000  (Ethernet)
@@ -44,5 +44,4 @@ wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 168502  bytes 28321239 (28.3 MB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
-
-```
+</pre>
