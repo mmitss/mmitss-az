@@ -72,17 +72,16 @@ class Scheduler:
 
 
 if __name__ == "__main__":
-    def dummy_function(str1:str, str2:str):
+    def dummy_function():
         """
-        takes two strings as arguments and simply prints them.
+        prints a string
         """
-        print(str1, str2)
+        print("hello")
 
     startHour = 7
     startMinute = 31
 
     func = dummy_function
-    args = "hi", "hello"
 
     scheduler = Scheduler()
     scheduler.schedule_daily_execution(func, startHour, startMinute)
