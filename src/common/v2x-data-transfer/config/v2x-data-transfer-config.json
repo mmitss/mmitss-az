@@ -6,10 +6,7 @@
 	{
 		"server":
 		{
-			"data_directory": "/home/nvaltekar/Desktop",
-			"ip_address": "127.0.0.1",
-			"username": "nvaltekar",
-			"password": "Vasandhya!982"
+			"data_directory": "/home/nvaltekar/Desktop"
 		},
 		"intersection": 
 		[

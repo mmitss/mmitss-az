@@ -29,8 +29,6 @@ from PushToServer import PushToServer
 from Scheduler import Scheduler
 
 # Define constants
-DEBUGGING_ROADSIDE = False
-DEBUGGING_SERVER = False
 SLEEP_TIME_SEC = 3600
 
 def get_roadside_config(config:dict):
@@ -81,16 +79,8 @@ def get_server_cyverse_push_config(config:dict):
 if __name__=="__main__":
 
     # Select appropriate configuration file:
-    if DEBUGGING_ROADSIDE and DEBUGGING_ROADSIDE:
-        print("Invalid debugging configuration!")
-        exit()
-    elif DEBUGGING_ROADSIDE: 
-        configFilename = "test/mmitss-phase3-master-config-roadside.json"
-    elif DEBUGGING_SERVER:
-        configFilename = "test/mmitss-phase3-master-config-server.json"
-    else: 
-        configFilename = "/nojournal/bin/mmitss-phase3-master-config.json"
-    
+    configFilename = "test/v2x-data-transfer-config.json"
+
     # Open the configuration file and read it's contents into a dictionary
     with open(configFilename, 'r') as configFile:
         config = json.load(configFile)
