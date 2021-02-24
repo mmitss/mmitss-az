@@ -39,8 +39,8 @@ def get_roadside_config(config:dict):
     try:
         server = config["DataTransfer"]["server"]
         intersection = config["DataTransfer"]["intersection"]
-        startHour = config["DataTransfer"]["StartTime"]["hour"]
-        startMinute = config["DataTransfer"]["StartTime"]["minute"]
+        startHour = config["DataTransfer"]["StartTime_ToServer"]["hour"]
+        startMinute = config["DataTransfer"]["StartTime_ToServer"]["minute"]
         return server, intersection, startHour, startMinute
     except Exception as e:
         print(e)
