@@ -39,8 +39,8 @@ def get_roadside_config(config:dict):
     try:
         server = config["DataTransfer"]["server"]
         intersection = config["DataTransfer"]["intersection"]
-        startHour = config["DataTransfer"]["StartTime_ToServer"]["hour"]
-        startMinute = config["DataTransfer"]["StartTime_ToServer"]["minute"]
+        startHour = config["DataTransfer"]["StartTime_PushToServer"]["hour"]
+        startMinute = config["DataTransfer"]["StartTime_PushToServer"]["minute"]
         return server, intersection, startHour, startMinute
     except Exception as e:
         print(e)
@@ -54,8 +54,8 @@ def get_server_pull_config(config:dict):
     try:
         server = config["DataTransfer"]["server"]
         intersection = config["DataTransfer"]["intersection"]
-        startHour = config["DataTransfer"]["StartTime_FromIntersections"]["hour"]
-        startMinute = config["DataTransfer"]["StartTime_FromIntersections"]["minute"]
+        startHour = config["DataTransfer"]["StartTime_PullFromIntersections"]["hour"]
+        startMinute = config["DataTransfer"]["StartTime_PullFromIntersections"]["minute"]
         return server, intersection, startHour, startMinute
     except Exception as e:
         print(e)
@@ -69,8 +69,8 @@ def get_server_cyverse_push_config(config:dict):
     try:
         server = config["DataTransfer"]["server"]
         intersection = config["DataTransfer"]["intersection"]
-        startHour = config["DataTransfer"]["StartTime_ToCyverse"]["hour"]
-        startMinute = config["DataTransfer"]["StartTime_ToCyverse"]["minute"]
+        startHour = config["DataTransfer"]["StartTime_PushToCyverse"]["hour"]
+        startMinute = config["DataTransfer"]["StartTime_PushToCyverse"]["minute"]
         return server, intersection, startHour, startMinute
     except Exception as e:
         print(e)

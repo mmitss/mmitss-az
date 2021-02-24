@@ -27,13 +27,13 @@
 				"cyverse_location": "/iplant/home/nvaltekar/test"
 			}
 		],
-		"StartTime_FromIntersections": 
+		"StartTime_PullFromIntersections": 
 		{
 				"hour": 0,
 				"minute": 0
 			
 		},
-		"StartTime_ToCyverse": 
+		"StartTime_PushToCyverse": 
 		{
 				"hour": 0,
 				"minute": 0

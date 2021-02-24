@@ -16,7 +16,7 @@
 				"v2x-data_location": "/home/nvaltekar/testdata"
 			}
 		],
-		"StartTime_ToServer": 
+		"StartTime_PushToServer": 
 		{
 				"hour": 0,
 				"minute": 0			
