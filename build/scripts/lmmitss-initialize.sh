@@ -45,6 +45,8 @@ echo "export MMITSS_NETWORK_ADAPTER=$mmitss_network_adapter" >> ~/.bashrc
 echo "Adding PROCESSOR to ~/.bashrc"
 echo "export PROCESSOR=$arch" >> ~/.bashrc
 
+source ~/.bashrc
+
 echo "Creating required directories in the root folder."
 sudo rm -r /nojournal/
 sudo rm -r /usr/local/lib/mmitss
