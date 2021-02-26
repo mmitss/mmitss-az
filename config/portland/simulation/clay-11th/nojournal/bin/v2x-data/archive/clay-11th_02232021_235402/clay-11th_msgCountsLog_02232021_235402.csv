@@ -1,0 +1,2 @@
+log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,interval_sec,msg_source,msg_type,msg_count,msg_served,msg_rejected
+2021-02-23 23:59:02.695825,1614124742.6958055,2021-02-23 23:59:02.695,1614124742.695198,300.0,clay-11th,SRM,0,0,0

@@ -4,8 +4,10 @@ services:
 # Note:  MMITSS_ROOT is an environment variable set to the root location of the configuration repository
 # for example /home/<my_home_directory>
 
+x-var: &IMAGE_MRP_SERVER
+    mmitssuarizona/mmitss-mrp-server:1.0
+
     market-11th:
-        image: mmitssuarizona/mmitss-mrp-server:1.0
         container_name: market-11th
         volumes:
           - type: bind
@@ -14,9 +16,9 @@ services:
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.98    
+        image: *IMAGE_MRP_SERVER
 
     market-10th:
-        image: mmitssuarizona/mmitss-mrp-server:1.0
         container_name: market-10th
         volumes:
             - type: bind
@@ -25,9 +27,9 @@ services:
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.95 
+        image: *IMAGE_MRP_SERVER
 
     market-broadway:
-        image: mmitssuarizona/mmitss-mrp-server:1.0
         container_name: market-broadway
         volumes:
             - type: bind
@@ -36,12 +38,12 @@ services:
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.92        
+        image: *IMAGE_MRP_SERVER
 
 networks:
     mmitss_vlan:
         driver: macvlan
         driver_opts:
-# note: change to local IP address from ifconfig 
             parent: $MMITSS_NETWORK_ADAPTER  
         ipam:
             config:
