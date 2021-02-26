@@ -25,7 +25,7 @@ from SimulatedBsmBlobProcessor import SimulatedBsmBlobProcessor
 with open("/nojournal/bin/mmitss-phase3-master-config.json", 'r') as configFile:
     config = json.load(configFile)
 
-host = (config["HostIp"], config["PortNumber"]["HostBsmDecoder"])
+host = (config["HostIp"], config["PortNumber"]["HostBsmDecoder"]) # The port is reused here as in simulation environment, SimulatedBsmBlobProcessor application replaces HostBsmDecoder.
 messageDistributor = (config["HostIp"], config["PortNumber"]["MessageDistributor"])
 
 # Create an object of SimulatedBsmBlobProcessor class:
