@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# build-arm.sh                                                                     
+# build.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -28,18 +28,26 @@ red='\033[0;31m'
 green='\033[0;32m'
 nocolor='\033[0m'
 
-################################## COMMON APPLICATIONS ################################
+######################################################################################
+
+################################## COMMON APPLICATIONS ###############################
 
 ######################################################################################
+
 echo "Building Message Encoder..."
 cd ../../src/common/MsgTransceiver/MsgEncoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
 
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_MsgEncoder ../../../../build/bin/MsgEncoder/arm/M_MsgEncoder
+    mv M_MsgEncoder ../../../../build/bin/MsgEncoder/$PROCESSOR/M_MsgEncoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -56,10 +64,16 @@ echo "Building Wireless Message Decoder..."
 cd ../../src/common/MsgTransceiver/MsgDecoder/WirelessMsgDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_WirelessMsgDecoder ../../../../../build/bin/WirelessMsgDecoder/arm/M_WirelessMsgDecoder
+    mv M_WirelessMsgDecoder ../../../../../build/bin/WirelessMsgDecoder/$PROCESSOR/M_WirelessMsgDecoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -78,7 +92,7 @@ cd ../../src/common/v2x-data-collector
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-collector-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-collector-main  ../../../build/bin/V2XDataCollector/arm/M_V2XDataCollector
+    mv dist/v2x-data-collector-main  ../../../build/bin/V2XDataCollector/$PROCESSOR/M_V2XDataCollector
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -98,7 +112,7 @@ cd ../../src/system-interface
 pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/system-interface  ../../build/bin/SystemInterface/arm/M_SystemInterface
+    mv dist/system-interface  ../../build/bin/SystemInterface/$PROCESSOR/M_SystemInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -118,10 +132,16 @@ echo "Building Priority Request Server..."
 cd ../../src/mrp/priority-request-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestServer ../../../build/bin/PriorityRequestServer/arm/M_PriorityRequestServer
+    mv M_PriorityRequestServer ../../../build/bin/PriorityRequestServer/$PROCESSOR/M_PriorityRequestServer
     echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -138,10 +158,16 @@ echo "Building Priority Solver..."
 cd ../../src/mrp/priority-request-solver
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestSolver ../../../build/bin/PriorityRequestSolver/arm/M_PriorityRequestSolver
+    mv M_PriorityRequestSolver ../../../build/bin/PriorityRequestSolver/$PROCESSOR/M_PriorityRequestSolver
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -158,7 +184,13 @@ echo "Building Snmp Engine..."
 cd ../../src/mrp/snmp-engine
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
     mv M_SnmpEngine ../../../build/bin/SnmpEngine/arm/M_SnmpEngine
@@ -180,7 +212,7 @@ cd ../../src/mrp/traffic-controller-interface
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed traffic-controller-interface.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/traffic-controller-interface  ../../../build/bin/TrafficControllerInterface/arm/M_TrafficControllerInterface
+    mv dist/traffic-controller-interface  ../../../build/bin/TrafficControllerInterface/$PROCESSOR/M_TrafficControllerInterface
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -200,7 +232,7 @@ cd ../../src/mrp/map-spat-broadcaster
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed map-spat-broadcaster.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/map-spat-broadcaster  ../../../build/bin/MapSpatBroadcaster/arm/M_MapSpatBroadcaster
+    mv dist/map-spat-broadcaster  ../../../build/bin/MapSpatBroadcaster/$PROCESSOR/M_MapSpatBroadcaster
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -220,7 +252,7 @@ cd ../../src/mrp/signal-coordination-request-generator
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed signal-coordination-request-generator.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/signal-coordination-request-generator  ../../../build/bin/SignalCoordinationRequestGenerator/arm/M_SignalCoordinationRequestGenerator
+    mv dist/signal-coordination-request-generator  ../../../build/bin/SignalCoordinationRequestGenerator/$PROCESSOR/M_SignalCoordinationRequestGenerator
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -240,7 +272,7 @@ cd ../../src/mrp/v2x-data-ftp-client
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/v2x-data-ftp-client-main  ../../../build/bin/V2XDataFtpClient/arm/M_V2XDataFtpClient
+    mv dist/v2x-data-ftp-client-main  ../../../build/bin/V2XDataFtpClient/$PROCESSOR/M_V2XDataFtpClient
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -260,10 +292,16 @@ echo "Building Host BSM Decoder..."
 cd ../../src/common/MsgTransceiver/MsgDecoder/HostBsmDecoder
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_HostBsmDecoder ../../../../../build/bin/HostBsmDecoder/arm/M_HostBsmDecoder
+    mv M_HostBsmDecoder ../../../../../build/bin/HostBsmDecoder/$PROCESSOR/M_HostBsmDecoder
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -280,10 +318,16 @@ echo "Building Priority Request Generator..."
 cd ../../src/vsp/priority-request-generator
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGenerator ../../../build/bin/PriorityRequestGenerator/arm/M_PriorityRequestGenerator
+    mv M_PriorityRequestGenerator ../../../build/bin/PriorityRequestGenerator/$PROCESSOR/M_PriorityRequestGenerator
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -302,7 +346,7 @@ cd ../../src/vsp/light-siren-status-manager
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed light-siren-status-manager.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/light-siren-status-manager  ../../../build/bin/LightSirenStatusManager/arm/M_LightSirenStatusManager
+    mv dist/light-siren-status-manager  ../../../build/bin/LightSirenStatusManager/$PROCESSOR/M_LightSirenStatusManager
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -322,7 +366,7 @@ cd ../../src/vsp/data-compressor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed data-compressor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/data-compressor  ../../../build/bin/DataCompressor/arm/M_DataCompressor
+    mv dist/data-compressor  ../../../build/bin/DataCompressor/$PROCESSOR/M_DataCompressor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -342,10 +386,16 @@ echo "Building Priority Request Generator Server..."
 cd ../../src/server/priority-request-generator-server
 # Clean the folder and build for linux.
 make clean &> /dev/null
+
+if [ "$PROCESSOR" = "arm" ]; then
 make linux ARM=1 &> /dev/null
+else
+make linux &> /dev/null
+fi
+
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv M_PriorityRequestGeneratorServer ../../../build/bin/PriorityRequestGeneratorServer/arm/M_PriorityRequestGeneratorServer
+    mv M_PriorityRequestGeneratorServer ../../../build/bin/PriorityRequestGeneratorServer/$PROCESSOR/M_PriorityRequestGeneratorServer
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -364,7 +414,7 @@ cd ../../src/server/message-distributor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed message-distributor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/message-distributor  ../../../build/bin/MessageDistributor/arm/M_MessageDistributor
+    mv dist/message-distributor  ../../../build/bin/MessageDistributor/$PROCESSOR/M_MessageDistributor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
@@ -384,7 +434,7 @@ cd ../../src/simulation/simulated-bsm-blob-processor
 pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed simulated-bsm-blob-processor.py  &> /dev/null
 # Indicate Success/Failure of the build
 if [ "$?" -eq "0" ]; then
-    mv dist/simulated-bsm-blob-processor  ../../../build/bin/SimulatedBsmBlobProcessor/arm/M_SimulatedBsmBlobProcessor
+    mv dist/simulated-bsm-blob-processor  ../../../build/bin/SimulatedBsmBlobProcessor/$PROCESSOR/M_SimulatedBsmBlobProcessor
 	echo -e "${green}Successful${nocolor}"
 else
 	echo -e "${red}Failed${nocolor}"
