@@ -1,0 +1,96 @@
+version: "3.8"
+
+x-var: &IMAGE_MRP_SIMULATION
+    mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:1.13
+
+x-var: &IMAGE_SERVER_TOOLS
+    mmitssuarizona/mmitss-server-tools-$PROCESSOR:1.13
+
+services:
+
+    daisy-gavilan:
+        container_name: daisy-gavilan
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-gavilan/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.3
+        image: *IMAGE_MRP_SIMULATION
+
+    daisy-dedication:
+        container_name: daisy-dedication
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-dedication/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.6
+        image: *IMAGE_MRP_SIMULATION
+
+    daisy-meridian:
+        container_name: daisy-meridian
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-meridian/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.9
+        image: *IMAGE_MRP_SIMULATION
+
+    daisy-hastings:
+        container_name: daisy-hastings
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-hastings/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.12
+        image: *IMAGE_MRP_SIMULATION
+
+    daisy-memorial:
+        container_name: daisy-memorial
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-memorial/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.15
+        image: *IMAGE_MRP_SIMULATION
+
+    daisy-anthem:
+        container_name: daisy-anthem
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/anthem/simulation/daisy-anthem/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.18
+        image: *IMAGE_MRP_SIMULATION
+
+    server-tools:
+        container_name: server-tools
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/server-tools/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.20
+        image: *IMAGE_SERVER_TOOLS
+
+networks:
+    mmitss_vlan:
+        driver: macvlan
+        driver_opts:
+            parent: $MMITSS_NETWORK_ADAPTER
+        ipam:
+            config:
+              - subnet: 10.12.6.0/24
+
