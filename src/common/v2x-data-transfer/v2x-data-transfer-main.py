@@ -79,7 +79,7 @@ def get_server_cyverse_push_config(config:dict):
 if __name__=="__main__":
 
     # Select appropriate configuration file:
-    configFilename = "test/v2x-data-transfer-config.json"
+    configFilename = "/nojournal/bin/v2x-data-transfer-config.json"
 
     # Open the configuration file and read it's contents into a dictionary
     with open(configFilename, 'r') as configFile:

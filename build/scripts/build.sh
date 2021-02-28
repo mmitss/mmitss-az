@@ -289,13 +289,13 @@ if [ "$mrp" = "y" ]; then
 	#######################################################################################
 
 	#######################################################################################
-	echo "Building V2X Data Ftp Client..."
-	cd ../../src/mrp/v2x-data-ftp-client
+	echo "Building V2X Data Transfer.."
+	cd ../../src/common/v2x-data-transfer
 	# Clean the folder and build for linux.
-	pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
+	pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-transfer-main.py  &> /dev/null
 	# Indicate Success/Failure of the build
 	if [ "$?" -eq "0" ]; then
-		mv dist/v2x-data-ftp-client-main  ../../../build/bin/V2XDataFtpClient/$PROCESSOR/M_V2XDataFtpClient
+		mv dist/v2x-data-transfer-main  ../../../build/bin/V2XDataTransfer/$PROCESSOR/M_V2XDataTransfer
 		echo -e "${green}Successful${nocolor}"
 	else
 		echo -e "${red}Failed${nocolor}"
