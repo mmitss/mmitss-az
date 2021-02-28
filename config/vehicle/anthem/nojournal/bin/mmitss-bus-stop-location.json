@@ -8,7 +8,8 @@
             "ApproachNo": 3,
             "Latitude_DecimalDegree": 33.842863,
             "Longitude_DecimalDegree": -112.134406,
-            "Elevation_Meter": 539
+            "Elevation_Meter": 539,
+            "Heading_Degree": 86.0
         },
         {
             "IntersectionName": "Daisy-Memorial",
@@ -17,7 +18,8 @@
             "ApproachNo": 5,
             "Latitude_DecimalDegree": 33.850825,
             "Longitude_DecimalDegree": -112.116047,
-            "Elevation_Meter": 560
+            "Elevation_Meter": 560,
+            "Heading_Degree": 25.0
         },
         {
             "IntersectionName": "Daisy-Memorial",
@@ -26,7 +28,8 @@
             "ApproachNo": 1,
             "Latitude_DecimalDegree": 33.859396,
             "Longitude_DecimalDegree": -112.112475,
-            "Elevation_Meter": 587
+            "Elevation_Meter": 587,
+            "Heading_Degree": 210.0,
         },
         {
             "IntersectionName": "Daisy-Dedication",
@@ -35,7 +38,8 @@
             "ApproachNo": 1,
             "Latitude_DecimalDegree": 33.846621,
             "Longitude_DecimalDegree": -112.122794,
-            "Elevation_Meter": 546
+            "Elevation_Meter": 546,
+            "Heading_Degree": 226.0
         },
         {
             "IntersectionName": "Daisy-Gavilan",
@@ -44,7 +48,8 @@
             "ApproachNo": 6,
             "Latitude_DecimalDegree": 33.843004,
             "Longitude_DecimalDegree": -112.135939,
-            "Elevation_Meter": 539
+            "Elevation_Meter": 539,
+            "Heading_Degree": 268.0
         }
     ]
 }
