@@ -12,7 +12,7 @@ services:
         container_name: speedway-campbell
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/config/speedway/simulation/speedway-campbell/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/simulation/speedway-campbell/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -23,7 +23,7 @@ services:
         container_name: speedway-cherry
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/config/speedway/simulation/speedway-cherry/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/simulation/speedway-cherry/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -34,7 +34,7 @@ services:
         container_name: speedway-mountain
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/config/speedway/simulation/speedway-mountain/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/simulation/speedway-mountain/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -45,7 +45,7 @@ services:
         container_name: speedway-park
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/config/speedway/simulation/speedway-park/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/simulation/speedway-park/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
@@ -56,7 +56,7 @@ services:
         container_name: server-tools
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/mmitss/config/server-tools/nojournal
+            source: $MMITSS_ROOT/mmitss/config/simulation_server-tools/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
