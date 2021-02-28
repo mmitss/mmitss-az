@@ -4,8 +4,8 @@ services:
 # Note:  MMITSS_ROOT is an environment variable set to the root location of the configuration repository
 # for example /home/<my_home_directory>
 
-x-var: &IMAGE_MRP_SERVER
-    mmitssuarizona/mmitss-mrp-server:1.0
+x-var: &IMAGE_MRP
+    mmitssuarizona/mmitss-mrp-$PROCESSOR:1.13
 
     market-11th:
         container_name: market-11th
@@ -16,7 +16,7 @@ x-var: &IMAGE_MRP_SERVER
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.98    
-        image: *IMAGE_MRP_SERVER
+        image: *IMAGE_MRP
 
     market-10th:
         container_name: market-10th
@@ -27,7 +27,7 @@ x-var: &IMAGE_MRP_SERVER
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.95 
-        image: *IMAGE_MRP_SERVER
+        image: *IMAGE_MRP
 
     market-broadway:
         container_name: market-broadway
@@ -38,7 +38,7 @@ x-var: &IMAGE_MRP_SERVER
         networks:    
             mmitss_vlan:
                 ipv4_address: 172.16.52.92        
-        image: *IMAGE_MRP_SERVER
+        image: *IMAGE_MRP
 
 networks:
     mmitss_vlan:

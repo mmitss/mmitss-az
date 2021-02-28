@@ -2,6 +2,7 @@
 #    Dockerfile to build an x86 platform image for an intersection            #
 #-----------------------------------------------------------------------------#
 FROM mmitssuarizona/mmitss-x86-base:1.0
+MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY build/bin/WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
 COPY build/bin/TrafficControllerInterface/x86/M_TrafficControllerInterface /mmitss
