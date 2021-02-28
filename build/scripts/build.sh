@@ -216,7 +216,7 @@ if [ "$mrp" = "y" ]; then
 
 	# Indicate Success/Failure of the build
 	if [ "$?" -eq "0" ]; then
-		mv M_SnmpEngine ../../../build/bin/SnmpEngine/arm/M_SnmpEngine
+		mv M_SnmpEngine ../../../build/bin/SnmpEngine/$PROCESSOR/M_SnmpEngine
 		echo -e "${green}Successful${nocolor}"
 	else
 		echo -e "${red}Failed${nocolor}"
