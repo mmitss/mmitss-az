@@ -55,8 +55,8 @@ sudo mkdir /usr/local/lib/mmitss
 sleep 1s
 
 if [ "$copy_sample" = "y" ]; then
-echo "Copy the configuration files of the intersection Daisy-Gavilan to /nojournal/bin/"
-sudo cp -r ../../config/anthem/field/daisy-gavilan/nojournal/bin /nojournal
+echo "Copy the configuration files of the intersection speedway-mountain to /nojournal/bin/"
+sudo cp -r ../../config/speedway-sample/simulation/speedway-mountain/nojournal/bin /nojournal
 sleep 1s
 echo "Change the owner and group of the configuration files and provide necessary permissions (chmod 777)"
 sudo chown -R $username:$usergroup /nojournal
