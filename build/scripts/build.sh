@@ -33,10 +33,10 @@ nocolor='\033[0m'
 read -p "Build all applications? (y or n): " all
 if [ "$all" = "n" ]; then
 
-read -p "Build Transceiver applications? (y or n): " common
-read -p "Build MRP applications? (y or n): " mrp
-read -p "Build VSP applications? (y or n): " vsp
-read -p "Build Simulation/Server applications? (y or n): " server
+read -p "Build transceiver applications? (y or n): " common
+read -p "Build roadside applications? (y or n): " mrp
+read -p "Build vehicle applications? (y or n): " vsp
+read -p "Build simulation_server-tools applications? (y or n): " server
 
 else
 common=y
@@ -51,7 +51,10 @@ fi
 
 
 if [ "$common" = "y" ]; then
-	echo "Building common applications..."
+
+	echo "------------------------"
+	echo "TRANSCEIVER APPLICATIONS"
+	echo "------------------------"
 	######################################################################################
 
 	echo "Building Message Encoder..."
@@ -148,7 +151,10 @@ fi
 
 ############################### INTERSECTION APPLICATIONS #############################
 if [ "$mrp" = "y" ]; then
-	echo "Building MRP applications..."
+
+	echo "---------------------"
+	echo "ROADSIDE APPLICATIONS"
+	echo "---------------------"
 
 	#######################################################################################
 	echo "Building Priority Request Server..."
@@ -312,7 +318,10 @@ fi
 ################################# VEHICLE APPLICATIONS ################################
 
 if [ "$vsp" = "y" ]; then
-	echo "Building VSP applications..."
+	
+	echo "--------------------"
+	echo "VEHICLE APPLICATIONS"
+	echo "--------------------"
 
 	#######################################################################################
 	echo "Building Host BSM Decoder..."
@@ -410,8 +419,10 @@ fi
 ################################### SERVER TOOLS ##################################
 
 if [ "$server" = "y" ]; then
-	echo "Building server-tools..."
 
+	echo "------------------------------------"
+	echo "SIMULATION_SERVER-TOOLS APPLICATIONS"
+	echo "------------------------------------"
 
 	#######################################################################################
 	echo "Building Priority Request Generator Server..."
@@ -481,4 +492,56 @@ if [ "$server" = "y" ]; then
 	#######################################################################################
 fi
 
+echo "Successfully built required applications!"
+echo "------------------------------------------"
 
+read -p "Build docker images? (y or n): " docker
+if [ "$docker" = "y" ]; then
+	read -p "Provide version tag: " versionTag
+
+	# Go to the mmitss directory
+	cd ../..
+
+	read -p "Build Base image? (y or n): " baseImage
+	read -p "Build MRP Field image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
+	read -p "Build VSP image? Needs transceiver and vehicle applications. (y or n): " vspImage
+	read -p "Build MRP Simulation image? Needs roadside applications. (y or n): " mrpSimulationImage
+	read -p "Build simulation_server-tools image? Needs simulation_server-tools applications. (y or n): " serverImage
+
+	if [ "$baseImage" = "y" ]; then
+		echo "Building Base image for $PROCESSOR"
+		docker build -t mmitssuarizona/mmitss-$PROCESSOR-base:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.base .
+	fi	
+
+	if [ "$mrpFieldImage" = "y" ]; then
+		echo "---------------------------------------"
+		echo "Building MRP-Field image for $PROCESSOR"
+		echo "---------------------------------------"
+		docker build -t mmitssuarizona/mmitss-mrp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp .
+	fi	
+
+	if [ "$vspImage" = "y" ]; then
+		echo "---------------------------------"
+		echo "Building VSP image for $PROCESSOR"
+		echo "---------------------------------"
+		docker build -t mmitssuarizona/mmitss-vsp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.vsp .
+	fi	
+
+	if [ "$mrpSimulationImage" = "y" ]; then
+		echo "--------------------------------------------"
+		echo "Building MRP-Simulation image for $PROCESSOR"
+		echo "--------------------------------------------"
+		docker build -t mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation .
+	fi	
+
+	if [ "$serverImage" = "y" ]; then
+		echo "-----------------------------------------------------"
+		echo "Building Simulation_Server-Tools image for $PROCESSOR"
+		echo "-----------------------------------------------------"
+		docker build -t mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.simulation_server-tools .
+	fi	
+
+echo "Successfully built required docker images!"
+echo "-----------------------------------------------------------------------"
+
+fi
