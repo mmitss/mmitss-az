@@ -1,55 +1,41 @@
 {
-    "NoOfBusStop": 5,
+    "NoOfBusStop": 4,
     "BusStopInformation": [
         {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "NorthBound",
+            "IntersectionName": "Daisy-Dedication",
+            "IntersectionID": 45115,
+            "TravelDirection": "EastBound",
             "ApproachNo": 3,
-            "Latitude_DecimalDegree":  32.234937,
-            "Longitude_DecimalDegree": -110.952312,
-            "Elevation_Meter": 744,
-            "Heading_Degree": 0.0
+            "Latitude_DecimalDegree":  33.842879,
+            "Longitude_DecimalDegree": -112.134322,
+            "Elevation_Meter": 539
         },
         {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "SouthBound",
-            "ApproachNo": 7,
-            "Latitude_DecimalDegree": 32.237225,
-            "Longitude_DecimalDegree": -110.952498,
-            "Elevation_Meter": 742,
-            "Heading_Degree": 180.0
-        },
-        {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
+            "IntersectionName": "Daisy-Meridian",
+            "IntersectionID": 54749,
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
-            "Latitude_DecimalDegree": 32.235876,
-            "Longitude_DecimalDegree": -110.954316,
-            "Elevation_Meter": 742,
-            "Heading_Degree": 90.0
+            "Latitude_DecimalDegree": 33.843353,
+            "Longitude_DecimalDegree": -112.129438,
+            "Elevation_Meter": 541
         },
         {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "WestBound",
-            "ApproachNo": 1,
-            "Latitude_DecimalDegree":  32.236097,
-            "Longitude_DecimalDegree": -110.951262,
-            "Elevation_Meter": 740.158,
-            "Heading_Degree": 269.45    
+            "IntersectionName": "Daisy-Hastings",
+            "IntersectionID": 63397,
+            "TravelDirection": "EastBound",
+            "ApproachNo": 5,
+            "Latitude_DecimalDegree": 33.847496,
+            "Longitude_DecimalDegree": -112.121253,
+            "Elevation_Meter": 550
         },
         {
-            "IntersectionName": "Speedway-Cherry",
-            "IntersectionID": 26593,
-            "TravelDirection": "WestBound",
-            "ApproachNo": 1,
-            "Latitude_DecimalDegree": 32.236167,
-            "Longitude_DecimalDegree": -110.945391,
-            "Elevation_Meter": 750,
-            "Heading_Degree":270.0
-        }      
+            "IntersectionName": "Daisy-Memorial",
+            "IntersectionID": 13710,
+            "TravelDirection": "EastBound",
+            "ApproachNo": 5,
+            "Latitude_DecimalDegree": 33.850883,
+            "Longitude_DecimalDegree": -112.116007,
+            "Elevation_Meter": 560
+        }
     ]
 }
