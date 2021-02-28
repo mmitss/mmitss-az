@@ -1,7 +1,9 @@
 #-----------------------------------------------------------------------------#
 #    Dockerfile to build an image to run MMITSS applications natively         #
 #    The image can be used to spawn containers that can simulate each         #
-#         RSU that needs to be present in the simulated network               #
+#    MRP/VSP that needs to be present in the simulated network                #
+#                                                                             #
+#    Image name: mmitssuarizona/mmitss-x86-base                               #
 #-----------------------------------------------------------------------------#
 FROM ubuntu:18.04
 

@@ -33,10 +33,10 @@ nocolor='\033[0m'
 read -p "Build all applications? (y or n): " all
 if [ "$all" = "n" ]; then
 
-read -p "Build Common applications? (y or n): " common
+read -p "Build Transceiver applications? (y or n): " common
 read -p "Build MRP applications? (y or n): " mrp
 read -p "Build VSP applications? (y or n): " vsp
-read -p "Build Server applications? (y or n): " server
+read -p "Build Simulation/Server applications? (y or n): " server
 
 else
 common=y
