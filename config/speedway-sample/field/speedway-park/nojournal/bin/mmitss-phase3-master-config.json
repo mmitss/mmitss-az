@@ -86,8 +86,8 @@
 		"bsm": "CONT"
 	},
 	"SignalController": {
-		"IpAddress": "10.12.6.104",
-		"NtcipPort": 505,
+		"IpAddress": "10.12.6.14",
+		"NtcipPort": 501,
 		"TimingPlanUpdateInterval_sec": 60,
 		"NtcipBackupTime_sec": 300,
 		"Vendor": "Econolite",
