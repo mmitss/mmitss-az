@@ -2,40 +2,44 @@
     "NoOfBusStop": 4,
     "BusStopInformation": [
         {
-            "IntersectionName": "Daisy-Dedication",
+            "IntersectionName": "daisy-dedication",
             "IntersectionID": 45115,
             "TravelDirection": "EastBound",
             "ApproachNo": 3,
-            "Latitude_DecimalDegree":  33.842879,
-            "Longitude_DecimalDegree": -112.134322,
-            "Elevation_Meter": 539
+            "Latitude_DecimalDegree":  33.842913,
+            "Longitude_DecimalDegree": -112.134316,
+            "Elevation_Meter": 539,
+            "Heading_Degree": 86.0
         },
         {
-            "IntersectionName": "Daisy-Meridian",
+            "IntersectionName": "daisy-meridian",
             "IntersectionID": 54749,
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
             "Latitude_DecimalDegree": 33.843353,
             "Longitude_DecimalDegree": -112.129438,
-            "Elevation_Meter": 541
+            "Elevation_Meter": 541,
+            "Heading_Degree": 75.0
         },
         {
-            "IntersectionName": "Daisy-Hastings",
+            "IntersectionName": "daisy-hastings",
             "IntersectionID": 63397,
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
             "Latitude_DecimalDegree": 33.847496,
             "Longitude_DecimalDegree": -112.121253,
-            "Elevation_Meter": 550
+            "Elevation_Meter": 550,
+            "Heading_Degree": 50.0
         },
         {
-            "IntersectionName": "Daisy-Memorial",
+            "IntersectionName": "daisy-memorial",
             "IntersectionID": 13710,
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
             "Latitude_DecimalDegree": 33.850883,
             "Longitude_DecimalDegree": -112.116007,
-            "Elevation_Meter": 560
+            "Elevation_Meter": 560,
+            "Heading_Degree": 25.0
         }
     ]
 }
