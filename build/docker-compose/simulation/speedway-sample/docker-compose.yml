@@ -4,7 +4,7 @@ x-var: &IMAGE_MRP_SIMULATION
     mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:1.13
 
 x-var: &IMAGE_SERVER_TOOLS
-    mmitssuarizona/mmitss-server-tools-$PROCESSOR:1.13
+    mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:1.13
 
 services:
 
