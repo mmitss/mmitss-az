@@ -103,7 +103,8 @@ fi
 
 sleep 1s
 
-
-
 sudo ldconfig
+
+sleep 2s
+echo "Added required environment variables in ~/.bashrc file. Close this terminal to allow changes take effect."
 pkill -9 sleep #End
