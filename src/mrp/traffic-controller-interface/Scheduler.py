@@ -307,6 +307,28 @@ class Scheduler:
                                             trigger = intervalTrigger, 
                                             max_instances=3)
 
+    def activateSpecialFunction(self, functionId, startSecFromNow:float, endSecFromNow:float):
+        """
+        Activates the special function at startSecFrmNow, and keeps it active till endSecFromNow.
+        """
+        if startSecFromNow == 0.0:
+            startSecFromNow = 0.01 # Jobs that start at time NOW (0.0 sec from now) are incompatible with BackgroundScheduler
+
+        intervalTrigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1,
+                                                start_date=(datetime.datetime.now()+datetime.timedelta(seconds=startSecFromNow)), 
+                                                end_date=(datetime.datetime.now()+datetime.timedelta(seconds=endSecFromNow)))
+
+        self.backgroundScheduler.add_job(self.signalController.setSpecialFunction, 
+                                            args = [functionId, True], 
+                                            trigger = intervalTrigger, 
+                                            max_instances=3)
+
+        dateTrigger = date.DateTrigger(run_date=(datetime.datetime.now()+datetime.timedelta(seconds=endSecFromNow)))
+        self.backgroundScheduler.add_job(self.signalController.setSpecialFunction, 
+                                            args = [functionId, False], 
+                                            trigger = dateTrigger, 
+                                            max_instances=3)
+
 
     def schedulePhaseControlDeactivation(self, phases:list, control:int, secFromNow:float):
         """

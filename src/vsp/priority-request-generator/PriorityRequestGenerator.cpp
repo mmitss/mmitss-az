@@ -883,16 +883,16 @@ void PriorityRequestGenerator::setVehicleType()
 void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 {
 	lightSirenStatus = true;
-	if (vehType == "transit")
+	if (vehType == "Transit")
 	{
 		vehicleType = Transit;
 		getBusStopInformation();
 	}
 
-	else if (vehType == "truck")
+	else if (vehType == "Truck")
 		vehicleType = Truck;
 
-	else if (vehType == "emergency")
+	else if (vehType == "EmergencyVehicle")
 	{
 		vehicleType = EmergencyVehicle;
 		lightSirenStatus = true;

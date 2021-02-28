@@ -1,2 +1,0 @@
-This signal control field version can be only applied to Gavilan Peak interseciton:
-- Always leading left turn

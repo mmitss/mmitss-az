@@ -1,0 +1,63 @@
+version: "3.8"
+services:
+
+# Note:  MMITSS_ROOT is an environment variable set to the root location of the configuration repository
+# for example /home/<my_home_directory>
+
+x-var: &IMAGE_MRP
+    mmitssuarizona/mmitss-mrp-$PROCESSOR:1.13
+
+    speedway-campbell:
+        container_name: speedway-campbell
+        volumes:
+          - type: bind
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-campbell/nojournal
+            target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.3
+        image: *IMAGE_MRP
+
+    speedway-cherry:
+        container_name: speedway-cherry
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-cherry/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.6
+        image: *IMAGE_MRP
+
+    speedway-mountain:
+        container_name: speedway-mountain
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-mountain/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.9      
+        image: *IMAGE_MRP
+
+    speedway-park:
+        container_name: 10.12.6.12
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-park/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.12       
+        image: *IMAGE_MRP
+
+networks:
+    mmitss_vlan:
+        driver: macvlan
+        driver_opts:
+            parent: $MMITSS_NETWORK_ADAPTER  
+        ipam:
+            config:
+              - subnet: 10.12.6.0/24
+
+              
