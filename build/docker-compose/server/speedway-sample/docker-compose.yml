@@ -7,37 +7,48 @@ services:
 x-var: &IMAGE_MRP
     mmitssuarizona/mmitss-mrp-$PROCESSOR:1.13
 
-    market-11th:
-        container_name: market-11th
+    speedway-campbell:
+        container_name: speedway-campbell
         volumes:
           - type: bind
-            source: $MMITSS_ROOT/portlandStreetcar/corridors/market-11th/nojournal
+            source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-campbell/nojournal
             target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 172.16.52.98    
+                ipv4_address: 10.12.6.3
         image: *IMAGE_MRP
 
-    market-10th:
-        container_name: market-10th
+    speedway-cherry:
+        container_name: speedway-cherry
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/portlandStreetcar/corridors/market-10th/nojournal
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-cherry/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 172.16.52.95 
+                ipv4_address: 10.12.6.6
         image: *IMAGE_MRP
 
-    market-broadway:
-        container_name: market-broadway
+    speedway-mountain:
+        container_name: speedway-mountain
         volumes:
             - type: bind
-              source: $MMITSS_ROOT/portlandStreetcar/corridors/market-broadway/nojournal
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-mountain/nojournal
               target: /nojournal
         networks:    
             mmitss_vlan:
-                ipv4_address: 172.16.52.92        
+                ipv4_address: 10.12.6.9      
+        image: *IMAGE_MRP
+
+    speedway-park:
+        container_name: 10.12.6.12
+        volumes:
+            - type: bind
+              source: $MMITSS_ROOT/mmitss/config/speedway-sample/field/speedway-park/nojournal
+              target: /nojournal
+        networks:    
+            mmitss_vlan:
+                ipv4_address: 10.12.6.12       
         image: *IMAGE_MRP
 
 networks:
@@ -47,4 +58,6 @@ networks:
             parent: $MMITSS_NETWORK_ADAPTER  
         ipam:
             config:
-              - subnet: 172.16.52.0/24
+              - subnet: 10.12.6.0/24
+
+              
