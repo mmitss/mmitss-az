@@ -7,7 +7,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    #
 # is obtained from Arizona Board of Regents or University of Arizona.                       #
 #                                                                                           #
-# mmitss-deployment-initialize.sh                                                           #
+# setup-deployment-environment.sh                                                           #
 # Created by Niraj Altekar                                                                  #
 # Transportation Research Institute                                                         #
 # Systems and Industrial Engineering                                                        #
