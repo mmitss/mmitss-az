@@ -110,6 +110,48 @@ Truck, Transit vehicle (Bus), Emergency vehicle can send SRMs. Truck sends SRM i
     }
 }
 ```
+#### Managing SSM
+The PRG accpts the SSM, if the intersectionID and regionalID of the vehicle and intersectionID and regionalID of the SSM match. The PRG clears the ART when it received new ssm and create a new ART. An example of such JSON formatted SSM is as follows:
+```
+{
+	"MessageType" : "SSM",
+	"noOfRequest" : 2,
+	"SignalStatus" : 
+	{
+		"minuteOfYear" : 345239,
+		"msOfMinute" : 54000,
+        "intersectionID" : 26379,
+		"regionalID" : 0,
+		"sequenceNumber" : 4,
+		"updateCount" : 4,
+		"requestorInfo" : 
+		[
+			{
+				"ETA_Duration" : 4.0,
+				"ETA_Minute" : 0,
+				"ETA_Second" : 20.0,
+				"basicVehicleRole" : 16,
+				"inBoundLaneID" : 8,
+				"msgCount" : 12,
+				"priorityRequestStatus" : 4,
+				"requestID" : 5,
+				"vehicleID" : 601
+			},
+			{
+				"ETA_Duration" : 4.0,
+				"ETA_Minute" : 0,
+				"ETA_Second" : 38.0,
+				"basicVehicleRole" : 9,
+				"inBoundLaneID" : 12,
+				"msgCount" : 6,
+				"priorityRequestStatus" : 4,
+				"requestID" : 5,
+				"vehicleID" : 610
+			}
+		]
+	}
+}
+```
 ## Console output and logging
 The PRG can store important information like- SRMs, SSMs etc. in the log files. The log file name is PRGLog.txt. It is expensive process to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
 The console output also provides some information about the status of the component. The console ouput can be redirected to a file using supervisor if mmitsss is running inside container. The following information is displayed in the console:

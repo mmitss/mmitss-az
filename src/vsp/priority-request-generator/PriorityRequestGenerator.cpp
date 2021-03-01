@@ -64,7 +64,7 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 
 /*
 	- The following method can create Active request Table in the vehicle side based on the received ssm
-	- The method clears the whole table when it received new ssm and again create new table (updating existing ART can be expensive since each time it has to be checked if any fields has been changed in table or if two vehicle information is removed from the table by PRS it may cause problem).
+	- updating existing ART can be an expensive process since each time it has to be checked if any fields has been updated for each requests in the ART. If two vehicle information is removed from the ART by PRS, it may cause problem.).
 */
 std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
 {
