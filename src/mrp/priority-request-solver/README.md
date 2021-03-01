@@ -1,5 +1,6 @@
 # Software Component Description: Priority-Request-Solver (PRSolver)
 The Priority-Request-Solver software component is responsible for formulating the optimization model based on priority request list, current traffic signal plan, current traffic signal status. It generates optimal signal timing schedule as a solution of the optimization problem. A GNU GLPK package (version 4.55) is used to solve the optimization model.The optimal solution is written on Results.txt file The optimal schedule is send to the TrafficControllerStatus(TCI) to serve the priority requests.
+The GLPK (https://www.gnu.org/software/glpk/) provides open-source C/C++ packages that has packages to solve mixed integer programming (MIP),  large-scale linear programming (LP), and other related optimization problems.
 ## Work-flow
 The PRSolver receives priority requests list from the PriorityRequestServer(PRS). It receives current signal timing plan(static) from the TCI. It also receives split data from SignalCoordinationRequestGenerator if there is an active coordination plan. The PRSolver requests for current signal status to TCI. It writes the optimization model in the NewModel.mod (for tranit, truck or coordination priority requests) or NewModel_EV.mod(for emergency vehicle prioriry requests) file. The input for the optimization model is written in the NewModelData.dat file. A JSON formatted optimal signal timing schedule is sent to the TCI over the UDP socket. The PRSolver composed of three class- (1) SolverDataManager (2) Schedulemanager, and (3) PriorityRequestSolver.
 
@@ -283,7 +284,7 @@ The console output also provides some information about the status of the compon
 - List of available priority requests in the active request table (ART)
 
 ## Requirements
-- Install GNU GLPK package (version 4.55).The GLPK (https://www.gnu.org/software/glpk/) provides open-source C/C++ packages that has packages to solve large-scale linear programming (LP), mixed integer programming (MIP), and other related problems.
+- None
 ## Configuration
 In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:
 - `config["PortNumber"]["PriorityRequestServer"]`:  UDP port number (integer). 

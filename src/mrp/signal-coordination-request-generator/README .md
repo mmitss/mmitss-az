@@ -100,12 +100,12 @@ The Signal-Coordination-Request-Generator does not generate any log files. The c
 - Coordination priority request messages
 
 ## Requirements
-- 
+- None
 ## Configuration
 In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:
 - `config["PortNumber"]["SignalCoordination"]`:  UDP port number (integer) 
 - `config["CoordinationPlanCheckingTimeInterval"]`: time interval to check if there is any update in the active coordination plan
 
 ## Known issues/limitations
-- None -
+- None
 

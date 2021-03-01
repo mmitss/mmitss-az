@@ -159,7 +159,7 @@ The console output also provides some information about the status of the compon
 - SSM received status
 
 ## Requirements
-- 
+- None
 ## Configuration
 In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:
 - `config["PortNumber"]["PriorityRequestGenerator"]`:  UDP port number (integer) 
