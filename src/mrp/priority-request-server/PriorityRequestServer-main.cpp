@@ -65,14 +65,12 @@ int main()
             {
                 signalRequest.json2SignalRequest(receivedJsonString);
                 PRS.manageSignalRequestTable(signalRequest);
-            } 
-            else if (msgType == static_cast<int>(msgType::coordinationRequest))
-            {
-                cout << "Received coordination Request" << receivedJsonString << endl;
-                PRS.manageCoordinationRequest(receivedJsonString);
             }
 
-            PRS.loggingData(receivedJsonString);
+            else if (msgType == static_cast<int>(msgType::coordinationRequest))
+                PRS.manageCoordinationRequest(receivedJsonString);
+
+            PRS.loggingData(receivedJsonString, "received");
             ssmJsonString = PRS.createSSMJsonString(signalStatus);
             PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
             PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
@@ -88,9 +86,8 @@ int main()
 	            - Delete vehicle info from Active Request Table if Infrustracture doesn't receive and SRM for predefined time
                 - After the request, if Active request table is empty then send clear request message to PRSolver
             */
-            if (PRS.shouldDeleteTimedOutRequestfromActiveRequestTable() == true)
+            if (PRS.checkTimedOutRequestDeletingRequirement() == true)
             {
-                PRS.deleteTimedOutRequestfromActiveRequestTable();
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.printActiveRequestTable();
@@ -106,12 +103,10 @@ int main()
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), systemPerformanceDataCollectorJsonString);
-                cout << "System Performance Data Log" << systemPerformanceDataCollectorJsonString << endl;
             }
 
             if (PRS.updateETA() == true)
             {
-                PRS.updateETAInActiveRequestTable();
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
