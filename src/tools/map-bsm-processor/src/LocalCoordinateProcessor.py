@@ -99,9 +99,29 @@ class LocalCoordinatesProcessor:
         
         self.bsmDf = self.bsmDf.groupby("temporaryId").apply(fill_trajectory_signal_group_for_vehicle)
         
+    def process_distances_to_stopbar_for_inside_box(self):
+        
+        def get_dist_to_stopbar_for_row_inside_box(row, lastInboundPoint):
+            originalDistToStopbar = float(row["dist_to_stopbar"])
+            if originalDistToStopbar == 0:
+                currentPoint = (row["latitude"], row["longitude"])
+                distToStopbar = (haversine.haversine(lastInboundPoint, currentPoint, haversine.Unit.METERS))*(-1)
+                return distToStopbar
+            else: return originalDistToStopbar
+        
+        def fill_dist_to_stopbar_for_vehicle(vehicleDf):
+            tempDf = vehicleDf.loc[vehicleDf["position_on_map"]=="inbound"]
+            lastInboundLatitude = float(tempDf.loc[tempDf["timestamp_posix"]==max(tempDf["timestamp_posix"])]["latitude"])
+            lastInboundLongitude = float(tempDf.loc[tempDf["timestamp_posix"]==max(tempDf["timestamp_posix"])]["longitude"])
+            lastInboundPoint = (lastInboundLatitude, lastInboundLongitude)
+            vehicleDf["dist_to_stopbar"] = vehicleDf.apply(lambda row: get_dist_to_stopbar_for_row_inside_box(row, lastInboundPoint), axis=1)            
+            return vehicleDf
+        
+        self.bsmDf = self.bsmDf.groupby("temporaryId").apply(fill_dist_to_stopbar_for_vehicle)
+        
 if __name__ == "__main__":
     
-    DEBUGGING = True
+    DEBUGGING = False
     
 
     if not DEBUGGING:
@@ -125,14 +145,15 @@ if __name__ == "__main__":
         configFile = "./../config/daisy-gavilan.json"
     
     lcp = LocalCoordinatesProcessor(inputFile, configFile)
-
-    lcp = LocalCoordinatesProcessor(inputFile, configFile)
+    
+    
     lcp.process_onmap_status()
     lcp.process_local_coordinates()
     lcp.process_distance_along_path()
     lcp.process_in_queue_status()
     lcp.process_time_to_stopbar()
     lcp.process_trajectory_signal_groups()
+    lcp.process_distances_to_stopbar_for_inside_box()
 
     lcp.bsmDf.to_csv(inputFile,index=False)
     
