@@ -52,6 +52,7 @@ int main()
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
+    double currentTime{};
     PRG.getLoggingStatus();
     PRG.setVehicleType();
 
@@ -68,7 +69,7 @@ int main()
         {
             basicVehicle.json2BasicVehicle(receivedJsonString);
             PRG.getVehicleInformationFromMAP(mapManager, basicVehicle);
-            if (PRG.shouldSendOutRequest() == true)
+            if (PRG.checkPriorityRequestSendingRequirementStatus() == true)
             {
                 srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
@@ -89,8 +90,11 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            cout << "SSM is received " << endl;
+            currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+            cout << "[" << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
     }
+    priorityRequestGeneratorSocket.closeSocket();
+    return 0;
 }

@@ -104,14 +104,14 @@ public:
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
   string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
   bool addToActiveRequestTable(SignalStatus signalStatus);
-  bool shouldSendOutRequest();
+  bool checkPriorityRequestSendingRequirementStatus();
   bool checkRequestSendingRequirement();                                         //This overloading function will be used for Truck
   bool checkRequestSendingRequirement(vector<BusStopInformation> bus_Stop_List); //This overloading function will be used for Transit
   bool checkRequestSendingRequirement(bool light_Siren_Status);                  //This overloading function will be used for EmergencyVehicle
   bool findNearestBusStopLocation();
   bool checkPassedNearestBusStop();
   bool getLoggingStatus();
-  void loggingData(string jsonString);
+  void loggingData(string jsonString, string communicationType);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
   void setVehicleID(BasicVehicle basicVehicle);
