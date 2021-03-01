@@ -7,7 +7,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    #
 # is obtained from Arizona Board of Regents or University of Arizona.                       #
 #                                                                                           #
-# lmmitss-initialize.sh                                                                     #
+# setup-build-environment.sh                                                                #
 # Created by Niraj Altekar                                                                  #
 # Transportation Research Institute                                                         #
 # Systems and Industrial Engineering                                                        #
@@ -106,5 +106,6 @@ sleep 1s
 sudo ldconfig
 
 sleep 2s
-echo "Added required environment variables in ~/.bashrc file. Close this terminal to allow changes take effect."
+echo "Added required environment variables in ~/.bashrc file."
+echo "To allow for changes to take effect, either close this terminal or execute the command: source ~/.bashrc"
 pkill -9 sleep #End
