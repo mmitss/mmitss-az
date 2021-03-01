@@ -184,6 +184,14 @@ class SignalController:
         else: value = False
         
         return value
+    
+    def setSpecialFunction(self, functionId:int, status:bool):
+        partOid = StandardMib.SPECIAL_FUNCTION
+        fullOid = partOid + "." + str(functionId)
+        self.snmp.setValue(fullOid, int(status))
+        if status == True:
+            print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is active!")
+        else: print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is deactivated!")
 
     def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int):
         phaseControlDict = self.phaseControls.get(control)
@@ -483,4 +491,4 @@ if __name__ == "__main__":
     # Create an object of SignalController class
     controller = SignalController()
     
-    controller.setPhaseControl(1,True,[],time.time())
+    controller.setSpecialFunction(8,False)

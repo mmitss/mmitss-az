@@ -45,34 +45,46 @@ Instructions for building MMITSS are in the /docs/mmitss-deployment/mmitss-build
 
 Tests are provided for many of the MMITSS components, but they are not currently automated. Where specific tests are provided, an input generator and output receiver (if used) is provided. For example see /src/mrp/traffic-controller-interface/tests or /src/mrp/priority-request-solver/test. Additional test scripts and automated testing are planned in future sprints.
 
-# Deploying and Executing MMITSS
+## Deploying and Executing
+
+### MMITSS
 
 Instructions for deploying MMITSS are in /docs/mmitss-deployment/mmitss-field-deployment.docx
 
-# MMITSS Simulation Platform
+### MMITSS Simulation Platform
 
 Instructions for setting up MMITSS Simulation using VISSIM are in /docs/mmitss-deloyment/mmitss-simulation-deployment.docx
 
 
 # Additional Notes
 
+__Known Issues:__ See [Issue Tracker](https://github.com/mmitss/mmitss-az/issues).
+
+# Version History and Retention
+__Status__: This project is in the release phase.
+
+__Release Frequency__: This project is updated approximately once every 2-3 weeks
+
+__Release History__: See [Releases](https://github.com/mmitss/mmitss-az/releases)
+
+__Retention__: This project will remain publicly accessible for a minimum of five years (until at least 06/15/2025).
 
 
-## Open source license
+# License
 
 By contributing to the Multi-Modal Intelligent Traffic Signal Systems (MMITSS) open source project, you agree that your contributions will be licensed under its Apache License 2.0 license.
 
+# Contributions
 
-## Tools
+## Issue tracker
 
-### Issue tracker
+[MMITSS AZ GitHub Issue Tracker Page](https://github.com/mmitss/mmitss-az/issues)
+
 Contributors will use Github's issue tracking system to record and manage issues that are reported by users of MMITSS AZ in the field. These may include performance requests, defects, and new feature requests. The follow operating procedure highlights how the MMITSS AZ development team will address and respond to reported issues.
 
-Issue Repository: (https://github.com/mmitss/mmitss)
+## Pull requests
 
-### Pull requests
-
-[MMITSS AZ GitHub Pull Request Page](https://github.com/mmitss/mmitss/pulls)
+[MMITSS AZ GitHub Pull Request Page](https://github.com/mmitss/mmitss-az/pulls)
 
 All pull requests will be reviewed by the MMITSS AZ team. During the review of your pull request the team member will either merge it, request changes to it, or close it with an explanation. For major changes the reviewer may require additional support from the team, which could cause some delay. We'll do our best to provide updates and feedback throughout the process. Feel free to open pull requests, and the MMITSS team will communicate through it with any comments.
 **Before submitting a pull request**, please make sure the following is done:
@@ -85,6 +97,7 @@ All pull requests will be reviewed by the MMITSS AZ team. During the review of y
 		- Architecture and user guide documentation should be included in the word document under the `docs/` folder
 		- Please contact the MMITSS with qny questions
 	5.	Format your code as outlined in the style guide
+
 
 ## Contributor Covenant Code of Conduct
 #### Our Pledge
@@ -119,5 +132,14 @@ Instances of abusive, harassing, or otherwise unacceptable behavior may be repor
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
 
+# Contact Information
 
+Contact Name: Larry Head
 
+Contact Information: klhead@arizona.edu, (520) 621-2264
+
+# Acknowledgements
+
+To track how this government-funded code is used, we request that if you decide to build additional software using this code please acknowledge its Digital Object Identifier in your software’s README/documentation.
+
+Digital Object Identifier: https://doi.org/10.21949/1520606

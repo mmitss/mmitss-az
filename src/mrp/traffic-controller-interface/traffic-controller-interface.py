@@ -98,6 +98,18 @@ def main():
             s.sendto(currentTimingPlan.encode(),address)
             if logging: print(currentTimingPlan)
 
+        elif receivedMessage["MsgType"]=="SpecialFunction":
+            # Extract status
+            requiredStatus = receivedMessage["Status"]
+            if requiredStatus == True:
+                # Then activate the special function from StartTime till EndTime
+                startTime = receivedMessage["StartTime"]
+                endTime = receivedMessage["EndTime"]
+                functionId = receivedMessage["Id"]
+                scheduler.activateSpecialFunction(functionId, startTime, endTime)
+            elif requiredStatus == False:
+                functionId = receivedMessage["Id"]
+                asc.setSpecialFunction(functionId, False)
         else: print("[" + str(datetime.datetime.now()) + "] " + "Invalid message received!")
         
     s.close()
