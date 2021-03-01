@@ -154,9 +154,9 @@ The PRS store the information of number of SRMs received, and number of SRMs gra
 }
 ```
 ## Console output and logging
-The PRS can store important information like- SRM, SSM etc. in the log files. The log file name depends on the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file). For example, if intersection name is daisy-gavilan, the logfile name will be PRSLog-daisy-davilan.txt. It is expensive to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
+The PRS can store important information like- SRMs, SSMs etc. in the log files. The log file name depends on the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file). For example, if intersection name is daisy-gavilan, the logfile name will be PRSLog-daisy-davilan.txt. It is expensive process to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
 The console output also provides some information about the status of the component. The console ouput can be redirected to a file using supervisor if mmitsss is running inside container. The following information is displayed in the console:
-- Message sent or received status
+- Messages sent or received status
 - List of available priority requests in the active request table (ART)
 
 ## Requirements
@@ -172,4 +172,3 @@ A basic test of the PRS software can be done by using a tool (msgSender.py scrip
 
 ## Known issues/limitations
 - None 
-

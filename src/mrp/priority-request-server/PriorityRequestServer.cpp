@@ -952,7 +952,7 @@ void PriorityRequestServer::loggingData(string jsonString, string communicationT
 		outputfile.open(fileName, std::ios_base::app);
 		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-		outputfile << "\nMessage is " << communicationType << " at time : " << currentTime << endl;
+		outputfile << "\nThe following message is " << communicationType << " at time : " << currentTime << endl;
 		outputfile << jsonString << endl;
 		outputfile.close();
 	}
