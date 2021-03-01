@@ -1,6 +1,7 @@
 
 #include <string>
 
+using std::string;
 
 class TransceiverDecoder
 {
