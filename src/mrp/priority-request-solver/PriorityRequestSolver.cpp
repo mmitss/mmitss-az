@@ -228,11 +228,12 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
     int temporaryPhase{};
     int tempSignalGroup{};
     vector<int>::iterator it;
-    vector<int> requestedEV_P11;
-    vector<int> requestedEV_P12;
-    vector<int> requestedEV_P21;
-    vector<int> requestedEV_P22;
+    vector<int> requestedEV_P11{};
+    vector<int> requestedEV_P12{};
+    vector<int> requestedEV_P21{};
+    vector<int> requestedEV_P22{};
 
+    //Append the requested signal group into their corresponding ring barrier vector.
     for (size_t i = 0; i < requestedSignalGroup.size(); i++)
     {
         if (requestedSignalGroup[i] == 1 || requestedSignalGroup[i] == 2)
@@ -247,7 +248,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
         else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
             requestedEV_P22.push_back(requestedSignalGroup[i]);
     }
-    //If a freight vehicle is trapped in the dilemma zone, then remove the split phase priority request from the list.
+    //If a freight vehicle is trapped in the dilemma zone, then remove the split phase priority request associated with the starting phase  from the priority request list.
     if (!dilemmaZoneRequestList.empty())
     {
         for (size_t i = 0; i < requestedSignalGroup.size(); i++)
@@ -299,38 +300,36 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             }
         }
     }
-
+    // If there is an EV priority request and number of requested signal phase is not more than 2, append the starting phases into their corresponding ring barrier vector.
     if (noOfEVInList > 0 && requestedSignalGroup.size() <= 2)
     {
-
         for (size_t j = 0; j < trafficControllerStatus.size(); j++)
         {
-
-            if (trafficControllerStatus[j].startingPhase1 == 1 || trafficControllerStatus[j].startingPhase1 == 2)
+            if ((trafficControllerStatus[j].startingPhase1 == 1) || (trafficControllerStatus[j].startingPhase1 == 2))
                 requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (trafficControllerStatus[j].startingPhase1 == 3 || trafficControllerStatus[j].startingPhase1 == 4)
+            else if ((trafficControllerStatus[j].startingPhase1 == 3) || (trafficControllerStatus[j].startingPhase1 == 4))
                 requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (trafficControllerStatus[j].startingPhase1 == 5 || trafficControllerStatus[j].startingPhase1 == 6)
+            else if ((trafficControllerStatus[j].startingPhase1 == 5) || (trafficControllerStatus[j].startingPhase1 == 6))
                 requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if (trafficControllerStatus[j].startingPhase1 == 7 || trafficControllerStatus[j].startingPhase1 == 8)
+            else if ((trafficControllerStatus[j].startingPhase1 == 7) || (trafficControllerStatus[j].startingPhase1 == 8))
                 requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase1);
 
-            if (trafficControllerStatus[j].startingPhase2 == 1 || trafficControllerStatus[j].startingPhase2 == 2)
+            if ((trafficControllerStatus[j].startingPhase2 == 1) || (trafficControllerStatus[j].startingPhase2 == 2))
                 requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase2);
 
-            else if (trafficControllerStatus[j].startingPhase2 == 3 || trafficControllerStatus[j].startingPhase2 == 4)
+            else if ((trafficControllerStatus[j].startingPhase2 == 3) || (trafficControllerStatus[j].startingPhase2 == 4))
                 requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase2);
 
-            else if (trafficControllerStatus[j].startingPhase2 == 5 || trafficControllerStatus[j].startingPhase2 == 6)
+            else if ((trafficControllerStatus[j].startingPhase2 == 5) || (trafficControllerStatus[j].startingPhase2 == 6))
                 requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase2);
 
-            else if (trafficControllerStatus[j].startingPhase2 == 7 || trafficControllerStatus[j].startingPhase2 == 8)
+            else if ((trafficControllerStatus[j].startingPhase2 == 7) || (trafficControllerStatus[j].startingPhase2 == 8))
                 requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase2);
         }
-
+        //If first ring-barrier group is empty, the left turn phases (3,7) of second ring-barrier group can be removed (if they are not starting phase). Dummy through phases (2,6) will be inserted in the first ring-barrier group. 
         if (requestedEV_P11.empty() && requestedEV_P21.empty())
         {
             if ((trafficControllerStatus[0].startingPhase1 != 3))
@@ -376,7 +375,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
                     requestedSignalGroup.push_back(tempSignalGroup);
             }
         }
-
+         //If second ring-barrier group is empty, the left turn phases (1,5) of first ring-barrier groupcan be removed (if they are not starting phase). Dummy through phases (4,8) will be inserted in the second ring-barrier group. 
         else if (requestedEV_P12.empty() && requestedEV_P22.empty())
         {
             if ((trafficControllerStatus[0].startingPhase1 != 1))
@@ -422,7 +421,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             }
         }
     }
-
+    // If there is an EV priority request and number of requested signal phase is more than 2, the split phase priority request can be removed (if opposite barrier group is empty)).
     else if (noOfEVInList > 0 && requestedSignalGroup.size() > 2)
     {
         if (requestedEV_P11.empty() && requestedEV_P21.empty())
