@@ -1,1 +1,0 @@
-log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,minuteOfYear,msOfMinute,msgCount,regionalID,intersectionID,priorityRequestType,basicVehicleRole,laneID,eTA_Minute,eTA_Second,eTA_Duration,vehicleID,latitude,longitude,elevation,heading,speed,vehicleType

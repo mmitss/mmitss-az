@@ -1,5 +1,6 @@
 #-----------------------------------------------------------------------------#
-#    Dockerfile to build an arm platform image for an intersection            #
+#    Dockerfile to build an arm platform image for field intersection         #
+#    Image name: mmitssuarizona/mmitss-mrp-arm                                # 
 #-----------------------------------------------------------------------------#
 FROM mmitssuarizona/mmitss-arm-base:1.0
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)

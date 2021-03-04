@@ -1,2 +1,0 @@
-log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,interval_sec,msg_source,msg_type,msg_count,msg_served,msg_rejected
-2021-02-24 00:53:40.550956,1614128020.550951,2021-02-24 00:53:40.550,1614128020.550761,300.0,market-broadway,SRM,0,0,0
