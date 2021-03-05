@@ -81,7 +81,6 @@ public:
     void manageCoordinationRequest(string jsonString);
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
-    void deleteCoordinationRequestFromList();
     void printActiveRequestTable();
     void setRequestTimedOutVehicleID(int timedOutVehicleID);
     void setPriorityRequestStatus();

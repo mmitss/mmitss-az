@@ -41,16 +41,14 @@ int main()
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
     const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
    
-    char receiveBuffer[15360];
-
     const string LOCALHOST = jsonObject["HostIp"].asString();
-    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
-
-    int msgType{};
-    bool timedOutOccur{};
+    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();    
     string ssmJsonString{};
     string solverJsonString{};
     string systemPerformanceDataCollectorJsonString{};
+    char receiveBuffer[15360];
+    int msgType{};
+    bool timedOutOccur{};
 
     while (true)
     {
@@ -70,11 +68,15 @@ int main()
             else if (msgType == static_cast<int>(msgType::coordinationRequest))
                 PRS.manageCoordinationRequest(receivedJsonString);
 
+            //Storing the received message in the logfile, if logging is true in config file
             PRS.loggingData(receivedJsonString, "received");
+            
+            //Creating SSM JSON string
             ssmJsonString = PRS.createSSMJsonString(signalStatus);
             PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
             PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
             PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+            //Creating JSON string for solver
             solverJsonString = PRS.createJsonStringForPrioritySolver();
             PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
             PRS.printActiveRequestTable();
@@ -86,26 +88,26 @@ int main()
 	            - Delete vehicle info from Active Request Table if Infrustracture doesn't receive and SRM for predefined time
                 - After the request, if Active request table is empty then send clear request message to PRSolver
             */
-            if (PRS.checkTimedOutRequestDeletingRequirement() == true)
+            if (PRS.checkTimedOutRequestDeletingRequirement())
             {
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.printActiveRequestTable();
             }
-            
-            if (PRS.sendClearRequest() == true)
+            // Clear request will send to solver, if requires
+            if (PRS.sendClearRequest())
             {
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
             }
-        
-            if(PRS.sendSystemPerformanceDataLog()== true)
+            // System Performance data will send to the data-collector software component
+            if(PRS.sendSystemPerformanceDataLog())
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), systemPerformanceDataCollectorJsonString);
             }
-
-            if (PRS.updateETA() == true)
+            // ETA will be updated in the ART for the priority requests.
+            if (PRS.updateETA())
             {
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
