@@ -16,9 +16,6 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
-#include <list>
-#include <string>
-#include <vector>
 #include <chrono>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
@@ -88,7 +85,7 @@ private:
   double vehicleDistanceFromStopBar{};
   double vehicleETA{};
   double vehicleSpeed{};
-  double SrmSendingTime{}; //temporary store the time when last SRM has been sent
+  double srmSendingTime{}; //temporary store the time when last SRM has been sent
   double requestTimedOutValue{};
   double busStopLattitude{};
   double busStopLongitude{};

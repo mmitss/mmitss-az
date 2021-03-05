@@ -14,8 +14,6 @@
 */
 
 #pragma once
-#include <string>
-#include <vector>
 #include "PriorityRequestGenerator.h"
 #include "MapManager.h"
 #include "BasicVehicle.h"
@@ -23,18 +21,23 @@
 #include "Map.h"
 #include "ActiveRequest.h"
 
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
 class PriorityRequestGeneratorStatus
 {
 private:
-  std::vector<Map::AvailableMap> availableMapList;
-  std::vector<ActiveRequest>ActiveRequestTable;
+  vector<Map::AvailableMap> availableMapList;
+  vector<ActiveRequest>ActiveRequestTable;
 
 public:
     PriorityRequestGeneratorStatus();
     ~PriorityRequestGeneratorStatus();
     void setAvailableMapList(PriorityRequestGenerator priorityRequestGenerator);
     void setActiveRequestTable(PriorityRequestGenerator priorityRequestGenerator);
-    std::string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle);
+    string priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle);
 };
 
 

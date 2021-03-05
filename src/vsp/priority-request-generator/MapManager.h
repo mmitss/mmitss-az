@@ -15,7 +15,6 @@
 
 #pragma once
 #include <vector>
-#include <list>
 #include <string>
 #include "BasicVehicle.h"
 #include "Position3D.h"
