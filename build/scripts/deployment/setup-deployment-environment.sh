@@ -7,7 +7,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    #
 # is obtained from Arizona Board of Regents or University of Arizona.                       #
 #                                                                                           #
-# mmitss-deployment-initialize.sh                                                           #
+# setup-deployment-environment.sh                                                           #
 # Created by Niraj Altekar                                                                  #
 # Transportation Research Institute                                                         #
 # Systems and Industrial Engineering                                                        #
@@ -33,7 +33,8 @@ echo "Adding PROCESSOR to ~/.bashrc"
 echo "export PROCESSOR=$arch" >> ~/.bashrc
 
 sleep 2
-echo "Added required environment variables in ~/.bashrc file. Close this terminal to allow changes take effect."
+echo "Added required environment variables in ~/.bashrc file."
+echo "To allow for changes to take effect, either close this terminal or execute the command: source ~/.bashrc"
 
 
 

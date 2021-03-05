@@ -8,7 +8,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    
 # is obtained from Arizona Board of Regents or University of Arizona.                       
 #                                                                                           
-# build.sh                                                                     
+# build-mmitss.sh                                                                     
 # Created by Niraj Altekar                                                                  
 # Transportation Research Institute                                                         
 # Systems and Industrial Engineering                                                        
@@ -18,9 +18,8 @@
 # in the Transportation Research Institute.                                                 
 #                                                                                           
 # Operational Description:                                                                   
-# This script builds all mmitss applications (vehicle, intersection, and common),
-# under the arm environment. The primary reason for such builds is development and testing.
-# This script can not be used in the x86 architecture based devices.                                                                                                  
+# This script builds all mmitss applications (vehicle, intersection, and common), 
+# and different types of docker images.
 #############################################################################################
 
 # Define colors:
@@ -30,10 +29,10 @@ nocolor='\033[0m'
 
 ######################################################################################
 
-read -p "Has lmmitss-initialize.sh script already been executed? (y or n):" lmmitssStatus
+read -p "Has setup-build-environment.sh script already been executed? (y or n): " buildSetup
 
-if [ "$lmmitssStatus" = "n" ]; then
-echo "Please run lmmitss-initialize.sh script and then run this script. Exiting now!"
+if [ "$buildSetup" = "n" ]; then
+echo "Please run setup-build-environment.sh script first and then run this script. Exiting now!"
 exit 0
 
 else
@@ -500,57 +499,69 @@ else
 	    #######################################################################################
     fi
 
-    echo "Successfully built required applications!"
+    echo "------------------------------------------"
+	echo "Successfully built required applications!"
     echo "------------------------------------------"
 
     read -p "Build docker images? (y or n): " docker
     if [ "$docker" = "y" ]; then
-	    read -p "Provide version tag: " versionTag
+		
+		read -p "Build Base image? (y or n): " baseImage
+		if [ "$baseImage" = "y" ]; then
+			read -p "Provide version tag for the base image: " baseVersionTag
+			# Go to the mmitss directory
+			cd ../..
+			echo "----------------------------------"
+			echo "Building Base image for $PROCESSOR"
+			echo "---------------------------------------"
+				docker build -t mmitssuarizona/mmitss-$PROCESSOR-base:$baseVersionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.base .
+			echo "Successfully built the base image with tag: $baseVersionTag" 
+			echo "Please note that this new base image will not be used for building other container images unless Dockerfiles for building container images are updated!"
+	    else
+			# Anyhow, go the mmitss directory
+			cd ../..
+		fi	
 
-	    # Go to the mmitss directory
-	    cd ../..
+		read -p "Build container images? (y or n): " containerImages
+	    
+		if [ "$containerImages" = "y" ]; then
+			read -p "Provide version tag for container images: " versionTag
+			read -p "Build MRP Field image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
+			read -p "Build VSP image? Needs transceiver and vehicle applications. (y or n): " vspImage
+			read -p "Build MRP Simulation image? Needs roadside applications. (y or n): " mrpSimulationImage
+			read -p "Build simulation_server-tools image? Needs simulation_server-tools applications. (y or n): " serverImage
 
-	    read -p "Build Base image? (y or n): " baseImage
-	    read -p "Build MRP Field image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
-	    read -p "Build VSP image? Needs transceiver and vehicle applications. (y or n): " vspImage
-	    read -p "Build MRP Simulation image? Needs roadside applications. (y or n): " mrpSimulationImage
-	    read -p "Build simulation_server-tools image? Needs simulation_server-tools applications. (y or n): " serverImage
+			if [ "$mrpFieldImage" = "y" ]; then
+				echo "---------------------------------------"
+				echo "Building MRP-Field image for $PROCESSOR"
+				echo "---------------------------------------"
+				docker build -t mmitssuarizona/mmitss-mrp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp .
+			fi	
 
-	    if [ "$baseImage" = "y" ]; then
-		    echo "Building Base image for $PROCESSOR"
-		    docker build -t mmitssuarizona/mmitss-$PROCESSOR-base:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.base .
-	    fi	
+			if [ "$vspImage" = "y" ]; then
+				echo "---------------------------------"
+				echo "Building VSP image for $PROCESSOR"
+				echo "---------------------------------"
+				docker build -t mmitssuarizona/mmitss-vsp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.vsp .
+			fi	
 
-	    if [ "$mrpFieldImage" = "y" ]; then
-		    echo "---------------------------------------"
-		    echo "Building MRP-Field image for $PROCESSOR"
-		    echo "---------------------------------------"
-		    docker build -t mmitssuarizona/mmitss-mrp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp .
-	    fi	
+			if [ "$mrpSimulationImage" = "y" ]; then
+				echo "--------------------------------------------"
+				echo "Building MRP-Simulation image for $PROCESSOR"
+				echo "--------------------------------------------"
+				docker build -t mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation .
+			fi	
 
-	    if [ "$vspImage" = "y" ]; then
-		    echo "---------------------------------"
-		    echo "Building VSP image for $PROCESSOR"
-		    echo "---------------------------------"
-		    docker build -t mmitssuarizona/mmitss-vsp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.vsp .
-	    fi	
-
-	    if [ "$mrpSimulationImage" = "y" ]; then
-		    echo "--------------------------------------------"
-		    echo "Building MRP-Simulation image for $PROCESSOR"
-		    echo "--------------------------------------------"
-		    docker build -t mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation .
-	    fi	
-
-	    if [ "$serverImage" = "y" ]; then
-		    echo "-----------------------------------------------------"
-		    echo "Building Simulation_Server-Tools image for $PROCESSOR"
-		    echo "-----------------------------------------------------"
-		    docker build -t mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.simulation_server-tools .
-	    fi	
-
-    echo "Successfully built required docker images!"
-    echo "-----------------------------------------------------------------------"
+			if [ "$serverImage" = "y" ]; then
+				echo "-----------------------------------------------------"
+				echo "Building Simulation_Server-Tools image for $PROCESSOR"
+				echo "-----------------------------------------------------"
+				docker build -t mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.simulation_server-tools .
+			fi	
+		fi
+		echo "------------------------------------------"
+		echo "Successfully built required docker images!"
+		echo "------------------------------------------"
 
     fi
 fi
