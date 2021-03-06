@@ -8,8 +8,8 @@ Message Distributor receives Basic safety Messages (BSMs) from Simulated-Bsm-Blo
 ## Configuration
 The message distributor requires two configuration files placed in the `/nojournal/bin/` directory: (1) `mmitss-phase3-master-config.json` and `mmitss-message-distributor-config.json`. The required fields from these configuration files are described below:
 1. `mmitss-phase3-master-config.json`: 
-  - `["MessageDistributorIP"]`: a `string` specifying IPv4 address of the machine (or container) that hosts the Message Distributor application.
-  - `["PortNumber"]["MessageDistributor"]`: an `int` specifying the UDP port used by the message distributor to receive messages.
+    - `["MessageDistributorIP"]`: a `string` specifying IPv4 address of the machine (or container) that hosts the Message Distributor application.
+    - `["PortNumber"]["MessageDistributor"]`: an `int` specifying the UDP port used by the message distributor to receive messages.
 
 
 
