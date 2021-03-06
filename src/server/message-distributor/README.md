@@ -6,10 +6,10 @@ In MMITSS, Roadside Units (RSUs) and On-board Units (OBUs) perform the function 
 Message Distributor receives Basic safety Messages (BSMs) from Simulated-Bsm-Blob-Processor, SRMs from Priority-Request-Generator(s), Signal Status Messages (SSMs) from Priority-Request-Server(s), Signal Phase and Timing (SPaT) and MAP messages from the Map-Spat-Broadcaster(s). It distributes the received BSMs and SRMs to each of the configured intersections if the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) distance between the location specified in the message and the configured location of the intersection is less than the configured DSRC range of that intersection.
 
 ## Configuration
-The message distributor requires two configuration files placed in the `/nojournal/bin/` directory: (1) `mmitss-phase3-master-config.json` and `mmitss-message-distributor-config.json`. The required fields from these configuration files are described below:
+The message distributor requires two configuration files placed in the `/nojournal/bin/` directory: (1) `mmitss-phase3-master-config.json`, and (2)`mmitss-message-distributor-config.json`. The required fields from these configuration files are described below:
 1. `mmitss-phase3-master-config.json`: 
-    - `["MessageDistributorIP"]`: a `string` specifying IPv4 address of the machine (or container) that hosts the Message Distributor application.
-    - `["PortNumber"]["MessageDistributor"]`: an `int` specifying the UDP port used by the message distributor to receive messages.
+    - `["MessageDistributorIP"]`: a `string` specifying IPv4 address of the machine (or container) that hosts the Message-Distributor application.
+    - `["PortNumber"]["MessageDistributor"]`: an `int` specifying the UDP port used by the Message-Distributor to receive messages.
 
 
 
