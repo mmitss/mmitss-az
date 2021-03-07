@@ -1,3 +1,4 @@
+# Structure of the Simulated BSM Blob
 | **Bytes** | **Data** | **Data Type** | **Description** |
 | --- | --- | --- | --- |
 | 0-3 | Message Count | uint_32 | Cumulative count of messages from the start of simulation |
