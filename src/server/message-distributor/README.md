@@ -10,6 +10,20 @@ The message distributor requires two configuration files placed in the `/nojourn
 1. `mmitss-phase3-master-config.json`: 
     - `["MessageDistributorIP"]`: a `string` specifying IPv4 address of the machine (or container) that hosts the Message-Distributor application.
     - `["PortNumber"]["MessageDistributor"]`: an `int` specifying the UDP port used by the Message-Distributor to receive messages.
+2. `mmitss-message-distributor-config.json`:
+    - `["package_drop_probability"]`: a `float` in the range [0,1] that specifies the probability of dropping a received message.
+    - `["raw_bsm_logging"]`: a `bool` indicating whether or not to log the data from received messages to a file. If this field is set to `true`, a `*.csv` file is generated in the working directory that contains the data from received BSMs.
+    - `["intersections"]`: a `list` containing intersection related information. For each intersection in the list, the following information is required:
+        - `["intersections"][n]["name"]`: a `string` specifying the name of the intersection
+        - `["intersections"][n]["ip_address"]`: a `string` specifying the IPv4 address of the machine or container representing the intersection
+        - `["intersections"][n]["bsm_client_port"]`: an `int` specifying the UDP port of the primary BSM client of the intersection (for example, V2X-Data-Collector)
+        - `["intersections"][n]["srm_client_port"]`: an `int` specifying the UDP port of the primary SRM client of the intersection (for example, Priority-Request-Server)
+        - `["intersections"][n]["dsrc_range_Meter"]`: an `int` specifying the DSRC range of the intersection in Meter
+        - `["intersections"][n]["position"]["latitude_DecimalDegree"]`: a `float` specifying the latitude of the center of the intersection, in Decimal Degree
+        - `["intersections"][n]["position"]["longitude_DecimalDegree"]`: a `float` specifying the longitude of the center of the intersection, in Decimal Degree
+        - `["intersections"][n]["position"]["elevation_Meter"]`: a `float` specifying the elevation of the center of the intersection, in Meter
+    - `["bsm_clients"]`: a `list` containing additional clients that need the BSMs from specific vehicle type
+
 
 
 
