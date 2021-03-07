@@ -1,6 +1,6 @@
 {
-    "simulated-bsm-blob-processor-ip": "10.12.6.20",
-    "simulated-bsm-blob-processor-port": 10005,
+    "client_ip": "10.12.6.20",
+    "client_port": 10005,
     "vissim_origin_position":
     {
         "elevation_Meter": 540.11,
