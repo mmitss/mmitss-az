@@ -484,8 +484,8 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
 
       geoPoint.init(ref_longitude_DecimalDegree, ref_latitude_DecimalDegree, ref_elevation_Meter);                                         // Initialize a geo-point as VISSIM (0,0) point.
 
-      clientComputerIP = (jsonObject["simulated-bsm-blob-processor-ip"]).asString(); // Parse client computer IP from the configuration file.
-      clientComputerPort = (jsonObject["simulated-bs-blob-processor-port"]).asInt(); // Parse client computer IUSP port from the configuration file.
+      clientComputerIP = (jsonObject["client_ip"]).asString(); // Parse client computer IP from the configuration file.
+      clientComputerPort = (jsonObject["client_port"]).asInt(); // Parse client computer IUSP port from the configuration file.
 
       // Fill up client information:
       clientInfo.sin_family = AF_INET;                                  // Fillup client information: family
