@@ -33,4 +33,5 @@ The driver model can be built using [Microsoft Visual Studio](https://visualstud
 8. The generated DLL may be renamed to hint the embedded vehicle type. Vehicles using this DLL will send their state information to the configured client at every simulation timestep.
 
 ## Known Issues/Limitations
-The driver-model is by design a DLL intended to be built and used on Microsoft Windows platform only.
+1. The driver-model is by design a DLL intended to be built and used on Microsoft Windows platform only.
+2. The structure of the BLOB needs to be known by the client that receives the BLOBs. 
