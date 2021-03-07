@@ -5,7 +5,7 @@ In the MMITSS simulation environment, simulated vehicles using the [MMITSS Drive
 Simulated-Bsm-Blob-Processor neither produces any console output nor generates any log file
 
 ## Requirements
-1. Python package: (bitstring)[https://pypi.org/project/bitstring/]
+1. Python package: [bitstring](https://pypi.org/project/bitstring/)
 2. The simulation Driver Model must be configured to send the generated blobs to above IPv4 address and the UDP port.  
 
 ## Configuration
