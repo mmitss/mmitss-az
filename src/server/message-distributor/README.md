@@ -53,5 +53,5 @@ If the `["raw_bsm_logging"]` field in the `mmitss-message-distributor-config.jso
 2. Python packages: [haversine](https://pypi.org/project/haversine/)
 
 ## Known issues/limitations
-1. Message-Distributor can distribute messages only if they are in the specified JSON format, and it is not designed to be able to encode or decode messages to/from UPER Hex format.
+Message-Distributor can distribute messages only if they are in the specified JSON format, and it is not designed to be able to encode or decode messages to/from UPER Hex format.
 
