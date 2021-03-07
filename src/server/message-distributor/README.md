@@ -5,6 +5,9 @@ In MMITSS, Roadside Units (RSUs) and On-board Units (OBUs) perform the function 
 ## Work-flow
 Message Distributor receives Basic safety Messages (BSMs) from Simulated-Bsm-Blob-Processor, SRMs from Priority-Request-Generator(s), Signal Status Messages (SSMs) from Priority-Request-Server(s), Signal Phase and Timing (SPaT) and MAP messages from the Map-Spat-Broadcaster(s). It distributes the received BSMs and SRMs to each of the configured intersections if the [haversine](https://en.wikipedia.org/wiki/Haversine_formula) distance between the location specified in the message and the configured location of the intersection is less than the configured DSRC range of that intersection.
 
+## Console output and logging
+Message-Distributor does not produce any console output. However, if the `["raw_bsm_logging"]` field in the `mmitss-message-distributor-config.json` is set to `true` then a file containing the information from the received BSMs is generated in the working directory.
+
 ## Configuration
 The message distributor requires two configuration files placed in the `/nojournal/bin/` directory: (1) `mmitss-phase3-master-config.json`, and (2)`mmitss-message-distributor-config.json`. The required fields from these configuration files are described below:
 1. `mmitss-phase3-master-config.json`: 
@@ -44,9 +47,6 @@ The message distributor requires two configuration files placed in the `/nojourn
     - `["ssm_clients"]`: a `list` containing additional clients that need the received SSM messages. In this list, following information is required for each client:
             - `["ssm_clients"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
             - `["ssm_clients"][n]["port"]`: an `int` specifying the UDP port of the client
-
-## Console output and logging
-If the `["raw_bsm_logging"]` field in the `mmitss-message-distributor-config.json` is set to `true` then a file containing the information from the received BSMs is generated in the working directory.
 
 ## Requirements
 1. Network connectivity with containers representing each intersection and the container hosting Simulated-Bsm-Blob-Processor application.
