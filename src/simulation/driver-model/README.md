@@ -1,6 +1,9 @@
 # MMITSS Driver Model for VISSIM Microscopic Simulation
 
-To simulate connected vehicles in VISSIM simulation, the MMITSS driver-model allows vehicles using this driver-model to send their dynamic state information to a configured network node at every simulation timestep (10 Hz). The vehicle state information is packed in a Binary Large Object (Blob) which has the following structure:
+To simulate connected vehicles in VISSIM simulation, the MMITSS driver-model allows vehicles using this driver-model to send their dynamic state information to a configured network node at every simulation timestep (10 Hz). 
+
+## Work-Flow:
+The vehicle state information is packed in a Binary Large Object (Blob) which has the following structure:
 | **Bytes** | **Data** | **Data Type** | **Description** |
 | --- | --- | --- | --- |
 | 0-3 | Message Count | uint_32 | Cumulative count of messages from the start of simulation |
@@ -14,3 +17,12 @@ To simulate connected vehicles in VISSIM simulation, the MMITSS driver-model all
 | 30-31 | Length | uint_16 | 10 * Length in centimeter |
 | 32-33 | Width | uint_16 | 10 * Width in centimeter |
 | 34 | Vehicle Type | uint_8 | 0:"unknown", 2: "EmergencyVehicle", 4: "Car", 6: "Transit", 9: "Truck" |
+
+## Console Output and Logging
+The driver-model neither produces any console output nor generates any log files.
+
+## Configuration
+
+## Requirements
+
+## Known Issues/Limitations
