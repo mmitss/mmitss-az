@@ -22,13 +22,31 @@ The message distributor requires two configuration files placed in the `/nojourn
         - `["intersections"][n]["position"]["latitude_DecimalDegree"]`: a `float` specifying the latitude of the center of the intersection, in Decimal Degree
         - `["intersections"][n]["position"]["longitude_DecimalDegree"]`: a `float` specifying the longitude of the center of the intersection, in Decimal Degree
         - `["intersections"][n]["position"]["elevation_Meter"]`: a `float` specifying the elevation of the center of the intersection, in Meter
-    - `["bsm_clients"]`: a `list` containing additional clients that need the BSMs from specific vehicle type
-
-
-
+    - `["bsm_clients"]`: a `list` containing additional clients that need the BSMs from specific vehicle type. MMITSS supports 4 vehicle types: Passenger, Transit, Truck, and EmergencyVehicle. For each vehicle type, following information is required.
+        - `["bsm_clients"]["Passenger"]`: a `list` containing the network information about additional clients that require BSMs from Passenger vehicles. In this list, following information is required for each client:
+            - `["bsm_clients"]["Passenger"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["bsm_clients"]["Passenger"][n]["port"]`: an `int` specifying the UDP port of the client
+         - `["bsm_clients"]["Transit"]`: a `list` containing the network information about additional clients that require BSMs from Transit vehicles. In this list, following information is required for each client:
+            - `["bsm_clients"]["Transit"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["bsm_clients"]["Transit"][n]["port"]`: an `int` specifying the UDP port of the client
+         - `["bsm_clients"]["Truck"]`: a `list` containing the network information about additional clients that require BSMs from Truck vehicles. In this list, following information is required for each client:
+            - `["bsm_clients"]["Truck"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["bsm_clients"]["Truck"][n]["port"]`: an `int` specifying the UDP port of the client
+          - `["bsm_clients"]["EmergencyVehicle"]`: a `list` containing the network information about additional clients that require BSMs from EmergencyVehicle vehicles. In this list, following information is required for each client:
+            - `["bsm_clients"]["EmergencyVehicle"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["bsm_clients"]["EmergencyVehicle"][n]["port"]`: an `int` specifying the UDP port of the client
+          - `["bsm_clients"]["other"]`: a `list` containing the network information about additional clients that require BSMs from other vehicles (unknown vehicle type). In this list, following information is required for each client:
+            - `["bsm_clients"]["other"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["bsm_clients"]["other"][n]["port"]`: an `int` specifying the UDP port of the client
+    - `["map_clients"]`: a `list` containing additional clients that need the received MAP messages. In this list, following information is required for each client:
+            - `["map_clients"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["map_clients"][n]["port"]`: an `int` specifying the UDP port of the client
+    - `["ssm_clients"]`: a `list` containing additional clients that need the received SSM messages. In this list, following information is required for each client:
+            - `["ssm_clients"][n]["ip_address"]`: a `string` specifying the IPv4 address of the client
+            - `["ssm_clients"][n]["port"]`: an `int` specifying the UDP port of the client
 
 ## Console output and logging
-Message-Distributor component does not generate any log files. 
+If the `["raw_bsm_logging"]` field in the `mmitss-message-distributor-config.json` is set to `true` then a file containing the information from the received BSMs is generated in the working directory.
 
 ## Requirements
 1. Network connectivity with containers representing each intersection and the container hosting Simulated-Bsm-Blob-Processor application.
