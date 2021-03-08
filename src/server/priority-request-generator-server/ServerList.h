@@ -9,7 +9,7 @@ struct ServerList
 {
     int vehicleID{};
     string vehicleType{};
-    int updateTime{};
+    double updateTime{};
     double vehicleLatitude{};
     double vehicleLongitude{};
     double vehicleElevation{};
@@ -23,7 +23,7 @@ struct ServerList
     {
         vehicleID = 0;
         vehicleType = "";
-        updateTime = 0;
+        updateTime = 0.0;
         vehicleLatitude = 0.0;
         vehicleLongitude = 0.0;
         vehicleElevation = 0.0;

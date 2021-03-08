@@ -38,15 +38,16 @@ int main()
     const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
-    // const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
     delete reader;
+
     char receiveBuffer[40960];
     int msgType{};
+    double currentTime{};
     string srmJsonString{};
     string prgStatusJsonString{};
     bool timedOutOccur{};
-    // cout << "Time" << priorityRequestGeneratorServer.getCurrentTimeInSeconds() << endl;
+   
     while (true)
     {
         timedOutOccur = priorityRequestGeneratorServerSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -56,35 +57,27 @@ int main()
             msgType = priorityRequestGeneratorServer.getMessageType(receivedJsonString);
             if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
-                // cout << "Received BSM" << endl;
                 basicVehicle.json2BasicVehicle(receivedJsonString);
                 priorityRequestGeneratorServer.processBSM(basicVehicle);
+
                 if (priorityRequestGeneratorServer.checkSrmSendingFlag() == true)
                 {
                     srmJsonString = priorityRequestGeneratorServer.getSRMJsonString();
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
-                    cout << "PRGServer sent SRM to MsgDistributor" << endl;
-                    // cout << "Following SRM is sent: \n" << srmJsonString << endl;
+                    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+                    cout << "[" << currentTime << "] PRGServer sent SRM to MsgDistributor" << endl;
                 }
+
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
-                // prgStatusJsonString = priorityRequestGeneratorServer.getPrgStatusJsonString();
-                // priorityRequestGeneratorServerSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
-                //priorityRequestGeneratorServer.printPRGServerList();
             }
 
             else if (msgType == MsgEnum::DSRCmsgID_map)
-            {
-                // cout << "Received Map" << endl;
                 priorityRequestGeneratorServer.processMap(receivedJsonString, mapManager);
-            }
 
-            else if (msgType == MsgEnum::DSRCmsgID_ssm)
-            {
-                cout << "Received SSM" << endl;
+            else if (msgType == MsgEnum::DSRCmsgID_ssm)                
                 priorityRequestGeneratorServer.processSSM(receivedJsonString);
-            }
         }
 
         else

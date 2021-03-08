@@ -13,8 +13,8 @@
   1. The script is responsible for maintaining Priority Request Generator list of multiple vehicles in simulation environment
   2. The script is developed for receiving bsm data from simulation and map, ssm data from the transceiver
   3. This script use MapManager class to obtain vehicle status based on active map. 
-  4. This script has an API to generate srm json string for each vehicle using PriorityRequestGenerator class. The json string is compatible with asn1 j2735 standard
-  5. The generated srm json string will send to Message Distributor over a UDP socket.
+  4. This script has an API to generate srm JSON string for each vehicle using PriorityRequestGenerator class. The JSON string is compatible with asn1 j2735 standard
+  5. The generated srm JSON string will send to Message Distributor over a UDP socket.
   6. This script has an API to manage Active Request Table for each vehicle based on the received ssm.
   7. The script has method to delete a vehicle information from the list if BSM is not received from a vehicle for more than predifined time(10sec).
 */
@@ -67,10 +67,10 @@ void PriorityRequestGeneratorServer::managingPRGServerList(BasicVehicle basicVeh
 }
 /*
     - The following method is responsible for processing the received BSM
-    - At first, the method calls managingPRGServerList(BasicVehicle basicVehicle) to add or update the vehicle infromation
-    - Then the method obtains vehicle information based on the active map and determine whether it is required to send SRM or not.
-    - If it is required to send the SRM, the method formulates the srm json string
-    - Finally method update map age, delete timed out map and formulate the PRG status json string for the HMI controller.
+        - At first, the method calls managingPRGServerList(BasicVehicle basicVehicle) to add or update the vehicle infromation
+        - Then the method obtains vehicle information based on the active map and determine whether it is required to send SRM or not.
+        - If it is required to send the SRM, the method formulates the srm json string
+        - Finally method update map age, delete timed out map and formulate the PRG status json string for the HMI controller.
 */
 void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
 {
@@ -85,15 +85,16 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
     findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
     findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);
 
-    if (findVehicleIDInList->PRG.shouldSendOutRequest() == true)
+    if (findVehicleIDInList->PRG.checkPriorityRequestSendingRequirementStatus())
     {
         srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonObject(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
         sendSRM = true;
     }
+
     findVehicleIDInList->mapManager.updateMapAge();
     findVehicleIDInList->mapManager.deleteMap();
     findVehicleIDInList->PRG.manageMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
-    // prgStatusSendingJsonString = findVehicleIDInList->prgStatus.priorityRequestGeneratorStatus2Json(findVehicleIDInList->PRG, basicVehicle);
+
 }
 
 /*
@@ -127,6 +128,9 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
 */
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
 {
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    cout << "[" << currentTime << "] Received SSM" << endl;
+    
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
         PRGServerList[i].signalStatus.json2SignalStatus(jsonString);
@@ -158,21 +162,21 @@ void PriorityRequestGeneratorServer::deleteTimedOutVehicleInformationFromPRGServ
 */
 double PriorityRequestGeneratorServer::haversineDistance(double lat1, double lon1, double lat2, double lon2)
 {
-    double dLat{};
-    double dLon{};
+    double lattitudeDifference{};
+    double longitudeDifference{};
     double rad{6371};
     double distance{};
     double intermediateCalculation{};
 
-    dLat = (lat2 - lat1) * M_PI / 180.0;
-    dLon = (lon2 - lon1) * M_PI / 180.0;
+    lattitudeDifference = (lat2 - lat1) * M_PI / 180.0;
+    longitudeDifference = (lon2 - lon1) * M_PI / 180.0;
 
     // convert to radians
     lat1 = (lat1)*M_PI / 180.0;
     lat2 = (lat2)*M_PI / 180.0;
 
-    // apply formulae
-    intermediateCalculation = pow(sin(dLat / 2), 2) + pow(sin(dLon / 2), 2) * cos(lat1) * cos(lat2);
+    // apply formula
+    intermediateCalculation = pow(sin(lattitudeDifference / 2), 2) + pow(sin(longitudeDifference / 2), 2) * cos(lat1) * cos(lat2);
 
     distance = 2 * rad * asin(sqrt(intermediateCalculation)) * 1000.0;
 
@@ -290,8 +294,9 @@ int PriorityRequestGeneratorServer::getMessageType(string jsonString)
     Json::CharReader *reader = builder.newCharReader();
     std::string errors{};
     bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    delete reader;
 
-    if (parsingSuccessful == true)
+    if (parsingSuccessful)
     {
         if ((jsonObject["MsgType"]).asString() == "MAP")
             messageType = MsgEnum::DSRCmsgID_map;
@@ -305,8 +310,7 @@ int PriorityRequestGeneratorServer::getMessageType(string jsonString)
         else
             std::cout << "Message type is unknown" << std::endl;
     }
-    delete reader;
-
+    
     return messageType;
 }
 
@@ -329,11 +333,9 @@ int PriorityRequestGeneratorServer::getTimedOutVehicleID()
 /*
     - Method to obtain current time
 */
-int PriorityRequestGeneratorServer::getCurrentTimeInSeconds()
+double PriorityRequestGeneratorServer::getCurrentTimeInSeconds()
 {
-    int currentTime{};
-    auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    currentTime = static_cast<int>(timenow);
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
     return currentTime;
 }
