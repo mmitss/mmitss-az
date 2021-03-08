@@ -45,39 +45,16 @@ from apscheduler.triggers import interval
 from apscheduler.triggers import date
 import Command
 from SignalController import SignalController
+from Scheduler import Scheduler
 
-class PhaseControlScheduler:
-    """
-    Scheduler class is responsible for processing the schedule received from MMITSS components,
-    and accordingly managing the BackgroundScheduler from the APScheduler library. The API for 
-    managing the BackgroundScheduler is provided in the member functions. 
-    
-    Arguments: 
-    ----------
-        (1) an object of the SignalController class.
-    
-    For example: scheduler = Scheduler(signalController)
-    """
+class PhaseControlScheduler(Scheduler):
+
     def __init__(self, signalController:SignalController):
         """
         extracts NTCIP_BackupTime, starts the background scheduler, and registers a call 
         to stopBackgroundScheduler() at exit.
         """
-        
-        self.commandId = 0        
-        
-        # From the methods of SignalController class, extract the ntcipBackupTime.
-        self.signalController = signalController
-        self.ntcipBackupTime_Sec = signalController.ntcipBackupTime_sec
-
-        # Scheduler parameters
-        self.backgroundScheduler = BackgroundScheduler() 
-        self.backgroundScheduler.start()
-        
-        
-        # Ensure that the scheduler shuts down when the app is exited
-        atexit.register(lambda: self.stopBackgroundScheduler())
-
+        super().__init__(signalController)      
         self.scheduleReceiptTime = 0
 
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -123,7 +100,8 @@ class PhaseControlScheduler:
                 (1) ScheduleDataStructure
 
             """     
-            self.clearBackgroundScheduler()
+            # Clear all jobs from the BackgroundScheduler
+            self.backgroundScheduler.remove_all_jobs()
             
             # Initialize flags to clear Holds, PedOmits, and VehOmits
             clearHolds = True
@@ -325,7 +303,7 @@ class PhaseControlScheduler:
         """
         
         # Clear all jobs from the BackgroundScheduler
-        self.clearBackgroundScheduler()
+        self.backgroundScheduler.remove_all_jobs()
 
         # Clear all phase controls from the traffic signal controller
         self.clearAllNtcipCommandsFromSignalController()
@@ -349,14 +327,6 @@ class PhaseControlScheduler:
         self.signalController.setPhaseControl(Command.OMIT_VEH_PHASES,False, [],time.time())
         # Clear PedOmits
         self.signalController.setPhaseControl(Command.OMIT_PED_PHASES,False, [],time.time())
-
-        
-    def clearBackgroundScheduler(self):
-        """
-        clearBackgroundScheduler clears all phase control jobs from the BackgroundScheduler.
-        """
-
-        self.backgroundScheduler.remove_all_jobs()
 
 
     def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
