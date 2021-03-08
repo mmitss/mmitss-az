@@ -46,7 +46,7 @@ from apscheduler.triggers import date
 import Command
 from SignalController import SignalController
 
-class Scheduler:
+class PhaseControlScheduler:
     """
     Scheduler class is responsible for processing the schedule received from MMITSS components,
     and accordingly managing the BackgroundScheduler from the APScheduler library. The API for 
@@ -73,7 +73,7 @@ class Scheduler:
         # Scheduler parameters
         self.backgroundScheduler = BackgroundScheduler() 
         self.backgroundScheduler.start()
-        self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
+        
         
         # Ensure that the scheduler shuts down when the app is exited
         atexit.register(lambda: self.stopBackgroundScheduler())
@@ -123,7 +123,7 @@ class Scheduler:
                 (1) ScheduleDataStructure
 
             """     
-            self.clearBackgroundScheduler(True)
+            self.clearBackgroundScheduler()
             
             # Initialize flags to clear Holds, PedOmits, and VehOmits
             clearHolds = True
@@ -307,29 +307,6 @@ class Scheduler:
                                             trigger = intervalTrigger, 
                                             max_instances=3)
 
-    def activateSpecialFunction(self, functionId, startSecFromNow:float, endSecFromNow:float):
-        """
-        Activates the special function at startSecFrmNow, and keeps it active till endSecFromNow.
-        """
-        if startSecFromNow == 0.0:
-            startSecFromNow = 0.01 # Jobs that start at time NOW (0.0 sec from now) are incompatible with BackgroundScheduler
-
-        intervalTrigger = interval.IntervalTrigger(seconds=self.ntcipBackupTime_Sec-1,
-                                                start_date=(datetime.datetime.now()+datetime.timedelta(seconds=startSecFromNow)), 
-                                                end_date=(datetime.datetime.now()+datetime.timedelta(seconds=endSecFromNow)))
-
-        self.backgroundScheduler.add_job(self.signalController.setSpecialFunction, 
-                                            args = [functionId, True], 
-                                            trigger = intervalTrigger, 
-                                            max_instances=3)
-
-        dateTrigger = date.DateTrigger(run_date=(datetime.datetime.now()+datetime.timedelta(seconds=endSecFromNow)))
-        self.backgroundScheduler.add_job(self.signalController.setSpecialFunction, 
-                                            args = [functionId, False], 
-                                            trigger = dateTrigger, 
-                                            max_instances=3)
-
-
     def schedulePhaseControlDeactivation(self, phases:list, control:int, secFromNow:float):
         """
         Deactivates the phase control at secFromNow - Single Job
@@ -340,27 +317,6 @@ class Scheduler:
                                             trigger = dateTrigger, 
                                             max_instances=3)
 
-    def scheduleTimingPlanUpdate(self, update_interval:int) -> int:
-        """
-        scheduleTimingPlanUpdate takes in the interval as an argument, and for that interval, 
-        schedules the update of active timing plan.
-
-        Arguments:
-        ----------
-            (1) interval:
-                    Time interval (seconds) between successive function call.
-        
-        Returns:
-        --------
-            the ID of the command (incase if one needs to cancel this job in the scheduler)
-        """
-        trigger = interval.IntervalTrigger(seconds=update_interval)
-        self.backgroundScheduler.add_job(self.signalController.updateAndSendActiveTimingPlan,
-                    trigger = trigger,
-                    id = str(self.commandId),
-                    max_instances=10)
-        return self.commandId
-
     def stopBackgroundScheduler(self):
         """
         stopBackgroundScheduler function first clears all jobs from the backgroundScheduler, 
@@ -369,7 +325,7 @@ class Scheduler:
         """
         
         # Clear all jobs from the BackgroundScheduler
-        self.clearBackgroundScheduler(False)
+        self.clearBackgroundScheduler()
 
         # Clear all phase controls from the traffic signal controller
         self.clearAllNtcipCommandsFromSignalController()
@@ -395,23 +351,12 @@ class Scheduler:
         self.signalController.setPhaseControl(Command.OMIT_PED_PHASES,False, [],time.time())
 
         
-    def clearBackgroundScheduler(self, rescheduleTimingPlanUpdate:bool):
+    def clearBackgroundScheduler(self):
         """
-        clearBackgroundScheduler clears all jobs from the BackgroundScheduler.
-
-        If the argument rescheduleTimingPlanUpdate is True, then adds the update 
-        of timing plan to the Background scheduler.
-        
-        Arguments: 
-        ----------
-            (1) RescheduleTimingPlanUpdate:
-                    A Boolean to indicate whether TimingPlanUpdater needs to be scheduled 
-                    after clearing the schedule.
+        clearBackgroundScheduler clears all phase control jobs from the BackgroundScheduler.
         """
 
         self.backgroundScheduler.remove_all_jobs()
-        if rescheduleTimingPlanUpdate==True:
-            self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
 
 
     def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
@@ -460,7 +405,7 @@ if __name__ == "__main__":
     asc = SignalController()
 
     # Create an object of Scheduler class
-    scheduler = Scheduler(asc)
+    scheduler = PhaseControlScheduler(asc)
 
     # Open a dummy schedule and load it into a json object
     scheduleFile = open("test/schedule3.json", "r")

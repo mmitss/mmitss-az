@@ -37,7 +37,8 @@ import json
 import socket
 import time, datetime
 from SignalController import SignalController
-from Scheduler import Scheduler
+from PhaseControlScheduler import PhaseControlScheduler
+from GeneralScheduler import GeneralScheduler
 
 def main():
     # Read the config file into a json object:
@@ -62,7 +63,8 @@ def main():
     
     # Create objects of the related modules:
     asc = SignalController()
-    scheduler = Scheduler(asc)
+    phaseControlScheduler = PhaseControlScheduler(asc)
+    generalScheduler = GeneralScheduler(asc)
 
     while(True):
         # Receive data on the TCI socket
@@ -74,16 +76,16 @@ def main():
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a clear request at time:" + str(time.time()))
-                scheduler.clearBackgroundScheduler(True)
+                phaseControlScheduler.clearBackgroundScheduler()
                 # Clear all holds, forceoffs, calls, and omits from the ASC signal controller:
-                scheduler.clearAllNtcipCommandsFromSignalController()
+                phaseControlScheduler.clearAllNtcipCommandsFromSignalController()
                 # Clear all phase controls from the SignalController class of the Schedule class.
-                scheduler.signalController.resetAllPhaseControls()
+                phaseControlScheduler.signalController.resetAllPhaseControls()
             else:
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a new schedule at time:" + str(time.time())) 
                 if logging: print(receivedMessage)
-                scheduler.signalController.resetAllPhaseControls()
-                scheduler.processReceivedSchedule(receivedMessage)
+                phaseControlScheduler.signalController.resetAllPhaseControls()
+                phaseControlScheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
@@ -106,7 +108,7 @@ def main():
                 startTime = receivedMessage["StartTime"]
                 endTime = receivedMessage["EndTime"]
                 functionId = receivedMessage["Id"]
-                scheduler.activateSpecialFunction(functionId, startTime, endTime)
+                generalScheduler.activateSpecialFunction(functionId, startTime, endTime)
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
                 asc.setSpecialFunction(functionId, False)
