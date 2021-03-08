@@ -26,7 +26,7 @@
 			"MessageEncoder": 10003,
 			"MessageDecoder": 10002
 		},
-		"MessageDistributor": 5000,
+		"MessageDistributor": 5001,
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
         "HostBsmDecoder": 10005,
@@ -115,9 +115,9 @@
 	},
      "IntersectionReferencePoint":
     {
-        "Latitude_DecimalDegree":123,
-        "Longitude_DecimalDegree":321,
-        "Elevation_Meter":213
+        "Latitude_DecimalDegree": 32.236058277186295,
+        "Longitude_DecimalDegree": -110.94398677110568,
+        "Elevation_Meter": 722
 	},
 	"DataTransfer": {
 		"FtpServerPort": 9090,
