@@ -18,8 +18,7 @@ class Scheduler(ABC):
     def stopBackgroundScheduler(self):
         """
         stopBackgroundScheduler function first clears all jobs from the backgroundScheduler, 
-        clears all NTCIP commands in the signal controller, and then shuts down the backgroundScheduler.
-        This function is intended to run at the exit.
+        and then shuts down the backgroundScheduler. This function is intended to run at the exit.
         """
         
         # Clear all jobs from the BackgroundScheduler
