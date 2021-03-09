@@ -521,4 +521,3 @@ if __name__ == "__main__":
     controller = SignalController()
     
     print(controller.ntcipBackupTime_sec)
-    print(controller.totalSpecialFunctions)

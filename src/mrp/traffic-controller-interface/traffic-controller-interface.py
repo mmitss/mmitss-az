@@ -108,7 +108,11 @@ def main():
                 startTime = receivedMessage["StartTime"]
                 endTime = receivedMessage["EndTime"]
                 functionId = receivedMessage["Id"]
-                generalScheduler.activateAndScheduleSpecialFunctionMaintenance(functionId, startTime, endTime)
+                currentStatus = asc.specialFunctionLocalStatus[functionId]
+                if currentStatus != requiredStatus:
+                    generalScheduler.activateAndScheduleSpecialFunctionMaintenance(functionId, startTime, endTime)
+                else: 
+                    print("Special function is already in the required status. Discarding the new request!")
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
                 asc.updateSpecialFunctionLocalStatus(functionId, requiredStatus)

@@ -47,11 +47,5 @@ class GeneralScheduler(Scheduler):
                                             args = [functionId, False], 
                                             trigger = dateTrigger, 
                                             max_instances=3)
-                                        
-        dateTrigger = date.DateTrigger(run_date=(datetime.datetime.now()+datetime.timedelta(seconds=endSecFromNow)))
-        self.backgroundScheduler.add_job(self.signalController.setSpecialFunctionControllerStatus, 
-                                            args = [functionId], 
-                                            trigger = dateTrigger, 
-                                            max_instances=3)
 
 
