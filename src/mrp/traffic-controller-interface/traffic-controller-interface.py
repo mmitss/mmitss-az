@@ -112,6 +112,7 @@ def main():
                 if currentStatus != requiredStatus:
                     generalScheduler.activateAndScheduleSpecialFunctionMaintenance(functionId, startTime, endTime)
                 else: 
+                    # This is a current limitations of TCI. If the special function is already ON, then further requests to set it ON will be discarded till it is ON.
                     print("Special function is already in the required status. Discarding the new request!")
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
