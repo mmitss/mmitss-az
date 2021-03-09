@@ -76,7 +76,7 @@ def main():
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
                 print("[" + str(datetime.datetime.now()) + "] " + "Received a clear request at time:" + str(time.time()))
-                phaseControlScheduler.clearBackgroundScheduler()
+                phaseControlScheduler.backgroundScheduler.remove_all_jobs()
                 # Clear all holds, forceoffs, calls, and omits from the ASC signal controller:
                 phaseControlScheduler.clearAllNtcipCommandsFromSignalController()
                 # Clear all phase controls from the SignalController class of the Schedule class.
@@ -108,7 +108,7 @@ def main():
                 startTime = receivedMessage["StartTime"]
                 endTime = receivedMessage["EndTime"]
                 functionId = receivedMessage["Id"]
-                generalScheduler.activateSpecialFunction(functionId, startTime, endTime)
+                #generalScheduler.activateSpecialFunction(functionId, startTime, endTime)
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
                 asc.setSpecialFunction(functionId, False)
