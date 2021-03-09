@@ -1,0 +1,124 @@
+File opened at time : 1615247997
+
+JsonString is sent or received at time : 1615247998
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248085
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 9.022051773729626}, "heading_Degree": 269.57, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 25000, "msgCount": 1, "position": {"elevation_Meter": 540.14, "latitude_DecimalDegree": 32.2360641, "longitude_DecimalDegree": -110.9512644}, "priorityRequestType": 1, "regionalID": 0, "speed_MeterPerSecond": 10.43, "vehicleID": 113, "vehicleType": 6}, "Timestamp_posix": 1615248085.6942647, "Timestamp_verbose": "2021-03-09 00:01:25.694268"}
+
+JsonString is sent or received at time : 1615248085
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":25000,"regionalID":0,"sequenceNumber":1,"updateCount":0},"Timestamp_posix":1615248085.6952519,"Timestamp_verbose":"2021-03-09 00:01:25.695","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248085
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248090
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 13, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 2.0534031413612563}, "heading_Degree": 354.92, "inBoundLane": {"ApproachID": 3, "LaneID": 8}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 30000, "msgCount": 2, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2354047, "longitude_DecimalDegree": -110.9522834}, "priorityRequestType": 1, "regionalID": 0, "speed_MeterPerSecond": 19.1, "vehicleID": 181, "vehicleType": 2}, "Timestamp_posix": 1615248090.9740043, "Timestamp_verbose": "2021-03-09 00:01:30.974009"}
+
+JsonString is sent or received at time : 1615248090
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":30000,"regionalID":0,"sequenceNumber":2,"updateCount":0},"Timestamp_posix":1615248090.975358,"Timestamp_verbose":"2021-03-09 00:01:30.975","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248090
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248092
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 13, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 0.9720464135021097}, "heading_Degree": 354.38, "inBoundLane": {"ApproachID": 3, "LaneID": 8}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 32000, "msgCount": 3, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2355925, "longitude_DecimalDegree": -110.9523063}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 18.96, "vehicleID": 181, "vehicleType": 2}, "Timestamp_posix": 1615248092.0929894, "Timestamp_verbose": "2021-03-09 00:01:32.092996"}
+
+JsonString is sent or received at time : 1615248092
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":32000,"regionalID":0,"sequenceNumber":3,"updateCount":0},"Timestamp_posix":1615248092.0943739,"Timestamp_verbose":"2021-03-09 00:01:32.94","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248092
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248092
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 5.743348982785603}, "heading_Degree": 269.82, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 32000, "msgCount": 2, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360623, "longitude_DecimalDegree": -110.9518734}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 6.39, "vehicleID": 113, "vehicleType": 6}, "Timestamp_posix": 1615248092.1797335, "Timestamp_verbose": "2021-03-09 00:01:32.179738"}
+
+JsonString is sent or received at time : 1615248092
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":32000,"regionalID":0,"sequenceNumber":4,"updateCount":0},"Timestamp_posix":1615248092.180496,"Timestamp_verbose":"2021-03-09 00:01:32.180","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248092
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248093
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 13, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 0.0}, "heading_Degree": 356.31, "inBoundLane": {"ApproachID": 1, "LaneID": 1}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 33000, "msgCount": 4, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2357626, "longitude_DecimalDegree": -110.9523196}, "priorityRequestType": 3, "regionalID": 0, "speed_MeterPerSecond": 18.86, "vehicleID": 181, "vehicleType": 2}, "Timestamp_posix": 1615248093.092858, "Timestamp_verbose": "2021-03-09 00:01:33.092864"}
+
+JsonString is sent or received at time : 1615248093
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":33000,"regionalID":0,"sequenceNumber":5,"updateCount":0},"Timestamp_posix":1615248093.094557,"Timestamp_verbose":"2021-03-09 00:01:33.94","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248093
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248097
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 4.921259842519685}, "heading_Degree": 269.82, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 37000, "msgCount": 3, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360617, "longitude_DecimalDegree": -110.9521036}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 2.34, "vehicleID": 113, "vehicleType": 6}, "Timestamp_posix": 1615248097.225646, "Timestamp_verbose": "2021-03-09 00:01:37.225650"}
+
+JsonString is sent or received at time : 1615248097
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":37000,"regionalID":0,"sequenceNumber":6,"updateCount":0},"Timestamp_posix":1615248097.226382,"Timestamp_verbose":"2021-03-09 00:01:37.226","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248097
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248102
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 0.0}, "heading_Degree": 269.68, "inBoundLane": {"ApproachID": 1, "LaneID": 1}, "intersectionID": 26379, "minuteOfYear": 95041, "msOfMinute": 42000, "msgCount": 4, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360612, "longitude_DecimalDegree": -110.9522509}, "priorityRequestType": 3, "regionalID": 0, "speed_MeterPerSecond": 5.27, "vehicleID": 113, "vehicleType": 6}, "Timestamp_posix": 1615248102.791728, "Timestamp_verbose": "2021-03-09 00:01:42.791733"}
+
+JsonString is sent or received at time : 1615248102
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95041,"msOfMinute":42000,"regionalID":0,"sequenceNumber":7,"updateCount":0},"Timestamp_posix":1615248102.793256,"Timestamp_verbose":"2021-03-09 00:01:42.793","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248102
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248144
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 9.818652849740932}, "heading_Degree": 269.54, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95042, "msOfMinute": 24000, "msgCount": 1, "position": {"elevation_Meter": 540.14, "latitude_DecimalDegree": 32.2360641, "longitude_DecimalDegree": -110.9512575}, "priorityRequestType": 1, "regionalID": 0, "speed_MeterPerSecond": 9.65, "vehicleID": 248, "vehicleType": 6}, "Timestamp_posix": 1615248144.6648207, "Timestamp_verbose": "2021-03-09 00:02:24.664825"}
+
+JsonString is sent or received at time : 1615248144
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95042,"msOfMinute":24000,"regionalID":0,"sequenceNumber":8,"updateCount":0},"Timestamp_posix":1615248144.666146,"Timestamp_verbose":"2021-03-09 00:02:24.666","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248144
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248151
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 6.594594594594595}, "heading_Degree": 269.82, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95042, "msOfMinute": 31000, "msgCount": 2, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360623, "longitude_DecimalDegree": -110.9518744}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 5.55, "vehicleID": 248, "vehicleType": 6}, "Timestamp_posix": 1615248151.2229629, "Timestamp_verbose": "2021-03-09 00:02:31.222968"}
+
+JsonString is sent or received at time : 1615248151
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95042,"msOfMinute":31000,"regionalID":0,"sequenceNumber":9,"updateCount":0},"Timestamp_posix":1615248151.2246449,"Timestamp_verbose":"2021-03-09 00:02:31.224","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248151
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248154
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 7.821522309711286}, "heading_Degree": 269.82, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95042, "msOfMinute": 34000, "msgCount": 3, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.236062, "longitude_DecimalDegree": -110.9520098}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 1.49, "vehicleID": 248, "vehicleType": 6}, "Timestamp_posix": 1615248154.9676914, "Timestamp_verbose": "2021-03-09 00:02:34.967695"}
+
+JsonString is sent or received at time : 1615248154
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95042,"msOfMinute":34000,"regionalID":0,"sequenceNumber":10,"updateCount":0},"Timestamp_posix":1615248154.968334,"Timestamp_verbose":"2021-03-09 00:02:34.968","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248154
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248162
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 2.6794871794871793}, "heading_Degree": 269.82, "inBoundLane": {"ApproachID": 1, "LaneID": 2}, "intersectionID": 26379, "minuteOfYear": 95042, "msOfMinute": 42000, "msgCount": 4, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360617, "longitude_DecimalDegree": -110.9521297}, "priorityRequestType": 2, "regionalID": 0, "speed_MeterPerSecond": 4.68, "vehicleID": 248, "vehicleType": 6}, "Timestamp_posix": 1615248162.051779, "Timestamp_verbose": "2021-03-09 00:02:42.051784"}
+
+JsonString is sent or received at time : 1615248162
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95042,"msOfMinute":42000,"regionalID":0,"sequenceNumber":11,"updateCount":0},"Timestamp_posix":1615248162.0533099,"Timestamp_verbose":"2021-03-09 00:02:42.53","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248162
+{"MsgType":"ClearRequest"}
+
+JsonString is sent or received at time : 1615248164
+{"MsgType": "SRM", "SignalRequest": {"basicVehicleRole": 16, "expectedTimeOfArrival": {"ETA_Duration": 4.0, "ETA_Minute": 0, "ETA_Second": 0.0}, "heading_Degree": 269.68, "inBoundLane": {"ApproachID": 1, "LaneID": 1}, "intersectionID": 26379, "minuteOfYear": 95042, "msOfMinute": 44000, "msgCount": 5, "position": {"elevation_Meter": 540.15, "latitude_DecimalDegree": 32.2360612, "longitude_DecimalDegree": -110.9522529}, "priorityRequestType": 3, "regionalID": 0, "speed_MeterPerSecond": 6.93, "vehicleID": 248, "vehicleType": 6}, "Timestamp_posix": 1615248164.0770745, "Timestamp_verbose": "2021-03-09 00:02:44.077080"}
+
+JsonString is sent or received at time : 1615248164
+{"MsgType":"SSM","SignalStatus":{"intersectionID":26807,"minuteOfYear":95042,"msOfMinute":44000,"regionalID":0,"sequenceNumber":12,"updateCount":0},"Timestamp_posix":1615248164.0786841,"Timestamp_verbose":"2021-03-09 00:02:44.78","noOfRequest":0}
+
+
+JsonString is sent or received at time : 1615248164
+{"MsgType":"ClearRequest"}
