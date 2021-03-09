@@ -108,10 +108,11 @@ def main():
                 startTime = receivedMessage["StartTime"]
                 endTime = receivedMessage["EndTime"]
                 functionId = receivedMessage["Id"]
-                #generalScheduler.activateSpecialFunction(functionId, startTime, endTime)
+                generalScheduler.activateAndScheduleSpecialFunctionMaintenance(functionId, startTime, endTime)
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
-                asc.setSpecialFunction(functionId, False)
+                asc.updateSpecialFunctionLocalStatus(functionId, requiredStatus)
+                asc.setSpecialFunctionControllerStatus(functionId)
         else: print("[" + str(datetime.datetime.now()) + "] " + "Invalid message received!")
         
     s.close()
