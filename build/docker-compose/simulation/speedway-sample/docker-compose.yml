@@ -52,8 +52,8 @@ services:
                 ipv4_address: 10.12.6.12
         image: *IMAGE_MRP_SIMULATION
 
-    server-tools:
-        container_name: server-tools
+    simulation_server-tools:
+        container_name: simulation_server-tools
         volumes:
           - type: bind
             source: $MMITSS_ROOT/mmitss/config/simulation_server-tools/nojournal
