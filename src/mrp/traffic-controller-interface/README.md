@@ -86,7 +86,7 @@ The TCI processes following types of requests:
    ```
    {
    	"MsgType": "SpecialFunction",
-	"Status": false,
+		"Status": false,
     	"Id": 8,
    }
    ```
