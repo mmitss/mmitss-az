@@ -71,8 +71,25 @@ The TCI processes following types of requests:
   }
   ```
 7. Special functions:
-
-
+   - The TCI allows to set a requested special function to `true` for the request time interval. To set any special function to `true`, a message similar to the following can be sent to the TCI:
+   ```
+   {
+	"MsgType": "SpecialFunction",
+	"Status": true,
+    	"Id": 8,
+    	"StartTime": 2,
+    	"EndTime" : 60
+   }
+   ```
+   - Note that in the above message, `StartTime` and `EndTime` will be seconds after the message was received.
+   - To set any special function to `false`, a message similar to the following can be sent to TCI:
+   ```
+   {
+   	"MsgType": "SpecialFunction",
+	"Status": false,
+    	"Id": 8,
+   }
+   ```
 ## Console output and logging
 Traffic-Controller-Interface component does not generate any log files. The console output displays the execution of the scheduled events.
 
@@ -88,4 +105,5 @@ Traffic-Controller-Interface component does not generate any log files. The cons
 
 
 ## Known issues/limitations
-- None -
+1. Special Functions:
+If the special function is already active (and being maintained), and another request for activating the "same" special function is received during this time (probably to extend the activation time), currently this request is discarded.
