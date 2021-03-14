@@ -60,14 +60,14 @@ The TCI processes following types of requests:
   - In association with the Map-Spat-Broadcaster component, the TCI provides the current and next phase status when requested. When the following message is received, TCI sends the current and next phase status to the requester:
   ```
   {
-	  "MsgType": "CurrNextPhaseRequest"
+	"MsgType": "CurrNextPhaseRequest"
   }
   ```
 5. Timing plan request:
   - TCI maintains the current timing plan set in the signal controller, through a series of NTCIP commands executed at the configured interval. WHen the following message is received, the TCI sends the current signal timing plan to the requester:
   ```
   {
-	  "MsgType": "TimingPlanRequest"
+  	"MsgType": "TimingPlanRequest"
   }
   ```
 7. Special functions:
@@ -76,18 +76,18 @@ The TCI processes following types of requests:
    {
 	"MsgType": "SpecialFunction",
 	"Status": true,
-    	"Id": 8,
-    	"StartTime": 2,
-    	"EndTime" : 60
+	"Id": 8,
+	"StartTime": 2,
+	"EndTime" : 60
    }
    ```
    - Note that in the above message, `StartTime` and `EndTime` will be seconds after the message was received.
    - To set any special function to `false`, a message similar to the following can be sent to TCI:
    ```
    {
-   	"MsgType": "SpecialFunction",
-		"Status": false,
-    	"Id": 8,
+	"MsgType": "SpecialFunction",
+	"Status": false,
+	"Id": 8,
    }
    ```
 ## Console output and logging
