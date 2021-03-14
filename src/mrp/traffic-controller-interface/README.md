@@ -6,7 +6,7 @@ The Traffic Controller Interface (TCI) component is the interfacing component th
 
 ## Work-flow
 The TCI processes following types of requests:
-1. Execution or clearing of phase control schedule:
+1. Execution of phase control schedule:
   - To execute a phase control schedule, a message similar to the following is expected:
   ```
   {
@@ -46,6 +46,15 @@ The TCI processes following types of requests:
     - `"forceoff"`: forceoff a vehicle phase
     - `"call_veh"`: call a vehicle phase
     - `"call_ped"`: call a pedestrian phase
+  2. Clearing a currently executing schedule:
+    - When the following message is received, TCI clears all scheduled jobs from the current phase control schedule:
+      ```
+      {
+        "MsgType": "Schedule",
+        "Schedule": "Clear"
+      }
+      ```
+    - When a currently 
     
 2. Current and next phase status
 3. Timing plan request
