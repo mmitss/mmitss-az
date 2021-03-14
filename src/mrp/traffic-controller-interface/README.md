@@ -46,15 +46,14 @@ The TCI processes following types of requests:
     - `"forceoff"`: forceoff a vehicle phase
     - `"call_veh"`: call a vehicle phase
     - `"call_ped"`: call a pedestrian phase
+  - When a new schedule is received while executing another schedule, and if new and old schedules have the same `commandType` for the same `commandPhase`, the `commandType`   state of the `commandPhase` is maintained while executing the next schedule.
   2. Clearing a currently executing schedule:
     - When the following message is received, TCI clears all scheduled jobs from the current phase control schedule:
       ```
       {
         "MsgType": "Schedule",
         "Schedule": "Clear"
-      }
-      ```
-    - When a currently 
+      }'''
     
 2. Current and next phase status
 3. Timing plan request
