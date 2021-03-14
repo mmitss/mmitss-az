@@ -39,7 +39,14 @@ The TCI processes following types of requests:
       ]
     }
   ```
-
+  - Number and type of commands in the `["Schedule"]` key may vary based on the requirement. Supported values in the `["commandType"]` key are the following:
+    - `"omit_veh"`: omit a vehicle phase
+    - `"omit_ped"`: omit a pedestrian phase
+    - `"hold"`: hold a vehicle phase
+    - `"forceoff"`: forceoff a vehicle phase
+    - `"call_veh"`: call a vehicle phase
+    - `"call_ped"`: call a pedestrian phase
+    
 2. Current and next phase status
 3. Timing plan request
 4. Special functions
