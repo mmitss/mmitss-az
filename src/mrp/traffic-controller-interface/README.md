@@ -54,8 +54,7 @@ The TCI processes following types of requests:
     {
       "MsgType": "Schedule",
       "Schedule": "Clear"
-    }'''
-    
+    }```    
 3. Current and next phase status
 4. Timing plan request
 5. Special functions
