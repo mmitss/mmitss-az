@@ -7,7 +7,7 @@
 # or reproduction of this material is strictly forbidden unless prior written permission    #
 # is obtained from Arizona Board of Regents or University of Arizona.                       #
 #                                                                                           #
-# lmmitss-initialize.sh                                                                     #
+# setup-build-environment.sh                                                                #
 # Created by Niraj Altekar                                                                  #
 # Transportation Research Institute                                                         #
 # Systems and Industrial Engineering                                                        #
@@ -55,8 +55,8 @@ sudo mkdir /usr/local/lib/mmitss
 sleep 1s
 
 if [ "$copy_sample" = "y" ]; then
-echo "Copy the configuration files of the intersection Daisy-Gavilan to /nojournal/bin/"
-sudo cp -r ../../config/anthem/field/daisy-gavilan/nojournal/bin /nojournal
+echo "Copy the configuration files of the intersection speedway-mountain to /nojournal/bin/"
+sudo cp -r ../../config/speedway-sample/simulation/speedway-mountain/nojournal/bin /nojournal
 sleep 1s
 echo "Change the owner and group of the configuration files and provide necessary permissions (chmod 777)"
 sudo chown -R $username:$usergroup /nojournal
@@ -103,7 +103,9 @@ fi
 
 sleep 1s
 
-
-
 sudo ldconfig
+
+sleep 2s
+echo "Added required environment variables in ~/.bashrc file."
+echo "To allow for changes to take effect, either close this terminal or execute the command: source ~/.bashrc"
 pkill -9 sleep #End
