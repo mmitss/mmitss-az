@@ -30,39 +30,22 @@
 #include "MapEngine.h"
 #include "CSV.h"
 
-int main(int argc, char *argv[])
+int main()
 {
-    Json::Value jsonObject;
+    Json::Value config;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
     std::string errors{};
-    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &config, &errors);        
     delete reader;
 
-    UdpSocket s(static_cast<short unsigned int>(jsonObject["PortNumber"]["OBUBSMReceiver"].asInt()));
+    UdpSocket s(static_cast<short unsigned int>(config["PortNumber"]["OBUBSMReceiver"].asInt()));
 
-    while(True)
+    while(true)
     {
-        isOnMap = mapEngine.isVehicleOnMap(latitude, longitude, elevation, speed, heading);
-
-        if (isOnMap == true)
-        {
-            onmapCsv = mapEngine.getOnMapCsv(latitude, longitude, elevation, speed, heading);
-            outputFile << std::fixed << std::setprecision(3) << log_timestamp_verbose << "," << log_timestamp_posix << "," << timestamp_verbose << "," << timestamp_posix << "," << temporaryId << "," << secMark << ",";
-            outputFile << std::fixed << std::setprecision(8) << latitude << "," << longitude << ",";
-            outputFile << std::fixed << std::setprecision(3) << elevation << "," << speed << "," << heading << "," << type << "," << length << "," << width << "," << onmapCsv << "\n";
-        }
+        std::cout << "hgellow" << std::endl;
     }
-
-    
-}
-index++;
-}
-
-inputFile.close();
-outputFile.close();
-
-return 0;
+ return 0;    
 }
