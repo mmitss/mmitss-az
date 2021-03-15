@@ -14,7 +14,7 @@ COPY build/bin/MsgEncoder/arm/M_MsgEncoder /mmitss
 COPY build/bin/MapSpatBroadcaster/arm/M_MapSpatBroadcaster /mmitss
 COPY build/bin/SystemInterface/arm/M_SystemInterface /mmitss
 COPY build/bin/V2XDataCollector/arm/M_V2XDataCollector /mmitss
-COPY build/bin/V2XDataFtpClient/arm/M_V2XDataFtpClient /mmitss
+COPY build/bin/V2XDataTransfer/arm/M_V2XDataTransfer /mmitss
 COPY build/bin/SignalCoordinationRequestGenerator/arm/M_SignalCoordinationRequestGenerator /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
