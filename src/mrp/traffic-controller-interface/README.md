@@ -102,6 +102,11 @@ Traffic-Controller-Interface component does not generate any log files. The cons
   - NTCIP backup time must be > 0
 
 2. In the `mmitss-phase3-master-config.json` (config) file, following keys need to be assigned with appropriate values:
+  - `["HostIp"]`
+  - `["PortNumber"]["TrafficControllerInterface"]
+  - `["PortNumber"]["TrafficControllerCurrPhaseListener"]
+  - `["PortNumber"]["TrafficControllerTimingPlanSender"]
+  - 
 
 
 ## Known issues/limitations
