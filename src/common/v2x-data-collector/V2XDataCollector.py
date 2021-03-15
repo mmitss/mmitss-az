@@ -176,7 +176,6 @@ class V2XDataCollector:
         self.msgCountsLogfile.write(csvRow)
 
     def write_bsm(self, bsmJson:json, senderPort:int):        
-        print("Writing BSM at: " + str(time.time()))
         csvRow = self.bsm_json_to_csv(bsmJson)
         if ((self.environment == "vehicle") and (senderPort == self.hostBsmDecoderPort)):
             self.hostBsmLogfile.write(csvRow)
