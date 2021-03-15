@@ -57,10 +57,16 @@ int main()
             else if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
                 std::string bsmJsonString = decoder.bsmDecoder(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
                 decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
                 decoderSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPort), bsmJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmLocatorPortNo), bsmJsonString);
+                if(applicationPlatform=="roadside")
+                {
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmLocatorPortNo), bsmJsonString);
+                }
+                else if(applicationPlatform=="vehicle")
+                {
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                }
                 std::cout << "Decoded BSM" << std::endl;
             }
 
