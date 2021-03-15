@@ -12,6 +12,7 @@ COPY build/bin/MapSpatBroadcaster/x86/M_MapSpatBroadcaster /mmitss
 COPY build/bin/SystemInterface/x86/M_SystemInterface /mmitss
 COPY build/bin/V2XDataCollector/x86/M_V2XDataCollector /mmitss
 COPY build/bin/SignalCoordinationRequestGenerator/x86/M_SignalCoordinationRequestGenerator /mmitss
+COPY build/bin/BsmLocator/x86/M_BsmLocator /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]
 
