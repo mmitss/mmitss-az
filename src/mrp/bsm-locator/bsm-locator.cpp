@@ -27,25 +27,60 @@
 #include "json/json.h"
 
 #include <UdpSocket.h>
-#include "MapEngine.h"
-#include "CSV.h"
+#include "BsmLocator.h"
 
 int main()
 {
+    std::string configFilename("/nojournal/bin/mmitss-phase3-master-config.json");
     Json::Value config;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::ifstream configJson(configFilename);
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    Json::CharReaderBuilder builder;
-    Json::CharReader * reader = builder.newCharReader();
+    Json::CharReaderBuilder readBuilder;
+    Json::CharReader * reader = readBuilder.newCharReader();
     std::string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &config, &errors);        
-    delete reader;
+
+    bool mapBsmFiltering = config["MapBsmFiltering"].asBool();
+
+    BsmLocator bsmLocator(configFilename);    
 
     UdpSocket s(static_cast<short unsigned int>(config["PortNumber"]["OBUBSMReceiver"].asInt()));
+    std::string hostIp = config["HostIp"].asString();
+    int dataCollectorPort = config["PortNumber"]["DataCollector"].asInt();
+
+    char receiveBuffer[5120];
+    Json::Value receivedJsonObject;
+    
+    Json::Value outgoingBsmJson;
+    Json::StreamWriterBuilder writeBuilder;
+    writeBuilder["commentStyle"] = "None";
+    writeBuilder["indentation"] = "";
+    std::string outgoingBsmJsonString{};
 
     while(true)
     {
-        std::cout << "hgellow" << std::endl;
+        s.receiveData(receiveBuffer, sizeof(receiveBuffer));
+        std::string receivedJsonString(receiveBuffer);
+        reader->parse(receivedJsonString.c_str(), receivedJsonString.c_str() + receivedJsonString.size(), &receivedJsonObject, &errors);        
+        if(receivedJsonObject["MsgType"]=="BSM")
+        {
+            outgoingBsmJson = bsmLocator.getOnMapFields(receivedJsonObject);
+            bool onMap = outgoingBsmJson["OnmapVehicle"]["onMap"].asBool();
+            if(onMap==false)
+            {
+                if(mapBsmFiltering==false)
+                {
+                    outgoingBsmJsonString = Json::writeString(writeBuilder,outgoingBsmJson);
+                    s.sendData(hostIp, static_cast<unsigned short int>(dataCollectorPort), outgoingBsmJsonString);
+                }
+            }
+            else
+            {
+                outgoingBsmJsonString = Json::writeString(writeBuilder,outgoingBsmJson);
+                s.sendData(hostIp, static_cast<unsigned short int>(dataCollectorPort), outgoingBsmJsonString);
+            }
+        }
     }
+ delete reader;
  return 0;    
 }

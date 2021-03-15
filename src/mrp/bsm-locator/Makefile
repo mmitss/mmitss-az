@@ -10,9 +10,9 @@ CPPFLAGS += -DLOGGING
 #-Wl is used to pass the option(rpath) to the linker --- we probably want to move this into a default rather than a hard coded location
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -L$(NETSNMP_LIB) -llocAware -ldsrc -lasn -lmmitss-common -lnetsnmp 
 #cpp's go here
-SRC += bsm-locator.cpp MapEngine.cpp
+SRC += bsm-locator.cpp BsmLocator.cpp
 #the name of the executable goes here
-TARGET = BsmLocator
+TARGET = M_BsmLocator
 
 # list the .o's corresponding to .cpp's
 # see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html
