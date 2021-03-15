@@ -26,7 +26,7 @@ int main()
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["TrajectoryAware"]).asInt();
+    const int bsmLocatorPortNo = (jsonObject_config["PortNumber"]["OBUBSMReceiver"]).asInt();
     const int messageDistributorPort = (jsonObject_config["PortNumber"]["MessageDistributor"]).asInt();
 
     std::string receivedPayload{};
@@ -60,7 +60,7 @@ int main()
                 decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
                 decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
                 decoderSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPort), bsmJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trajectoryAwarePortNo), bsmJsonString);
+                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmLocatorPortNo), bsmJsonString);
                 std::cout << "Decoded BSM" << std::endl;
             }
 
