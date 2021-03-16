@@ -175,7 +175,7 @@ In the `mmitss-phase3-master-config.json` (config) file following keys need to b
 - `config["SRMTimedOutTime"]`: time-out period to delete priority request from the Active Request Table, if infrastructure doesn't receive SRM.
 
 ## Test
-A basic test of the PRG software can be done by using a tool (bsmSender.py, mapSender.py scripts) reside on mmitss/src/vsp/priority-request-generator/Test directory. The bsmSender.py and msgSender.py can send BSM MAP JSON string respectively to the PRG over the UDP socket. The PRG will sent SRM if the received map becomes active map.
+A basic test of the PRG software can be done by using a tool (bsmSender.py, mapSender.py scripts) reside on mmitss/src/vsp/priority-request-generator/test directory. The bsmSender.py and msgSender.py can send BSM MAP JSON string respectively to the PRG over the UDP socket. The PRG will sent SRM if the received map becomes active map.
 
 ## Known issues/limitations
 - None
