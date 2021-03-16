@@ -1,12 +1,12 @@
 # Software Component Description: Priority-Request-Solver (PRSolver)
-The Priority-Request-Solver software component is responsible for formulating the optimization model based on priority request list, current traffic signal plan, current traffic signal status. It generates optimal signal timing schedule as a solution of the optimization problem. A GNU GLPK package (version 4.55) is used to solve the optimization model. The optimal signal timing schedule is send to the TrafficControllerStatus(TCI) to serve the priority requests.
-The GLPK (https://www.gnu.org/software/glpk/) provides open-source C/C++ packages that has packages to solve mixed integer programming (MIP),  large-scale linear programming (LP), and other related optimization problems.
+The Priority-Request-Solver software component is responsible for formulating the optimization model based on priority request list, current traffic signal plan, current traffic signal status. It generates optimal signal timing schedule as a solution of the optimization problem. A GNU GLPK package (version 4.55) is used to solve the optimization model. The optimal signal timing schedule is sent to the TrafficControllerStatus (TCI) to serve the priority requests.
+The GLPK (https://www.gnu.org/software/glpk/) provides open-source C/C++ packages that has packages to solve mixed integer programming (MIP), large-scale linear programming (LP), and other related optimization problems.
+
 ## Work-flow
-The PRSolver receives priority requests list from the PriorityRequestServer(PRS). It receives current signal timing plan(static) from the TCI. It also receives split data from SignalCoordinationRequestGenerator if there is an active coordination plan. The PRSolver requests for current signal status to TCI. It writes the optimization model in the NewModel.mod (for tranit, truck or coordination priority requests) or NewModel_EV.mod(for emergency vehicle prioriry requests) file. The input for the optimization model is written in the NewModelData.dat file. A JSON formatted optimal signal timing schedule is sent to the TCI over the UDP socket. The PRSolver composed of three class- (1) SolverDataManager (2) Schedulemanager, and (3) PriorityRequestSolver.
+The PRSolver receives priority requests list from the PriorityRequestServer(PRS) and current signal timing plan(static) from the TCI. It also receives split data from the SignalCoordinationRequestGenerator, if there is an active coordination plan. The PRSolver requests for current signal status to the TCI. It writes the optimization model in the NewModel.mod (for transit, truck or coordination priority requests) or NewModel_EV.mod (for emergency vehicle priority requests) file. The input for the optimization model is written in the NewModelData.dat file. A JSON formatted optimal signal timing schedule is sent to the TCI over the UDP socket. The PRSolver composed of three class- (1) SolverDataManager (2) Schedulemanager, and (3) PriorityRequestSolver.
 
 ### SolverDataManager Class
-The SolverDataManager class manages the data required for solving the optimization model. It writes the dat file (NewModelData.dat) in the /nojournal/bin directory, required for solving the optimization model. The dat file contains the  information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green), static signal timing plan (yellow change interval, red clearance interval, minimum green time and maximum green time for all the active phases), priority type (transit, truck, EV etc.), priority weights, ETA (earliest arrival time and latest arrival time) of each priorrity requests. An example of such NewModelData.dat file is as follows:
-
+The SolverDataManager class manages the data required for solving the optimization model. It writes the dat file (NewModelData.dat) in the /nojournal/bin directory, required for solving the optimization model. The dat file contains the  information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green), static signal timing plan (yellow change interval, red clearance interval, minimum green time and maximum green time for all the active phases), priority type (transit, truck, EV etc.), priority weights, ETA (earliest arrival time and latest arrival time) of each priority requests. An example of such NewModelData.dat file is as follows:
 ```
 data;
 param SP1:=4;
@@ -35,7 +35,7 @@ end;
 ```
 
 ### ScheduleManager Class
-The ScheduleManager class can read the Results.txt file and develop optimal schedule in a JSON formatted message. The schedule contains the information about start time, end time of different commands, like- Hold, Force-Off, Ommit, Vehicle-Call etc. for each phases. The optimal schedule contains the optimal signal timing plan for two cycles. An example of such JSON formatted optimal schedule is as follows:
+The ScheduleManager class can read the Results.txt file and develop optimal schedule in a JSON formatted message. The schedule contains the information about start time, end time of different commands, like- Hold, Force-Off, Omit, Vehicle-Call etc. for each phase. The optimal schedule contains the optimal signal timing plan for two cycles. An example of such JSON formatted optimal schedule is as follows:
 ```
 {
     "MsgType": "Schedule",
@@ -65,30 +65,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandType": "hold"
         },
         {
-            "commandEndTime": 79.42,
-            "commandPhase": 4,
-            "commandStartTime": 64.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 90.42,
-            "commandPhase": 1,
-            "commandStartTime": 86.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 109.42,
-            "commandPhase": 2,
-            "commandStartTime": 94.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 119.92,
-            "commandPhase": 3,
-            "commandStartTime": 115.92,
-            "commandType": "hold"
-        },
-        {
             "commandEndTime": 3.0,
             "commandPhase": 4,
             "commandStartTime": 2.0,
@@ -110,30 +86,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandEndTime": 71.06,
             "commandPhase": 3,
             "commandStartTime": 70.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 92.06,
-            "commandPhase": 4,
-            "commandStartTime": 91.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 112.06,
-            "commandPhase": 1,
-            "commandStartTime": 111.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 151.13,
-            "commandPhase": 2,
-            "commandStartTime": 150.13,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 161.63,
-            "commandPhase": 3,
-            "commandStartTime": 160.63,
             "commandType": "forceoff"
         },
         {
@@ -173,30 +125,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandType": "hold"
         },
         {
-            "commandEndTime": 79.42,
-            "commandPhase": 8,
-            "commandStartTime": 64.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 90.42,
-            "commandPhase": 5,
-            "commandStartTime": 86.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 109.42,
-            "commandPhase": 6,
-            "commandStartTime": 94.42,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 119.92,
-            "commandPhase": 7,
-            "commandStartTime": 115.92,
-            "commandType": "hold"
-        },
-        {
             "commandEndTime": 3.0,
             "commandPhase": 8,
             "commandStartTime": 2.0,
@@ -221,30 +149,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandType": "forceoff"
         },
         {
-            "commandEndTime": 92.06,
-            "commandPhase": 8,
-            "commandStartTime": 91.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 112.06,
-            "commandPhase": 5,
-            "commandStartTime": 111.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 151.13,
-            "commandPhase": 6,
-            "commandStartTime": 150.13,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 161.63,
-            "commandPhase": 7,
-            "commandStartTime": 160.63,
-            "commandType": "forceoff"
-        },
-        {
             "commandEndTime": 49.92,
             "commandPhase": 6,
             "commandStartTime": 0.0,
@@ -253,6 +157,7 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
     ]
 }
 ```
+
 ### PriorityRequestSolverClass
 PriorityRequestSolverClass has the functionality to manage the priority requests in a list, the current signal timing plan, split data and current signal status. It can also manage dilemma zone request list if emergency vehicle is sending priority requests while heavy vehicles are trapped in the dilemma zone on the opposite approaches. It can provide the optimization model and input data to glpk solver package as an input to solve the optimization problem. The optimal solution is written on Results.txt file. The optimal soultion can be validated. The first two line of the file contains the information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green). The next six lines are the phase duration (first three lines are left critical points of "Hold" points and next three lines are are right critical points or "Force-Off" points) for each phases in cyle 1-3. There are green time for each phases in cycle 1-3 afterwards. The file can contain the information about ETA of the all priority requests and their corresponding delay. An example of such Results.txt fileis as follows:
 ```
@@ -280,18 +185,19 @@ PriorityRequestSolverClass has the functionality to manage the priority requests
 
 ## Console output and logging
 The PRSolver can store important information like- priority request list, current signal status, input data for optimization model, optimal schedule etc. in the log files. The log file name depends on the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file). For example, if intersection name is daisy-gavilan, the logfile name will be PRSolver-daisy-davilan.txt. It is expensive process to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
-The console output also provides some information about the status of the component. The console ouput can be redirected to a file using supervisor if mmitsss is running inside container. The following information is displayed in the console:
+The console output also provides some information about the status of the component. The console output can be redirected to a file using supervisor if mmitss is running inside container. The following information is displayed in the console:
 - Messages (signal timing plan, split data, current signal status, priority request, or clear request received status, optimal schedule sent status etc.) sent or received status
 - GLPK solver output
 
 ## Requirements
 - The TCI is required to run along with the PRSolver
+
 ## Configuration
 In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:
-- `config["PortNumber"]["PrioritySolver"]`:  UDP port number (integer). 
+- `config["PortNumber"]["PrioritySolver"]`:  UDP port number (integer).
 
 ## Test
 A basic test of the PRSolver software can be done by using tools reside on mmitss/src/mrp/priority-request-solver/Test directory. The priorityRequestSender.cpp can send priority request list as a JSON string to the PRSolver over the UDP socket. The TCIMsgSender.cpp can send current signal timing plan, and current signal status. It can also receive the optimal schedule. The splitDataSender.py can send split data to the PRSolver. The PRSolver can formulate the optimization model and generate optimal schedule.
 
 ## Known issues/limitations
-- None 
+- None

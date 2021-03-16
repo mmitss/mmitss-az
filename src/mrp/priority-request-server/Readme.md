@@ -1,11 +1,11 @@
 # Software Component Description: Priority-Request-Server (PRS)
-The Priority-Request-Server software component is responsible for managing (adding, updating or deleting) and prioritizing the priority requests received from the multiple priority eligible vehicles (signal request messages (SRMs)) or Signal-Coordination-Request-Generator (coordination requests). The PPRS constructs an Active Request Table (ART) to store the information of priority requests. If the PRS receives priority request from an emergency vehicle, it appends a split phase request  into the ART. It formulates a JSON formatted message based on the ART. The message is sent over the socket to the Priority-Request-Solver (PRSolver) component. The PRS also generates signal status messages (SSMs). The SSMs are acknowledgement messages for the connected vehicles. The JSON formatted priority requests (SRMs and signal coordination requests) and SSMs follow ASN1 J2735 2016 standards.
+The Priority-Request-Server software component is responsible for managing (adding, updating, or deleting) and prioritizing the priority requests received from the multiple priority eligible vehicles (signal request messages (SRMs)) or Signal-Coordination-Request-Generator (coordination requests). The PRS constructs an Active Request Table (ART) to store the information of priority requests. If the PRS receives priority request from an emergency vehicle, it appends a split phase request into the ART. It formulates a JSON formatted message based on the ART. The message is sent over the socket to the Priority-Request-Solver (PRSolver) component. The PRS also generates signal status messages (SSMs). The SSMs are acknowledgement messages for the connected vehicles. The JSON formatted priority requests and SSMs follow ASN1 J2735 2016 standards.
 
 ## Work-flow
-The PRS receives priority request either from MsgDecoder or Signal-Coordination-Request-Generator. It stores the accepted priority requests information in the ART. It updates ETA in the ART and deletes timed-out requests (if no SRM is received for specified time period (currently 8 seconds but can be changed). It sends message to the PRSolver as an input if there is any significant updates (new requests received, ART is empty) in the ART. The PRS stores the system performance data and sends it to the Data-Collector. All kind of message communication is performed over the UDP socket. 
+The PRS receives priority request either from MsgDecoder or Signal-Coordination-Request-Generator. It stores the accepted priority requests information in the ART. It updates ETA in the ART and deletes timed-out requests, if no SRM is received for specified time period (currently 8 seconds but can be changed). It sends message to the PRSolver as an input if there are any significant updates (new requests received, ART is empty) in the ART. The PRS stores the system performance data and sends it to the Data-Collector. All kind of message communication is performed over the UDP socket. 
 
 ### Managing received priority requests
-The PRS can receive priority requests from all the priority eligible vehicles which are within the range of wireless device. It only accepts those priority requests which are corresponds to that intersection (matches the IntersectionID field in the SRM). The Msg-Decoder or Signal-Coordination-Request-Generator forwards JSON formatted priority requests to the PRS. The PRS adds the new requests in the ART, updates the information if corresponding request is already available in the ART or delete the priority requests which are already served.  An example of such JSON formatted Priority Request is as follows:
+The PRS can receive priority requests from all the priority eligible vehicles which are within the range of wireless device. It only accepts those priority requests which are corresponds to its intersection (matches the IntersectionID field in the SRM). The PRS adds the new priority requests in the ART, updates the information if corresponding request is already available in the ART or delete the priority requests which are already served.  An example of such JSON formatted Priority Request is as follows:
 ```
 {   
     "MsgType":"SRM",
@@ -42,8 +42,9 @@ The PRS can receive priority requests from all the priority eligible vehicles wh
     }
 }
 ```
+
 ### Constructing SSMs:
-The PRS formulates a JSON formatted SSM as an acknowledgement message whenever it receives priority requests. It updates the ETA in the ART, every second elapsed and formualtes SSM. An example of such JSON formatted SSM is as follows:
+The PRS formulates a JSON formatted SSM as an acknowledgement message whenever it receives priority requests. It updates the ETA in the ART, every second elapsed and formulates SSM. An example of such JSON formatted SSM is as follows:
 ```
 {
 	"MessageType" : "SSM",
@@ -84,6 +85,7 @@ The PRS formulates a JSON formatted SSM as an acknowledgement message whenever i
 	}
 }
 ```
+
 ### Creating inputs for PRSolver
 The PRSolver requires priority requests list as an input to formulate the optimization problem. The PRS packs the priority list as a JSON formatted message every time it receives priority requests. An example of such JSON formatted messages is as follows:
 ```
@@ -136,14 +138,15 @@ The PRS sends clear request message to the PRSolver when all the priority reques
     "MsgType": "ClearRequest"
 }
 ```
-### Managing system performance Data
+
+### Managing System Performance Data
 The PRS store the information of number of SRMs received, and number of SRMs granted or rejected for specified time period. It formulates a JSON formatted message sends it to the Data-Collector. The Data-Collector stores the information in a csv file in /nojournal/bin/v2x-data directory. An example of such JSON formatted system performance data messages is as follows:
 ```
 {
     "MsgType": "MsgCount",
     "PriorityRequestList": {
         "MsgSource": "speedway-mountain",
-        "MsgCountType" :"SRM",
+        "MsgCountType": "SRM",
         "MsgCount": 186,
         "MsgServed": 154
         "MsgRejected": 32,
@@ -155,7 +158,7 @@ The PRS store the information of number of SRMs received, and number of SRMs gra
 ```
 ## Console output and logging
 The PRS can store important information like- SRMs, SSMs etc. in the log files. The log file name depends on the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file). For example, if intersection name is daisy-gavilan, the logfile name will be PRSLog-daisy-davilan.txt. It is expensive process to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
-The console output also provides some information about the status of the component. The console ouput can be redirected to a file using supervisor if mmitsss is running inside container. The following information is displayed in the console:
+The console output also provides some information about the status of the component. The console output can be redirected to a file using supervisor, if mmitss is running inside the container. The following information is displayed in the console:
 - Messages sent or received status
 - List of available priority requests in the active request table (ART)
 
@@ -171,4 +174,4 @@ In the `mmitss-phase3-master-config.json` (config) file following keys need to b
 A basic test of the PRS software can be done by using a tool (msgSender.py script) reside on mmitss/src/mrp/priority-request-server/Test directory. The msgSender.py can send SRM JSON string to the PRS over the UDP socket. The PRS will populate the ART and sent SSM. 
 
 ## Known issues/limitations
-- None 
+- None
