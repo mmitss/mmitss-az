@@ -112,4 +112,3 @@ In the `mmitss-phase3-master-config.json` (config) file following keys need to b
 
 ## Known issues/limitations
 - None
-
