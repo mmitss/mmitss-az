@@ -15,10 +15,10 @@ param init1:=0;
 param init2:=0;
 param Grn1 :=15;
 param Grn2 :=13;
-param y          	:=	1	3	2	4	3	3	4	3.6	5	3	6	4	7	3	8	3.6;
-param red          	:=	1	1	2	2.5	3	1	4	3.4	5	1	6	2.5	7	1	8	3.4;
-param gmin      	:=	1	4	2	15	3	4	4	15	5	4	6	15	7	4	8	15;
-param gmax      	:=	1	13	2	35.075	3	8	4	17	5	13	6	35.075	7	10	8	15;
+param y    :=	1	3	2	4	3	3	4	3.6	5	3	6	4	7	3	8	3.6;
+param red  :=	1	1	2	2.5	3	1	4	3.4	5	1	6	2.5	7	1	8	3.4;
+param gmin :=	1	4	2	15	3	4	4	15	5	4	6	15	7	4	8	15;
+param gmax :=	1	13	2	35.07	3	8	4	17	5	13	6	35.07	7	10	8	15;
 param priorityType:= 1 2 2 5 3 5 4 0 5 0 6 0 7 0 8 0 9 0 10 0  ;  
 param PrioWeight:=  1 0 2 0.9 3 0 4 0 5 0.2 6 0 7 0 8 0 9 0 10 0 ; 
 param Rl (tr): 1 2 3 4 5 6 7 8:=
@@ -53,18 +53,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandType": "hold"
         },
         {
-            "commandEndTime": 49.92,
-            "commandPhase": 2,
-            "commandStartTime": 17.0,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 60.42,
-            "commandPhase": 3,
-            "commandStartTime": 56.42,
-            "commandType": "hold"
-        },
-        {
             "commandEndTime": 3.0,
             "commandPhase": 4,
             "commandStartTime": 2.0,
@@ -75,24 +63,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandPhase": 1,
             "commandStartTime": 16.48,
             "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 56.56,
-            "commandPhase": 2,
-            "commandStartTime": 55.56,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 71.06,
-            "commandPhase": 3,
-            "commandStartTime": 70.06,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 28.48,
-            "commandPhase": 2,
-            "commandStartTime": 0.0,
-            "commandType": "call_veh"
         },
         {
             "commandEndTime": 49.92,
@@ -113,18 +83,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandType": "hold"
         },
         {
-            "commandEndTime": 49.92,
-            "commandPhase": 6,
-            "commandStartTime": 17.0,
-            "commandType": "hold"
-        },
-        {
-            "commandEndTime": 60.42,
-            "commandPhase": 7,
-            "commandStartTime": 56.42,
-            "commandType": "hold"
-        },
-        {
             "commandEndTime": 3.0,
             "commandPhase": 8,
             "commandStartTime": 2.0,
@@ -134,18 +92,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
             "commandEndTime": 23.0,
             "commandPhase": 5,
             "commandStartTime": 22.0,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 56.56,
-            "commandPhase": 6,
-            "commandStartTime": 55.56,
-            "commandType": "forceoff"
-        },
-        {
-            "commandEndTime": 73.06,
-            "commandPhase": 7,
-            "commandStartTime": 72.06,
             "commandType": "forceoff"
         },
         {
