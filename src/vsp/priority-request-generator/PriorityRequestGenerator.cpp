@@ -51,14 +51,14 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
-
 	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+	delete reader;
+	
 	// set the request timed out value to avoid clearing the old request in PRS
 	if (parsingSuccessful)
 		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SrmTimeGapValue;
-
-	delete reader;
 }
 
 /*
@@ -175,6 +175,7 @@ bool PriorityRequestGenerator::addToActiveRequestTable(SignalStatus signalStatus
 bool PriorityRequestGenerator::checkPriorityRequestSendingRequirementStatus()
 {
 	bool srmSendingRequirement{};
+
 	switch (vehicleType)
 	{
 	case 2:
@@ -591,6 +592,7 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 
 		if (busStopDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
 			busStopPassedStatus = true;
+		
 		else
 			busStopPassedStatus = false;
 	}
@@ -671,7 +673,9 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
+	
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
 	if (parsingSuccessful == true)
 	{
@@ -690,7 +694,7 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 		else if ((jsonObject["MsgType"]).asString() == "LightSirenStatusMessage")
 			messageType = static_cast<int>(msgType::lightSirenStatus);
 	}
-	delete reader;
+	
 
 	return messageType;
 }
@@ -844,6 +848,11 @@ int PriorityRequestGenerator::getSignalGroup()
 	return signalGroup;
 }
 
+double PriorityRequestGenerator::getVehicleDistanceFromStopBar()
+{
+	return vehicleDistanceFromStopBar;
+}
+
 double PriorityRequestGenerator::getTime2Go()
 {
 	return vehicleETA;
@@ -866,7 +875,9 @@ void PriorityRequestGenerator::setVehicleType()
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
+	
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+	delete reader;
 
 	if (parsingSuccessful == true)
 	{
@@ -885,12 +896,12 @@ void PriorityRequestGenerator::setVehicleType()
 			lightSirenStatus = false;
 		}
 	}
-	delete reader;
 }
 
 void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 {
 	lightSirenStatus = true;
+
 	if (vehType == "Transit")
 	{
 		vehicleType = Transit;
@@ -1119,12 +1130,13 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	std::ofstream outputfile;
 	Json::Value jsonObject;
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
-
 	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
+	
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+	delete reader;
 
 	if (parsingSuccessful == true)
 		logging = (jsonObject["Logging"]).asString();
@@ -1140,7 +1152,7 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	else
 		loggingStatus = false;
 
-	delete reader;
+	
 	return loggingStatus;
 }
 
@@ -1154,9 +1166,11 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
+	
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
-	if (parsingSuccessful == true)
+	if (parsingSuccessful)
 	{
 
 		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
@@ -1165,7 +1179,6 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
 			lightSirenStatus = false;
 	}
-	delete reader;
 }
 
 void PriorityRequestGenerator::getBusStopInformation()

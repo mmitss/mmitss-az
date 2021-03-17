@@ -133,6 +133,7 @@ public:
   int getLaneID();
   int getApproachID();
   int getSignalGroup();
+  double getVehicleDistanceFromStopBar();
   double getTime2Go();
   int getVehicleIntersectionStatus();
   int getVehicleType();
