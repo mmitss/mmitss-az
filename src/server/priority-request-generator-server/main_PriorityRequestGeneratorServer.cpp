@@ -95,4 +95,7 @@ int main()
         else
             priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
     }
+    
+    priorityRequestGeneratorServerSocket.closeSocket();
+    return 0;
 }
