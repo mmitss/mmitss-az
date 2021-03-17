@@ -9,7 +9,7 @@ INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(COMMON_INCL) -I$(BUILD_ROOT
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -llocAware -ldsrc -lasn -lmmitss-common #tell the linker where to find the j2735 and json libraries
 
 #cpp's go here
-SRC += main.cpp PriorityRequestGeneratorServer.cpp ../../vsp/priority-request-generator/PriorityRequestGenerator.cpp ../../vsp/priority-request-generator/MapManager.cpp ../../vsp/priority-request-generator/PriorityRequestGeneratorStatus.cpp  
+SRC += main_PriorityRequestGeneratorServer.cpp PriorityRequestGeneratorServer.cpp ../../vsp/priority-request-generator/PriorityRequestGenerator.cpp ../../vsp/priority-request-generator/MapManager.cpp ../../vsp/priority-request-generator/PriorityRequestGeneratorStatus.cpp  
 
 #the name of the executable goes here
 TARGET = M_PriorityRequestGeneratorServer

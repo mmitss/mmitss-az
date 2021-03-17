@@ -25,7 +25,7 @@
 #include <chrono>
 
 const double TIME_GAP_BETWEEN_RECEIVING_BSM = 10;
-const double DSRC_RANGE = 600.0;
+const double DSRC_RANGE = 800.0;
 
 PriorityRequestGeneratorServer::PriorityRequestGeneratorServer()
 {
@@ -74,13 +74,13 @@ void PriorityRequestGeneratorServer::managingPRGServerList(BasicVehicle basicVeh
 */
 void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
 {
-    int vehid{};
+    int veheicleID{};
     sendSRM = false;
 
-    vehid = basicVehicle.getTemporaryID();
+    veheicleID = basicVehicle.getTemporaryID();
     managingPRGServerList(basicVehicle);
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == vehid; });
+                                                                    [&](ServerList const &p) { return p.vehicleID == veheicleID; });
 
     findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
     findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);
@@ -94,7 +94,6 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
     findVehicleIDInList->mapManager.updateMapAge();
     findVehicleIDInList->mapManager.deleteMap();
     findVehicleIDInList->PRG.manageMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
-
 }
 
 /*
@@ -145,12 +144,12 @@ void PriorityRequestGeneratorServer::processSSM(string jsonString)
 */
 void PriorityRequestGeneratorServer::deleteTimedOutVehicleInformationFromPRGServerList()
 {
-    int vehid{};
+    int veheicleID{};
     if (checkDeleteTimedOutVehicleIDFromList() == true)
     {
-        vehid = getTimedOutVehicleID();
+        veheicleID = getTimedOutVehicleID();
         vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                        [&](ServerList const &p) { return p.vehicleID == vehid; });
+                                                                        [&](ServerList const &p) { return p.vehicleID == veheicleID; });
 
         if (findVehicleIDInList != PRGServerList.end())
             PRGServerList.erase(findVehicleIDInList);
@@ -190,10 +189,10 @@ double PriorityRequestGeneratorServer::haversineDistance(double lat1, double lon
 bool PriorityRequestGeneratorServer::checkAddVehicleIDToPRGServerList(BasicVehicle basicVehicle)
 {
     bool addVehicleID{false};
-    int vehid = basicVehicle.getTemporaryID();
+    int vehicleID = basicVehicle.getTemporaryID();
 
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == vehid; });
+                                                                    [&](ServerList const &p) { return p.vehicleID == vehicleID; });
 
     if (PRGServerList.empty())
         addVehicleID = true;
@@ -211,10 +210,10 @@ bool PriorityRequestGeneratorServer::checkAddVehicleIDToPRGServerList(BasicVehic
 bool PriorityRequestGeneratorServer::checkUpdateVehicleIDInPRGServerList(BasicVehicle basicVehicle)
 {
     bool updateVehicleID{false};
-    int vehid = basicVehicle.getTemporaryID();
+    int veheicleID = basicVehicle.getTemporaryID();
 
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == vehid; });
+                                                                    [&](ServerList const &p) { return p.vehicleID == veheicleID; });
 
     if (PRGServerList.empty())
         updateVehicleID = false;
@@ -258,12 +257,6 @@ bool PriorityRequestGeneratorServer::checkDeleteTimedOutVehicleIDFromList()
 */
 bool PriorityRequestGeneratorServer::checkSrmSendingFlag()
 {
-    // bool srmSendingFlag{false};
-
-    // if (sendSRM == true)
-    //     srmSendingFlag = true;
-
-    // return srmSendingFlag;
     return sendSRM;
 }
 
@@ -317,9 +310,9 @@ int PriorityRequestGeneratorServer::getMessageType(string jsonString)
 /*
     - Setter for timed out vehicle
 */
-void PriorityRequestGeneratorServer::setTimedOutVehicleID(int vehicleID)
+void PriorityRequestGeneratorServer::setTimedOutVehicleID(int vehicleId)
 {
-    timedOutVehicleID = vehicleID;
+    timedOutVehicleID = vehicleId;
 }
 
 /*

@@ -32,7 +32,7 @@ int main()
     SignalRequest signalRequest;
     MapManager mapManager;
     UdpSocket priorityRequestGeneratorServerSocket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestGeneratorServer"].asInt()), 1, 0);
-    // UdpSocket priorityRequestGeneratorServerSocket(50010,1,0);
+    
     const string LOCALHOST = jsonObject["HostIp"].asString();
     const string HMIControllerIP = jsonObject["HMIControllerIP"].asString();
     const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
@@ -55,6 +55,11 @@ int main()
         {
             std::string receivedJsonString(receiveBuffer);
             msgType = priorityRequestGeneratorServer.getMessageType(receivedJsonString);
+            /*
+                - If received message is BSM, process the BSM (either add or update the vehicle informtaion in the list)
+                - If vehicle is on an active map, SRM will be generated.
+                - The SRM will be the sent to the respective user (msgDistributor, dataCollector, MsgEncoder etc.)
+            */
             if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
                 basicVehicle.json2BasicVehicle(receivedJsonString);
@@ -69,17 +74,24 @@ int main()
                     currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
                     cout << "[" << currentTime << "] PRGServer sent SRM to MsgDistributor" << endl;
                 }
-
+                // Delete the timed-out vehicle information from the list, if requires
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
             }
 
+            /*
+                - The received MAP will be either added or updated in the availableMapList for each connected vehicle.
+            */
             else if (msgType == MsgEnum::DSRCmsgID_map)
                 priorityRequestGeneratorServer.processMap(receivedJsonString, mapManager);
 
+            /*
+                - The active request table (ART) will be managed for each connected vehicle.
+            */
             else if (msgType == MsgEnum::DSRCmsgID_ssm)                
                 priorityRequestGeneratorServer.processSSM(receivedJsonString);
         }
-
+        
+        // Delete the timed-out vehicle information from the list, if requires
         else
             priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
     }
