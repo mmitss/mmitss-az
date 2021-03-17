@@ -16,7 +16,6 @@
 
 #include "PriorityRequestSolver.h"
 #include "glpk.h"
-#include <fstream>
 #include <stdio.h>
 #include <sys/time.h>
 #include "json/json.h"
@@ -31,9 +30,9 @@ PriorityRequestSolver::PriorityRequestSolver()
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
-    Json::CharReader * reader = builder.newCharReader();
+    Json::CharReader *reader = builder.newCharReader();
     std::string errors{};
-    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
     delete reader;
 
     EmergencyVehicleWeight = jsonObject["PriorityParameter"]["EmergencyVehicleWeight"].asDouble();
@@ -51,13 +50,13 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 {
     int messageType{};
     Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
-	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
-	delete reader;
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    string errors{};
+    bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    delete reader;
 
-	if (parsingSuccessful == true)
+    if (parsingSuccessful == true)
     {
         if ((jsonObject["MsgType"]).asString() == "PriorityRequest")
             messageType = static_cast<int>(msgType::priorityRequest);
@@ -69,11 +68,11 @@ int PriorityRequestSolver::getMessageType(string jsonString)
             messageType = static_cast<int>(msgType::signalPlan);
 
         else if ((jsonObject["MsgType"]).asString() == "CurrNextPhaseStatus")
-            messageType = static_cast<int>(msgType::currentPhaseStatus); 
+            messageType = static_cast<int>(msgType::currentPhaseStatus);
 
         else if ((jsonObject["MsgType"]).asString() == "ActiveCoordinationPlan")
-            messageType = static_cast<int>(msgType::splitData); 
-        
+            messageType = static_cast<int>(msgType::splitData);
+
         else
             std::cout << "Message type is unknown" << std::endl;
     }
@@ -89,14 +88,14 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     RequestList requestList;
     priorityRequestList.clear();
     Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    string errors{};
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
-	delete reader;
+    delete reader;
 
     int noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
-    
+
     for (int i = 0; i < noOfRequest; i++)
     {
         requestList.reset();
@@ -329,7 +328,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
             else if ((trafficControllerStatus[j].startingPhase2 == 7) || (trafficControllerStatus[j].startingPhase2 == 8))
                 requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase2);
         }
-        //If first ring-barrier group is empty, the left turn phases (3,7) of second ring-barrier group can be removed (if they are not starting phase). Dummy through phases (2,6) will be inserted in the first ring-barrier group. 
+        //If first ring-barrier group is empty, the left turn phases (3,7) of second ring-barrier group can be removed (if they are not starting phase). Dummy through phases (2,6) will be inserted in the first ring-barrier group.
         if (requestedEV_P11.empty() && requestedEV_P21.empty())
         {
             if ((trafficControllerStatus[0].startingPhase1 != 3))
@@ -375,7 +374,7 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
                     requestedSignalGroup.push_back(tempSignalGroup);
             }
         }
-         //If second ring-barrier group is empty, the left turn phases (1,5) of first ring-barrier groupcan be removed (if they are not starting phase). Dummy through phases (4,8) will be inserted in the second ring-barrier group. 
+        //If second ring-barrier group is empty, the left turn phases (1,5) of first ring-barrier groupcan be removed (if they are not starting phase). Dummy through phases (4,8) will be inserted in the second ring-barrier group.
         else if (requestedEV_P12.empty() && requestedEV_P22.empty())
         {
             if ((trafficControllerStatus[0].startingPhase1 != 1))
@@ -539,28 +538,30 @@ void PriorityRequestSolver::setOptimizationInput()
 {
     if (emergencyVehicleStatus == true)
     {
+        OptimizationModelManager optimizationModelManager;
+
         createDilemmaZoneRequestList();
         modifyPriorityRequestList();
         getRequestedSignalGroup();
         deleteSplitPhasesFromPriorityRequestList();
         getEVPhases();
         getEVTrafficSignalPlan();
-        generateEVModFile();
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV,EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        optimizationModelManager.generateEVModFile(trafficSignalPlan_EV, EV_P11, EV_P12, EV_P21, EV_P22);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
     else if (signalCoordinationRequestStatus == true)
-    {   
+    {
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
-    
+
     else
-    {    
+    {
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
@@ -590,13 +591,13 @@ void PriorityRequestSolver::GLPKSolver()
 
     startOfSolve = getSeconds();
 
-    char modFile[128] = "/nojournal/bin/NewModel.mod";
+    char modFile[128] = "/nojournal/bin/OptimizationModel.mod";
     glp_prob *mip;
     glp_tran *tran;
     int ret{};
     int success = 1;
     if (emergencyVehicleStatus == true)
-        strcpy(modFile, "/nojournal/bin/NewModel_EV.mod");
+        strcpy(modFile, "/nojournal/bin/OptimizationModel_EV.mod");
 
     mip = glp_create_prob();
     tran = glp_mpl_alloc_wksp();
@@ -609,7 +610,7 @@ void PriorityRequestSolver::GLPKSolver()
         goto skip;
     }
 
-    ret = glp_mpl_read_data(tran, "/nojournal/bin/NewModelData.dat");
+    ret = glp_mpl_read_data(tran, "/nojournal/bin/OptimizationModelData.dat");
 
     if (ret != 0)
     {
@@ -664,7 +665,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     }
 
     else if (signalCoordinationRequestStatus == true)
-    {    
+    {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
         scheduleManager.obtainRequiredSignalGroup();
         scheduleManager.readOptimalSignalPlan();
@@ -800,19 +801,19 @@ void PriorityRequestSolver::validateEVTrafficSignalPlan()
         temporarySignalGroup = trafficSignalPlan_EV[i].phaseNumber;
         if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
             associatedSignalGroup = temporarySignalGroup + 4;
-        
+
         else if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
             associatedSignalGroup = temporarySignalGroup - 4;
 
         else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
             associatedSignalGroup = temporarySignalGroup + 5;
-        
+
         else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
             associatedSignalGroup = temporarySignalGroup - 3;
 
         else
             continue;
-        
+
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findAssociatedSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
                                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == associatedSignalGroup; });
 
@@ -866,12 +867,12 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     trafficControllerStatus.clear();
 
     Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    string errors{};
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
-	delete reader;
-      
+    delete reader;
+
     const Json::Value values = jsonObject["currentPhases"];
 
     for (int i = 0; i < NumberOfStartingPhase; i++)
@@ -962,7 +963,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 
     trafficControllerStatus.push_back(tcStatus);
     validateTrafficControllerStatus();
-    modifyTrafficControllerStatus();    
+    modifyTrafficControllerStatus();
 }
 /*
 - If there is coordination request for coordinated phases:
@@ -993,24 +994,24 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
             coordinationRequestStatus = false;
     }
 
-    if (coordinationRequestStatus == true)
+    if (coordinationRequestStatus)
     {
         currentTime = getCurrentTime();
-        elapsedTimeInCycle = fmod((currentTime-coordinationStartTime), cycleLength);
+        elapsedTimeInCycle = fmod((currentTime - coordinationStartTime), cycleLength);
 
         //Temporary logging code for debugging coordination
         ofstream outputfile;
         ifstream infile;
 
-        if (loggingStatus == true)
+        if (loggingStatus)
         {
             outputfile.open(fileName, std::ios_base::app);
-            auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            double timeNow = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-            outputfile << "\nThe elapsed time in a cycle at time " << timenow << " is " << elapsedTimeInCycle << endl;
+            outputfile << "\nThe elapsed time in a cycle at time " << timeNow << " is " << elapsedTimeInCycle << endl;
             outputfile.close();
         }
-        
+
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
             // For coordinated phase
@@ -1018,31 +1019,32 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-            //compute the early returned and upper limit of green time
+                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                //compute the early returned and upper limit of green time
                 if (elapsedTimeInCycle > offset)
                     earlyReturnedValue = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
+
                 else
                     earlyReturnedValue = 0.0;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
-                
+
                 if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
-                
+
                 else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen && earlyReturnedValue > 0)
                     trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1 - earlyReturnedValue;
 
                 //If early return value is greater than the gmin, elapsed green time value may become negative. Then set the elaped green time as min green
-                if (trafficControllerStatus[i].elapsedGreen1 < 0) 
-                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen; 
+                if (trafficControllerStatus[i].elapsedGreen1 < 0)
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
             }
             // For non-coordinated phases
             else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-                
+                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
                 if (trafficControllerStatus[i].elapsedGreen1 >= findSignalGroup1->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
             }
@@ -1051,14 +1053,15 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
                 //compute the early returned and upper limit of green time
                 if (elapsedTimeInCycle > offset)
                     earlyReturnedValue = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
+
                 else
                     earlyReturnedValue = 0.0;
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
-                
+
                 if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRSTimedOutValue))
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
@@ -1066,37 +1069,34 @@ void PriorityRequestSolver::modifyTrafficControllerStatus()
                     trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2 - earlyReturnedValue;
 
                 //If early return value is greater than the gmin, elapsed green time value may become negative. Then set the elaped green time as min green
-                if (trafficControllerStatus[i].elapsedGreen2 < 0) 
-                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen; 
-            
+                if (trafficControllerStatus[i].elapsedGreen2 < 0)
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
             }
             // For non-coordinated phases
             else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
                 if (trafficControllerStatus[i].elapsedGreen2 >= findSignalGroup2->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
             }
         }
-
-
     }
 
     else
-    {   
+    {
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
             temporaryPhase = trafficControllerStatus[i].startingPhase1;
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
             if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
             temporaryPhase = trafficControllerStatus[i].startingPhase2;
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                    [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
             if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
         }
@@ -1129,14 +1129,15 @@ void PriorityRequestSolver::validateTrafficControllerStatus()
 */
 void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 {
+    OptimizationModelManager optimizationModelManager;
     TrafficControllerData::TrafficSignalPlan signalPlan;
 
     Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
-	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
-	delete reader;
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    delete reader;
 
     loggingSignalPlanData(jsonString);
     trafficSignalPlan.clear();
@@ -1213,7 +1214,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
             P22.push_back(trafficSignalPlan[i].phaseNumber);
     }
 
-    generateModFile();
+    optimizationModelManager.generateModFile(noOfPhase, PhaseNumber, P11, P12, P21, P22);
     modifySignalTimingPlan();
 }
 
@@ -1225,11 +1226,11 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     TrafficControllerData::TrafficSignalPlan signalPlan;
     double splitValue{};
     Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
-	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
-	delete reader;
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+    delete reader;
 
     loggingSplitData(jsonString);
     trafficSignalPlan_SignalCoordination.clear();
@@ -1239,22 +1240,21 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     coordinationStartTime = jsonObject["CoordinationStartTime_Hour"].asDouble() * HourToSecondConversion + jsonObject["CoordinationStartTime_Minute"].asDouble() * MinuteToSecondCoversion;
     coordinatedPhase1 = jsonObject["CoordinatedPhase1"].asInt();
     coordinatedPhase2 = jsonObject["CoordinatedPhase2"].asInt();
-    
+
     for (int i = 0; i < noOfSplitData; i++)
     {
         splitValue = jsonObject["TimingPlan"]["SplitData"][i].asDouble();
         signalPlan.reset();
-       
+
         signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
         signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
         signalPlan.redClear = trafficSignalPlan[i].redClear;
         signalPlan.minGreen = trafficSignalPlan[i].minGreen;
         signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
-        if(splitValue != 0)
+        if (splitValue != 0)
             signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
-            
+
         trafficSignalPlan_SignalCoordination.push_back(signalPlan);
-        
     }
     modifyCoordinationSignalTimingPlan();
 }
@@ -1278,7 +1278,7 @@ void PriorityRequestSolver::modifySignalTimingPlan()
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
-    
+
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
         temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
@@ -1305,7 +1305,7 @@ void PriorityRequestSolver::modifySignalTimingPlan()
             findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
         }
 
-        else 
+        else
             continue;
     }
 }
@@ -1319,7 +1319,7 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
 {
     int temporarySignalGroup{};
     int temporaryCompitableSignalGroup{};
-    
+
     for (size_t i = 0; i < trafficSignalPlan_SignalCoordination.size(); i++)
     {
         temporarySignalGroup = trafficSignalPlan_SignalCoordination[i].phaseNumber;
@@ -1329,9 +1329,10 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
 
         if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0))
         {
-            if (temporarySignalGroup < 5)
+            if (temporarySignalGroup < FirstPhaseOfRing2)
+
                 temporaryCompitableSignalGroup = temporarySignalGroup + 4;
-            else if (temporarySignalGroup > 4)
+            else if (temporarySignalGroup > LastPhaseOfRing1)
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
@@ -1346,527 +1347,9 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
             findSignalGroupOnList->redClear = findCompitableSignalGroupOnList->redClear;
         }
 
-        else 
+        else
             continue;
     }
-}
-
-/*
-    - Method for generating Mod File for transit and truck
-*/
-
-void PriorityRequestSolver::generateModFile()
-{
-    // modifySignalTimingPlan();
-    ofstream FileMod;
-    FileMod.open("/nojournal/bin/NewModel.mod", ios::out);
-    // =================Defining the sets ======================
-
-    if (P11.size() == 1)
-        FileMod << "set P11:={" << P11[0] << "}; \n";
-
-    else if (P11.size() == 2)
-        FileMod << "set P11:={" << P11[0] << "," << P11[1] << "};  \n";
-
-    if (P12.size() == 1)
-        FileMod << "set P12:={" << P12[0] << "}; \n";
-
-    else if (P12.size() == 2)
-        FileMod << "set P12:={" << P12[0] << "," << P12[1] << "};  \n";
-
-    if (P21.size() == 1)
-        FileMod << "set P21:={" << P21[0] << "}; \n";
-
-    else if (P21.size() == 2)
-        FileMod << "set P21:={" << P21[0] << "," << P21[1] << "};  \n";
-
-    if (P22.size() == 1)
-        FileMod << "set P22:={" << P22[0] << "}; \n";
-
-    else if (P22.size() == 2)
-        FileMod << "set P22:={" << P22[0] << "," << P22[1] << "};  \n";
-
-    FileMod << "set P:={";
-    for (int i = 0; i < noOfPhase; i++)
-    {
-        if (i != noOfPhase - 1)
-            FileMod << " " << PhaseNumber[i] << ",";
-        else
-            FileMod << " " << PhaseNumber[i];
-    }
-    FileMod << "};\n";
-
-    FileMod << "set K  := {1..3};\n"; // Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..10};\n";
-    FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
-
-    FileMod << "set E:={1,2};\n";
-    FileMod << "\n";
-    //========================Parameters=========================
-
-    FileMod << "param y    {p in P}, >=0,default 0;\n";
-    FileMod << "param red  {p in P}, >=0,default 0;\n";
-    FileMod << "param gmin {p in P}, >=0,default 0;\n";
-    FileMod << "param gmax {p in P}, >=0,default 0;\n";
-    FileMod << "param init1,default 0;\n";
-    FileMod << "param init2,default 0;\n";
-    FileMod << "param Grn1, default 0;\n";
-    FileMod << "param Grn2, default 0;\n";
-    FileMod << "param SP1,  integer,default 0;\n";
-    FileMod << "param SP2,  integer,default 0;\n";
-    FileMod << "param M:=9999,integer;\n";
-    FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
-    FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
-
-    FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
-    FileMod << "param PrioWeight { t in T}, >=0, default 0;  \n";
-    FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
-    FileMod << "param priorityTypeWeight{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeight[t] else 0);  \n";
-    FileMod << "param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);\n";
-    FileMod << "param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);\n";
-    FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
-    FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
-    FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
-
-    // the following parameters added in order to consider case when the max green time in one barrier group expired but not in the other barrier group
-    FileMod << "param sumOfGMax11, := sum{p in P11} (gmax[p]*coef[p,1]);\n";
-    FileMod << "param sumOfGMax12, := sum{p in P12} (gmax[p]*coef[p,1]);\n";
-    FileMod << "param sumOfGMax21, := sum{p in P21} (gmax[p]*coef[p,1]);\n";
-    FileMod << "param sumOfGMax22, := sum{p in P22} (gmax[p]*coef[p,1]);\n";
-    FileMod << "param barrier1GmaxSlack, := sumOfGMax11 - sumOfGMax21 ;\n";
-    FileMod << "param barrier2GmaxSlack, := sumOfGMax12 - sumOfGMax22 ;\n";
-    FileMod << "param gmaxSlack{p in P}, := (if coef[p,1]=0 then 0 else (if (p in P11) then gmax[p]*max(0,-barrier1GmaxSlack)/sumOfGMax11  else ( if (p in P21) then gmax[p]*max(0,+barrier1GmaxSlack)/sumOfGMax21  else ( if (p in P12) then gmax[p]*max(0,-barrier2GmaxSlack)/sumOfGMax12  else ( if (p in P22) then gmax[p]*max(0,barrier2GmaxSlack)/sumOfGMax22  else 0) ) ) )    ); \n";
-    FileMod << "param gmaxPerRng{p in P,k in K}, := (if (k=1) then gmax[p]+gmaxSlack[p] else	gmax[p]);\n";
-
-    FileMod << "\n";
-    // ==================== VARIABLES =======================
-    FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var d{p in P,j in J}, >=0;\n";
-    FileMod << "var theta{p in P,j in J}, binary;\n";
-    FileMod << "var ttheta{p in P,j in J}, >=0;\n";
-    FileMod << "var PriorityDelay;\n";
-    FileMod << "var Flex;\n";
-
-    FileMod << "\n";
-
-    // ===================Constraints==============================
-
-    FileMod << "s.t. initial{e in E,p in P:(p<SP1) or (p<SP2 and p>4)}: t[p,1,e]=0;  \n";
-    FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
-    FileMod << "s.t. initial2{e in E,p in P:p=SP2}: t[p,1,e]=init2;  \n";
-    // # constraints in the same cycle in same P??
-    FileMod << "s.t. Prec_11_11_c1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. Prec_12_12_c1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. Prec_21_21_c1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. Prec_22_22_c1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    // # constraints in the same cycle in connecting
-    FileMod << "s.t. Prec_11_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
-    FileMod << "s.t. Prec_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
-    FileMod << "s.t. Prec_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
-    FileMod << "s.t. Prec_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
-    // #================ END of cycle 1======================#
-
-    // # constraints in the same cycle in same P??
-    FileMod << "s.t. Prec_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. Prec_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. Prec_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. Prec_22_22_c23{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-
-    // # constraints in the same cycle in connecting
-    FileMod << "s.t. Prec_11_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
-    FileMod << "s.t. Prec_11_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
-    FileMod << "s.t. Prec_21_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
-    FileMod << "s.t. Prec_21_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
-
-    // # constraints in connecting in different cycles
-    FileMod << "s.t. Prec_12_11_c23{e in E,p in P11, k in K: (card(P11)+p+1)=4 and k>1 }:    t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
-    FileMod << "s.t. Prec_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=8 and k>1 }:  t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
-    FileMod << "s.t. Prec_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=4 and k>1 }:  t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
-    FileMod << "s.t. Prec_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=8 and k>1 }:    t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
-
-    FileMod << "s.t. PhaseLen{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];\n";
-    FileMod << "s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
-    FileMod << "s.t. GrnMin{e in E,p in P ,k in K}:  g[p,k,e]>=(gmin[p]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
-
-    FileMod << "s.t. PrioDelay1{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Rl[p,j]; \n";
-    FileMod << "s.t. PrioDelay2{e in E,p in P,j in J: active_pj[p,j]>0}:    M*theta[p,j]>=Ru[p,j]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
-    FileMod << "s.t. PrioDelay3{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>= ttheta[p,j]-Rl[p,j]*theta[p,j];\n";
-    FileMod << "s.t. PrioDelay4{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Ru[p,j]-Rl[p,j])*(1-theta[p,j]);\n";
-    FileMod << "s.t. PrioDelay5{e in E,p in P,j in J: active_pj[p,j]>0}:    ttheta[p,j]<=M*theta[p,j];\n";
-    FileMod << "s.t. PrioDelay6{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-theta[p,j])<=ttheta[p,j];\n";
-    FileMod << "s.t. PrioDelay7{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-theta[p,j])>=ttheta[p,j];\n";
-    FileMod << "s.t. PrioDelay8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
-    FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
-
-    FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-
-    FileMod << "  minimize delay: PriorityDelay;     \n";
-    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
-    FileMod << "  \n";
-    FileMod << "solve;  \n";
-    FileMod << "  \n";
-    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << " \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << " \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "  \n";
-    FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
-    FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
-    FileMod << " } \n";
-
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
-
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; \n";
-    FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    //------------- End of Print the Main body of mode----------------
-    FileMod << "end;\n";
-    FileMod.close();
-}
-
-/*
-    -Dynamic mod file for EV. If there is multiple EV and they are requesting for different phase 
-*/
-void PriorityRequestSolver::generateEVModFile()
-{
-    int phasePosition{};
-    ofstream FileMod;
-
-    FileMod.open("/nojournal/bin/NewModel_EV.mod", ios::out);
-    // =================Defining the sets ======================
-
-    if (EV_P11.size() == 1)
-        FileMod << "set P11:={" << EV_P11[0] << "}; \n";
-
-    else if (EV_P11.size() == 2)
-        FileMod << "set P11:={" << EV_P11[0] << "," << EV_P11[1] << "};  \n";
-
-    if (EV_P12.size() == 1)
-        FileMod << "set P12:={" << EV_P12[0] << "}; \n";
-
-    else if (EV_P12.size() == 2)
-        FileMod << "set P12:={" << EV_P12[0] << "," << EV_P12[1] << "};  \n";
-
-    if (EV_P21.size() == 1)
-        FileMod << "set P21:={" << EV_P21[0] << "}; \n";
-
-    else if (EV_P21.size() == 2)
-        FileMod << "set P21:={" << EV_P21[0] << "," << EV_P21[1] << "};  \n";
-
-    if (EV_P22.size() == 1)
-        FileMod << "set P22:={" << EV_P22[0] << "}; \n";
-
-    else if (EV_P22.size() == 2)
-        FileMod << "set P22:={" << EV_P22[0] << "," << EV_P22[1] << "};  \n";
-
-    FileMod << "set P:={";
-    for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
-    {
-        if (i == trafficSignalPlan_EV.size() - 1)
-            FileMod << trafficSignalPlan_EV[i].phaseNumber;
-        else
-            FileMod << trafficSignalPlan_EV[i].phaseNumber << ","
-                    << " ";
-    }
-
-    FileMod << "};\n";
-
-    FileMod << "set K  := {1..3};\n"; // Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..10};\n";
-    FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
-
-    FileMod << "set E:={1,2};\n";
-    FileMod << "set DZ:={1,2};\n"; //For Dilemma Zone
-
-    FileMod << "\n";
-    // //========================Parameters=========================
-
-    FileMod << "param y    {p in P}, >=0,default 0;\n";
-    FileMod << "param red  {p in P}, >=0,default 0;\n";
-    FileMod << "param gmin {p in P}, >=0,default 0;\n";
-    FileMod << "param gmax {p in P}, >=0,default 0;\n";
-    FileMod << "param init1,default 0;\n";
-    FileMod << "param init2,default 0;\n";
-    FileMod << "param Grn1, default 0;\n";
-    FileMod << "param Grn2, default 0;\n";
-    FileMod << "param SP1,  integer,default 0;\n";
-    FileMod << "param SP2,  integer,default 0;\n";
-    FileMod << "param M:=9999,integer;\n";
-    FileMod << "param alpha:=100,integer;\n";
-    FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
-    FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
-
-    // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
-    FileMod << "param cycle, :=" << 100 << ";\n";
-    FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
-    FileMod << "param PrioWeight { t in T}, >=0, default 0;  \n";
-    FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
-    FileMod << "param priorityTypeWeight{j in J, t in T}, := (if (priorityType[j]=t) then PrioWeight[t] else 0);  \n";
-    FileMod << "param active_pj{p in P, j in J}, integer, :=(if Rl[p,j]>0 then 1 else	0);\n";
-    FileMod << "param coef{p in P,k in K}, integer,:=(if  (((p<SP1 and p<5) or (p<SP2 and p>4 )) and k==1) or (((p<5 and SP1<=p) or (p>4 and SP2<=p)) and k==3) then 0 else 1);\n";
-    FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
-    FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
-    FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
-    /*************************DilemmaZone***************************/
-    FileMod << "param Dl{p in P, dz in DZ}, >=0,  default 0;\n";
-    FileMod << "param Du{p in P, dz in DZ}, >=0,  default 0;\n";
-    FileMod << "param DilemmaZoneWeight, default 0;\n";
-    // FileMod << "param DilemmaZoneExtention, default 0;\n";
-    FileMod << "param active_dilemmazone_p{p in P, dz in DZ}, integer, :=(if Dl[p,dz]>0 then 1 else	0);\n";
-
-    FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
-    FileMod << "\n";
-    // ==================== VARIABLES =======================
-    FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
-    FileMod << "var d{p in P,j in J}, >=0;\n";
-    FileMod << "var theta{p in P,j in J}, binary;\n";
-    FileMod << "var ttheta{p in P,j in J}, >=0;\n";
-    FileMod << "var dilemmazone_d{p in P, dz in DZ}, >=0;\n";
-    FileMod << "var dilemmazone_theta{p in P, dz in DZ}, binary;\n";
-    FileMod << "var dilemmazone_ttheta{p in P, dz in DZ}, >=0;\n";
-    FileMod << "var PriorityDelay;\n";
-    FileMod << "var DilemmaZoneDelay;\n";
-    FileMod << "var Flex;\n";
-
-    FileMod << "\n";
-
-    // ===================Constraints==============================
-
-    FileMod << "s.t. initial{e in E,p in P:(p<SP1) or (p<SP2 and p>4)}: t[p,1,e]=0;  \n";
-    FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
-    FileMod << "s.t. initial2{e in E,p in P:p=SP2}: t[p,1,e]=init2;  \n";
-    // # constraints in the same cycle in same ring and barrier group
-    if (EV_P11.size() > 1)
-        FileMod << "s.t. Prec_11_11_c1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    if (EV_P12.size() > 1)
-        FileMod << "s.t. Prec_12_12_c1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    if (EV_P21.size() > 1)
-        FileMod << "s.t. Prec_21_21_c1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    if (EV_P22.size() > 1)
-        FileMod << "s.t. Prec_22_22_c1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    // # constraints in the same cycle in connecting
-    if (EV_P11.size() > 0 && EV_P12.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. Prec_11_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
-    }
-
-    if (EV_P11.size() > 0 && EV_P22.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. Prec_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
-    }
-
-    if (EV_P21.size() > 0 && EV_P12.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. Prec_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
-    }
-
-    if (EV_P21.size() > 0 && EV_P22.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. Prec_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
-    }
-
-    // #================ END of cycle 1======================#
-
-    // # constraints in the same cycle in same ring and barrier group
-    if (EV_P11.size() > 1)
-        FileMod << "s.t. Prec_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    if (EV_P12.size() > 1)
-        FileMod << "s.t. Prec_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    if (EV_P21.size() > 1)
-        FileMod << "s.t. Prec_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    if (EV_P22.size() > 1)
-        FileMod << "s.t. Prec_22_22_c23{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-
-    // # constraints in the same cycle in connecting
-
-    if (EV_P11.size() > 0 && EV_P12.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. Prec_11_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
-    }
-
-    if (EV_P11.size() > 0 && EV_P22.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. Prec_11_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
-    }
-
-    if (EV_P21.size() > 0 && EV_P12.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. Prec_21_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
-    }
-
-    if (EV_P21.size() > 0 && EV_P22.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. Prec_21_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
-    }
-
-    // # constraints in connecting in different cycles
-    if (EV_P12.size() > 0 && EV_P11.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P12.size()) - 1;
-        FileMod << "s.t. Prec_12_11_c23{e in E,p in P11, k in K: (card(P11)+p+1)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
-    }
-
-    if (EV_P22.size() > 0 && EV_P11.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P22.size()) - 1;
-        FileMod << "s.t. Prec_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 + 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
-    }
-
-    if (EV_P12.size() > 0 && EV_P21.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P12.size()) - 1;
-        FileMod << "s.t. Prec_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 - 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
-    }
-
-    if (EV_P22.size() > 0 && EV_P21.size() > 0)
-    {
-        phasePosition = static_cast<int>(EV_P22.size()) - 1;
-        FileMod << "s.t. Prec_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
-    }
-
-    FileMod << "s.t. PhaseLen{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];\n";
-    FileMod << "s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
-    FileMod << "s.t. GrnMin{e in E,p in P ,k in K}:  g[p,k,e]>=(gmin[p]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
-
-    FileMod << "s.t. PrioDelay1{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Rl[p,j]; \n";
-    FileMod << "s.t. PrioDelay2{e in E,p in P,j in J: active_pj[p,j]>0}:    M*theta[p,j]>=Ru[p,j]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
-    FileMod << "s.t. PrioDelay3{e in E,p in P,j in J: active_pj[p,j]>0}:    d[p,j]>= ttheta[p,j]-Rl[p,j]*theta[p,j];\n";
-    FileMod << "s.t. PrioDelay4{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Ru[p,j]-Rl[p,j])*(1-theta[p,j]);\n";
-    FileMod << "s.t. PrioDelay5{e in E,p in P,j in J: active_pj[p,j]>0}:    ttheta[p,j]<=M*theta[p,j];\n";
-    FileMod << "s.t. PrioDelay6{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-theta[p,j])<=ttheta[p,j];\n";
-    FileMod << "s.t. PrioDelay7{e in E,p in P,j in J: active_pj[p,j]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-theta[p,j])>=ttheta[p,j];\n";
-    FileMod << "s.t. PrioDelay8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
-    FileMod << "s.t. PrioDelay9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
-
-    FileMod << "s.t. Flexib: Flex= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-
-    /****************************************DilemmaZone Constraints ************************************/
-    FileMod << "s.t. DilemmaZoneDelay1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
-    FileMod << "s.t. DilemmaZoneDelay2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
-    FileMod << "s.t. DilemmaZoneDelay3{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>= dilemmazone_ttheta[p,dz]-Dl[p,dz]*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay4{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Du[p,dz]-Dl[p,dz])*(1-dilemmazone_theta[p,dz]);\n";
-    FileMod << "s.t. DilemmaZoneDelay5{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_ttheta[p,dz]<=M*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay6{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-dilemmazone_theta[p,dz])<=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay7{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-dilemmazone_theta[p,dz])>=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay8{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Du[p,dz]-Dl[p,dz])*dilemmazone_theta[p,dz]; \n";
-    FileMod << "s.t. DilemmaZoneDelay9{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    Du[p,dz]*dilemmazone_theta[p,dz] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
-
-    FileMod << "s.t. DD: DilemmaZoneDelay=( sum{p in P, dz in DZ} (DilemmaZoneWeight*active_dilemmazone_p[p,dz]*dilemmazone_d[p,dz] ) )  - 0.01*Flex; \n"; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-                                                                                                                                                           /***************************************************************************************************/
-
-    FileMod << "  minimize delay: PriorityDelay + DilemmaZoneDelay;     \n";
-
-    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
-    FileMod << "  \n";
-    FileMod << "solve;  \n";
-    FileMod << "  \n";
-    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << " \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << " \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "for {k in K}   \n";
-    FileMod << " { \n";
-    FileMod << "     for {p in P2} \n";
-    FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
-    FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    FileMod << " } \n";
-    FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "  \n";
-    FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
-    FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
-    FileMod << " } \n";
-
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
-
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; \n";
-    FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
-    //------------- End of Print the Main body of mode----------------
-    FileMod << "end;\n";
-    FileMod.close();
 }
 
 /*
@@ -1901,7 +1384,7 @@ bool PriorityRequestSolver::findCoordinationRequestInList()
 {
     if (priorityRequestList.empty())
         signalCoordinationRequestStatus = false;
-    
+
     else
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
@@ -1981,7 +1464,7 @@ double PriorityRequestSolver::getCurrentTime()
     current_time = localtime(&s);
 
     currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
-    
+
     return currentTime;
 }
 
@@ -1991,7 +1474,7 @@ double PriorityRequestSolver::getCurrentTime()
 bool PriorityRequestSolver::checkSignalCoordinationTimingPlan()
 {
     bool sendCoordinationPlanRequest{false};
-    
+
     if (priorityRequestList.empty())
         sendCoordinationPlanRequest = false;
     else
@@ -2008,7 +1491,7 @@ bool PriorityRequestSolver::checkSignalCoordinationTimingPlan()
                 sendCoordinationPlanRequest = false;
         }
     }
-    
+
     return sendCoordinationPlanRequest;
 }
 
@@ -2024,9 +1507,9 @@ bool PriorityRequestSolver::logging()
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
-    Json::CharReader * reader = builder.newCharReader();
+    Json::CharReader *reader = builder.newCharReader();
     std::string errors{};
-    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
     delete reader;
 
     logging = jsonObject["Logging"].asString();
@@ -2035,9 +1518,9 @@ bool PriorityRequestSolver::logging()
     if (logging == "True")
     {
         loggingStatus = true;
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         outputfile.open(fileName);
-        outputfile << "File opened at time : " << timenow << std::endl;
+        outputfile << "File opened at time : " << currentTime << std::endl;
         outputfile.close();
     }
     else
@@ -2047,7 +1530,7 @@ bool PriorityRequestSolver::logging()
 }
 
 /*
-    - Loggers to log priority request string, signal status string, NewModelData.dat and results.txt files
+    - Loggers to log priority request string, signal status string, OptimizationModelData.dat and results.txt files
 */
 void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
 {
@@ -2056,33 +1539,32 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 
     if (loggingStatus == true)
     {
-        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(timenow) + ".txt");
+        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(currentTime) + ".txt");
         outputfile.open(fileName, std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-        outputfile << "\nFollowing Priority Request is received from PRS at time " << timenow << endl;
+        outputfile << "\nFollowing Priority Request is received from PRS at time " << currentTime << endl;
         outputfile << priorityRequestString << endl;
 
-        outputfile << "\nFollowing Signal Status is received from TCI at time " << timenow << endl;
+        outputfile << "\nFollowing Signal Status is received from TCI at time " << currentTime << endl;
         outputfile << signalStatusString << endl;
 
-        outputfile << "\nCurrent Dat File at time : " << timenow << endl;
-        infile.open("/nojournal/bin/NewModelData.dat");
+        outputfile << "\nCurrent Dat File at time : " << currentTime << endl;
+        infile.open("/nojournal/bin/OptimizationModelData.dat");
+
         for (string line; getline(infile, line);)
-        {
             outputfile << line << endl;
-        }
+
         infile.close();
 
-        outputfile << "\nCurrent Results File at time : " << timenow << endl;
+        outputfile << "\nCurrent Results File at time : " << currentTime << endl;
         infile.open("/nojournal/bin/Results.txt");
         for (std::string line; getline(infile, line);)
-        {
             outputfile << line << endl;
-        }
+
         infile.close();
 
-        outputfile << "\nFollowing Schedule will send to TCI at time " << timenow << endl;
+        outputfile << "\nFollowing Schedule will send to TCI at time " << currentTime << endl;
         outputfile << scheduleString << endl;
 
         outputfile.close();
@@ -2094,31 +1576,30 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 */
 void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
 {
-    if (loggingStatus == true)
+    if (loggingStatus)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-        outputfile << "\nFollowing Signal Plan is received from TCI at time " << timenow << endl;
+        outputfile << "\nFollowing Signal Plan is received from TCI at time " << currentTime << endl;
         outputfile << jsonString << endl;
         outputfile.close();
     }
 }
-
 
 /*
     - Loggers to log split data for signal coordinatio
 */
 void PriorityRequestSolver::loggingSplitData(string jsonString)
 {
-    if (loggingStatus == true)
+    if (loggingStatus)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-        outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << timenow << endl;
+        outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << currentTime << endl;
         outputfile << jsonString << endl;
         outputfile.close();
     }
@@ -2128,12 +1609,13 @@ void PriorityRequestSolver::loggingSplitData(string jsonString)
 */
 void PriorityRequestSolver::loggingClearRequestData(string jsonString)
 {
-    if (loggingStatus == true)
+    if (loggingStatus)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        outputfile << "\nFollowing Clear Request is sent to TCI at time " << timenow << endl;
+        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
+        outputfile << "\nFollowing Clear Request is sent to TCI at time " << currentTime << endl;
         outputfile << jsonString << endl;
         outputfile.close();
     }

@@ -13,12 +13,12 @@
 */
 
 #pragma once
-#include <iostream>
-#include <vector>
+
 #include <chrono>
 #include <sstream>
 #include "ScheduleManager.h"
 #include "SolverDataManager.h"
+#include "OptimizationModelManager.h"
 #include "TrafficSignalPlan.h"
 #include "Schedule.h"
 

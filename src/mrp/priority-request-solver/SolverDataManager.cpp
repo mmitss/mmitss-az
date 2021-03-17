@@ -212,7 +212,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 
     // modifyCurrentSignalStatus();
 
-    fs.open("/nojournal/bin/NewModelData.dat", ios::out);
+    fs.open("/nojournal/bin/OptimizationModelData.dat", ios::out);
     fs << "data;\n";
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
