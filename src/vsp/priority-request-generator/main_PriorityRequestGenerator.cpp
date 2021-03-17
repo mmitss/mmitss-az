@@ -86,12 +86,14 @@ int main()
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
         }
 
+        //The received MAP will be either added or updated in the availableMapList.
         else if (msgType == MsgEnum::DSRCmsgID_map)
         {
             mapManager.json2MapPayload(receivedJsonString);
             mapManager.maintainAvailableMapList();
         }
 
+        // The active request table (ART) will be managed for the connected vehicle.
         else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
             signalStatus.json2SignalStatus(receivedJsonString);
@@ -101,6 +103,7 @@ int main()
             signalStatus.reset();
         }
     }
+    
     priorityRequestGeneratorSocket.closeSocket();
     return 0;
 }
