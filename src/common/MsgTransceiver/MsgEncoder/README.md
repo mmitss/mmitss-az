@@ -11,6 +11,37 @@ Message-Encoder does not produce any console outputs or log files.
 2. Undisrupted physical network connection between the RSU/OBU and the corresponding coprocessor (MRP/VSP)
 
 ## Configuration
+In the `mmitss-phase3-master-config.json` file, following fields must be configured:
+1. Common to both, vehicle and roadside deployments:
+  - `["HostIp"]`: a `string` specifying the IP address of the host processor of the Host-BSM-Decoder (vehicleside coprocessor)
+  - `["SourceDsrcDeviceIp"]`: a `string` specifying the IP address of the Dsrc Device (RSU or OBU) corresponding the host coprocessor
+  - `["PortNumber"]["MessageTransceiver"]["MessageEncoder"]`: an `int` specifying the UDP port number to be used by the Message-Encoder
+  - `["PortNumber"]["DsrcImmediateForwarder"]`: an `int` specifying the UDP port number where RSU listens for messages for immediate-forwarding (standard: 1516)
+  - `["PortNumber"]["DataCollector"]`: an `'int` specifying the UDP port number used by the V2X-Data-Collector
+2. Roadside deployments only:
+  - `["msgId"]["spat"]`: a `string` specifying the message ID (hex) of SPAT, which is currently: `0013`
+  - `["msgId"]["map"]`: a `string` specifying the message ID (hex) of MAP, which is currently: `0012`
+  - `["msgId"]["ssm_lower"]`: a `string` specifying the message ID of SSM (hex) in lower case, which is currently: `001d`
+  - `["msgId"]["ssm_upper"]`: a `string` specifying the message ID of SSM (hex) in upper case, which is currently: `001D`
+  - `["psid"]["spat"]`: a `string` specifying the PSID used for SRM by MMITSS, which is currently: `0x8002`
+  - `["psid"]["map"]`: a `string` specifying the PSID used for MAP by MMITSS, which is currently: `0x8002`
+  - `["psid"]["ssm"]`: a `string` specifying the PSID used for SSM by MMITSS, which is currently: `0x8002`
+  - `["TxChannel"]["spat"]`: an `int` specifying the TX channel to be used for SPAT, which is currently: `172`
+  - `["TxChannel"]["map"]`: an `int` specifying the TX channel to be used for MAP, which is currently: `172`
+  - `["TxChannel"]["ssm"]`: an `int` specifying the TX channel to be used for SSM, which is currently: `182`
+  - `["TxMode"]["spat"]`: a `string` specifying the Tx mode used for SPAT by MMITSS, which is currently: `CONT` (Continuous)
+  - `["TxMode"]["map"]`: a `string` specifying the Tx mode used for MAP by MMITSS, which is currently: `CONT` (Continuous)
+  - `["TxMode"]["ssm"]`: a `string` specifying the Tx mode used for SSM by MMITSS, which is currently: `ALT` (Alternating)
+3. Vehicleside deployments only:
+  - `["msgId"]["bsm"]`: a `string` specifying the message ID (hex) of BSM, which is currently: `0014`
+  - `["msgId"]["srm_lower"]`: a `string` specifying the message ID of SRM (hex) in lower case, which is currently: `001e`
+  - `["msgId"]["srm_upper"]`: a `string` specifying the message ID of SRM (hex) in upper case, which is currently: `001E`
+  - `["psid"]["bsm"]`: a `string` specifying the PSID used for BSM by MMITSS, which is currently: `0x20`
+  - `["psid"]["srm"]`: a `string` specifying the PSID used for SRM by MMITSS, which is currently: `0x8002`
+  - `["TxChannel"]["bsm"]`: an `int` specifying the TX channel to be used for BSM, which is currently: `172`
+  - `["TxChannel"]["srm"]`: an `int` specifying the TX channel to be used for SRM, which is currently: `182`
+  - `["TxMode"]["bsm"]`: a `string` specifying the Tx mode used for BSM by MMITSS, which is currently: `CONT` (Continuous)
+  - `["TxMode"]["srm"]`: a `string` specifying the Tx mode used for SRM by MMITSS, which is currently: `ALT` (Alternating)
 
 ## Known issues/limitations
 - None -
