@@ -942,31 +942,45 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
             for (int k = 0; k < NumberOfStartingPhase; k++)
             {
                 temporaryNextPhase = (jsonObject["nextPhases"][k]).asInt();
-                if (temporaryCurrentPhase == temporaryNextPhase) //current phase and next phase can be same in case of T intersection.
-                                                                 //Like the scenario when phase 4 is only yellow/red since phase 8 is missing. phase 2 and 6 was green before phase 4.
-                                                                 //In this case current phase can be following :{"currentPhases": [{"Phase": 4, "State": "yellow", "ElapsedTime": 5}, {"Phase": 6, "State": "red", "ElapsedTime": 136}], "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
+                /*
+                    - Current phase and next phase can be same in case of T intersection.
+                    - For example, the scenario when phase 4 is only yellow/red since phase 8 is missing. phase 2 and 6 was green before phase 4.
+                    - In this case current signal status message can be following: 
+                        {"currentPhases": [{"Phase": 4, "State": "yellow", "ElapsedTime": 5}, {"Phase": 6, "State": "red", "ElapsedTime": 136}], 
+                        "MsgType": "CurrNextPhaseStatus", "nextPhases": [6]}
+                */
+                if (temporaryCurrentPhase == temporaryNextPhase) 
                 {
-                    cout << "Current Phase and next phase is same" << endl;
+                    cout << "[" << currentTime << "] Current Phase and next phase is same" << endl;
                     break;
                 }
+
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
+                
                 if (temporaryNextPhase > 0 && temporaryNextPhase < FirstPhaseOfRing2)
                 {
                     tcStatus.startingPhase1 = temporaryNextPhase;
-                    if ((findSignalGroup->redClear - temporaryElaspedTime) < 0.0) //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
+                    //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
+                    if ((findSignalGroup->redClear - temporaryElaspedTime) < 0.0) 
                         tcStatus.initPhase1 = 0.5;
+                    
                     else
                         tcStatus.initPhase1 = findSignalGroup->redClear - temporaryElaspedTime;
+                    
                     tcStatus.elapsedGreen1 = Initialize;
                 }
+
                 else if (temporaryNextPhase > LastPhaseOfRing1 && temporaryNextPhase <= LastPhaseOfRing2)
                 {
                     tcStatus.startingPhase2 = temporaryNextPhase;
+                    
                     if ((findSignalGroup->redClear - temporaryElaspedTime) < 0.0)
                         tcStatus.initPhase2 = 0.5;
+                    
                     else
                         tcStatus.initPhase2 = findSignalGroup->redClear - temporaryElaspedTime;
+                    
                     tcStatus.elapsedGreen2 = Initialize;
                 }
             }
