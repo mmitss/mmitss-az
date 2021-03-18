@@ -102,11 +102,15 @@ Traffic-Controller-Interface component does not generate any log files. The cons
   - NTCIP backup time must be > 0
 
 2. In the `mmitss-phase3-master-config.json` (config) file, following keys need to be assigned with appropriate values:
-  - `["HostIp"]`
-  - `["PortNumber"]["TrafficControllerInterface"]
-  - `["PortNumber"]["TrafficControllerCurrPhaseListener"]
-  - `["PortNumber"]["TrafficControllerTimingPlanSender"]
-  - 
+  - `["HostIp"]`: a `string` specifying the IP address of the host processor
+  - `["PortNumber"]["TrafficControllerInterface"]`: an `int` specifying the UDP port to be used by the Traffic COntroller Interface
+  - `["PortNumber"]["TrafficControllerCurrPhaseListener"]`: an `int` specifying the UDP port where Traffic Controller Interface listens for current phase information sent by the Map Spat Broadcaster
+  - `["PortNumber"]["TrafficControllerTimingPlanSender"]`: an `int` specifying the UDP port using which the traffic controller sends the current timing plan to requester
+  - `["SignalController"]["IpAddress"]`: a `string` specifying the IP address of the signal controller
+  - `["SignalController"]["NtcipPort"]`: an `int` specifying the UDP port where the signal controller listens for the NTCIP `get` and `set` requests
+  - `["SignalController"]["TimingPlanUpdateInterval_sec"]`: an `int` specifying the seconds after which the traffic controller interface attempts to see if the timing plan has changed in the signal controller 
+  - `["SignalController"]["Vendor"]`: a `string` specifying the vendor of the signal controller. Currently Traffic Controller Interface is tested with Econolite and MaxTime signal controllers
+  - `["SignalController"]["TimingPlanMib"]`: a `string` specifying the location of the `*.py` file that stores the timing plan object indentifiers.
 
 
 ## Known issues/limitations
