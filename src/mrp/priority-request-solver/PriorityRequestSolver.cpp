@@ -86,6 +86,7 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 {
     RequestList requestList;
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     priorityRequestList.clear();
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
@@ -93,6 +94,8 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     string errors{};
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
+    
+    cout << "[" << currentTime << "] Received Priority Request List from PRS"<< endl;
 
     int noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
 
@@ -247,7 +250,11 @@ void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
         else if (requestedSignalGroup[i] == 7 || requestedSignalGroup[i] == 8)
             requestedEV_P22.push_back(requestedSignalGroup[i]);
     }
-    //If a freight vehicle is trapped in the dilemma zone, then remove the split phase priority request associated with the starting phase  from the priority request list.
+    /*
+        - If a freight vehicle is trapped in the dilemma zone, the split phase priority request may require to remove (depends on the starting phase).
+        - The split phase priority request which is associated with the starting phase will be removed from the priority request list.
+        - For example, if starting phase is phase 2, the split phase priority request for phase 5 will be removed.
+    */
     if (!dilemmaZoneRequestList.empty())
     {
         for (size_t i = 0; i < requestedSignalGroup.size(); i++)
@@ -697,8 +704,11 @@ string PriorityRequestSolver::getScheduleforTCI()
 string PriorityRequestSolver::getClearCommandScheduleforTCI()
 {
     string clearScheduleJsonString{};
-
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     ScheduleManager scheduleManager;
+    
+    cout << "[" << currentTime << "] Received Clear Request"<< endl;
+
     clearScheduleJsonString = scheduleManager.createScheduleJsonString();
 
     return clearScheduleJsonString;
@@ -751,10 +761,10 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
     {
         temporaryPhase = plannedEVPhases.at(j);
         it = std::find(temporaryPhaseNumber.begin(), temporaryPhaseNumber.end(), temporaryPhase);
+        
         if (it != temporaryPhaseNumber.end())
-        {
             temporaryPhaseNumber.erase(it);
-        }
+
     }
 
     for (size_t i = 0; i < temporaryPhaseNumber.size(); i++)
@@ -772,6 +782,7 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
     for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
     {
         temporaryPhase = trafficSignalPlan_EV[i].phaseNumber;
+        
         if (trafficSignalPlan_EV[i].phaseNumber < 3 && trafficSignalPlan_EV[i].phaseRing == 1)
             EV_P11.push_back(trafficSignalPlan_EV[i].phaseNumber);
 
@@ -857,12 +868,11 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 */
 void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
-    // int temporaryPhase{};
     int temporaryCurrentPhase{};
     int temporaryNextPhase{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
-
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
 
@@ -872,6 +882,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     string errors{};
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
+    
+    cout << "[" << currentTime << "] Received Current Signal Status" << endl;
 
     const Json::Value values = jsonObject["currentPhases"];
 
@@ -1131,7 +1143,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 {
     OptimizationModelManager optimizationModelManager;
     TrafficControllerData::TrafficSignalPlan signalPlan;
-
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -1139,7 +1151,9 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
+    cout << "[" << currentTime << "] Received Signal Timing Plan" << endl;
     loggingSignalPlanData(jsonString);
+
     trafficSignalPlan.clear();
     PhaseNumber.clear();
     PedWalk.clear();
@@ -1155,7 +1169,6 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     P21.clear();
     P22.clear();
 
-    // const Json::Value values = jsonObject["TimingPlan"];
     noOfPhase = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
 
     for (int i = 0; i < noOfPhase; i++)
@@ -1198,6 +1211,33 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
         signalPlan.phaseRing = PhaseRing[i];
         trafficSignalPlan.push_back(signalPlan);
     }
+
+    /*    
+        - If phaseRing value is zero (0) for a phase that phase is inactive. 
+        - To avoid the issue of inconsistant data, minGreen, maxGreen, passage, yellowChange and redClear value will be set as zero (0).
+        - The phaseRing value will be also set.
+    */
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+    {        
+        if ((trafficSignalPlan[i].phaseRing == 0))
+        {            
+            trafficSignalPlan[i].minGreen = 0.0;
+            trafficSignalPlan[i].maxGreen = 0.0;
+            trafficSignalPlan[i].passage = 0.0;
+            trafficSignalPlan[i].yellowChange = 0.0;
+            trafficSignalPlan[i].redClear = 0.0;
+            
+            if (trafficSignalPlan[i].phaseNumber <= LastPhaseOfRing1)
+                trafficSignalPlan[i].phaseRing = 1;
+            
+            else if (trafficSignalPlan[i].phaseNumber >= FirstPhaseOfRing2)
+                trafficSignalPlan[i].phaseRing = 2;
+        }
+
+        else 
+            continue;
+    }
+
     //Obtain the phases in P11, P12, P21, P22
     for (int i = 0; i < noOfPhase; i++)
     {
@@ -1224,7 +1264,9 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
+    trafficSignalPlan_SignalCoordination.clear();
     double splitValue{};
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -1232,8 +1274,10 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
+    cout << "[" << currentTime << "] Received Split Data for Signal Coordination" << endl;
     loggingSplitData(jsonString);
-    trafficSignalPlan_SignalCoordination.clear();
+
+    
     int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
     cycleLength = jsonObject["CycleLength"].asDouble();
     offset = jsonObject["Offset"].asDouble();

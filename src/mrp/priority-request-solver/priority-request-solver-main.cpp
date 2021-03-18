@@ -56,71 +56,73 @@ int main()
         
         msgType = priorityRequestSolver.getMessageType(receivedJsonString);
 
-        // Received static signal timing plan will be managed and mod file will be written.
-        if (msgType == static_cast<int>(msgType::signalPlan))
-        {
-            cout << "Received Signal Timing Plan " << priorityRequestSolver.getSeconds() << endl;
+        /*
+            - If received message contains static signal timing plan, it will be managed and mod file will be written.
+            - If received message contains split data, it will be used to manage trafficSignalPlan_SignalCoordination vector.
+            - If received message contains priority requests, it will be used to manage the priority requests list.
+        */
+        if (msgType == static_cast<int>(msgType::signalPlan))            
             priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
-        }
-
-        // Received split data will be used to manage trafficSignalPlan_SignalCoordination vector
+ 
         else if (msgType == static_cast<int>(msgType::splitData))
-        {
-            cout << "Received Split Data for Signal Coordination at time " << priorityRequestSolver.getSeconds() << endl;
             priorityRequestSolver.getSignalCoordinationTimingPlan(receivedJsonString);
-        }
 
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
             priorityRequestSolver.createPriorityRequestList(receivedJsonString);
-            cout << "Received Priority Request from PRS at time " << priorityRequestSolver.getSeconds() << endl;
-
-            // If split data is not available, split data request message will send to signal-coordination-request-generator.
-            // Received split data will be used to manage trafficSignalPlan_SignalCoordination vector
+            /*
+                - If split data is not available, split data request message will send to signal-coordination-request-generator.
+                - Received split data will be used to manage trafficSignalPlan_SignalCoordination vector
+            */
             if (priorityRequestSolver.checkSignalCoordinationTimingPlan() == true)
             {
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(signalCoordinationRequestGeneratorPortNo),priorityRequestSolver.getSignalCoordinationTimingPlanRequestString());
                 priorityRequestSolverSocket.receiveData(receivedCoordinationPlanBuffer, sizeof(receivedCoordinationPlanBuffer));
-                
                 std::string receivedCoordinationPlanString(receivedCoordinationPlanBuffer);
-                cout << "Received Split Data for Signal Coordination at time " << priorityRequestSolver.getSeconds() << endl;
                 
                 if (priorityRequestSolver.getMessageType(receivedCoordinationPlanString) == static_cast<int>(msgType::splitData))
                     priorityRequestSolver.getSignalCoordinationTimingPlan(receivedCoordinationPlanString);
             }
 
-            // A JSON formatted message will send to TCI to obtain current signal status
-            // A different port number is used for this communication so that PRSolver doesn't miss any messages from the PRS since blocking socket are using here
+            /*
+                - A JSON formatted message will send to TCI to obtain current signal status
+                - A different port number is used for this communication so that PRSolver doesn't miss any messages from the PRS since blocking socket are using here
+            */
             priorityRequestSolver_To_TCI_Interface_Socket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getCurrentSignalStatusRequestString());
             priorityRequestSolver_To_TCI_Interface_Socket.receiveData(receivedSignalStatusBuffer, sizeof(receivedSignalStatusBuffer));
-            
             std::string receivedSignalStatusString(receivedSignalStatusBuffer);
-            cout << "Received Signal Status at time " << priorityRequestSolver.getSeconds() << endl;
-            
+           
             if (priorityRequestSolver.getMessageType(receivedSignalStatusString) == static_cast<int>(msgType::currentPhaseStatus))
                 priorityRequestSolver.getCurrentSignalStatus(receivedSignalStatusString);
 
-            // An optimal signal timing schedule will be formulated based on the priority request list, current signal status and current signal timing plan.
+             /*
+                - An optimization problem will be solved based on the priority request list, current signal status and current signal timing plan.
+                - An optimal signal timing schedule will be formulated based on optimal solution.
+                - The validated schedule will send to the TCI.
+            */
             tciJsonString = priorityRequestSolver.getScheduleforTCI();
-            
-            // The validated schedule will send to the TCI
             if(priorityRequestSolver.getOptimalSolutionValidationStatus())
                 priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             
             // If requires (logging is "True" in the config file), received priority requests list, dat file, Results.txt file, optimal schedule will be written in the log file.
             priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
-            
         }
 
-        // If clear request message is received from the PRS, a clear request schedule will be formulated and send to the TCI.
+        /*
+            - If clear request message is received from the PRS, a clear request schedule will be formulated and send to the TCI.
+            - If requires (logging is "True" in the config file), clear request message and schedule will be written in the log file.
+        */
         else if (msgType == static_cast<int>(msgType::clearRequest))
         {
-            cout << "Received Clear Request at time " << priorityRequestSolver.getSeconds() << endl;
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
             
-            // If requires (logging is "True" in the config file), clear request message and schedule will be written in the log file.
             priorityRequestSolver.loggingClearRequestData(tciJsonString);
         }
     }
+    
+    priorityRequestSolverSocket.closeSocket();
+    priorityRequestSolver_To_TCI_Interface_Socket.closeSocket();
+
+    return 0;
 }
