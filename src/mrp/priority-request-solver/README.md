@@ -3,7 +3,30 @@ The Priority-Request-Solver software component is responsible for formulating th
 The GLPK (https://www.gnu.org/software/glpk/) provides open-source C/C++ packages that has packages to solve mixed integer programming (MIP), large-scale linear programming (LP), and other related optimization problems.
 
 ## Work-flow
-The PRSolver receives priority requests list from the PriorityRequestServer(PRS) and current signal timing plan(static) from the TCI. It also receives split data from the SignalCoordinationRequestGenerator, if there is an active coordination plan. The PRSolver requests for current signal status to the TCI. It writes the optimization model in the OptimizationModel.mod (for transit, truck or coordination priority requests) or OptimizationModel_EV.mod (for emergency vehicle priority requests) file. The input for the optimization model is written in the OptimizationModelData.dat file. A JSON formatted optimal signal timing schedule is sent to the TCI over the UDP socket. The PRSolver composed of four class- (1) SolverDataManager (2) Schedulemanager, (3) OptimizationModelManager, and (4) PriorityRequestSolver.
+The PRSolver receives priority requests list from the PriorityRequestServer(PRS) and current signal timing plan(static) from the TCI. It also receives split data from the SignalCoordinationRequestGenerator, if there is an active coordination plan. The PRSolver requests for current signal status to the TCI. It writes the optimization model in the OptimizationModel.mod (for transit, truck or coordination priority requests) or OptimizationModel_EV.mod (for emergency vehicle priority requests) file. The input for the optimization model is written in the OptimizationModelData.dat file. A JSON formatted optimal signal timing schedule is sent to the TCI over the UDP socket. The PRSolver composed of five class- (1) TrafficConrtollerStatusManager (2) SolverDataManager  (3) OptimizationModelManager (4)PriorityRequestSolver, and (4) Schedulemanager.
+
+### TrafficConrtollerStatusManager class
+TrafficConrtollerStatusManager class has the functionality to manage the current traffic signal status, received from the TCI. It can validate the received signal status. It can modify the received signal status, if requires. For example- if current phase is on green rest, it will set the elapsed time as min green value for transit or truck priority request. An example of such JSON formatted current signal status message is as follows:
+```
+{
+    "currentPhases": [
+        {
+            "Phase": 2,
+            "State": "green",
+            "ElapsedTime": 85
+        },
+        {
+            "Phase": 6,
+            "State": "green",
+            "ElapsedTime": 200
+        }
+    ],
+    "MsgType": "CurrNextPhaseStatus",
+    "nextPhases": [
+        0
+    ]
+}
+```
 
 ### SolverDataManager Class
 The SolverDataManager class manages the data required for solving the optimization model. It writes the dat file (OptimizationModelData.dat) in the /nojournal/bin directory, required for solving the optimization model. The dat file contains the  information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green), static signal timing plan (yellow change interval, red clearance interval, minimum green time and maximum green time for all the active phases), priority type (transit, truck, EV etc.), priority weights, ETA (earliest arrival time and latest arrival time) of each priority requests. An example of such OptimizationModelData.dat file is as follows:
@@ -32,6 +55,34 @@ param Ru (tr): 1 2 3 4 5 6 7 8:=
 3  .	.	.	.	.	49.9211	.	.	
 ;
 end;
+```
+
+### OptimizationModelManager Class
+OptimizationModelManager class has the functionality to write the optimization model file for the different types of priority requests. The static optimization model file for the truck, transit, or coordination is OptimizationModel.mod. The dynamic optimization model file for the emergency vehicle is OptimizationModel_EV.mod.
+
+### PriorityRequestSolverClass
+PriorityRequestSolverClass has the functionality to manage the priority requests in a list, the current signal timing plan, split data and current signal status. It can also manage dilemma zone request list if emergency vehicle is sending priority requests while heavy vehicles are trapped in the dilemma zone on the opposite approaches. It can provide the optimization model and input data to glpk solver package as an input to solve the optimization problem. The optimal solution is written on Results.txt file. The optimal soultion can be validated. The first two line of the file contains the information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green). The next six lines are the phase duration (first three lines are left critical points of "Hold" points and next three lines are are right critical points or "Force-Off" points) for each phases in cyle 1-3. There are green time for each phases in cycle 1-3 afterwards. The file can contain the information about ETA of the all priority requests and their corresponding delay. An example of such Results.txt file is as follows:
+```
+   4    8 
+  0.00   0.00 15.00  13.00 
+  0.00   0.00   0.00   9.00   0.00   0.00   0.00   9.00   
+  8.00  39.42   8.00  22.00   8.00  39.42   8.00  22.00   
+  8.00  21.50   8.00   0.00   8.00  21.50   8.00   0.00   
+  0.00   0.00   0.00   9.00   0.00   0.00   0.00   9.00   
+ 11.48  41.58  12.00  24.00  17.00  36.06  14.00  22.00   
+ 17.00  41.58   8.00   0.00  17.00  41.58   8.00   0.00   
+  0.00   0.00   0.00   2.00   0.00   0.00   0.00   2.00   
+  4.00  32.92   4.00  15.00   4.00  32.92   4.00  15.00   
+  4.00  15.00   4.00   0.00   4.00  15.00   4.00   0.00   
+  0.00   0.00   0.00   2.00   0.00   0.00   0.00   2.00   
+  7.48  35.08   8.00  17.00  13.00  29.56  10.00  15.00   
+ 13.00  35.08   4.00   0.00  13.00  35.08   4.00   0.00   
+   3 
+ 2  20.48  28.48   0.00 2 
+ 2  29.92  49.92   0.00 5 
+ 6  29.92  49.92   0.00 5 
+  0.00 
+ 190.97 
 ```
 
 ### ScheduleManager Class
@@ -102,33 +153,6 @@ The ScheduleManager class can read the Results.txt file and develop optimal sche
         }
     ]
 }
-```
-### OptimizationModelManager Class
-OptimizationModelManager class has the functionality to write the optimization model file for the different types of priority requests. The static optimization model file for the truck, transit, or coordination is OptimizationModel.mod. The dynamic optimization model file for the emergency vehicle is OptimizationModel_EV.mod.
-
-### PriorityRequestSolverClass
-PriorityRequestSolverClass has the functionality to manage the priority requests in a list, the current signal timing plan, split data and current signal status. It can also manage dilemma zone request list if emergency vehicle is sending priority requests while heavy vehicles are trapped in the dilemma zone on the opposite approaches. It can provide the optimization model and input data to glpk solver package as an input to solve the optimization problem. The optimal solution is written on Results.txt file. The optimal soultion can be validated. The first two line of the file contains the information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green). The next six lines are the phase duration (first three lines are left critical points of "Hold" points and next three lines are are right critical points or "Force-Off" points) for each phases in cyle 1-3. There are green time for each phases in cycle 1-3 afterwards. The file can contain the information about ETA of the all priority requests and their corresponding delay. An example of such Results.txt fileis as follows:
-```
-   4    8 
-  0.00   0.00 15.00  13.00 
-  0.00   0.00   0.00   9.00   0.00   0.00   0.00   9.00   
-  8.00  39.42   8.00  22.00   8.00  39.42   8.00  22.00   
-  8.00  21.50   8.00   0.00   8.00  21.50   8.00   0.00   
-  0.00   0.00   0.00   9.00   0.00   0.00   0.00   9.00   
- 11.48  41.58  12.00  24.00  17.00  36.06  14.00  22.00   
- 17.00  41.58   8.00   0.00  17.00  41.58   8.00   0.00   
-  0.00   0.00   0.00   2.00   0.00   0.00   0.00   2.00   
-  4.00  32.92   4.00  15.00   4.00  32.92   4.00  15.00   
-  4.00  15.00   4.00   0.00   4.00  15.00   4.00   0.00   
-  0.00   0.00   0.00   2.00   0.00   0.00   0.00   2.00   
-  7.48  35.08   8.00  17.00  13.00  29.56  10.00  15.00   
- 13.00  35.08   4.00   0.00  13.00  35.08   4.00   0.00   
-   3 
- 2  20.48  28.48   0.00 2 
- 2  29.92  49.92   0.00 5 
- 6  29.92  49.92   0.00 5 
-  0.00 
- 190.97 
 ```
 
 ## Console output and logging
