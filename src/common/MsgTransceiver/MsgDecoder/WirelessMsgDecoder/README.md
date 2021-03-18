@@ -26,7 +26,7 @@ In the `mmitss-phase3-master-config.json` file, following fields need to be conf
   - `["PortNumber"]["DataCollector"]`: an `int` specifying the UDP port number used by the V2X-Data-Collector
 
 2. In roadside deployment only:
-  - `["MapPayload"]`: a `string` containing the MAP payload created using (USDOT ISD Message Creator)[https://webapp.connectedvcs.com/isd/]
+  - `["MapPayload"]`: a `string` containing the MAP payload created using [USDOT ISD Message Creator](https://webapp.connectedvcs.com/isd/)
   - `["PortNumber"]["PriorityRequestServer"]`: an `int` specifying the UDP port number used by the Priority-Request-Server
   - `["PortNumber"]["OBUBSMReceiver"]`: an `int` specifying the UDP port number used by the Bsm-Locator
 
