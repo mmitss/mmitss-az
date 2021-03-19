@@ -18,7 +18,6 @@ Signature=False
 Encryption=False
 Payload=<DSRC message payload>
 ```
-
 ## Console output and logging
 Message-Encoder does not produce any console outputs or log files.
 
