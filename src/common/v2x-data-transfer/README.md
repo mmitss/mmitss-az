@@ -25,7 +25,7 @@ The following fields are required to be configured in the `/nojournal/bin/mmitss
   - `["DataTransfer"]["StartTime_PushToServer"]["hour"]`: an `int` specifying the hour component of the time at which an attempt to **push the data to the server** must begin (range: 0-23) 
   - `["DataTransfer"]["StartTime_PushToServer"]["minute"]`: an `int` specifying the minute component of the time at which attempt to **push the data to the server** must begin (range: 0-59)
   - `["DataTransfer"]["intersection"][0]["name"]`: a `string` specifying the name of the intersection (self)
-  - `["DataTransfer"]["intersection"][0]["v2x-data_location"]`: a `string` specifying the absolute location of the v2x-data directory, which consists the data archive. Default: `/nojournal/bin/v2x-data` 
+  - `["DataTransfer"]["intersection"][0]["v2x-data_location"]`: a `string` specifying the absolute location of the v2x-data directory (in the host file system), which consists the data archive. (Default: `/nojournal/bin/v2x-data`)
   
 3. Serverside deployment only:
   - `["PullFromIntersections"]`: a `bool` specifying whether or not to pull the data from intersections. (NOTE: `true` requires connectivity with intersections)
@@ -34,12 +34,12 @@ The following fields are required to be configured in the `/nojournal/bin/mmitss
   - `["DataTransfer"]["StartTime_PullFromIntersections"]["minute"]`: an `int` specifying the minute component of the time at which attempt to **push the data from intersections** must begin (range: 0-59)
   - `["DataTransfer"]["StartTime_PushToCyverse"]["hour"]`: an `int` specifying the hour component of the time at which attempt to **push the data to CyVerse** must begin (range: 0-23)
   - `["DataTransfer"]["StartTime_PushToCyverse"]["minute"]`: an `int` specifying the minute component of the time at which attempt to **push the data to CyVerse** must begin (range: 0-59)
-  - `["DataTransfer"]["intersection"][n]["name"]`:
-  - `["DataTransfer"]["intersection"][n]["ip_address"]`:
-  - `["DataTransfer"]["intersection"][n]["username"]`:
-  - `["DataTransfer"]["intersection"][n]["password"]`:
-  - `["DataTransfer"]["intersection"][n]["v2x-data_location"]`:
-  - `["DataTransfer"]["intersection"][n]["cyverse_location"]`:
+  - `["DataTransfer"]["intersection"][n]["name"]`: a `string` specifying the name of the *nth* intersection
+  - `["DataTransfer"]["intersection"][n]["ip_address"]`: a `string` specifying the IPv4 address of the *nth* intersection
+  - `["DataTransfer"]["intersection"][n]["username"]`: a `string` specifying the the username that is allowed SFTP transactions with the *nth* intersection's coprocessor
+  - `["DataTransfer"]["intersection"][n]["password"]`: a `string` specifying the password corresponding to the username that is allowed SFTP transactions with the *nth* intersection's coprocessor
+  - `["DataTransfer"]["intersection"][n]["v2x-data_location"]`: a `string` specifying the absolute location of the v2x-data directory (in the remote file system), which consists the data archive. (Default: `/nojournal/bin/v2x-data`)
+  - `["DataTransfer"]["intersection"][n]["cyverse_location"]`: a `string` specifying the location of the directory on CyVerse that corresponds to the *nth* intersection.
 
 # Requirements
 1. Common to both, serverside and roadside deployment:
