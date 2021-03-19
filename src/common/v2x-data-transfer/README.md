@@ -57,3 +57,4 @@ The following fields are required to be configured in the `/nojournal/bin/mmitss
   - Sufficient storage space proportional to number of intersections in the corridor
 
 # Known issues/limitations
+- None
