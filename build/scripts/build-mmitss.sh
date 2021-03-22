@@ -323,7 +323,7 @@ else
 
 		#######################################################################################
 	    echo "Building BSM Locator..."
-	    cd ../../src/mrp/bsm-locator
+	    cd ../../src/mrp/trajectory-aware
 	    # Clean the folder and build for linux.
 	    make clean &> /dev/null
 
@@ -335,7 +335,7 @@ else
 
 	    # Indicate Success/Failure of the build
 	    if [ "$?" -eq "0" ]; then
-		    mv M_BsmLocator ../../../build/bin/BsmLocator/$PROCESSOR/M_BsmLocator
+		    mv M_TrajectoryAware ../../../build/bin/TrajectoryAware/$PROCESSOR/M_TrajectoryAware
 		    echo -e "${green}Successful${nocolor}"
 	    else
 		    echo -e "${red}Failed${nocolor}"

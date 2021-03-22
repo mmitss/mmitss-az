@@ -40,11 +40,11 @@ int main()
     std::string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &config, &errors);        
 
-    bool mapBsmFiltering = config["MapBsmFiltering"].asBool();
+    bool offmapBsmFiltering = config["OffmapBsmFiltering"].asBool();
 
     BsmLocator bsmLocator(configFilename);    
 
-    UdpSocket s(static_cast<short unsigned int>(config["PortNumber"]["OBUBSMReceiver"].asInt()));
+    UdpSocket s(static_cast<short unsigned int>(config["PortNumber"]["TrajectoryAware"].asInt()));
     std::string hostIp = config["HostIp"].asString();
     int dataCollectorPort = config["PortNumber"]["DataCollector"].asInt();
 
@@ -68,7 +68,7 @@ int main()
             bool onMap = outgoingBsmJson["OnmapVehicle"]["onMap"].asBool();
             if(onMap==false)
             {
-                if(mapBsmFiltering==false)
+                if(offmapBsmFiltering==false)
                 {
                     outgoingBsmJsonString = Json::writeString(writeBuilder,outgoingBsmJson);
                     s.sendData(hostIp, static_cast<unsigned short int>(dataCollectorPort), outgoingBsmJsonString);

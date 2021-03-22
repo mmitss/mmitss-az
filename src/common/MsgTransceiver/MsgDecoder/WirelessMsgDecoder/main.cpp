@@ -26,7 +26,7 @@ int main()
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int bsmLocatorPortNo = (jsonObject_config["PortNumber"]["OBUBSMReceiver"]).asInt();
+    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["trajectoryAware"]).asInt();
     const int messageDistributorPort = (jsonObject_config["PortNumber"]["MessageDistributor"]).asInt();
 
     std::string receivedPayload{};
@@ -61,7 +61,7 @@ int main()
                 decoderSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPort), bsmJsonString);
                 if(applicationPlatform=="roadside")
                 {
-                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmLocatorPortNo), bsmJsonString);
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trajectoryAwarePortNo), bsmJsonString);
                 }
                 else if(applicationPlatform=="vehicle")
                 {

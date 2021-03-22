@@ -5,7 +5,7 @@
         {
             "name": "speedway-campbell",
             "ip_address": "10.12.6.3",
-            "bsm_client_port": 10001,
+            "bsm_client_port": 20001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -17,7 +17,7 @@
         {
             "name": "speedway-cherry",
             "ip_address": "10.12.6.6",
-            "bsm_client_port": 10001,
+            "bsm_client_port": 20001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -29,7 +29,7 @@
         {
             "name": "speedway-mountain",
             "ip_address": "10.12.6.9",
-            "bsm_client_port": 10001,
+            "bsm_client_port": 20001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
@@ -41,7 +41,7 @@
         {
             "name": "speedway-park",
             "ip_address": "10.12.6.12",
-            "bsm_client_port": 10001,
+            "bsm_client_port": 20001,
             "srm_client_port": 20002,
             "dsrc_range_Meter": 500,
             "position": {
