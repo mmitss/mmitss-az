@@ -42,7 +42,7 @@ constexpr auto PI = 3.14159265;
 // REPLACE THIS WITH THE DESIRED VEHICLE TYPE
 /****************************************************************************/
 // 2: EmergencyVehicle, 6: Transit, 9: Truck, 4: Car
-#define VEHICLE_TYPE 2
+#define VEHICLE_TYPE 4
 #define CONFIG_FILE_NAME "mmitss_simulation/mmitss_driver_model_config.json"
 
 /*==========================================================================*/
@@ -193,50 +193,50 @@ DRIVERMODEL_API int DriverModelSetValue(long type,
     veh_rear_x = double_value;
     return 1;
   case DRIVER_DATA_VEH_REAR_Y_COORDINATE:
-  {
-    veh_rear_y = double_value;
-    double dx = veh_x - veh_rear_x;
-    double dy = veh_y - veh_rear_y;
-    double veh_heading = atan2(dy, dx) * 180.0 / PI;
-    double y_origin = 0.0;
-    double x_origin = 0.0;
-    double veh_x_cal = ((veh_x + veh_rear_x) / 2) - x_origin;
-    double veh_y_cal = ((veh_y + veh_rear_y) / 2) - y_origin;
-    veh_heading = 90.0 - veh_heading;
-    if (veh_heading < 0)
-    {
-      veh_heading = veh_heading + 360.0;
-    }
+       {
+          veh_rear_y = double_value;
+          double dx = veh_x - veh_rear_x;
+          double dy = veh_y - veh_rear_y;
+          double veh_heading = atan2(dy, dx) * 180.0 / PI;
+          double y_origin = 0.0;
+          double x_origin = 0.0;
+          double veh_x_cal = ((veh_x + veh_rear_x) / 2) - x_origin;
+          double veh_y_cal = ((veh_y + veh_rear_y) / 2) - y_origin;
+          veh_heading = 90.0 - veh_heading;
+          if (veh_heading < 0)
+          {
+              veh_heading = veh_heading + 360.0;
+          }
 
-    double x_grid{};
-    double y_grid{};
-    double z_grid{};
-    geoPoint.local2ecef(veh_y_cal, veh_x_cal, 0.0, &x_grid, &y_grid, &z_grid); // Convert the current vehicle position from local to earth-center-earth-fixed co-ordinates.
+          double x_grid{};
+          double y_grid{};
+          double z_grid{};
+          geoPoint.local2ecef(veh_y_cal, veh_x_cal, 0.0, &x_grid, &y_grid, &z_grid); // Convert the current vehicle position from local to earth-center-earth-fixed co-ordinates.
 
-    // Tranformed/calculated time-variant attributes:
-    double longitude_DecimalDegree{};
-    double latitude_DecimalDegree{};
-    double elevation_Meter{};
-    geoPoint.ecef2lla(x_grid, y_grid, z_grid, &longitude_DecimalDegree, &latitude_DecimalDegree, &elevation_Meter); // Convert the current vehicle position from earth-center-earth-fixed to latitude-longitude-altitude co-ordinates.
+          // Tranformed/calculated time-variant attributes:
+          double longitude_DecimalDegree{};
+          double latitude_DecimalDegree{};
+          double elevation_Meter{};
+          geoPoint.ecef2lla(x_grid, y_grid, z_grid, &longitude_DecimalDegree, &latitude_DecimalDegree, &elevation_Meter); // Convert the current vehicle position from earth-center-earth-fixed to latitude-longitude-altitude co-ordinates.
 
-    uint64_t temporaryId_in = static_cast<uint64_t>(veh_id);
-    uint16_t secMark_in = static_cast<uint16_t>(veh_secmark);
-    int32_t latitude_DecimalDegree_in = static_cast<int32_t>(latitude_DecimalDegree * MULTIPLIER_LATITUDE);
-    int32_t longitude_DecimalDegree_in = static_cast<int32_t>(longitude_DecimalDegree * MULTIPLIER_LONGITUDE);
-    int32_t elevation_Meter_in = static_cast<int32_t>(elevation_Meter * MULTIPLIER_ELEVATION);
-    uint16_t speed_MetersPerSecond_in = static_cast<uint16_t>(veh_speed * MULTIPLIER_SPEED);
-    uint16_t heading_Degree_in = static_cast<uint16_t>(veh_heading * MULTIPLIER_HEADING);
-    uint16_t length_cm_in = static_cast<uint16_t>(length_cm * MULTIPLIER_LENGTH);
-    uint16_t width_cm_in = static_cast<uint16_t>(width_cm * MULTIPLIER_WIDTH);
-    uint8_t vehicle_Type_in = static_cast<uint8_t>(VEHICLE_TYPE);
-    
-    if (msgCount_in > MAX_MSG_COUNT)
-        msgCount_in = 0;
-    msgCount_in++;
-    MsgBlob msgBlobObject(msgCount_in, temporaryId_in, secMark_in, latitude_DecimalDegree_in, longitude_DecimalDegree_in, elevation_Meter_in, speed_MetersPerSecond_in, heading_Degree_in, length_cm_in, width_cm_in, vehicle_Type_in);
-    sendto(socketC, msgBlobObject.CreateBSMForVissimVehicle(), BSM_BlOB_SIZE, 0, (sockaddr*)&clientInfo, len);
-    return 1;
-  }
+          uint64_t temporaryId_in = static_cast<uint64_t>(veh_id);
+          uint16_t secMark_in = static_cast<uint16_t>(veh_secmark);
+          int32_t latitude_DecimalDegree_in = static_cast<int32_t>(latitude_DecimalDegree * MULTIPLIER_LATITUDE);
+          int32_t longitude_DecimalDegree_in = static_cast<int32_t>(longitude_DecimalDegree * MULTIPLIER_LONGITUDE);
+          int32_t elevation_Meter_in = static_cast<int32_t>(elevation_Meter * MULTIPLIER_ELEVATION);
+          uint16_t speed_MetersPerSecond_in = static_cast<uint16_t>(veh_speed * MULTIPLIER_SPEED);
+          uint16_t heading_Degree_in = static_cast<uint16_t>(veh_heading * MULTIPLIER_HEADING);
+          uint16_t length_cm_in = static_cast<uint16_t>(length_cm * MULTIPLIER_LENGTH);
+          uint16_t width_cm_in = static_cast<uint16_t>(width_cm * MULTIPLIER_WIDTH);
+          uint8_t vehicle_Type_in = static_cast<uint8_t>(VEHICLE_TYPE);
+
+          if (msgCount_in > MAX_MSG_COUNT)
+              msgCount_in = 0;
+          msgCount_in++;
+          MsgBlob msgBlobObject(msgCount_in, temporaryId_in, secMark_in, latitude_DecimalDegree_in, longitude_DecimalDegree_in, elevation_Meter_in, speed_MetersPerSecond_in, heading_Degree_in, length_cm_in, width_cm_in, vehicle_Type_in);
+          sendto(socketC, msgBlobObject.CreateBSMForVissimVehicle(), BSM_BlOB_SIZE, 0, (sockaddr*)&clientInfo, len);
+          return 1;
+      }
   case DRIVER_DATA_VEH_REAR_Z_COORDINATE:
     return 1;
   case DRIVER_DATA_VEH_COLOR:
@@ -503,7 +503,7 @@ DRIVERMODEL_API int DriverModelExecuteCommand(long number)
   case DRIVER_COMMAND_KILL_DRIVER:
     return 1;
   case DRIVER_COMMAND_MOVE_DRIVER:
-    return 1;
+      return 1;
   default:
     return 0;
   }
