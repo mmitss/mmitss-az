@@ -13,6 +13,7 @@
     "Logging" : "True",
     "SRMTimedOutTime" : 10.0,
 	"PeerDataDecoding": false,
+	"MapBsmFiltering": true,
 	"PortNumber":
 	{
 		"MessageTransceiver":
