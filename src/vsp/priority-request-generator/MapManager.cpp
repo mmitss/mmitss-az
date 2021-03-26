@@ -50,14 +50,12 @@ MapManager::MapManager()
 void MapManager::json2MapPayload(std::string jsonString)
 {
     Json::Value jsonObject;
-    // Json::Reader reader;
-    // reader.parse(jsonString.c_str(), jsonObject);
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
     std::string errors{};
     bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     
-    if(parsingSuccessful == true)
+    if(parsingSuccessful)
     {    
         mapPayload = (jsonObject["MapPayload"]).asString();
         intersectionMapName = (jsonObject["IntersectionName"]).asString();
@@ -206,7 +204,6 @@ int MapManager::getMapPayloadReceivedSecondOfMinute()
     tm *timePtr = gmtime(&t);
 
     secondOfMinute = timePtr->tm_sec;
-    ;
 
     return secondOfMinute;
 }
@@ -260,7 +257,7 @@ void MapManager::deleteMap()
         std::string deleteFileName = findMapPayLoad->availableMapFileDirectory;
         remove(deleteFileName.c_str());
         availableMapList.erase(findMapPayLoad);
-        // printAvailableMapList();
+
     }
 }
 
@@ -270,9 +267,7 @@ void MapManager::deleteMap()
 void MapManager::printAvailableMapList()
 {
     for (size_t i = 0; i < availableMapList.size(); i++)
-    {
         cout << availableMapList[i].availableMapFileName << " " << availableMapList[i].availableMapFileDirectory << " " << availableMapList[i].activeMapStatus << endl;
-    }
 }
 
 /*
@@ -328,9 +323,7 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
     }
 
     else if (!activeMapList.empty())
-    {
         cout << "There is a an active MAP in list" << endl;
-    }
 }
 
 /*

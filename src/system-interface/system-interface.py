@@ -81,6 +81,7 @@ class ConfigurationForm(FlaskForm):
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
     applicationPlatform             = SelectField('Application Platform', choices = ["roadside", "vehicle"])
     peerDataDecoding                = BooleanField('Peer Data Decoding')
+    offmapBsmFiltering              = BooleanField("Off Map BSM Filtering")
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
     portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
@@ -89,6 +90,7 @@ class ConfigurationForm(FlaskForm):
     portNumberRSMDecoder            = IntegerField('Port Number: RSM Decoder')
     portNumberOBUBSMReceiver        = IntegerField('Port Number: OBU BSM Receiver')
     portNumberHostBsmDecoder        = IntegerField('Port Number: Host BSM Decoder')
+    portNumberTrajectoryAware       = IntegerField('Port Number: TrajectoryAware')
     portNumberTrajectoryAware       = IntegerField('Port Number: Trajectory Aware')
     portNumberPriorityRequestServer = IntegerField('Port Number: Priority Request Server')
     portNumberPrioritySolver        = IntegerField('Port Number: Priority Solver')
@@ -192,6 +194,7 @@ class SysConfig:
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
         self.applicationPlatform = data['ApplicationPlatform']
         self.peerDataDecoding = data['PeerDataDecoding']
+        self.offmapBsmFiltering = data['OffmapBsmFiltering']
         self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
         self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
         self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
@@ -200,6 +203,7 @@ class SysConfig:
         self.portNumberRSMDecoder = data['PortNumber']['RsmDecoder']
         self.portNumberOBUBSMReceiver = data['PortNumber']['OBUBSMReceiver']
         self.portNumberHostBsmDecoder = data['PortNumber']['HostBsmDecoder']
+        self.portNumberTrajectoryAware = data['PortNumber']['TrajectoryAware']
         self.portNumberTrajectoryAware = data['PortNumber']['TrajectoryAware']
         self.portNumberPriorityRequestServer = data['PortNumber']['PriorityRequestServer']
         self.portNumberPrioritySolver = data['PortNumber']['PrioritySolver']
@@ -316,6 +320,7 @@ def prepareJSONData(data, form):
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
     data['PeerDataDecoding']= form.peerDataDecoding.data
+    data['OffmapBsmFiltering']  =  form.offmapBsmFiltering
     data['PortNumber']['MessageTransceiver']['MessageSender']= 'Deprecated'
     data['PortNumber']['MessageTransceiver']['MessageReceiver']= 'Deprecated'
     data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
@@ -324,6 +329,7 @@ def prepareJSONData(data, form):
     data['PortNumber']['RsmDecoder']    = form.portNumberRSMDecoder.data
     data['PortNumber']['OBUBSMReceiver']    = form.portNumberOBUBSMReceiver.data
     data['PortNumber']['HostBsmDecoder']    = form.portNumberHostBsmDecoder.data
+    data['PortNumber']['TrajectoryAware']   = form.portNumberTrajectoryAware.data
     data['PortNumber']['TrajectoryAware']    = 'Component is Yet to Come'
     data['PortNumber']['PriorityRequestServer']    = form.portNumberPriorityRequestServer.data
     data['PortNumber']['PrioritySolver']    = form.portNumberPrioritySolver.data

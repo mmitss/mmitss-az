@@ -13,14 +13,12 @@
 */
 
 #pragma once
-#include <iostream>
-#include <vector>
-#include <chrono>
+
 #include <sstream>
 #include "ScheduleManager.h"
 #include "SolverDataManager.h"
-#include "TrafficSignalPlan.h"
-#include "Schedule.h"
+#include "OptimizationModelManager.h"
+#include "TrafficConrtollerStatusManager.h"
 
 using std::cout;
 using std::endl;
@@ -32,18 +30,8 @@ using std::stringstream;
 using std::vector;
 
 #define SignalCoordinationVehicleType 20
-#define Initialize 0.0
-#define Tolerance 2.0
-#define NumberOfStartingPhase 2
-#define NumberOfPhasePerRing 4
-#define FirstPhaseOfRing1 1
-#define FirstPhaseOfRing2 5
-#define LastPhaseOfRing1 4
-#define LastPhaseOfRing2 8
 #define MinuteToSecondCoversion 60.0
 #define HourToSecondConversion 3600.0
-#define PRSTimedOutValue 10.0
-
 
 enum msgType
 {
@@ -116,15 +104,11 @@ public:
   void GLPKSolver();
   void getCurrentSignalTimingPlan(string jsonString);
   void getSignalCoordinationTimingPlan(string jsonString);
-  void generateModFile();
-  void generateEVModFile();
   void setOptimizationInput();
   void getRequestedSignalGroup();
   void getEVPhases();
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string jsonString);
-  void modifyTrafficControllerStatus();
-  void validateTrafficControllerStatus();
   void validateEVTrafficSignalPlan();
   void loggingSignalPlanData(string jsonString);
   void loggingSplitData(string jsonString);

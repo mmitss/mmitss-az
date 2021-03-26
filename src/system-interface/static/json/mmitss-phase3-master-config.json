@@ -16,6 +16,7 @@
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
 	"PeerDataDecoding": false,
+	"OffmapBsmFiltering": true,
 	"CoordinationPlanCheckingTimeInterval": 300,
 	"PortNumber": {
 		"MessageTransceiver": {
@@ -28,7 +29,7 @@
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
 		"HostBsmDecoder": 10005,
-		"TrajectoryAware": "Component is Yet to Come",
+		"TrajectoryAware": 20001,
 		"PriorityRequestServer": 20002,
 		"PrioritySolver": 20003,
 		"PriorityRequestGenerator": 20004,

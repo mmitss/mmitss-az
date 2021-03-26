@@ -85,8 +85,13 @@ class V2XDataCollector:
 
     def initialize_bsmLogfile(self, origin):
         bsmLogfileName = self.loggingDirectory + self.baseName + "_" + origin + "BsmLog_" + self.initializationTimestamp + ".csv"
-        csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
+        
+        if self.environment == "vehicle":
+            csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
                                     + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width\n")
+        elif self.environment == "roadside":
+            csvHeader = ("log_timestamp_verbose,log_timestamp_posix,timestamp_verbose,timestamp_posix,"
+                                    + "temporaryId,secMark,latitude,longitude,elevation,speed,heading,type,length,width,onmap_status,position_on_map,current_approach,current_lane,current_signal_group,dist_to_stopbar\n")
 
         if origin == "host":
             self.hostBsmLogfile = open(bsmLogfileName, 'w')
@@ -232,8 +237,16 @@ class V2XDataCollector:
         vehType = str(jsonData["BasicVehicle"]["type"])
         length = str(jsonData["BasicVehicle"]["size"]["length_cm"])
         width = str(jsonData["BasicVehicle"]["size"]["width_cm"])
-        
-        csv = (log_timestamp_verbose + "," 
+
+        if self.environment == "roadside":
+            onMap = str(jsonData["OnmapVehicle"]["onMap"])
+            approachId = str(jsonData["OnmapVehicle"]["approachId"])
+            laneId = str(jsonData["OnmapVehicle"]["laneId"])
+            signalGroup = str(jsonData["OnmapVehicle"]["signalGroup"])
+            distanceToStopbar = str(jsonData["OnmapVehicle"]["distanceToStopbar"])
+            locationOnMap = str(jsonData["OnmapVehicle"]["locationOnMap"])
+            
+            csv = (log_timestamp_verbose + "," 
                 + log_timestamp_posix + "," 
                 + timestamp_verbose + "," 
                 + timestamp_posix + "," 
@@ -246,7 +259,30 @@ class V2XDataCollector:
                 + heading + "," 
                 + vehType + ","
                 + length + "," 
-                + width + "\n")
+                + width + "," 
+                + onMap + "," 
+                + locationOnMap + ","
+                + approachId + ","  
+                + laneId + ","  
+                + signalGroup + ","  
+                + distanceToStopbar + "\n")
+                
+        elif self.environment == "vehicle":
+            csv = (log_timestamp_verbose + "," 
+                    + log_timestamp_posix + "," 
+                    + timestamp_verbose + "," 
+                    + timestamp_posix + "," 
+                    + temporaryId + "," 
+                    + secMark + "," 
+                    + latitude + "," 
+                    + longitude + "," 
+                    + elevation + "," 
+                    + speed + "," 
+                    + heading + "," 
+                    + vehType + ","
+                    + length + "," 
+                    + width + "\n")
+
         return csv
 
     def spat_json_to_csv(self, jsonData:json):

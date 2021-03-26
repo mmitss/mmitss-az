@@ -1,0 +1,7 @@
+{
+	"MsgType": "SpecialFunction",
+	"Status": false,
+    "Id": 8,
+    "StartTime": 2,
+    "EndTime" : 10
+}
