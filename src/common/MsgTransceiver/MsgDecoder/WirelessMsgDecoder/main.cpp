@@ -29,7 +29,7 @@ int main()
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["TrajectoryAware"]).asInt();
+    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["trajectoryAware"]).asInt();
     const int messageDistributorPort = (jsonObject_config["PortNumber"]["MessageDistributor"]).asInt();
 
     std::string receivedPayload{};
@@ -60,10 +60,16 @@ int main()
             else if (msgType == MsgEnum::DSRCmsgID_bsm)
             {
                 std::string bsmJsonString = decoder.bsmDecoder(extractedPayload);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
                 decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), bsmJsonString);
                 decoderSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPort), bsmJsonString);
-                decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trajectoryAwarePortNo), bsmJsonString);
+                if(applicationPlatform=="roadside")
+                {
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trajectoryAwarePortNo), bsmJsonString);
+                }
+                else if(applicationPlatform=="vehicle")
+                {
+                    decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
+                }
                 std::cout << "Decoded BSM" << std::endl;
             }
 

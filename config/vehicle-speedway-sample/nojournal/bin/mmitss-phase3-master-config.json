@@ -17,6 +17,7 @@
 	"ApplicationPlatform": "vehicle",
 	"CoordinationPlanCheckingTimeInterval": 300,
 	"PeerDataDecoding": false,
+	"MapBsmFiltering": true,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,

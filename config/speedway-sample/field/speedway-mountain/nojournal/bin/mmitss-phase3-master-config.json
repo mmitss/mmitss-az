@@ -17,6 +17,7 @@
 	"ApplicationPlatform": "roadside",
 	"CoordinationPlanCheckingTimeInterval": 300,
 	"PeerDataDecoding": false,
+	"MapBsmFiltering": true,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,
@@ -112,17 +113,28 @@
 		"Longitude_DecimalDegree": -110.95232938020776,
 		"Elevation_Meter": 715
 	},
-	"DataTransfer": {
-		"FtpServerPort": 9090,
-		"StartTime": {
-			"Hour": 15,
-			"Minute": 30
+	"DataTransfer":
+	{
+		"server":
+		{
+			"data_directory": "/home/ubuntu/mmitss",
+			"ip_address": "127.0.0.1",
+			"username": "username",
+			"password": "password"
 		},
-		"EndTime": {
-			"Hour": 18,
-			"Minute": 30
-		},
-		"MaxRetries": 3
+		"intersection": 
+		[
+			{
+				"name": "intersection-1",
+				"v2x-data_location": "/home/ubuntu/mmitss"
+			}
+		],
+		"StartTime_PushToServer": 
+		{
+				"hour": 0,
+				"minute": 0			
+		}
+		
 	},
 	"PriorityParameter": {
 		"EmergencyVehicleWeight": 1.0,

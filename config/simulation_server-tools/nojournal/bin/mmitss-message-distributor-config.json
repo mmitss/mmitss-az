@@ -51,57 +51,48 @@
             }
         }
     ],
-    "bsm_clients": 
-    {
-        "Transit":[
+    "bsm_clients": {
+        "transit": [
             {
                 "ip_address": "10.12.6.20",
-                "port":20022
+                "port": 20022
             }
         ],
-        "Truck":[
+        "truck": [
             {
                 "ip_address": "10.12.6.20",
-                "port":20022
+                "port": 20022
             }
         ],
-        "EmergencyVehicle":[
+        "emergency": [
             {
                 "ip_address": "10.12.6.20",
-                "port":20022
+                "port": 20022
             }
         ],
-        "Passenger":[
+        "passenger": [
             {
                 "ip_address": "10.12.6.20",
-                "port":20022
+                "port": 20022
             }
         ],
-        "other":[
+        "other": [
             {
                 "ip_address": "10.12.6.20",
-                "port":20022
-            }
-        ],
-        "other":[
-            {
-                "ip_address": "10.12.6.20",
-                "port":20022
+                "port": 20022
             }
         ]
     },
-    "map_clients":
-    [
+    "map_clients": [
         {
             "ip_address": "10.12.6.20",
-            "port":20022
+            "port": 20022
         }
     ],
-    "ssm_clients":
-    [
+    "ssm_clients": [
         {
             "ip_address": "10.12.6.20",
-            "port":20022
+            "port": 20022
         }
     ]
 }

@@ -51,11 +51,11 @@ This is an html file that contains the presentation for:
         <!-- Tab panes -->
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade in active" id="system">
-          {{ renderfield(form.logging)}}
-          {{ renderfield(form.srmTimedOutTime)}}
-          {{ renderfield(form.systemPerformanceTimeInterval)}}
           {{ renderfield(form.applicationPlatform)}}
+          {{ renderfield(form.logging)}}
+          {{ renderfield(form.systemPerformanceTimeInterval)}}
           {{ renderfield(form.peerDataDecoding)}}
+          {{ renderfield(form.offmapBsmFiltering)}}
 
         </div>
 
@@ -64,7 +64,12 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.intersectionName)}}
             {{ renderfield(form.intersectionID)}}
             {{ renderfield(form.regionalID)}}
-            {{ renderfield(form.mapPayload)}}          
+            <div>
+              {{form.mapPayload.label}}
+            </div>
+            <div>
+              {{form.mapPayload(style="width: 400px")}}
+            </div>        
             {{ renderfield(form.intersectionReferencePointLatitudeDecimalDegree)}}
             {{ renderfield(form.intersectionReferencePointLongitudeDecimalDegree)}}
             {{ renderfield(form.intersectionReferencePointElevationMeter)}}
@@ -82,9 +87,8 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.sourceDsrcDeviceIp)}}
             {{ renderfield(form.dataCollectorIP)}}
  
- 
             <div class="page-header">
-              <h2> Network configuration administration only </h2>
+              <h2> Network configuration (Administration Only) </h2>
             </div>  
             
             {{ renderfield(form.portNumberMTMessageSender)}}
@@ -183,15 +187,18 @@ This is an html file that contains the presentation for:
             {{ renderfield(form.priorityTruckWeight)}}
             {{ renderfield(form.priorityDilemmaZoneRequestWeight)}}
             {{ renderfield(form.priorityCoordinationWeight)}}
+            {{ renderfield(form.srmTimedOutTime)}}
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="data_transfer">
-            {{ renderfield(form.dataTransferFtpServerPort)}}
-            {{ renderfield(form.dataTransferStartTimeHour)}}
-            {{ renderfield(form.dataTransferStartTimeMinute)}}
-            {{ renderfield(form.dataTransferEndTimeHour)}}
-            {{ renderfield(form.dataTransferEndTimeMinute)}}
-            {{ renderfield(form.dataTransferMaxRetries)}}
+            {{ renderfield(form.dataTransferServerDataDirectory)}}
+            {{ renderfield(form.dataTransferServerIPAddress)}}
+            {{ renderfield(form.dataTransferServerUsername)}}
+            {{ renderfield(form.dataTransferServerPassword)}}            
+            {{ renderfield(form.dataTransferIntersectionName)}}
+            {{ renderfield(form.dataTransferIntersectionV2xDataLocation)}}
+            {{ renderfield(form.dataTransferStartTimePushToServerHour)}}
+            {{ renderfield(form.dataTransferStartTimePushToServerMinute)}}
           </div>
 
           <div role="tabpanel" class="tab-pane fade" id="simulation">

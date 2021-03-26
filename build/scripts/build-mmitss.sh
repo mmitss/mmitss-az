@@ -136,6 +136,26 @@ else
 	    #######################################################################################
 
 	    #######################################################################################
+	    echo "Building V2X Data Transfer..."
+	    cd ../../src/common/v2x-data-transfer
+	    # Clean the folder and build for linux.
+	    pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-transfer-main.py  &> /dev/null
+	    # Indicate Success/Failure of the build
+	    if [ "$?" -eq "0" ]; then
+		    mv dist/v2x-data-transfer-main  ../../../build/bin/V2XDataTransfer/$PROCESSOR/M_V2XDataTransfer
+		    echo -e "${green}Successful${nocolor}"
+	    else
+		    echo -e "${red}Failed${nocolor}"
+	    fi
+	    # Remove the .o files to keep the folders clean
+	    rm -r build dist *.spec &> /dev/null
+	    rm -r __pycache__ &> /dev/null
+	    # Return back to original directory to go over the process again for another one
+	    cd - &> /dev/null
+	    sleep 1s
+	    #######################################################################################
+
+	    #######################################################################################
 	    echo "Building System Interface..."
 	    cd ../../src/system-interface
 	    # Clean the folder and build for linux.
@@ -301,25 +321,31 @@ else
 	    sleep 1s
 	    #######################################################################################
 
-	    #######################################################################################
-	    echo "Building V2X Data Ftp Client..."
-	    cd ../../src/mrp/v2x-data-ftp-client
+		#######################################################################################
+	    echo "Building BSM Locator..."
+	    cd ../../src/mrp/trajectory-aware
 	    # Clean the folder and build for linux.
-	    pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed v2x-data-ftp-client-main.py  &> /dev/null
+	    make clean &> /dev/null
+
+	    if [ "$PROCESSOR" = "arm" ]; then
+		    make linux ARM=1 &> /dev/null
+	    else
+		    make linux &> /dev/null
+	    fi
+
 	    # Indicate Success/Failure of the build
 	    if [ "$?" -eq "0" ]; then
-		    mv dist/v2x-data-ftp-client-main  ../../../build/bin/V2XDataFtpClient/$PROCESSOR/M_V2XDataFtpClient
+		    mv M_TrajectoryAware ../../../build/bin/TrajectoryAware/$PROCESSOR/M_TrajectoryAware
 		    echo -e "${green}Successful${nocolor}"
 	    else
 		    echo -e "${red}Failed${nocolor}"
 	    fi
 	    # Remove the .o files to keep the folders clean
-	    rm -r build dist *.spec &> /dev/null
-	    rm -r __pycache__ &> /dev/null
+	    rm ./*.o &> /dev/null
 	    # Return back to original directory to go over the process again for another one
 	    cd - &> /dev/null
 	    sleep 1s
-	    #######################################################################################
+	    ######################################################################################
     fi
 
     ################################# VEHICLE APPLICATIONS ################################
