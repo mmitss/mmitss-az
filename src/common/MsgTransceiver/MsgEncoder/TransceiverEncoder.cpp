@@ -26,11 +26,14 @@ TransceiverEncoder::TransceiverEncoder()
 {
     std::ofstream outputfile;
     Json::Value jsonObject;
-    Json::Reader reader;
-    std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
 
-    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);
     applicationPlatform = (jsonObject["ApplicationPlatform"]).asString();
     intersectionName = jsonObject["IntersectionName"].asString();
     // set the time interval for logging the system performance data
@@ -43,38 +46,29 @@ TransceiverEncoder::TransceiverEncoder()
 int TransceiverEncoder::getMessageType(std::string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
     if ((jsonObject["MsgType"]).asString() == "MAP")
-    {
         messageType = MsgEnum::DSRCmsgID_map;
-    }
 
     else if ((jsonObject["MsgType"]).asString() == "BSM")
-    {
         messageType = MsgEnum::DSRCmsgID_bsm;
-    }
 
     else if ((jsonObject["MsgType"]).asString() == "SRM")
-    {
         messageType = MsgEnum::DSRCmsgID_srm;
-    }
 
     else if ((jsonObject["MsgType"]).asString() == "SPaT")
-    {
         messageType = MsgEnum::DSRCmsgID_spat;
-    }
 
     else if ((jsonObject["MsgType"]).asString() == "SSM")
-    {
         messageType = MsgEnum::DSRCmsgID_ssm;
-    }
 
     else
-    {
         messageType = MsgEnum::DSRCmsgID_unknown;
-    }
 
     return messageType;
 }
@@ -112,9 +106,7 @@ std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonS
     if (payload_size > 0)
     {
         for (size_t i = 0; i < payload_size; i++)
-        {
             payloadstream << std::uppercase << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(buf[i]);
-        }
     }
 
     bsmMessagePayload = payloadstream.str();
@@ -164,9 +156,7 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
     if (payload_size > 0)
     {
         for (size_t i = 0; i < payload_size; i++)
-        {
             payloadstream << std::uppercase << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(buf[i]);
-        }
     }
 
     srmMessagePayload = payloadstream.str();
@@ -178,9 +168,11 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
 std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
-
-    reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
     size_t bufSize = DsrcConstants::maxMsgSize;
     std::vector<uint8_t> buf(bufSize, 0);
@@ -234,9 +226,7 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     if (payload_size > 0)
     {
         for (size_t i = 0; i < payload_size; i++)
-        {
             payloadstream << std::uppercase << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(buf[i]);
-        }
     }
     spatMessagePayload = payloadstream.str();
 
@@ -302,9 +292,7 @@ std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
     if (payload_size > 0)
     {
         for (size_t i = 0; i < payload_size; i++)
-        {
             payloadstream << std::uppercase << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(buf[i]);
-        }
     }
     ssmMessagePayload = payloadstream.str();
     ssmMsgCount = ssmMsgCount + 1;
@@ -328,9 +316,10 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
 {
     std::string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
-    double currentTime{};
-    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	Json::StreamWriterBuilder builder;
+	builder["commentStyle"] = "None";
+	builder["indentation"] = "";
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
     jsonObject["MsgType"] = "MsgCount";
     jsonObject["MsgInformation"]["TimeInterval"] = timeInterval;
@@ -347,9 +336,7 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
     }
 
     else if (applicationPlatform == "vehicle")
-    {
         jsonObject["MsgInformation"]["MsgSource"] = "vehicle";
-    }
 
     if (msgCountType == "HostBSM")
     {
@@ -383,7 +370,7 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
 
 
 
-    systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
+    systemPerformanceDataLogJsonString = Json::writeString(builder, jsonObject);
 
     msgSentTime = static_cast<int>(currentTime);
 

@@ -134,25 +134,6 @@ void SolverDataManager::modifyGreenMax()
 }
 
 /*
-    - This method is responsible for finding the largest ETA and ETA_Duration value from the priorityRequest List.
-*/
-void SolverDataManager::findMaximumETAofEV()
-{
-    vector<double> temporaryVehicleETA{};
-    vector<double> temporaryVehicleETA_Duration{};
-    //Find the maximum ETA and ETA duration from among all the EV
-    for (size_t k = 0; k < priorityRequestList.size(); k++)
-    {
-        temporaryVehicleETA.push_back(priorityRequestList[k].vehicleETA);
-        temporaryVehicleETA_Duration.push_back(priorityRequestList[k].vehicleETA_Duration);
-    }
-
-    auto maxETA = *max_element(temporaryVehicleETA.begin(), temporaryVehicleETA.end());
-    auto maxETA_Duration = *max_element(temporaryVehicleETA_Duration.begin(), temporaryVehicleETA_Duration.end());
-    maxEV_ETA = static_cast<double>(maxETA);
-    maxEV_ETA_Duration = static_cast<double>(maxETA_Duration);
-}
-/*
     -If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
 */
 void SolverDataManager::modifyCurrentSignalStatus()
@@ -231,7 +212,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 
     // modifyCurrentSignalStatus();
 
-    fs.open("/nojournal/bin/NewModelData.dat", ios::out);
+    fs.open("/nojournal/bin/OptimizationModelData.dat", ios::out);
     fs << "data;\n";
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {

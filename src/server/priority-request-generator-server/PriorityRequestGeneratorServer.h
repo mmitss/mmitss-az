@@ -46,7 +46,7 @@ public:
     void processMap(string jsonString, MapManager mapManager);
     void processSSM(string jsonString);
     void deleteTimedOutVehicleInformationFromPRGServerList();
-    void setTimedOutVehicleID(int vehicleID);
+    void setTimedOutVehicleID(int vehicleId);
     void printPRGServerList();
     bool checkAddVehicleIDToPRGServerList(BasicVehicle basicVehicle);
     bool checkUpdateVehicleIDInPRGServerList(BasicVehicle basicVehicle);
@@ -54,7 +54,7 @@ public:
     bool checkSrmSendingFlag();
     int getMessageType(string jsonString);
     int getTimedOutVehicleID();
-    int getCurrentTimeInSeconds();
+    double getCurrentTimeInSeconds();
     double haversineDistance(double lat1, double lon1, double lat2, double lon2);
     string getSRMJsonString();
     string getPrgStatusJsonString();

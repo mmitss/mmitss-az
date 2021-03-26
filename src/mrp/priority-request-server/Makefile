@@ -12,7 +12,7 @@ CPPFLAGS += -DLOGGING
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -L$(NETSNMP_LIB) -llocAware -ldsrc -lasn -lmmitss-common -lnetsnmp   #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += PriorityRequestServer-main.cpp  PriorityRequestServer.cpp 
+SRC += priority-request-server-main.cpp  PriorityRequestServer.cpp 
 #the name of the executable goes here
 TARGET = M_PriorityRequestServer
 
