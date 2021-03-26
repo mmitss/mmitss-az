@@ -10,7 +10,7 @@ INCLUDES    := -I$(J2735_INCL) -I$(JSONCPP_INCL) -I$(COMMON_INCL) -I$(BUILD_ROOT
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -L$(MAPENGINE_LIB) -L$(GLPK_LIB) -llocAware -ldsrc -lasn -lmmitss-common -lglpk   #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += PriorityRequestSolver-main.cpp  PriorityRequestSolver.cpp SolverDataManager.cpp ScheduleManager.cpp
+SRC += priority-request-solver-main.cpp  PriorityRequestSolver.cpp SolverDataManager.cpp ScheduleManager.cpp OptimizationModelManager.cpp TrafficConrtollerStatusManager.cpp
 #the name of the executable goes here
 TARGET = M_PriorityRequestSolver
 
