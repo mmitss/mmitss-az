@@ -30,12 +30,16 @@ const int WALK = 6;
 TransceiverDecoder::TransceiverDecoder()
 {
     std::ofstream outputfile;
-    Json::Value jsonObject;
-    Json::Reader reader;
-    std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 
-    std::string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject);
+    Json::Value jsonObject;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    delete reader;
+
     applicationPlatform = (jsonObject["ApplicationPlatform"]).asString();
     intersectionName = jsonObject["IntersectionName"].asString();
     // set the time interval for logging the system performance data
@@ -48,34 +52,25 @@ TransceiverDecoder::TransceiverDecoder()
 int TransceiverDecoder::getMessageType(std::string payload)
 {
     std::string subPayload = payload.substr(0, 4);
-
     std::vector<std::string> MessageIdentifier;
 
     MessageIdentifier = {MAPIdentifier, BSMIdentifier, SRMIdentifier_UpperCase, SRMIdentifier_LowerCase, SPaTIdentifier, SSMIdentifier_UpperCase, SSMIdentifier_LowerCase};
 
     if (MessageIdentifier.at(0).compare(subPayload) == 0)
-    {
         messageType = MsgEnum::DSRCmsgID_map;
-    }
 
     else if (MessageIdentifier.at(1).compare(subPayload) == 0)
-    {
         messageType = MsgEnum::DSRCmsgID_bsm;
-    }
 
     else if (MessageIdentifier.at(2).compare(subPayload) == 0 || MessageIdentifier.at(3).compare(subPayload) == 0)
-    {
         messageType = MsgEnum::DSRCmsgID_srm;
-    }
 
     else if (MessageIdentifier.at(4).compare(subPayload) == 0)
-    {
         messageType = MsgEnum::DSRCmsgID_spat;
-    }
+
     else if (MessageIdentifier.at(5).compare(subPayload) == 0 || MessageIdentifier.at(6).compare(subPayload) == 0)
-    {
         messageType = MsgEnum::DSRCmsgID_ssm;
-    }
+
     return messageType;
 }
 
@@ -87,16 +82,23 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     std::string mapName{};
     int intersectionID{};
     bool singleFrame = false;
-    std::string deleteFileName = "Map.map.payload";
-    Json::Value jsonObject;
-    Json::FastWriter fastWriter;
-    std::string jsonString{};
-    Json::Value jsonObject_config;
-    Json::Reader reader;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    string deleteFileName = "Map.map.payload";
+    string jsonString{};
 
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    Json::Value jsonObject_config;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
+    delete reader;
+
+    Json::Value jsonObject;
+	Json::StreamWriterBuilder writeBuilder;
+	writeBuilder["commentStyle"] = "None";
+	writeBuilder["indentation"] = "";
+
     outputfile.open("Map.map.payload");
     outputfile << "payload"
                << " "
@@ -115,7 +117,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     jsonObject["IntersectionName"] = mapName;
     jsonObject["MapPayload"] = mapPayload;
     jsonObject["IntersectionID"] = intersectionID;
-    jsonString = fastWriter.write(jsonObject);
+    jsonString = Json::writeString(writeBuilder, jsonObject);
 
     remove(deleteFileName.c_str());
     delete plocAwareLib;
@@ -344,7 +346,9 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
         SPAT_element_t &spatOut = dsrcFrameOut.spat;
 
         Json::Value jsonObject;
-        Json::FastWriter fastWriter;
+        Json::StreamWriterBuilder builder;
+        builder["commentStyle"] = "None";
+        builder["indentation"] = "";
         int currVehPhaseState{};
         int currPedPhaseState{};
 
@@ -400,12 +404,12 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
             }
         }
 
-        jsonString = fastWriter.write(jsonObject);
+        jsonString = Json::writeString(builder, jsonObject);
 
         spatMsgCount = spatMsgCount + 1;
-
-        return jsonString;
     }
+    return jsonString;
+    
 }
 
 bool TransceiverDecoder::sendSystemPerformanceDataLog()
@@ -424,7 +428,9 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
 {
     std::string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
+	Json::StreamWriterBuilder builder;
+	builder["commentStyle"] = "None";
+	builder["indentation"] = "";
     auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
     jsonObject["MsgType"] = "MsgCount";
@@ -441,9 +447,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     }
 
     else if (applicationPlatform == "vehicle")
-    {
         jsonObject["MsgInformation"]["MsgSource"] = "vehicle";
-    }
 
     if (msgCountType == "RemoteBSM")
     {
@@ -481,7 +485,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
         spatMsgCount = 0;
     }
 
-    systemPerformanceDataLogJsonString = fastWriter.write(jsonObject);
+    systemPerformanceDataLogJsonString = Json::writeString(builder, jsonObject);;
 
     msgSentTime = static_cast<int>(currentTime);
 

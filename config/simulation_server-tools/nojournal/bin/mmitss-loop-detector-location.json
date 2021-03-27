@@ -1,0 +1,18 @@
+{
+    "NoOfLoopDetector": 1,
+    "SpecialFunctionID": 8,
+    "LoopDetectorInformation": [
+        {
+            "IntersectionName": "speedway-mountain",
+            "IntersectionID": 26379,
+            "TravelDirection": "WestBound",
+            "ApproachNo": 1,
+            "Latitude_DecimalDegree":  32.236071,
+            "Longitude_DecimalDegree": -110.949815,
+            "Elevation_Meter": 726,
+			"Heading_Degree": 270,
+            "IPAddress": "10.12.6.9",
+            "EndTime": 300
+        }
+    ]
+}

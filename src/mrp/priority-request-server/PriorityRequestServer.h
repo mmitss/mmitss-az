@@ -27,16 +27,16 @@ using std::string;
 using std::vector;
 
 #define coordinationVehicleType 20
-#define coordinationLaneID 1.0
+#define coordinationLaneID 1
 #define Minimum_ETA 1.0
 #define ETA_Delete_Time 1.0
 #define TIME_GAP_BETWEEN_ETA_Update 1
 #define SEQUENCE_NUMBER_MINLIMIT 1
 #define SEQUENCE_NUMBER_MAXLIMIT 127
-#define HOURSINADAY 24
-#define MINUTESINAHOUR 60
-#define SECONDSINAMINUTE 60
-#define SECONDTOMILISECOND 1000
+#define HOURS_IN_A_DAY 24
+#define MINUTES_IN_A_HOUR 60
+#define SECONDS_IN_A_MINUTE 60
+#define SECOND_FROM_MILISECOND 1000
 
 enum msgType
 {
@@ -61,10 +61,10 @@ private:
     int msgServed{};
     int msgRejected{};
     int msgSentTime{};
-    double expectedTimeOfArrivalToStopBar{0.0};
-    double requestTimedOutValue{0.0};
-    double timeInterval{0.0};
-    bool bLogging{};
+    double expectedTimeOfArrivalToStopBar{};
+    double requestTimedOutValue{};
+    double timeInterval{};
+    bool loggingStatus{};
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
@@ -81,14 +81,13 @@ public:
     void manageCoordinationRequest(string jsonString);
     void deleteTimedOutRequestfromActiveRequestTable();
     void updateETAInActiveRequestTable();
-    void deleteCoordinationRequestFromList();
     void printActiveRequestTable();
     void setRequestTimedOutVehicleID(int timedOutVehicleID);
     void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
-    void loggingData(string jsonString);
+    void loggingData(string jsonString, string communicationType);
     int getMessageType(string jsonString);
     int getIntersectionID();
     int getRegionalID();
@@ -103,7 +102,7 @@ public:
     bool addToActiveRequestTable(SignalRequest signalRequest);
     bool updateActiveRequestTable(SignalRequest signalRequest);
     bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
-    bool shouldDeleteTimedOutRequestfromActiveRequestTable();
+    bool checkTimedOutRequestDeletingRequirement();
     bool updateETA();
     bool sendClearRequest();
     bool findEVInList();

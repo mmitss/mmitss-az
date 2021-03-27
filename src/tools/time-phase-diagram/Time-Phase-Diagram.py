@@ -344,10 +344,11 @@ def timePhaseDiagramMethod(startingPhase1, startingPhase2, cum_Left_Ring1_Phase_
 
     # Requested phase of First Type Priority Request
     requestedPhasePosition = []
-    indexPosList = []
+    # indexPosList = []
     indexPos = 0
 
     for requestedPhase in req_phase:
+        indexPosList = []
         if requestedPhase < 5:
             # Get the requested phases index in phasesInRing1 list
             for j in range(len(phasesInRing1)):
@@ -376,16 +377,17 @@ def timePhaseDiagramMethod(startingPhase1, startingPhase2, cum_Left_Ring1_Phase_
         z = ETA_Duration[i]
         if i == 0:
             ax1.add_patch(matplotlib.patches.Rectangle(
-                (x, y), z, 10, angle=0.0, color='green', linewidth=2, label='Truck Priority Request'))
+                (x, y), z, 10, angle=0.0, color='green', linewidth=2, label='Coordination Priority Request'))
         else:
             ax1.add_patch(matplotlib.patches.Rectangle(
                 (x, y), z, 10, angle=0.0, color='green', linewidth=2))
 
     # Requested phase of Second Type Priority Request
     requestedPhasePosition = []
-    indexPosList = []
+    # indexPosList = []
     indexPos = 0
     for requestedPhase in secondPriorityRequestphases:
+        indexPosList = []
         if requestedPhase < 5:
             # Get the requested phases index in phasesInRing1 list
             for j in range(len(phasesInRing1)):

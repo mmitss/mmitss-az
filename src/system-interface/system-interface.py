@@ -52,6 +52,7 @@ def console():
 @app.route('/local_console')
 def local_console():
     import json
+    
 
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
@@ -80,6 +81,7 @@ class ConfigurationForm(FlaskForm):
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
     applicationPlatform             = SelectField('Application Platform', choices = ["roadside", "vehicle"])
     peerDataDecoding                = BooleanField('Peer Data Decoding')
+    offmapBsmFiltering              = BooleanField("Off Map BSM Filtering")
     portNumberMTMessageSender       = IntegerField('Port Number: Message Transceiver / Message Sender')
     portNumberMTMessageReceiver     = IntegerField('Port Number: Message Transceiver / Message Receiver')
     portNumberMTMessageEncoder      = IntegerField('Port Number: Message Transceiver / Message Encoder')
@@ -88,6 +90,7 @@ class ConfigurationForm(FlaskForm):
     portNumberRSMDecoder            = IntegerField('Port Number: RSM Decoder')
     portNumberOBUBSMReceiver        = IntegerField('Port Number: OBU BSM Receiver')
     portNumberHostBsmDecoder        = IntegerField('Port Number: Host BSM Decoder')
+    portNumberTrajectoryAware       = IntegerField('Port Number: TrajectoryAware')
     portNumberTrajectoryAware       = IntegerField('Port Number: Trajectory Aware')
     portNumberPriorityRequestServer = IntegerField('Port Number: Priority Request Server')
     portNumberPrioritySolver        = IntegerField('Port Number: Priority Solver')
@@ -155,19 +158,21 @@ class ConfigurationForm(FlaskForm):
     intersectionReferencePointLatitudeDecimalDegree     = StringField('Intersection Reference Point Latitude Decimal Degree')
     intersectionReferencePointLongitudeDecimalDegree    = StringField('Intersection Reference Point Longitude Decimal Degree')
     intersectionReferencePointElevationMeter            = IntegerField('Intersection Reference Point Elevation Meter')
-    dataTransferFtpServerPort            = IntegerField('Data Transfer Server Port')
-    dataTransferStartTimeHour            = IntegerField('Data Transfer Start Time Hour')
-    dataTransferStartTimeMinute          = IntegerField('Data Transfer Start Time Minute')
-    dataTransferEndTimeHour              = IntegerField('Data Transfer End Time Hour')
-    dataTransferEndTimeMinute            = IntegerField('Data Transfer End Time Minute')
-    dataTransferMaxRetries               = IntegerField('Data Transfer Max Retries')    
+    dataTransferServerDataDirectory             = StringField('Data Transfer Server Data Directory')
+    dataTransferServerIPAddress                 = StringField('Data Transfer Server IP Address')
+    dataTransferServerUsername                  = StringField('Data Transfer Server Username')
+    dataTransferServerPassword                  = StringField('Data Transfer Server Password')
+    dataTransferIntersectionName = StringField('Data Transfer Intersection Name')
+    dataTransferIntersectionV2xDataLocation = StringField('Data Transfer Interesction v2x Data Location')
+    dataTransferStartTimePushToServerHour       = IntegerField('Data Transfer Start Time Push To Server Hour')
+    dataTransferStartTimePushToServerMinute     = IntegerField('Data Transfer Start Time Push To Server Minute')  
     priorityEVWeight                    = StringField('Emergency Vehicle Weight')    
     priorityEVSplitPhaseWeight          = StringField('Emergency Vehicle Split Phase Weight')    
     priorityTransitWeight                = StringField('Transit Weight')    
     priorityTruckWeight                 = StringField('Truck Weight')    
-    priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight')    
+    priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight (Truck Only)')    
     priorityCoordinationWeight            = StringField('Coordination Weight')    
-    coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Checking Time Interval (seconds)')    
+    coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Update Interval (seconds)')    
 
 # System Configuration data object
 class SysConfig:
@@ -189,6 +194,7 @@ class SysConfig:
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
         self.applicationPlatform = data['ApplicationPlatform']
         self.peerDataDecoding = data['PeerDataDecoding']
+        self.offmapBsmFiltering = data['OffmapBsmFiltering']
         self.portNumberMTMessageSender = data['PortNumber']['MessageTransceiver']['MessageSender']
         self.portNumberMTMessageReceiver = data['PortNumber']['MessageTransceiver']['MessageReceiver']
         self.portNumberMTMessageEncoder = data['PortNumber']['MessageTransceiver']['MessageEncoder']
@@ -197,6 +203,7 @@ class SysConfig:
         self.portNumberRSMDecoder = data['PortNumber']['RsmDecoder']
         self.portNumberOBUBSMReceiver = data['PortNumber']['OBUBSMReceiver']
         self.portNumberHostBsmDecoder = data['PortNumber']['HostBsmDecoder']
+        self.portNumberTrajectoryAware = data['PortNumber']['TrajectoryAware']
         self.portNumberTrajectoryAware = data['PortNumber']['TrajectoryAware']
         self.portNumberPriorityRequestServer = data['PortNumber']['PriorityRequestServer']
         self.portNumberPrioritySolver = data['PortNumber']['PrioritySolver']
@@ -264,12 +271,14 @@ class SysConfig:
         self.intersectionReferencePointLatitudeDecimalDegree = data['IntersectionReferencePoint']['Latitude_DecimalDegree']
         self.intersectionReferencePointLongitudeDecimalDegree = data['IntersectionReferencePoint']['Longitude_DecimalDegree']
         self.intersectionReferencePointElevationMeter = data['IntersectionReferencePoint']['Elevation_Meter']
-        self.dataTransferFtpServerPort      = data['DataTransfer']['FtpServerPort']
-        self.dataTransferStartTimeHour      = data['DataTransfer']['StartTime']['Hour']
-        self.dataTransferStartTimeMinute    = data['DataTransfer']['StartTime']['Minute']
-        self.dataTransferEndTimeHour        = data['DataTransfer']['EndTime']['Hour']
-        self.dataTransferEndTimeMinute      = data['DataTransfer']['EndTime']['Minute']
-        self.dataTransferMaxRetries         = data['DataTransfer']['MaxRetries']
+        self.dataTransferServerDataDirectory = data['DataTransfer']['server']['data_directory']
+        self.dataTransferServerIPAddress = data['DataTransfer']['server']['ip_address']
+        self.dataTransferServerUsername = data['DataTransfer']['server']['username']
+        self.dataTransferServerPassword = data['DataTransfer']['server']['password']
+        self.dataTransferIntersectionName = data['DataTransfer']['intersection'][0]['name']
+        self.dataTransferIntersectionV2xDataLocation = data['DataTransfer']['intersection'][0]['v2x-data_location']
+        self.dataTransferStartTimePushToServerHour = data['DataTransfer']['StartTime_PushToServer']['hour']
+        self.dataTransferStartTimePushToServerMinute = data['DataTransfer']['StartTime_PushToServer']['minute']
         self.priorityEVWeight                   = data['PriorityParameter']['EmergencyVehicleWeight']
         self.priorityEVSplitPhaseWeight         = data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']
         self.priorityTransitWeight              = data['PriorityParameter']['TransitWeight']
@@ -299,7 +308,7 @@ def prepareJSONData(data, form):
     data['IntersectionID']      = form.intersectionID.data
     data['MapPayload']          = form.mapPayload.data
     data['RegionalID']          = form.regionalID.data
-    data['DataCollectorIP']     = form.dataCollectorIP.data
+    data['DataCollectorIP']     = 'Deprecated'
     data['HMIControllerIP']     = form.hmiControllerIP.data
     data['MessageDistributorIP']= form.messageDistributorIP.data
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
@@ -307,19 +316,21 @@ def prepareJSONData(data, form):
     data['Logging']= form.logging.data
     data['Logging']= form.logging.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
-    data['ScheduleExecutionBuffer']= float(form.scheduleExecutionBuffer.data)
+    data['ScheduleExecutionBuffer']= 'Deprecated'
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
     data['ApplicationPlatform']= form.applicationPlatform.data
     data['PeerDataDecoding']= form.peerDataDecoding.data
-    data['PortNumber']['MessageTransceiver']['MessageSender']= form.portNumberMTMessageSender.data
-    data['PortNumber']['MessageTransceiver']['MessageReceiver']= form.portNumberMTMessageReceiver.data
+    data['OffmapBsmFiltering']  =  form.offmapBsmFiltering
+    data['PortNumber']['MessageTransceiver']['MessageSender']= 'Deprecated'
+    data['PortNumber']['MessageTransceiver']['MessageReceiver']= 'Deprecated'
     data['PortNumber']['MessageTransceiver']['MessageEncoder']= form.portNumberMTMessageEncoder.data
     data['PortNumber']['MessageTransceiver']['MessageDecoder']= form.portNumberMTMessageDecoder.data
     data['PortNumber']['MessageDistributor']    = form.portNumberMessageDistributor.data
     data['PortNumber']['RsmDecoder']    = form.portNumberRSMDecoder.data
     data['PortNumber']['OBUBSMReceiver']    = form.portNumberOBUBSMReceiver.data
     data['PortNumber']['HostBsmDecoder']    = form.portNumberHostBsmDecoder.data
-    data['PortNumber']['TrajectoryAware']    = form.portNumberTrajectoryAware.data
+    data['PortNumber']['TrajectoryAware']   = form.portNumberTrajectoryAware.data
+    data['PortNumber']['TrajectoryAware']    = 'Component is Yet to Come'
     data['PortNumber']['PriorityRequestServer']    = form.portNumberPriorityRequestServer.data
     data['PortNumber']['PrioritySolver']    = form.portNumberPrioritySolver.data
     data['PortNumber']['PriorityRequestGenerator']    = form.portNumberPriorityRequestGenerator.data
@@ -338,7 +349,7 @@ def prepareJSONData(data, form):
     data['PortNumber']['SnmpEngineInterface']    = form.portNumberSnmpEngineInterface.data
     data['PortNumber']['PriorityRequestGeneratorServer']    = form.portNumberPriorityRequestGeneratorServer.data
     data['PortNumber']['TrajectoryAware_MapEngineInterface']    = form.portNumberTrajectoryAware_MapEngineInterface.data
-    data['PortNumber']['MapEngine']    = form.portNumberMapEngine.data
+    data['PortNumber']['MapEngine']    = 'Component is Yet to Come'
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
     data['psid']['map']    = form.psidMap.data    
@@ -370,7 +381,7 @@ def prepareJSONData(data, form):
     data['SignalController']['IpAddress']    = form.signalControllerIP.data
     data['SignalController']['NtcipPort']    = form.signalControllerNTCIPPort.data
     data['SignalController']['TimingPlanUpdateInterval_sec']    = form.signalControllerUpdateInterval.data
-    data['SignalController']['NtcipBackupTime_sec']    = form.signalControllerNtcipBackupTime_sec.data
+    data['SignalController']['NtcipBackupTime_sec']    = 'Deprecated'
     data['SignalController']['Vendor']    = form.signalControllerVendor.data
     data['SignalController']['TimingPlanMib']    = form.signalControllerTimingPlanMib.data
     data['SignalController']['InactiveVehPhases']    = convertToList(form.signalControllerInactiveVehPhases.data)
@@ -386,12 +397,14 @@ def prepareJSONData(data, form):
     data['IntersectionReferencePoint']['Latitude_DecimalDegree']    = float(form.intersectionReferencePointLatitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Longitude_DecimalDegree']   = float(form.intersectionReferencePointLongitudeDecimalDegree.data)
     data['IntersectionReferencePoint']['Elevation_Meter']           = float(form.intersectionReferencePointElevationMeter.data)
-    data['DataTransfer']['FtpServerPort']               = form.dataTransferFtpServerPort.data
-    data['DataTransfer']['StartTime']['Hour']           = form.dataTransferStartTimeHour.data
-    data['DataTransfer']['StartTime']['Minute']         = form.dataTransferStartTimeMinute.data
-    data['DataTransfer']['EndTime']['Hour']             = form.dataTransferEndTimeHour.data
-    data['DataTransfer']['EndTime']['Minute']           = form.dataTransferEndTimeMinute.data
-    data['DataTransfer']['MaxRetries']                  = form.dataTransferMaxRetries.data
+    data['DataTransfer']['server']['data_directory']            = form.dataTransferServerDataDirectory.data
+    data['DataTransfer']['server']['ip_address']                = form.dataTransferServerIPAddress.data
+    data['DataTransfer']['server']['username']                  = form.dataTransferServerUsername.data
+    data['DataTransfer']['server']['password']                  = form.dataTransferServerPassword.data
+    data['DataTransfer']['intersection'][0]['name']                 = form.dataTransferIntersectionName.data
+    data['DataTransfer']['intersection'][0]['v2x-data_location']    = form.dataTransferIntersectionV2xDataLocation.data
+    data['DataTransfer']['StartTime_PushToServer']['hour']     = form.dataTransferStartTimePushToServerHour.data
+    data['DataTransfer']['StartTime_PushToServer']['minute']   = form.dataTransferStartTimePushToServerMinute.data
     data['PriorityParameter']['EmergencyVehicleWeight']             = float(form.priorityEVWeight.data)
     data['PriorityParameter']['EmergencyVehicleSplitPhaseWeight']   = float(form.priorityEVSplitPhaseWeight.data)
     data['PriorityParameter']['TransitWeight']                      = float(form.priorityTransitWeight.data)
@@ -404,11 +417,11 @@ def prepareJSONData(data, form):
 @app.route('/configuration/', methods = ['GET', 'POST'])
 def configuration():
     import json
-
+    
     #field location
-    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    #with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
-    #with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         sysConfig = SysConfig(data)    
         pageTitle = data['IntersectionName']
@@ -418,9 +431,9 @@ def configuration():
     if request.method == 'POST':
         # Serialize the edited data
         #field location
-        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
-        #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
             dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  

@@ -16,9 +16,6 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
-#include <list>
-#include <string>
-#include <vector>
 #include <chrono>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
@@ -88,7 +85,7 @@ private:
   double vehicleDistanceFromStopBar{};
   double vehicleETA{};
   double vehicleSpeed{};
-  double SrmSendingTime{}; //temporary store the time when last SRM has been sent
+  double srmSendingTime{}; //temporary store the time when last SRM has been sent
   double requestTimedOutValue{};
   double busStopLattitude{};
   double busStopLongitude{};
@@ -104,14 +101,14 @@ public:
   std::vector<ActiveRequest> creatingSignalRequestTable(SignalStatus signalStatus);
   string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
   bool addToActiveRequestTable(SignalStatus signalStatus);
-  bool shouldSendOutRequest();
+  bool checkPriorityRequestSendingRequirementStatus();
   bool checkRequestSendingRequirement();                                         //This overloading function will be used for Truck
   bool checkRequestSendingRequirement(vector<BusStopInformation> bus_Stop_List); //This overloading function will be used for Transit
   bool checkRequestSendingRequirement(bool light_Siren_Status);                  //This overloading function will be used for EmergencyVehicle
   bool findNearestBusStopLocation();
   bool checkPassedNearestBusStop();
   bool getLoggingStatus();
-  void loggingData(string jsonString);
+  void loggingData(string jsonString, string communicationType);
   void setIntersectionID(int vehicleNearByIntersectionId);
   void setRegionalID(int vehicleNearByRegionalId);
   void setVehicleID(BasicVehicle basicVehicle);
@@ -136,6 +133,7 @@ public:
   int getLaneID();
   int getApproachID();
   int getSignalGroup();
+  double getVehicleDistanceFromStopBar();
   double getTime2Go();
   int getVehicleIntersectionStatus();
   int getVehicleType();

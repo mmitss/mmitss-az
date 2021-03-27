@@ -32,13 +32,13 @@ void PriorityRequestGeneratorStatus::setActiveRequestTable(PriorityRequestGenera
     ActiveRequestTable = priorityRequestGenerator.getActiveRequestTable();
 }
 
-std::string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
+string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(PriorityRequestGenerator priorityRequestGenerator, BasicVehicle basicVehicle)
 {
     Json::Value jsonObject;
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
     builder["indentation"] = "";
-    std::string jsonString{};
+    string jsonString{};
 
     setAvailableMapList(priorityRequestGenerator);
     setActiveRequestTable(priorityRequestGenerator);
