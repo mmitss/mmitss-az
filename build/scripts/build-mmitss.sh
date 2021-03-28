@@ -322,7 +322,7 @@ else
 	    #######################################################################################
 
 		#######################################################################################
-	    echo "Building BSM Locator..."
+	    echo "Building Trajectory Aware..."
 	    cd ../../src/mrp/trajectory-aware
 	    # Clean the folder and build for linux.
 	    make clean &> /dev/null

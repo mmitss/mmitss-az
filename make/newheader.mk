@@ -36,7 +36,7 @@ GLPK_LIB       := $(GLPK_DIR)/lib/x86
 endif
 
 # compiler and linker options 
-CPP         := g++ -std=c++17
+CPP         := g++
 DEBUG_FLAGS := -O0 -g #do not optimize, add info for gdb
 CPPFLAGS    := -Wall -Wextra -W -Wshadow -Wcast-qual -Wwrite-strings -Wconversion $(DEBUG_FLAGS) # turn on compiler warnings with -W options
 

@@ -29,7 +29,7 @@ int main()
     const int srmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestServer"]).asInt();
     const int vehicleHmiPortNo = (jsonObject_config["PortNumber"]["HMIController"]).asInt();
     const int ssmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
-    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["trajectoryAware"]).asInt();
+    const int trajectoryAwarePortNo = (jsonObject_config["PortNumber"]["TrajectoryAware"]).asInt();
     const int messageDistributorPort = (jsonObject_config["PortNumber"]["MessageDistributor"]).asInt();
 
     std::string receivedPayload{};
