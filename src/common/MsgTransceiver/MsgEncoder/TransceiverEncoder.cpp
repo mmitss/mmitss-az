@@ -185,11 +185,11 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     std::string phaseState{};
     std::string pedPhaseState{};
 
-    spatIn.regionalId = jsonObject["Spat"]["IntersectionState"]["regionalID"].asInt();
-    spatIn.id = jsonObject["Spat"]["IntersectionState"]["intersectionID"].asInt();
-    spatIn.msgCnt = jsonObject["Spat"]["msgCnt"].asInt();
+    spatIn.regionalId = static_cast<uint16_t>(jsonObject["Spat"]["IntersectionState"]["regionalID"].asInt());
+    spatIn.id = static_cast<uint16_t>(jsonObject["Spat"]["IntersectionState"]["intersectionID"].asInt());
+    spatIn.msgCnt = static_cast<uint8_t>(jsonObject["Spat"]["msgCnt"].asInt());
     spatIn.timeStampMinute = jsonObject["Spat"]["minuteOfYear"].asInt();
-    spatIn.timeStampSec = jsonObject["Spat"]["msOfMinute"].asInt();
+    spatIn.timeStampSec = static_cast<uint16_t>(jsonObject["Spat"]["msOfMinute"].asInt());
     std::bitset<16> intersectionStatus(jsonObject["Spat"]["status"].asString());
     spatIn.status = intersectionStatus;
     spatIn.permittedPhases.set(); // all 8 phases permitted
@@ -197,9 +197,9 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 
     for (int i = 0; i < 8; i++)
     {
-        spatIn.phaseState[i].startTime = jsonObject["Spat"]["phaseState"][i]["startTime"].asInt();
-        spatIn.phaseState[i].minEndTime = jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt();
-        spatIn.phaseState[i].maxEndTime = jsonObject["Spat"]["phaseState"][i]["maxEndTime"].asInt();
+        spatIn.phaseState[i].startTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["startTime"].asInt());
+        spatIn.phaseState[i].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt());
+        spatIn.phaseState[i].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["maxEndTime"].asInt());
         phaseState = jsonObject["Spat"]["phaseState"][i]["currState"].asString();
         if (phaseState == "red")
             spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(RED);
@@ -210,9 +210,9 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
         else if (phaseState == "permissive_yellow")
             spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(PERMISSIVE);
 
-        spatIn.pedPhaseState[i].startTime = jsonObject["Spat"]["pedPhaseState"][i]["startTime"].asInt();
-        spatIn.pedPhaseState[i].minEndTime = jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"].asInt();
-        spatIn.pedPhaseState[i].maxEndTime = jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"].asInt();
+        spatIn.pedPhaseState[i].startTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["startTime"].asInt());
+        spatIn.pedPhaseState[i].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"].asInt());
+        spatIn.pedPhaseState[i].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"].asInt());
         pedPhaseState = jsonObject["Spat"]["pedPhaseState"][i]["currState"].asString();
         if (pedPhaseState == "do_not_walk")
             spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(DONOTWALK);

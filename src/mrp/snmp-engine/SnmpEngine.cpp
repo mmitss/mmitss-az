@@ -153,7 +153,7 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     else // Identify the reason of failure
     {
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(response->errstat));     
+            fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(static_cast<int>(response->errstat)));     
         else if (status == STAT_TIMEOUT)
             fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
         else
