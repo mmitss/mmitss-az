@@ -17,7 +17,7 @@
 	"ApplicationPlatform": "roadside",
 	"CoordinationPlanCheckingTimeInterval": 300,
 	"PeerDataDecoding": false,
-	"MapBsmFiltering": true,
+	"OffmapBsmFiltering": true,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": 10003,
