@@ -7,7 +7,7 @@
             "ip_address": "10.12.6.3",
             "bsm_client_port": 20001,
             "srm_client_port": 20002,
-            "dsrc_range_Meter": 500,
+            "dsrc_range_Meter": 800,
             "position": {
                 "latitude_DecimalDegree": 32.236058277186295,
                 "longitude_DecimalDegree": -110.94398677110568,
@@ -19,7 +19,7 @@
             "ip_address": "10.12.6.6",
             "bsm_client_port": 20001,
             "srm_client_port": 20002,
-            "dsrc_range_Meter": 500,
+            "dsrc_range_Meter": 800,
             "position": {
                 "latitude_DecimalDegree": 32.23599160827699,
                 "longitude_DecimalDegree": -110.94813512309486,
@@ -31,7 +31,7 @@
             "ip_address": "10.12.6.9",
             "bsm_client_port": 20001,
             "srm_client_port": 20002,
-            "dsrc_range_Meter": 500,
+            "dsrc_range_Meter": 800,
             "position": {
                 "latitude_DecimalDegree": 32.23596639207629,
                 "longitude_DecimalDegree": -110.95241440609077,
@@ -43,7 +43,7 @@
             "ip_address": "10.12.6.12",
             "bsm_client_port": 20001,
             "srm_client_port": 20002,
-            "dsrc_range_Meter": 500,
+            "dsrc_range_Meter": 800,
             "position": {
                 "latitude_DecimalDegree": 32.23602450541839,
                 "longitude_DecimalDegree": -110.95678390604628,

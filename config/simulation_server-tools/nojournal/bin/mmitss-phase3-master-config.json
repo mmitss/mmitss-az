@@ -13,6 +13,7 @@
     "Logging" : "True",
     "SRMTimedOutTime" : 10.0,
 	"PeerDataDecoding": false,
+	"MapBsmFiltering": true,
 	"PortNumber":
 	{
 		"MessageTransceiver":
@@ -22,7 +23,7 @@
 			"MessageEncoder": 10003,
 			"MessageDecoder": 10002
 		},
-		"MessageDistributor": 5000,
+		"MessageDistributor": 5001,
 		"RsmDecoder": 10006,
 		"OBUBSMReceiver": 10005,
 		"HostBsmDecoder": 10005,

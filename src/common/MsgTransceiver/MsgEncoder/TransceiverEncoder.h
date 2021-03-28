@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+using std::string;
+
 class TransceiverEncoder
 {
     private:

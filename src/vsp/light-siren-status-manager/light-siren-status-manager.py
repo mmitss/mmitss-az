@@ -66,13 +66,12 @@ def main():
     # read the ip address and port number from the config file
     hostIP = config["HostIp"]
     port = config["PortNumber"]["LightSirenStatusManager"]
+    priorityRequestGeneratorAddress = (config["HostIp"], config["PortNumber"]["PriorityRequestGenerator"])
     communicationInfo = (hostIP, port)
     # Open a socket and bind it to the IP and port dedicated for this application:
     lightSirenStatusManagerSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     lightSirenStatusManagerSocket.bind(communicationInfo)
-
-    priorityRequestGeneratorAddress = (config["HostIp"], config["PortNumber"]["PriorityRequestGenerator"])
-    # priorityRequestGeneratorAddress = ("10.12.6.108", config["PortNumber"]["PriorityRequestGenerator"])
+        
     vehicleType = config["VehicleType"]
     lightSirenStatus = "OFF"
     temporaryLightSirenStatus = "OFF"
