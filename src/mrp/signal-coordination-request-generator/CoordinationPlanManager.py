@@ -183,10 +183,7 @@ class CoordinationPlanManager:
         Compute the today's day of the week
         """
         date_Today = date.today()
-
         dayOfToday = calendar.day_name[date_Today.weekday()]
-
-        print("Today is",dayOfToday)
 
         return dayOfToday 
                  
