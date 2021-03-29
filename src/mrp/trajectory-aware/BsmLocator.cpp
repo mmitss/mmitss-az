@@ -38,6 +38,7 @@ BsmLocator::BsmLocator(std::string configFilename)
     uint32_t referenceId = plocAwareLib->getIntersectionIdByName(intersectionName);
     regionalId = static_cast<uint16_t>((referenceId >> 16) & 0xFFFF);
     intersectionId = static_cast<uint16_t>(referenceId & 0xFFFF);
+    delete tempPlocAwareLib;
 }
 
 BsmLocator::~BsmLocator()
