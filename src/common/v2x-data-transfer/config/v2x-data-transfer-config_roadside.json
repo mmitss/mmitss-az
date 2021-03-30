@@ -1,0 +1,26 @@
+{
+	"ApplicationPlatform": "roadside",
+	"DataTransfer":
+	{
+		"server":
+		{
+			"data_directory": "/home/ubuntu/mmitss",
+			"ip_address": "127.0.0.1",
+			"username": "username",
+			"password": "password"
+		},
+		"intersection": 
+		[
+			{
+				"name": "intersection-1",
+				"v2x-data_location": "/home/ubuntu/mmitss"
+			}
+		],
+		"StartTime_PushToServer": 
+		{
+				"hour": 0,
+				"minute": 0			
+		}
+		
+	}
+}

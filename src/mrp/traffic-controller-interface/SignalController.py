@@ -82,8 +82,13 @@ class SignalController:
         # Read the arguments into local variables:
         self.snmp = Snmp()
         self.timingPlanUpdateInterval_sec = config["SignalController"]["TimingPlanUpdateInterval_sec"]
-        self.ntcipBackupTime_sec = int(self.snmp.getValue(StandardMib.NTCIP_UNIT_BACKUP_TIME))
         
+        # Get NTCIP Unit Backup Time:
+        ntcipBackupTimeOid = StandardMib.NTCIP_UNIT_BACKUP_TIME
+        if self.vendor == "maxtime":
+            ntcipBackupTimeOid = ntcipBackupTimeOid[:-2]
+        self.ntcipBackupTime_sec = int(self.snmp.getValue(ntcipBackupTimeOid))
+
         # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
         mrpIp = config["HostIp"]
         currPhaseListenerPort = config["PortNumber"]["TrafficControllerCurrPhaseListener"]
@@ -137,7 +142,38 @@ class SignalController:
                                         },
                                     })
 
+        self.specialFunctionLocalStatus = self.getSpecialFunctionControllerStatus()
+        
     ######################## Definition End: __init__(self, snmp:Snmp) ########################
+
+    def getSpecialFunctionControllerStatus(self):
+        # Get total number of available special functions:
+        numTotalSpecialFunctionsOid = StandardMib.TOTAL_SPECIAL_FUNCTIONS 
+        if self.vendor == "maxtime":
+            numTotalSpecialFunctionsOid = numTotalSpecialFunctionsOid[:-2]
+        
+        totalSpecialFunctions = int(self.snmp.getValue(numTotalSpecialFunctionsOid))        
+        specialFunctionStatusDict = {}
+        for specialFunctionIndex in range(totalSpecialFunctions):
+            specialFunctionId = specialFunctionIndex+1
+            specialFunctionStatusDict[specialFunctionId] = int(self.snmp.getValue(StandardMib.SPECIAL_FUNCTION + "." + str(specialFunctionId)))
+        
+        return specialFunctionStatusDict
+
+
+    def updateSpecialFunctionLocalStatus(self, functionId:int, status:bool):
+        self.specialFunctionLocalStatus[functionId] = status
+
+
+    def setSpecialFunctionControllerStatus(self, functionId:int):        
+        
+        partOid = StandardMib.SPECIAL_FUNCTION
+        fullOid = partOid + "." + str(functionId)
+        status = self.specialFunctionLocalStatus[functionId]
+        self.snmp.setValue(fullOid, int(status))
+        if status == True:
+            print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is active!")
+        else: print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is deactivated!")
 
     def resetAllPhaseControls(self):
         
@@ -184,6 +220,7 @@ class SignalController:
         else: value = False
         
         return value
+    
 
     def setPhaseControl(self, control:int, action:bool, phases:list, scheduleReceiptTime:int):
         phaseControlDict = self.phaseControls.get(control)
@@ -483,4 +520,4 @@ if __name__ == "__main__":
     # Create an object of SignalController class
     controller = SignalController()
     
-    controller.setPhaseControl(1,True,[],time.time())
+    print(controller.ntcipBackupTime_sec)

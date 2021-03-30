@@ -22,7 +22,8 @@ The methods available from this class are the following:
 - checkActiveCoordinationPlan(): A boolean function to check whether active coordination plan is available or not 
 - getActiveCoordinationPlan(): Method to obtain the coordination parameters for the active coordination Plan
 - getSplitData(): Method to obtain the split data for the active coordination Plan
-- checkTimedOutCoordinationPlanClearingRequirement(): Method to check whether current coordination plan is timed-out or not 
+- checkTimedOutCoordinationPlanClearingRequirement(): Method to check whether current coordination plan is timed-out or not
+- getDayofToday(self): Method to compute the today's day of the week
 - getCurrentTime(): Method to obtain the current time of today
 ***************************************************************************************
 """
@@ -30,6 +31,8 @@ The methods available from this class are the following:
 import json
 import datetime
 import time
+import calendar
+from datetime import date
 
 MinuteToSecondCoversion = 60.0
 HourToSecondConversion =  3600.0
@@ -43,6 +46,7 @@ class CoordinationPlanManager:
         self.coordinationPlanName = ""
         self.coordinationParametersDictionary = {}
         self.coordinationSplitDataDictionary = {}
+        self.coordinationActiveOnDays= {}
         self.coordinatedPhase1 = 0
         self.coordinatedPhase2 = 0
         self.cycleLength = 0.0
@@ -76,33 +80,38 @@ class CoordinationPlanManager:
         """
         currentTime = self.getCurrentTime()
         self.coordinationParametersDictionary.clear()
+        dayOfToday = self.getDayofToday()
+
         for parameters in self.coordinationConfigData['CoordinationParameters']:
-            coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
-            coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(MinuteToSecondCoversion)
+            
+            if dayOfToday in parameters["CoordinationActiveOnDays"]:
 
-            cycleLength = parameters['CycleLength']
-            if currentTime >= coordinationStartTime and currentTime <= coordinationEndTime or abs(coordinationStartTime - currentTime) <= cycleLength:
-                self.coordinationStartTime_Hour = parameters['CoordinationStartTime_Hour']
-                self.coordinationStartTime_Minute = parameters['CoordinationStartTime_Minute']
-                
-                self.coordinationParametersDictionary = {
-                    "CoordinationPlanName": parameters['CoordinationPlanName'],
-                    "CoordinationPatternNo": parameters['CoordinationPatternNo'],
-                    "SplitPatternNo": parameters['SplitPatternNo'],
-                    "CycleLength": parameters['CycleLength'],
-                    "Offset": parameters['Offset'],
-                    "CoordinationStartTime_Hour": parameters['CoordinationStartTime_Hour'],
-                    "CoordinationStartTime_Minute": parameters['CoordinationStartTime_Minute'],
-                    "CoordinationEndTime_Hour": parameters['CoordinationEndTime_Hour'],
-                    "CoordinationEndTime_Minute": parameters['CoordinationEndTime_Minute'],
-                    "CoordinationSplit": parameters['CoordinationSplit'],
-                    "CoordinatedPhase1": parameters['CoordinatedPhase1'],
-                    "CoordinatedPhase2": parameters['CoordinatedPhase2']
-                }
-                self.coordinationPlanName = parameters['CoordinationPlanName']
+                coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
+                coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(MinuteToSecondCoversion)
 
-                print("\n[" + str(datetime.datetime.now()) + "] " + "Active Coordination Parameter at time " + str(time.time())+ " is following: \n", self.coordinationParametersDictionary)
-                break
+                cycleLength = parameters['CycleLength']
+                if currentTime >= coordinationStartTime and currentTime <= coordinationEndTime or abs(coordinationStartTime - currentTime) <= cycleLength:
+                    self.coordinationStartTime_Hour = parameters['CoordinationStartTime_Hour']
+                    self.coordinationStartTime_Minute = parameters['CoordinationStartTime_Minute']
+                    
+                    self.coordinationParametersDictionary = {
+                        "CoordinationPlanName": parameters['CoordinationPlanName'],
+                        "CoordinationPatternNo": parameters['CoordinationPatternNo'],
+                        "SplitPatternNo": parameters['SplitPatternNo'],
+                        "CycleLength": parameters['CycleLength'],
+                        "Offset": parameters['Offset'],
+                        "CoordinationStartTime_Hour": parameters['CoordinationStartTime_Hour'],
+                        "CoordinationStartTime_Minute": parameters['CoordinationStartTime_Minute'],
+                        "CoordinationEndTime_Hour": parameters['CoordinationEndTime_Hour'],
+                        "CoordinationEndTime_Minute": parameters['CoordinationEndTime_Minute'],
+                        "CoordinationSplit": parameters['CoordinationSplit'],
+                        "CoordinatedPhase1": parameters['CoordinatedPhase1'],
+                        "CoordinatedPhase2": parameters['CoordinatedPhase2']
+                    }
+                    self.coordinationPlanName = parameters['CoordinationPlanName']
+
+                    print("\n[" + str(datetime.datetime.now()) + "] " + "Active Coordination Parameter at time " + str(time.time())+ " is following: \n", self.coordinationParametersDictionary)
+                    break
 
         return self.coordinationParametersDictionary
 
@@ -168,7 +177,16 @@ class CoordinationPlanManager:
                     break
                     
         return clearTimedOutCoordinationPlan
-                
+
+    def getDayofToday(self):
+        """
+        Compute the today's day of the week
+        """
+        date_Today = date.today()
+        dayOfToday = calendar.day_name[date_Today.weekday()]
+
+        return dayOfToday 
+                 
     def getCurrentTime(self):
         """
         Compute the current time based on current hour, minute and second of a day in the unit of second

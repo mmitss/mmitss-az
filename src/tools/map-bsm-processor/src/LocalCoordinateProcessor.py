@@ -50,8 +50,8 @@ class LocalCoordinatesProcessor:
         bsmDfs = []        
         for vehId in self.bsmDf.temporaryId.unique():
             tempDf = self.bsmDf.loc[self.bsmDf["temporaryId"]==vehId]
-            tempDf['latitude_prev'] = tempDf['latitude'].shift(1)
-            tempDf['longitude_prev'] = tempDf['longitude'].shift(1)
+            tempDf['latitude_prev'] = tempDf['latitude'].shift()
+            tempDf['longitude_prev'] = tempDf['longitude'].shift()
             tempDf = tempDf[pd.notnull(tempDf["latitude_prev"])]
             tempDf["dist_from_prev_pt"] = tempDf.apply(lambda row: distance_from_prev_point(row), axis=1)
             tempDf["distance_along_path"] = tempDf["dist_from_prev_pt"].cumsum()
@@ -84,61 +84,68 @@ class LocalCoordinatesProcessor:
 
 
     def process_trajectory_signal_groups(self):
-        #1
-        """
-        This function processed trajectory signal groups for all data points. 
-        """
-        bsmDfs = []
-        self.bsmDf["trajectory_signal_group"] = 0
-
-        for vehId in self.bsmDf.temporaryId.unique():
-            tempDf = self.bsmDf.loc[self.bsmDf["temporaryId"]==vehId]
-            trajectorySignalGroup = 0
-            applicableSignalGroups = (tempDf["current_signal_group"].unique())
-            applicableSignalGroups.sort()
-            
-            if min(applicableSignalGroups)==0:
-                minTrajectorySignalGroup = applicableSignalGroups[1]
-            else: minTrajectorySignalGroup = min(applicableSignalGroups)
-            
-            maxTrajectorySignalGroup = max(tempDf["current_signal_group"].unique())
-            
-            if minTrajectorySignalGroup == maxTrajectorySignalGroup:
-                trajectorySignalGroup = minTrajectorySignalGroup
-            elif minTrajectorySignalGroup == 3 and maxTrajectorySignalGroup == 8:
-                trajectorySignalGroup = 3                
-            elif minTrajectorySignalGroup == 1 and maxTrajectorySignalGroup == 6:
-                trajectorySignalGroup = 1                
-            elif minTrajectorySignalGroup == 4 and maxTrajectorySignalGroup == 7:
-                trajectorySignalGroup = 7                
-            elif minTrajectorySignalGroup == 2 and maxTrajectorySignalGroup == 5:
-                trajectorySignalGroup = 5
-                            
-            tempDf["trajectory_signal_group"] = trajectorySignalGroup
-            bsmDfs = bsmDfs + [tempDf]
-            
-        self.bsmDf = pd.concat(bsmDfs)
-
-
-if __name__ == "__main__":
-
-    if len(sys.argv) == 1:
-        print("Two arguments are required: input file and config file!")
-        exit()
-    elif len(sys.argv) > 3:
-        print("Too many arguments. Only required arguments are the locations of the input file and config file")
-        exit()
-    elif not os.path.exists(sys.argv[1]):
-        print("Input file does not exist!")
-        exit()
-    elif not os.path.exists(sys.argv[2]):
-        print("Config file does not exist!")
-        exit()
+        def get_trajectory_signal_group_for_row(row, lastInboundPhase):
+            if row["position_on_map"]=="inbound":
+                return row["current_signal_group"]
+            else: 
+                return lastInboundPhase
+        
+        def fill_trajectory_signal_group_for_vehicle(vehicleDf):
+            tempDf = vehicleDf.loc[vehicleDf["position_on_map"]=="inbound"]
     
-    inputFile = sys.argv[1]
-    configFile = sys.argv[2]
+            lastInboundPhase = int(tempDf.loc[tempDf["timestamp_posix"]==max(tempDf["timestamp_posix"])]["current_signal_group"])
+            vehicleDf["trajectory_signal_group"] = vehicleDf.apply(lambda row: get_trajectory_signal_group_for_row(row, lastInboundPhase), axis=1)
+            return vehicleDf
+        
+        self.bsmDf = self.bsmDf.groupby("temporaryId").apply(fill_trajectory_signal_group_for_vehicle)
+        
+    def process_distances_to_stopbar_for_inside_box(self):
+        
+        def get_dist_to_stopbar_for_row_inside_box(row, lastInboundPoint):
+            originalDistToStopbar = float(row["dist_to_stopbar"])
+            if originalDistToStopbar == 0:
+                currentPoint = (row["latitude"], row["longitude"])
+                distToStopbar = (haversine.haversine(lastInboundPoint, currentPoint, haversine.Unit.METERS))*(-1)
+                return distToStopbar
+            else: return originalDistToStopbar
+        
+        def fill_dist_to_stopbar_for_vehicle(vehicleDf):
+            tempDf = vehicleDf.loc[vehicleDf["position_on_map"]=="inbound"]
+            lastInboundLatitude = float(tempDf.loc[tempDf["timestamp_posix"]==max(tempDf["timestamp_posix"])]["latitude"])
+            lastInboundLongitude = float(tempDf.loc[tempDf["timestamp_posix"]==max(tempDf["timestamp_posix"])]["longitude"])
+            lastInboundPoint = (lastInboundLatitude, lastInboundLongitude)
+            vehicleDf["dist_to_stopbar"] = vehicleDf.apply(lambda row: get_dist_to_stopbar_for_row_inside_box(row, lastInboundPoint), axis=1)            
+            return vehicleDf
+        
+        self.bsmDf = self.bsmDf.groupby("temporaryId").apply(fill_dist_to_stopbar_for_vehicle)
+        
+if __name__ == "__main__":
+    
+    DEBUGGING = False
+    
 
+    if not DEBUGGING:
+        if len(sys.argv) == 1:
+            print("Two arguments are required: input file and config file!")
+            exit()
+        elif len(sys.argv) > 3:
+            print("Too many arguments. Only required arguments are the locations of the input file and config file")
+            exit()
+        elif not os.path.exists(sys.argv[1]):
+            print("Input file does not exist!")
+            exit()
+        elif not os.path.exists(sys.argv[2]):
+            print("Config file does not exist!")
+            exit()
+    
+        inputFile = sys.argv[1]
+        configFile = sys.argv[2]
+    else: 
+        inputFile = "/home/nvaltekar/repo/safety-assessment/data/simulation/base/processedRemoteBsmLog.csv"
+        configFile = "./../config/daisy-gavilan.json"
+    
     lcp = LocalCoordinatesProcessor(inputFile, configFile)
+    
     
     lcp.process_onmap_status()
     lcp.process_local_coordinates()
@@ -146,6 +153,7 @@ if __name__ == "__main__":
     lcp.process_in_queue_status()
     lcp.process_time_to_stopbar()
     lcp.process_trajectory_signal_groups()
+    lcp.process_distances_to_stopbar_for_inside_box()
 
     lcp.bsmDf.to_csv(inputFile,index=False)
     

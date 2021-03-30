@@ -1,0 +1,79 @@
+{
+    "IntersectionName": "Speedway-Campbell",
+    "CoordinationParameters": [
+        {
+            "CoordinationPlanName": "AM-Plan",
+            "CoordinationPatternNo": 1,
+            "SplitPatternNo": 1,
+            "CycleLength": 100,
+            "Offset": 0,
+            "CoordinationStartTime_Hour": 7,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 10,
+            "CoordinationEndTime_Minute": 30,
+            "CoordinationSplit": 20.0,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "CoordinationActiveOnDays":["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
+            "SplitPatternData": {
+                "PhaseNumber": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "Split": [
+                    23,
+                    30,
+                    20,
+                    27,
+                    24,
+                    29,
+                    22,
+                    25
+                ]
+            }
+        },
+        {
+            "CoordinationPlanName" :"PM-Plan",
+            "CoordinationPatternNo": 2,
+            "SplitPatternNo": 2,
+            "CycleLength": 100,
+            "Offset": 0,
+            "CoordinationStartTime_Hour": 15,
+            "CoordinationStartTime_Minute": 30,
+            "CoordinationEndTime_Hour": 16,
+            "CoordinationEndTime_Minute": 30,
+            "CoordinationSplit": 20.0,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "CoordinationActiveOnDays":["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
+            "SplitPatternData": {
+                "PhaseNumber": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "Split": [
+                    25,
+                    30,
+                    18,
+                    27,
+                    23,
+                    32,
+                    20,
+                    25
+                ]
+            }
+        }
+    ]
+}

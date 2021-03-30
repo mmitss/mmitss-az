@@ -53,3 +53,7 @@ PHASE_CONTROL_PEDCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.7.1"
 
 # NTCIP Backup Time Parameter
 NTCIP_UNIT_BACKUP_TIME          =   "1.3.6.1.4.1.1206.4.2.1.3.3.1"
+
+# Special Function
+TOTAL_SPECIAL_FUNCTIONS         =   "1.3.6.1.4.1.1206.4.2.1.3.13.1"
+SPECIAL_FUNCTION                =   "1.3.6.1.4.1.1206.4.2.1.3.14.1.3"

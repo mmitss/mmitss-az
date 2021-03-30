@@ -1,0 +1,98 @@
+{
+    "package_drop_probability": 0,
+    "raw_bsm_logging": false,
+    "intersections": [
+        {
+            "name": "speedway-campbell",
+            "ip_address": "10.12.6.3",
+            "bsm_client_port": 20001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 800,
+            "position": {
+                "latitude_DecimalDegree": 32.236058277186295,
+                "longitude_DecimalDegree": -110.94398677110568,
+                "elevation_Meter": 722
+            }
+        },
+        {
+            "name": "speedway-cherry",
+            "ip_address": "10.12.6.6",
+            "bsm_client_port": 20001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 800,
+            "position": {
+                "latitude_DecimalDegree": 32.23599160827699,
+                "longitude_DecimalDegree": -110.94813512309486,
+                "elevation_Meter": 721
+            }
+        },
+        {
+            "name": "speedway-mountain",
+            "ip_address": "10.12.6.9",
+            "bsm_client_port": 20001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 800,
+            "position": {
+                "latitude_DecimalDegree": 32.23596639207629,
+                "longitude_DecimalDegree": -110.95241440609077,
+                "elevation_Meter": 716
+            }
+        },
+        {
+            "name": "speedway-park",
+            "ip_address": "10.12.6.12",
+            "bsm_client_port": 20001,
+            "srm_client_port": 20002,
+            "dsrc_range_Meter": 800,
+            "position": {
+                "latitude_DecimalDegree": 32.23602450541839,
+                "longitude_DecimalDegree": -110.95678390604628,
+                "elevation_Meter": 712
+            }
+        }
+    ],
+    "bsm_clients": {
+        "Transit": [
+            {
+                "ip_address": "10.12.6.20",
+                "port": 20022
+            }
+        ],
+        "Truck": [
+            {
+                "ip_address": "10.12.6.20",
+                "port": 20022
+            }
+        ],
+        "EmergencyVehicle": [
+            {
+                "ip_address": "10.12.6.20",
+                "port": 20022
+            }
+        ],
+        "Passenger": [
+            {
+                "ip_address": "10.12.6.20",
+                "port": 20022
+            }
+        ],
+        "other": [
+            {
+                "ip_address": "10.12.6.20",
+                "port": 20022
+            }
+        ]
+    },
+    "map_clients": [
+        {
+            "ip_address": "10.12.6.20",
+            "port": 20022
+        }
+    ],
+    "ssm_clients": [
+        {
+            "ip_address": "10.12.6.20",
+            "port": 20022
+        }
+    ]
+}

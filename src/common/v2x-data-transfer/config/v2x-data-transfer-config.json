@@ -1,0 +1,43 @@
+{
+	"ApplicationPlatform": "server",
+	"PullFromIntersections": true,
+	"PushToCyverse": true,
+	"DataTransfer":
+	{
+		"server":
+		{
+			"data_directory": "/home/nvaltekar/Desktop"
+		},
+		"intersection": 
+		[
+			{
+				"name": "intersection-1",
+				"ip_address": "10.12.6.250",
+				"username": "ubuntu",
+				"password": "mmitss123",
+				"v2x-data_location": "/home/nvaltekar/testdata",
+				"cyverse_location": "/iplant/home/nvaltekar/test"
+			},
+			{
+				"name": "intersection-2",
+				"ip_address": "10.12.6.251",
+				"username": "ubuntu",
+				"password": "mmitss123",
+				"v2x-data_location": "/home/nvaltekar/testdata",
+				"cyverse_location": "/iplant/home/nvaltekar/test"
+			}
+		],
+		"StartTime_FromIntersections": 
+		{
+				"hour": 0,
+				"minute": 0
+			
+		},
+		"StartTime_ToCyverse": 
+		{
+				"hour": 0,
+				"minute": 0
+			
+		}
+	}
+}

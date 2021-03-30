@@ -1,0 +1,32 @@
+{
+    "MsgType": "ActiveCoordinationPlan",
+    "CycleLength": 90,
+    "Offset": 0,
+    "CoordinationStartTime_Hour": 0,
+    "CoordinationStartTime_Minute": 1,
+    "CoordinatedPhase1": 2,
+    "CoordinatedPhase2": 6,
+    "TimingPlan": {
+        "NoOfPhase": 8,
+        "PhaseNumber": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "SplitData": [
+            17,
+            37,
+            12,
+            24,
+            17,
+            37,
+            14,
+            22
+        ]
+    }
+}

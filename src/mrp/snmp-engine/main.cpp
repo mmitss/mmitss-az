@@ -35,12 +35,14 @@ int main()
     std::string setCustomMibsCommand = "export MIBS=ALL";
     system(setCustomMibsCommand.c_str()); 
 
-    // Read configuration items:
     Json::Value jsonObject_config;
-    Json::Reader reader;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    reader.parse(configJsonString.c_str(), jsonObject_config);
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
+    delete reader;
     configJson.close();
 
     // Read the network config for the SnmpEngine applciation    
@@ -60,7 +62,9 @@ int main()
 
     // Variables to store the JSON object and JSON strings to be sent
     Json::Value sendingJson;
-    Json::FastWriter fastWriter;
+    Json::StreamWriterBuilder writeBuilder;
+    writeBuilder["commentStyle"] = "None";
+	writeBuilder["indentation"] = "";
     std::string sendingJsonString{};    
 
     // Variables to store the SNMP requests related information
@@ -74,10 +78,14 @@ int main()
     // Instantiate an object opf SnmpEngine class
     SnmpEngine snmp(ascIp, ascNtcipPort);
 
+    // Creator another reader
+    Json::CharReader * inputReader = builder.newCharReader();
+
     while(true)
     {
         snmpEngineSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
-        reader.parse(receiveBuffer, receivedJson);
+        std::string jsonString(receiveBuffer);
+        inputReader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &receivedJson, &errors);  
         
         // Parse the message type and OID for set or get request
         msgType = receivedJson["MsgType"].asString();
@@ -109,12 +117,13 @@ int main()
             sendingJson["MsgType"] = "SnmpGetResponse";
             sendingJson["OID"] = receivedOid;
             sendingJson["Value"] = snmpResponse;
-            sendingJsonString = fastWriter.write(sendingJson);
+            sendingJsonString = Json::writeString(writeBuilder, sendingJson);
 
             // Send the response to the requestor
             snmpEngineSocket.sendData(senderIp, senderPort, sendingJsonString);
         }
     }
+    delete inputReader;
     snmpEngineSocket.closeSocket();
     return 0;
 }

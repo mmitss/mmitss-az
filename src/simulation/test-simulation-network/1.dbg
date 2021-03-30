@@ -1,0 +1,9 @@
+== ASC3 Debug file Start =============================
+
+ControllerID:1, VissimSocketID:56761, ShowWindowID:1
+
+*** VISSIM SocketError: A non-blocking socket operation could not be completed immediately.
+ ***
+Time set to => 00:00:00.1 20210222
+Time 0:0:0.1  2//22//2021
+== ASC3 Debug file End =============================

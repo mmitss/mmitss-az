@@ -1,9 +1,11 @@
 # SNMP-ENGINE
-The [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) is one of widely accepted protocols to manage and monitor network elements. All [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers can be managed and monitored using the SNMP protocol.  
+In MMITSS ecosystem, Snmp-Engine is the **only** application that communicates directly with the signal controller through using SNMP. The [Simple Network Management Protocol (SNMP)](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) is one of widely accepted protocols to manage and monitor network elements. All [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers can be managed and monitored using the SNMP protocol.  
 
 [Net-SNMP](http://www.net-snmp.org/) provides an open-source C/C++ library that has APIs to communicate with such devices over IPv4 or IPv6. A [tutorial](http://www.net-snmp.org/wiki/index.php/TUT:Simple_Application) on using the Net-SNMP libraries with C/C++ is available on the official [website](http://www.net-snmp.org/wiki/index.php/Main_Page) of Net-SNMP.  
 
-The **Snmp-Engine** component of MMITSS builds upon the [Net-SNMP](http://www.net-snmp.org/wiki/index.php/Main_Page) library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers.
+The **Snmp-Engine** component of MMITSS builds upon the [Net-SNMP](http://www.net-snmp.org/wiki/index.php/Main_Page) library and provides simple JSON based APIs to monitor (through `get` requests) or manage (through `set` requests) the [NTCIP-1202](https://www.ntcip.org/wp-content/uploads/2018/11/NTCIP1202v0219f.pdf) compliant traffic actuated signal controllers. 
+
+NOTE: In case if it is required to run or monitor MMITSS applications without controlling the intersection signal controller, the Snmp-Engine application can be turned off.
 
 ## Work-flow
 The Snmp-Engine component establishes and maintains a single SNMP session with the target SNMP device. This session is reused for all `get` and `set` requests. Post opening the SNMP session, the components waits for UDP packets containing JSON formatted `get` or `set` requests.

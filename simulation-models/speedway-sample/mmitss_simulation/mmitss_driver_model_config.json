@@ -1,0 +1,20 @@
+{
+    "client_ip": "10.12.6.20",
+    "client_port": 10005,
+    "vissim_origin_position":
+    {
+        "elevation_Meter": 540.11,
+		"latitude" : 
+		{
+			"Degree" : 32.0,
+			"Minute" : 14.0,
+			"Second" : 9.93
+		},
+		"longitude" : 
+		{
+			"Degree" : -110.0,
+			"Minute" : -56.0,
+			"Second" : -38.30
+		}
+    }
+}

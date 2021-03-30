@@ -47,7 +47,7 @@ private:
     double TransitWeight{1.0};
     double TruckWeight{1.0};
     double DilemmaZoneRequestWeight{20.0};
-    double CoordinationWeight{1.0};
+    double CoordinationWeight{0.1};
     vector<int> requestedSignalGroup;
     vector<RequestList> priorityRequestList;
     vector<RequestList> dilemmaZoneRequestList;
@@ -66,7 +66,6 @@ public:
     void addAssociatedSignalGroup();
     void modifyGreenMax();
     void modifyCurrentSignalStatus();
-    void findMaximumETAofEV();
     void generateDatFile(bool emergencyVehicleStatus);
     bool findSignalGroupInList(int signalGroup);
 };
