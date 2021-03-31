@@ -739,7 +739,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		//get the vehicle data from bsm
 		double vehicle_Latitude = basicVehicle.getLatitude_DecimalDegree();
 		double vehicle_Longitude = basicVehicle.getLongitude_DecimalDegree();
-		double vehicle_Elevation = basicVehicle.getLongitude_DecimalDegree();
+		double vehicle_Elevation = basicVehicle.getElevation_Meter();
 		setVehicleSpeed(basicVehicle);
 		double vehicle_Heading = basicVehicle.getHeading_Degree();
 		//initialize all the struct require to locate vehicle in Map.
