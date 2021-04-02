@@ -11,39 +11,66 @@ CoordinationPlanManager has the functionality to check for a active coordination
 A function/method called getActiveCoordinationPlan(), computes the start time and end time for each coordination plan. If the current time is in between the start time and end time of a coordination plan or time difference between the coordination start time and current time is less than or equal to the cycle length plus offset, that plan is the active coordination plan. The getSplitData() method can create JSON formatted message to provide coordination plan information to the PRSolver. An example of such JSON formatted messages is as follows:
 ```
 {
-    "MsgType": "ActiveCoordinationPlan",
-    "CycleLength": 100,
-    "Offset": 0,
-    "CoordinationStartTime_Hour": 1,
-    "CoordinationStartTime_Minute": 10,
-    "CoordinatedPhase1": 2,
-    "CoordinatedPhase2": 6,
-    "TimingPlan": {
-        "NoOfPhase": 8,
-        "PhaseNumber": [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8
-        ],
-        "SplitData": [
-            25,
-            37,
-            0,
-            38,
-            24,
-            38,
-            0,
-            38
-        ]
-    }
+    "IntersectionName": "Speedway-Mountain",
+    "CoordinationPattern": [
+        {
+            "CoordinationPlanName": "Plan1",
+            "CoordinationPatternNo": 1,
+            "SplitPatternNo": 1,
+            "CycleLength": 100,
+            "Offset": 48,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "CoordinationSplit": 20.0,
+            "Split": [25, 37, 0 , 38, 24, 38, 0, 38]
+        },
+        {
+            "CoordinationPlanName": "Plan2",
+            "CoordinationPatternNo": 2,
+            "SplitPatternNo": 1,
+            "CycleLength": 90,
+            "Offset": 18,
+            "CoordinatedPhase1": 2,
+            "CoordinatedPhase2": 6,
+            "CoordinationSplit": 20.0,
+            "Split": [25, 37, 0 , 38, 24, 38, 0, 38]
+        }
+    ],
+    "CoordinationDayPlan": [
+        {
+            "Days": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+            "ActionPlan": [
+                {
+                    "CoordinationPatternNo": 1,
+                    "CoordinationStartTime_Hour": 7,
+                    "CoordinationStartTime_Minute": 30,
+                    "CoordinationEndTime_Hour": 10,
+                    "CoordinationEndTime_Minute": 30
+                },
+                {
+                    "CoordinationPatternNo": 2,
+                    "CoordinationStartTime_Hour": 15,
+                    "CoordinationStartTime_Minute": 30,
+                    "CoordinationEndTime_Hour": 23,
+                    "CoordinationEndTime_Minute": 30
+                }
+            ]
+        },
+        {
+            "Days": ["Friday"],
+            "ActionPlan": [
+                {
+                    "CoordinationPatternNo": 1,
+                    "CoordinationStartTime_Hour": 7,
+                    "CoordinationStartTime_Minute": 10,
+                    "CoordinationEndTime_Hour": 10,
+                    "CoordinationEndTime_Minute": 15
+                }
+            ]
+        }       
+    ]
 }
 ```
-
 ### CoordinationRequestManager Class
 CoordinationRequestManager has the functionality to generate virtual coordination requests, update the "ETA" and "Coordination Split" for each coordination requests and delete the coordination priority request if coordination split value become zero.
 
