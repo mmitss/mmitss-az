@@ -63,6 +63,7 @@ private:
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
+  double priorityWeightsCheckedTime{};
   string fileName{};
 
   vector<RequestList> priorityRequestList{};
@@ -110,6 +111,7 @@ public:
   void getEVTrafficSignalPlan();
   void getCurrentSignalStatus(string jsonString);
   void validateEVTrafficSignalPlan();
+  void getPriorityWeights();
   void loggingSignalPlanData(string jsonString);
   void loggingSplitData(string jsonString);
   void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
@@ -128,5 +130,6 @@ public:
   bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
   bool checkSignalCoordinationTimingPlan();
+  bool checkUpdatesForPriorityWeights();
   bool logging();
 };

@@ -552,9 +552,8 @@ else
 	    
 		if [ "$containerImages" = "y" ]; then
 			read -p "Provide version tag for container images: " versionTag
-			read -p "Build MRP Field image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
+			read -p "Build MRP image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
 			read -p "Build VSP image? Needs transceiver and vehicle applications. (y or n): " vspImage
-			read -p "Build MRP Simulation image? Needs roadside applications. (y or n): " mrpSimulationImage
 			read -p "Build simulation_server-tools image? Needs simulation_server-tools applications. (y or n): " serverImage
 
 			if [ "$mrpFieldImage" = "y" ]; then
@@ -569,13 +568,6 @@ else
 				echo "Building VSP image for $PROCESSOR"
 				echo "---------------------------------"
 				docker build -t mmitssuarizona/mmitss-vsp-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.vsp .
-			fi	
-
-			if [ "$mrpSimulationImage" = "y" ]; then
-				echo "--------------------------------------------"
-				echo "Building MRP-Simulation image for $PROCESSOR"
-				echo "--------------------------------------------"
-				docker build -t mmitssuarizona/mmitss-mrp-simulation-$PROCESSOR:$versionTag -f build/dockerfiles/$PROCESSOR/Dockerfile.mrp-simulation .
 			fi	
 
 			if [ "$serverImage" = "y" ]; then

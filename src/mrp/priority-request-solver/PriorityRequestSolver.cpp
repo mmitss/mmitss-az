@@ -25,21 +25,7 @@
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
-    Json::Value jsonObject;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
-    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
-    Json::CharReaderBuilder builder;
-    Json::CharReader *reader = builder.newCharReader();
-    std::string errors{};
-    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
-    delete reader;
-
-    EmergencyVehicleWeight = jsonObject["PriorityParameter"]["EmergencyVehicleWeight"].asDouble();
-    EmergencyVehicleSplitPhaseWeight = jsonObject["PriorityParameter"]["EmergencyVehicleSplitPhaseWeight"].asDouble();
-    TransitWeight = jsonObject["PriorityParameter"]["TransitWeight"].asDouble();
-    TruckWeight = jsonObject["PriorityParameter"]["TruckWeight"].asDouble();
-    DilemmaZoneRequestWeight = jsonObject["PriorityParameter"]["DilemmaZoneRequestWeight"].asDouble();
-    CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
+    getPriorityWeights();
 }
 
 /*
@@ -48,6 +34,7 @@ PriorityRequestSolver::PriorityRequestSolver()
 int PriorityRequestSolver::getMessageType(string jsonString)
 {
     int messageType{};
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -73,7 +60,7 @@ int PriorityRequestSolver::getMessageType(string jsonString)
             messageType = static_cast<int>(msgType::splitData);
 
         else
-            std::cout << "Message type is unknown" << std::endl;
+            cout << "[" << currentTime << "] Message type is unknown" << std::endl;
     }
 
     return messageType;
@@ -1194,6 +1181,42 @@ bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
     return optimalSolutionStatus;
 }
 
+bool PriorityRequestSolver::checkUpdatesForPriorityWeights()
+{
+    bool priorityWeightsCheckingRequirement{false};
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
+    if (currentTime - priorityWeightsCheckedTime > 120.0)
+        priorityWeightsCheckingRequirement = true;
+    
+    return priorityWeightsCheckingRequirement;
+}
+/*
+    - The following methods read the priority weights from the config file.
+*/
+void PriorityRequestSolver::getPriorityWeights()
+{
+    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    Json::Value jsonObject;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader *reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+    delete reader;
+
+    EmergencyVehicleWeight = jsonObject["PriorityParameter"]["EmergencyVehicleWeight"].asDouble();
+    EmergencyVehicleSplitPhaseWeight = jsonObject["PriorityParameter"]["EmergencyVehicleSplitPhaseWeight"].asDouble();
+    TransitWeight = jsonObject["PriorityParameter"]["TransitWeight"].asDouble();
+    TruckWeight = jsonObject["PriorityParameter"]["TruckWeight"].asDouble();
+    DilemmaZoneRequestWeight = jsonObject["PriorityParameter"]["DilemmaZoneRequestWeight"].asDouble();
+    CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
+
+    priorityWeightsCheckedTime = currentTime;
+    cout << "[" << currentTime << "] priority requests weights are updated " << std::endl;
+}
+
 /*
     - PRSolver obtains the signal timing plan from the TCI. At the start of the program it asks TCI to send the static signal timing plan 
     - This method creats that signal timing plan request string.
@@ -1305,7 +1328,7 @@ bool PriorityRequestSolver::logging()
     if (logging == "True")
     {
         loggingStatus = true;
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
         outputfile.open(fileName);
         outputfile << "File opened at time : " << currentTime << std::endl;
         outputfile.close();
@@ -1326,7 +1349,6 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 
     if (loggingStatus == true)
     {
-        // outputfile.open("/nojournal/bin/log/PRSolver_Log" + std::to_string(currentTime) + ".txt");
         outputfile.open(fileName, std::ios_base::app);
         double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
