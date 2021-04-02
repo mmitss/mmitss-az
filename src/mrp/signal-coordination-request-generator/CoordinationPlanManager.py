@@ -24,8 +24,10 @@ The methods available from this class are the following:
 - getSplitData(): Method to obtain the split data for the active coordination Plan
 - checkTimedOutCoordinationPlanClearingRequirement(): Method to check whether current coordination plan is timed-out or not
 - fillUpCoordinationParametersDictionary(): Method to fill up the coordinationParametersDictionary with active coordination plan parameters
+- resetParameters(self): Method to reset the parameters of CoordinationPlanManager class 
+- updateCoordinationConfigData(self, coordinationConfigData):  Method to update coordination config data
 - getOffset(coordinationPatternNo): Method to compute the cycle length for different coordination plan
-- getDayofToday(): Method to compute the today's day of the week
+- getDayOfWeek(): Method to compute the today's day of the week
 - getCurrentTime(): Method to obtain the current time of today
 ***************************************************************************************
 """
@@ -49,7 +51,6 @@ class CoordinationPlanManager:
         self.coordinationPlanName = ""
         self.coordinationParametersDictionary = {}
         self.coordinationSplitDataDictionary = {}
-        self.coordinationActiveOnDays = {}
         self.coordinatedPhase1 = 0
         self.coordinatedPhase2 = 0
         self.cycleLength = 0.0
@@ -85,12 +86,12 @@ class CoordinationPlanManager:
         If the current time is in between the start time and end time of a coordination plan or time difference between the coordination start time and current time is less than or equal to the cycle length, the plan is active coordination plan.
         Store active coordination plan name
         """
+        self.resetParameters()
         currentTime = self.getCurrentTime()
-        self.coordinationParametersDictionary.clear()
-        dayOfToday = self.getDayofToday()
+        dayOfWeek = self.getDayOfWeek()
 
         for coordinationDayPlanDictionary in self.coordinationConfigData['CoordinationDayPlan']:
-            if dayOfToday in coordinationDayPlanDictionary['Days']:
+            if dayOfWeek in coordinationDayPlanDictionary['Days']:
                 for parameters in coordinationDayPlanDictionary['ActionPlan']:
                     coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(
                         HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
@@ -171,6 +172,8 @@ class CoordinationPlanManager:
                     HourToSecondConversion) + self.coordinationEndTime_Minute * float(MinuteToSecondCoversion)
 
                 if currentTime > coordinationEndTime and parameters['CoordinationPlanName'] == self.coordinationPlanName:
+                    print("\n[" + str(datetime.datetime.now()) + "] " + "Cleared timed-out coordination plan (" +
+                          self.coordinationPlanName + ") at time " + str(time.time()))
                     self.coordinationPlanName = ""
                     self.coordinationParametersDictionary.clear()
                     clearTimedOutCoordinationPlan = True
@@ -187,7 +190,6 @@ class CoordinationPlanManager:
                 self.coordinationParametersDictionary = {
                     "CoordinationPlanName": parameters['CoordinationPlanName'],
                     "CoordinationPatternNo": parameters['CoordinationPatternNo'],
-                    "SplitPatternNo": parameters['SplitPatternNo'],
                     "CycleLength": parameters['CycleLength'],
                     "Offset": parameters['Offset'],
                     "CoordinationStartTime_Hour": self.coordinationStartTime_Hour,
@@ -199,6 +201,28 @@ class CoordinationPlanManager:
                     "CoordinatedPhase2": parameters['CoordinatedPhase2']
                 }
                 self.coordinationPlanName = parameters['CoordinationPlanName']
+
+    def resetParameters(self):
+        """
+        Reset the parameters of CoordinationPlanManager class
+        """
+        self.coordinationParametersDictionary = {}
+        self.coordinationSplitDataDictionary = {}
+        self.coordinatedPhase1 = 0
+        self.coordinatedPhase2 = 0
+        self.cycleLength = 0.0
+        self.offset = 0.0
+        self.coordinationStartTime_Hour = 0
+        self.coordinationStartTime_Minute = 0
+        self.coordinationEndTime_Hour = 0
+        self.coordinationEndTime_Minute = 0
+        self.activeCoordinationPatternNo = 0
+
+    def updateCoordinationConfigData(self, coordinationConfigData):
+        """
+        Update coordination config data
+        """
+        self.coordinationConfigData = coordinationConfigData
 
     def getOffset(self, coordinationPatternNo):
         """
@@ -212,14 +236,14 @@ class CoordinationPlanManager:
 
         return cycleLength
 
-    def getDayofToday(self):
+    def getDayOfWeek(self):
         """
         Compute the today's day of the week
         """
         date_Today = date.today()
-        dayOfToday = calendar.day_name[date_Today.weekday()]
+        dayOfWeek = calendar.day_name[date_Today.weekday()]
 
-        return dayOfToday
+        return dayOfWeek
 
     def getCurrentTime(self):
         """

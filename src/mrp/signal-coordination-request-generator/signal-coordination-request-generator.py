@@ -33,19 +33,23 @@ import socket
 from CoordinationPlanManager import CoordinationPlanManager
 from CoordinationRequestManager import CoordinationRequestManager
 
-def main():
-    # Read the config file into a json object:
-    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
-    config = (json.load(configFile))
-
+def readConfigfile():
     # Read the Coordination config file into a json object:
     coordinationConfigFile = open("/nojournal/bin/mmitss-coordination-plan.json", 'r')
     coordinationConfigData = (json.load(coordinationConfigFile))
     
     # Close the config file:
-    configFile.close()
     coordinationConfigFile.close()
+
+    return coordinationConfigData
+
+def main():
+    # Read the config file into a json object:
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+    config = (json.load(configFile))
     
+    # Close the config file:
+    configFile.close()  
     
     # Open a socket and bind it to the IP and port dedicated for this application:
     coordinationSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,6 +62,9 @@ def main():
     # Get the PRS and PRSolver communication address
     prioritySolverAddress = (mrpIp, config["PortNumber"]["PrioritySolver"])
     priorityRequestServerAddress = (mrpIp, config["PortNumber"]["PriorityRequestServer"])
+    
+    #Read Coordination config file
+    coordinationConfigData = readConfigfile() 
     
     #Create instances for the class
     coordinationPlanManager = CoordinationPlanManager(coordinationConfigData, config)
@@ -80,6 +87,7 @@ def main():
         # Send the split data to the PRSolver
         except:
             if bool(coordinationPlanManager.checkActiveCoordinationPlan()):
+                coordinationPlanManager.updateCoordinationConfigData(readConfigfile())
                 coordinationParametersDictionary = coordinationPlanManager.getActiveCoordinationPlan()
                 coordinationRequestManager.getCoordinationParametersDictionary(coordinationParametersDictionary)
                 splitData = coordinationPlanManager.getSplitData()

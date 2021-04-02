@@ -16,7 +16,6 @@ A function/method called getActiveCoordinationPlan(), computes the start time an
         {
             "CoordinationPlanName": "Plan1",
             "CoordinationPatternNo": 1,
-            "SplitPatternNo": 1,
             "CycleLength": 100,
             "Offset": 48,
             "CoordinatedPhase1": 2,
@@ -27,7 +26,6 @@ A function/method called getActiveCoordinationPlan(), computes the start time an
         {
             "CoordinationPlanName": "Plan2",
             "CoordinationPatternNo": 2,
-            "SplitPatternNo": 1,
             "CycleLength": 90,
             "Offset": 18,
             "CoordinatedPhase1": 2,
