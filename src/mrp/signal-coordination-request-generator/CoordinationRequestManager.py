@@ -74,7 +74,6 @@ class CoordinationRequestManager:
             cycleLength = self.coordinationParametersDictionary['CycleLength']
 
             remainderTime = (currentTime - coordinationStartTime) % cycleLength
-            # print("\n[" + str(datetime.datetime.now()) + "] " + "Elapsed Time in the Cycle at time " + str(time.time())+ " is ", remainderTime)
 
             if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and (coordinationStartTime - currentTime <= cycleLength):
                 sendRequest = True
@@ -139,9 +138,11 @@ class CoordinationRequestManager:
         """
         sendRequest = False
         currentTime_UTC = time.time()
+        if bool(self.coordinationPriorityRequestDictionary):
+            noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
 
-        if bool(self.coordinationPriorityRequestDictionary) and (currentTime_UTC - self.requestSentTime) >= self.requestTimedOutValue:
-            sendRequest = True
+            if (noOfCoordinationRequest > 0) and ((currentTime_UTC - self.requestSentTime) >= self.requestTimedOutValue):
+                sendRequest = True
 
         return sendRequest
 
@@ -211,12 +212,16 @@ class CoordinationRequestManager:
         """
         noOfCoordinationRequest = self.coordinationPriorityRequestDictionary['noOfCoordinationRequest']
 
-        self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
-        self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
-        for i in range(noOfCoordinationRequest):
-            self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
-            self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
-        self.requestSentTime = time.time()
+        if noOfCoordinationRequest > 0:
+            self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
+            self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+            for i in range(noOfCoordinationRequest):
+                self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
+                self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
+            self.requestSentTime = time.time()
+
+        else:  
+            self.coordinationPriorityRequestDictionary = {}
 
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
         print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination request List after deletion process at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)

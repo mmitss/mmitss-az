@@ -106,6 +106,10 @@ int main()
             
             // If requires (logging is "True" in the config file), received priority requests list, dat file, Results.txt file, optimal schedule will be written in the log file.
             priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
+
+            //If requires, check for the priority weights update from the config file
+            if(priorityRequestSolver.checkUpdatesForPriorityWeights())
+                priorityRequestSolver.getPriorityWeights();
         }
 
         /*
