@@ -46,7 +46,7 @@ int main()
     string ssmJsonString{};
     string solverJsonString{};
     string systemPerformanceDataCollectorJsonString{};
-    char receiveBuffer[15360];
+    char receiveBuffer[40960];
     int msgType{};
     bool timedOutOccur{};
 
