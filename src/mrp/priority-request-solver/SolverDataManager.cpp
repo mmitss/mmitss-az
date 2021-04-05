@@ -207,13 +207,11 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
     double ETA_Range{};
-
     ofstream fs;
-
-    // modifyCurrentSignalStatus();
 
     fs.open("/nojournal/bin/OptimizationModelData.dat", ios::out);
     fs << "data;\n";
+
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
         fs << "param SP1:=" << trafficControllerStatus[i].startingPhase1 << ";" << endl;
@@ -244,13 +242,6 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
             fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-        // {
-        //     if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
-        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-
-        //     else
-        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-        // }
     }
     
     else
@@ -296,7 +287,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             fs << numberOfRequest;
             fs << " " << vehicleClass << " ";
         }
-        while (numberOfRequest < 10)
+        while (numberOfRequest < 15)
         {
             numberOfRequest++;
             fs << numberOfRequest;
@@ -347,7 +338,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             fs << numberOfRequest;
             fs << " " << vehicleClass << " ";
         }
-        while (numberOfRequest < 10)
+        while (numberOfRequest < 15)
         {
             numberOfRequest++;
             fs << numberOfRequest;
@@ -359,7 +350,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     }
 
     else
-        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 0 12 0 13 0 14 0 15 0 ; \n";
 
     fs << "param PrioWeight:= ";
 
@@ -443,11 +434,6 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 
     if (!priorityRequestList.empty())
     {
-        // if (emergencyVehicleStatus == true)
-        //     ETA_Range = 4.0;
-        // else
-        //     ETA_Range = 2.0;
-
         ETA_Range = 4.0;
 
         for (size_t i = 0; i < priorityRequestList.size(); i++)
@@ -487,13 +473,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
             {
                 if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
                     fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
-                // {
-                //     if (priorityRequestList[i].vehicleETA <= 6.0)
-                //         fs << 10.0 << "\t"; //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
 
-                //     else
-                //         fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
-                // }
                 else
                     fs << ".\t";
             }
