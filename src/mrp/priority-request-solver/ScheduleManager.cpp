@@ -10,7 +10,7 @@
   This code was developed under the supervision of Professor Larry Head
   in the Systems and Industrial Engineering Department.
   Revision History:
-  1. This script contains method to read the Results.txt file and store the right and left critical points value.
+  1. This script contains method to read the OptimizationResults.txt file and store the right and left critical points value.
   2. This script contains method to develop optimal schedule in a JSON formatted message.
 */
 #include <iostream>
@@ -117,7 +117,7 @@ void ScheduleManager::getOmitPhases()
 }
 
 /*
-    - Method to read the results.txt file and store information like starting phases, phase duration, green time etc. in list.
+    - Method to read the OptimizationResults.txt file and store information like starting phases, phase duration, green time etc. in list.
 */
 void ScheduleManager::readOptimalSignalPlan()
 {
@@ -133,7 +133,7 @@ void ScheduleManager::readOptimalSignalPlan()
     vector<double> leftCriticalPoints_GreenTime{};
     vector<double> rightCriticalPoints_GreenTime{};
 
-    infile.open("/nojournal/bin/Results.txt");
+    infile.open("/nojournal/bin/OptimizationResults.txt");
     // getline(infile, lineread);
 
     if (infile.fail())
@@ -597,7 +597,7 @@ void ScheduleManager::createEventList()
 
 /*
     - The following method is reponsible for validate the soultion
-    - If there is no optimal solution, phase duration and green time value in Results.txt will be zero
+    - If there is no optimal solution, phase duration and green time value in OptimizationResults.txt will be zero
     - The method will check the right critical green time value of ring 1. If all of them are zero, the soulution is not correct
 */
 bool ScheduleManager::validateOptimalSolution()

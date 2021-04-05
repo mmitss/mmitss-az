@@ -171,61 +171,61 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flex; \n "; // The coeficient to Flex should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
-    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
+    //=============================Writing the Optimal Output into the /nojournal/bin/OptimizationResults.txt file ==================================
     FileMod << "  \n";
     FileMod << "solve;  \n";
     FileMod << "  \n";
-    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \" \" > \"/nojournal/bin/OptimizationResults.txt\";  \n";
+    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
+    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/OptimizationResults.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
+    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/OptimizationResults.txt\"; \n";
 
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; ";
-    // FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";";
+    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/OptimizationResults.txt\"; ";
+    // FileMod << "printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";";
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;";
     FileMod.close();
@@ -479,61 +479,61 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
 
     FileMod << "  minimize delay: PriorityDelay + DilemmaZoneDelay;     \n";
 
-    //=============================Writing the Optimal Output into the /nojournal/bin/Results.txt file ==================================
+    //=============================Writing the Optimal Output into the /nojournal/bin/OptimizationResults.txt file ==================================
     FileMod << "  \n";
     FileMod << "solve;  \n";
     FileMod << "  \n";
-    FileMod << "printf \" \" > \"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/Results.txt\";  \n";
-    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \" \" > \"/nojournal/bin/OptimizationResults.txt\";  \n";
+    FileMod << "printf \"%3d  %3d \\n \",SP1, SP2 >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
+    FileMod << "printf \"%5.2f  %5.2f %5.2f  %5.2f \\n \",init1, init2,Grn1,Grn2 >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,1] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then v[p,k,2] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << " \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,1] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
     FileMod << "for {k in K}   \n";
     FileMod << " { \n";
     FileMod << "     for {p in P2} \n";
     FileMod << "        { \n";
-    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/Results.txt\";   \n";
+    FileMod << "           printf \"%5.2f  \", if(p in P)  then g[p,k,2] else 0  >>\"/nojournal/bin/OptimizationResults.txt\";   \n";
     FileMod << "        } \n";
-    FileMod << "        printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/Results.txt\";  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/Results.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/OptimizationResults.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
     FileMod << " } \n";
 
-    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/Results.txt\"; \n";
+    FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/OptimizationResults.txt\"; \n";
 
-    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/Results.txt\"; \n";
-    // FileMod << "printf \" \\n \">>\"/nojournal/bin/Results.txt\";\n";
+    FileMod << "printf \"%5.2f \\n \", Flex >>\"/nojournal/bin/OptimizationResults.txt\"; \n";
+    // FileMod << "printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();

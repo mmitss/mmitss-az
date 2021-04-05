@@ -575,7 +575,7 @@ void PriorityRequestSolver::getRequestedSignalGroup()
 
 /*
     - Method of solving the request in the priority request list  based on mod and dat files
-    - Solution will be written in the /nojournal/bin/Results.txt file
+    - Solution will be written in the /nojournal/bin/OptimizationResults.txt file
 */
 void PriorityRequestSolver::GLPKSolver()
 {
@@ -1340,7 +1340,7 @@ bool PriorityRequestSolver::logging()
 }
 
 /*
-    - Loggers to log priority request string, signal status string, OptimizationModelData.dat and results.txt files
+    - Loggers to log priority request string, signal status string, OptimizationModelData.dat and OptimizationResults.txt files
 */
 void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
 {
@@ -1367,7 +1367,7 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
         infile.close();
 
         outputfile << "\nCurrent Results File at time : " << currentTime << endl;
-        infile.open("/nojournal/bin/Results.txt");
+        infile.open("/nojournal/bin/OptimizationResults.txt");
         for (std::string line; getline(infile, line);)
             outputfile << line << endl;
 
