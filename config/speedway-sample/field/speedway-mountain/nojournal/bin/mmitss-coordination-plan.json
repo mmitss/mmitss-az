@@ -1,79 +1,92 @@
 {
-    "IntersectionName": "Speedway-Mountain",
-    "CoordinationParameters": [
+    "IntersectionName": "speedway-mountain",
+    "CoordinationPattern": [
         {
             "CoordinationPlanName": "AM-Plan",
             "CoordinationPatternNo": 1,
-            "SplitPatternNo": 1,
             "CycleLength": 100,
-            "Offset": 20,
-            "CoordinationStartTime_Hour": 0,
-            "CoordinationStartTime_Minute": 10,
-            "CoordinationEndTime_Hour": 15,
-            "CoordinationEndTime_Minute": 20,
-            "CoordinationSplit": 20.0,
+            "Offset": 48,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
-            "CoordinationActiveOnDays":["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
-            "SplitPatternData": {
-                "PhaseNumber": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8
-                ],
-                "Split": [
-                    22,
-                    40,
-                    0,
-                    38,
-                    24,
-                    38,
-                    0,
-                    38
-                ]
-            }
+            "CoordinationSplit": 20.0,
+            "Split": [
+                25,
+                37,
+                0,
+                38,
+                24,
+                38,
+                0,
+                38
+            ]
         },
         {
-            "CoordinationPlanName" :"PM-Plan",
+            "CoordinationPlanName": "PM-Plan",
             "CoordinationPatternNo": 2,
-            "SplitPatternNo": 2,
             "CycleLength": 100,
-            "Offset": 20,
-            "CoordinationStartTime_Hour": 15,
-            "CoordinationStartTime_Minute": 30,
-            "CoordinationEndTime_Hour": 23,
-            "CoordinationEndTime_Minute": 50,
-            "CoordinationSplit": 20.0,
+            "Offset": 48,
             "CoordinatedPhase1": 2,
             "CoordinatedPhase2": 6,
-            "CoordinationActiveOnDays":["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], 
-            "SplitPatternData": {
-                "PhaseNumber": [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8
-                ],
-                "Split": [
-                    22,
-                    40,
-                    0,
-                    38,
-                    24,
-                    38,
-                    0,
-                    38
-                ]
-            }
+            "CoordinationSplit": 20.0,
+            "Split": [
+                25,
+                37,
+                0,
+                38,
+                24,
+                38,
+                0,
+                38
+            ]
+        }
+    ],
+    "CoordinationDayPlan": [
+        {
+            "Days": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday"
+            ],
+            "ActionPlan": [
+                {
+                    "CoordinationPatternNo": 1,
+                    "CoordinationStartTime_Hour": 0,
+                    "CoordinationStartTime_Minute": 1,
+                    "CoordinationEndTime_Hour": 23,
+                    "CoordinationEndTime_Minute": 55
+                },
+                {
+                    "CoordinationPatternNo": 2,
+                    "CoordinationStartTime_Hour": 23,
+                    "CoordinationStartTime_Minute": 56,
+                    "CoordinationEndTime_Hour": 23,
+                    "CoordinationEndTime_Minute": 59
+                }
+            ]
+        },
+        {
+            "Days": [
+                "Saturday",
+                "Sunday"
+            ],
+            "ActionPlan": [
+                {
+                    "CoordinationPatternNo": 1,
+                    "CoordinationStartTime_Hour": 0,
+                    "CoordinationStartTime_Minute": 1,
+                    "CoordinationEndTime_Hour": 23,
+                    "CoordinationEndTime_Minute": 55
+                },
+                {
+                    "CoordinationPatternNo": 2,
+                    "CoordinationStartTime_Hour": 23,
+                    "CoordinationStartTime_Minute": 56,
+                    "CoordinationEndTime_Hour": 23,
+                    "CoordinationEndTime_Minute": 59
+                }
+            ]
         }
     ]
 }
