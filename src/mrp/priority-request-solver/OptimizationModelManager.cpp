@@ -63,7 +63,7 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "};\n";
 
     FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
+    FileMod << "set J  := {1..20};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
     FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
 
@@ -281,7 +281,7 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "};\n";
 
     FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
+    FileMod << "set J  := {1..20};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
     FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
 
