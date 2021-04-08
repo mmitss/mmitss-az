@@ -30,6 +30,7 @@ using std::endl;
 #define VehicleClass_EmergencyVehicleSplitRequest 4
 #define VehicleClass_Coordination 5
 #define SignalCoordinationVehicleType 20
+#define Maximum_Number_Of_Priority_Request 15
 
 class SolverDataManager
 {
