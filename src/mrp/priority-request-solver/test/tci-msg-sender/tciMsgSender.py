@@ -33,9 +33,9 @@ def getJsonString(fileName):
     return data
 
 
-# data = getJsonString(currentSignalPlanFileName)
-# tciSocket.sendto(data.encode(), priorityRequestSolverCommunicationInfo)
-# print("Sent Signal Plan to Solver at time: ", time.time())
+data = getJsonString(currentSignalPlanFileName)
+tciSocket.sendto(data.encode(), priorityRequestSolverCommunicationInfo)
+print("Sent Signal Plan to Solver at time: ", time.time())
 
 while(True):
     # Receive data on the TCI socket
