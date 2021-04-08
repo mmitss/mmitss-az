@@ -587,7 +587,7 @@ void PriorityRequestSolver::GLPKSolver()
     char modFile[128] = "/nojournal/bin/OptimizationModel.mod";
     glp_prob *mip;
     glp_tran *tran;
-    
+
     if (emergencyVehicleStatus == true)
         strcpy(modFile, "/nojournal/bin/OptimizationModel_EV.mod");
 
@@ -619,18 +619,18 @@ void PriorityRequestSolver::GLPKSolver()
 
     glp_mpl_build_prob(tran, mip);
     glp_simplex(mip, NULL);
-    
+
     fail = glp_intopt(mip, NULL);
     endOfSolve = getSeconds();
     currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-    
-    if(!fail)
+
+    if (!fail)
         cout << "[" << currentTime << "] Successfully solved the optimization problem" << endl;
     else
         cout << "[" << currentTime << "] Failed to solved the optimization problem successfully" << endl;
-    
+
     cout << "[" << currentTime << "] Time requires to Solve the optimization problem " << endOfSolve - startOfSolve << endl;
-    
+
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");
@@ -865,7 +865,6 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
 }
 
-
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
@@ -1014,22 +1013,25 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     coordinatedPhase1 = jsonObject["CoordinatedPhase1"].asInt();
     coordinatedPhase2 = jsonObject["CoordinatedPhase2"].asInt();
 
-    for (int i = 0; i < noOfSplitData; i++)
+    if (!trafficSignalPlan.empty())
     {
-        splitValue = jsonObject["TimingPlan"]["SplitData"][i].asDouble();
-        signalPlan.reset();
+        for (int i = 0; i < noOfSplitData; i++)
+        {
+            splitValue = jsonObject["TimingPlan"]["SplitData"][i].asDouble();
+            signalPlan.reset();
 
-        signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
-        signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
-        signalPlan.redClear = trafficSignalPlan[i].redClear;
-        signalPlan.minGreen = trafficSignalPlan[i].minGreen;
-        signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
-        if (splitValue != 0)
-            signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
+            signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
+            signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
+            signalPlan.redClear = trafficSignalPlan[i].redClear;
+            signalPlan.minGreen = trafficSignalPlan[i].minGreen;
+            signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
+            if (splitValue != 0)
+                signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
 
-        trafficSignalPlan_SignalCoordination.push_back(signalPlan);
+            trafficSignalPlan_SignalCoordination.push_back(signalPlan);
+        }
+        modifyCoordinationSignalTimingPlan();
     }
-    modifyCoordinationSignalTimingPlan();
 }
 
 /*
@@ -1038,9 +1040,7 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
 void PriorityRequestSolver::printSignalPlan()
 {
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-    {
         cout << trafficSignalPlan[i].phaseNumber << " " << trafficSignalPlan[i].phaseRing << " " << trafficSignalPlan[i].minGreen << endl;
-    }
 }
 
 /*
@@ -1188,7 +1188,7 @@ bool PriorityRequestSolver::checkUpdatesForPriorityWeights()
 
     if (currentTime - priorityWeightsCheckedTime > 120.0)
         priorityWeightsCheckingRequirement = true;
-    
+
     return priorityWeightsCheckingRequirement;
 }
 /*
@@ -1276,17 +1276,29 @@ double PriorityRequestSolver::getCurrentTime()
 
     return currentTime;
 }
+/*
+    -Check whether static traffic signal timing plan is available or not
+*/
+bool PriorityRequestSolver::checkTrafficSignalTimingPlanStatus()
+{
+    bool trafficSignalTimingPlanStatus{false};
+
+    if(!trafficSignalPlan.empty())
+        trafficSignalTimingPlanStatus = true;
+
+    return trafficSignalTimingPlanStatus;
+}
 
 /*
     -Check whether active signal coordination timing plan is available or not
 */
-bool PriorityRequestSolver::checkSignalCoordinationTimingPlan()
+bool PriorityRequestSolver::checkSignalCoordinationTimingPlanStatus()
 {
     bool sendCoordinationPlanRequest{false};
 
     if (priorityRequestList.empty())
         sendCoordinationPlanRequest = false;
-    
+
     else
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)

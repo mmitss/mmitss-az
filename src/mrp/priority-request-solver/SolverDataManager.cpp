@@ -43,10 +43,10 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
     if (!dilemmaZoneList.empty())
         dilemmaZoneRequestList = dilemmaZoneList;
 
-    EmergencyVehicleWeight = EV_Weight; 
+    EmergencyVehicleWeight = EV_Weight;
     EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
-    TransitWeight = Transit_Weight; 
-    TruckWeight = Truck_Weight; 
+    TransitWeight = Transit_Weight;
+    TruckWeight = Truck_Weight;
     DilemmaZoneRequestWeight = DZ_Request_Weight;
     CoordinationWeight = Coordination_Weight;
 }
@@ -207,13 +207,11 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     int ReqSeq = 1;
     int dilemmaZoneReq = 1;
     double ETA_Range{};
-
     ofstream fs;
-
-    // modifyCurrentSignalStatus();
 
     fs.open("/nojournal/bin/OptimizationModelData.dat", ios::out);
     fs << "data;\n";
+
     for (size_t i = 0; i < trafficControllerStatus.size(); i++)
     {
         fs << "param SP1:=" << trafficControllerStatus[i].startingPhase1 << ";" << endl;
@@ -244,15 +242,8 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
             fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-        // {
-        //     if (findSignalGroupInList(trafficSignalPlan[i].phaseNumber) == true)
-        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-
-        //     else
-        //         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-        // }
     }
-    
+
     else
     {
         for (size_t i = 0; i < trafficSignalPlan.size(); i++)
@@ -266,37 +257,40 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            vehicleClass = 0;
-            numberOfRequest++;
-
-            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                numberOfEVInList++;
-                vehicleClass = VehicleClass_EmergencyVehicle;
-            }
+                vehicleClass = 0;
+                numberOfRequest++;
 
-            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
-            {
-                numberOfTransitInList++;
-                vehicleClass = VehicleClass_Transit;
-            }
+                if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
+                {
+                    numberOfEVInList++;
+                    vehicleClass = VehicleClass_EmergencyVehicle;
+                }
 
-            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-            {
-                numberOfTruckInList++;
-                vehicleClass = VehicleClass_Truck;
-            }
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
+                {
+                    numberOfTransitInList++;
+                    vehicleClass = VehicleClass_Transit;
+                }
 
-            else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
-            {
-                numberOfCoordinationRequest++;
-                vehicleClass = VehicleClass_Coordination;
-            }
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+                {
+                    numberOfTruckInList++;
+                    vehicleClass = VehicleClass_Truck;
+                }
 
-            fs << numberOfRequest;
-            fs << " " << vehicleClass << " ";
+                else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
+                {
+                    numberOfCoordinationRequest++;
+                    vehicleClass = VehicleClass_Coordination;
+                }
+
+                fs << numberOfRequest;
+                fs << " " << vehicleClass << " ";
+            }
         }
-        while (numberOfRequest < 10)
+        while (numberOfRequest < Maximum_Number_Of_Priority_Request)
         {
             numberOfRequest++;
             fs << numberOfRequest;
@@ -311,43 +305,46 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            vehicleClass = 0;
-            numberOfRequest++;
-
-            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 == 0)
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                numberOfEVInList++;
-                vehicleClass = VehicleClass_EmergencyVehicle;
-            }
+                vehicleClass = 0;
+                numberOfRequest++;
 
-            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 != 0)
-            {
-                numberOfEVSplitRequestInList++;
-                vehicleClass = VehicleClass_EmergencyVehicleSplitRequest;
-            }
+                if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 == 0)
+                {
+                    numberOfEVInList++;
+                    vehicleClass = VehicleClass_EmergencyVehicle;
+                }
 
-            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
-            {
-                numberOfTransitInList++;
-                vehicleClass = VehicleClass_Transit;
-            }
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && priorityRequestList[i].requestedPhase % 2 != 0)
+                {
+                    numberOfEVSplitRequestInList++;
+                    vehicleClass = VehicleClass_EmergencyVehicleSplitRequest;
+                }
 
-            else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-            {
-                numberOfTruckInList++;
-                vehicleClass = VehicleClass_Truck;
-            }
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
+                {
+                    numberOfTransitInList++;
+                    vehicleClass = VehicleClass_Transit;
+                }
 
-            else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
-            {
-                numberOfCoordinationRequest++;
-                vehicleClass = VehicleClass_Coordination;
-            }
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+                {
+                    numberOfTruckInList++;
+                    vehicleClass = VehicleClass_Truck;
+                }
 
-            fs << numberOfRequest;
-            fs << " " << vehicleClass << " ";
+                else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
+                {
+                    numberOfCoordinationRequest++;
+                    vehicleClass = VehicleClass_Coordination;
+                }
+
+                fs << numberOfRequest;
+                fs << " " << vehicleClass << " ";
+            }
         }
-        while (numberOfRequest < 10)
+        while (numberOfRequest < Maximum_Number_Of_Priority_Request)
         {
             numberOfRequest++;
             fs << numberOfRequest;
@@ -359,7 +356,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     }
 
     else
-        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 ; \n";
+        fs << " 1 0 2 0 3 0 4 0 5 0 6 0 7 0 8 0 9 0 10 0 11 0 12 0 13 0 14 0 15 0 ; \n";
 
     fs << "param PrioWeight:= ";
 
@@ -398,7 +395,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     else
         fs << 0;
 
-    fs << " 6 0 7 0 8 0 9 0 10 0 ; \n"; 
+    fs << " 6 0 7 0 8 0 9 0 10 0 ; \n";
 
     if (!dilemmaZoneRequestList.empty())
     {
@@ -406,17 +403,20 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
         fs << "param Dl (tr): 1 2 3 4 5 6 7 8:=\n";
         for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
         {
-            fs << dilemmaZoneReq << "  ";
-            for (size_t j = 1; j < 9; j++)
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
-                    fs << dilemmaZoneRequestList[i].vehicleETA << "\t";
+                fs << dilemmaZoneReq << "  ";
+                for (size_t j = 1; j < 9; j++)
+                {
+                    if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
+                        fs << dilemmaZoneRequestList[i].vehicleETA << "\t";
 
-                else
-                    fs << ".\t";
+                    else
+                        fs << ".\t";
+                }
+                dilemmaZoneReq++;
+                fs << "\n";
             }
-            dilemmaZoneReq++;
-            fs << "\n";
         }
         fs << ";\n";
         dilemmaZoneReq = 1;
@@ -424,17 +424,20 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
         fs << "param Du (tr): 1 2 3 4 5 6 7 8:=\n";
         for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
         {
-            fs << dilemmaZoneReq << "  ";
-            for (size_t j = 1; j < 9; j++)
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
-                    fs << dilemmaZoneRequestList[i].vehicleETA + dilemmaZoneRequestList[i].vehicleETA_Duration << "\t";
+                fs << dilemmaZoneReq << "  ";
+                for (size_t j = 1; j < 9; j++)
+                {
+                    if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
+                        fs << dilemmaZoneRequestList[i].vehicleETA + dilemmaZoneRequestList[i].vehicleETA_Duration << "\t";
 
-                else
-                    fs << ".\t";
+                    else
+                        fs << ".\t";
+                }
+                dilemmaZoneReq++;
+                fs << "\n";
             }
-            dilemmaZoneReq++;
-            fs << "\n";
         }
         fs << ";\n";
     }
@@ -443,33 +446,31 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
 
     if (!priorityRequestList.empty())
     {
-        // if (emergencyVehicleStatus == true)
-        //     ETA_Range = 4.0;
-        // else
-        //     ETA_Range = 2.0;
-
         ETA_Range = 4.0;
 
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            fs << ReqSeq << "  ";
-            for (size_t j = 1; j < 9; j++)
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType != coordinationVehicleType)
+                fs << ReqSeq << "  ";
+                for (size_t j = 1; j < 9; j++)
                 {
-                    if (priorityRequestList[i].vehicleETA <= ETA_Range + 1.0)
-                        fs << 1.0 << "\t";
+                    if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType != coordinationVehicleType)
+                    {
+                        if (priorityRequestList[i].vehicleETA <= ETA_Range + 1.0)
+                            fs << 1.0 << "\t";
+                        else
+                            fs << priorityRequestList[i].vehicleETA - ETA_Range << "\t";
+                    }
+                    else if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType == coordinationVehicleType)
+                        fs << priorityRequestList[i].vehicleETA << "\t";
+
                     else
-                        fs << priorityRequestList[i].vehicleETA - ETA_Range << "\t";
+                        fs << ".\t";
                 }
-                else if (priorityRequestList[i].requestedPhase == static_cast<int>(j) && priorityRequestList[i].vehicleType == coordinationVehicleType)
-                    fs << priorityRequestList[i].vehicleETA << "\t";
-                
-                else
-                    fs << ".\t";
+                ReqSeq++;
+                fs << "\n";
             }
-            ReqSeq++;
-            fs << "\n";
         }
     }
 
@@ -482,23 +483,20 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
-            fs << ReqSeq << "  ";
-            for (size_t j = 1; j < 9; j++)
+            if (i < Maximum_Number_Of_Priority_Request)
             {
-                if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
-                    fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
-                // {
-                //     if (priorityRequestList[i].vehicleETA <= 6.0)
-                //         fs << 10.0 << "\t"; //If vehicle is in queue or stopped at red signal, make the latest arrival large enough so that there will be vehicle call until the vehicle pass the intersection.
+                fs << ReqSeq << "  ";
+                for (size_t j = 1; j < 9; j++)
+                {
+                    if (priorityRequestList[i].requestedPhase == static_cast<int>(j))
+                        fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
 
-                //     else
-                //         fs << priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration << "\t";
-                // }
-                else
-                    fs << ".\t";
+                    else
+                        fs << ".\t";
+                }
+                ReqSeq++;
+                fs << "\n";
             }
-            ReqSeq++;
-            fs << "\n";
         }
     }
 

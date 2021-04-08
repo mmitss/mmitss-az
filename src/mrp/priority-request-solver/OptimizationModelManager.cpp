@@ -62,10 +62,10 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     }
     FileMod << "};\n";
 
-    FileMod << "set K  := {1..3};\n"; // Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..10};\n";
+    FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
+    FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
+    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
 
     FileMod << "set E:={1,2};\n";
     FileMod << "\n";
@@ -280,13 +280,13 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
 
     FileMod << "};\n";
 
-    FileMod << "set K  := {1..3};\n"; // Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
-    FileMod << "set J  := {1..10};\n";
+    FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
+    FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; // at most 10 different types of vehicle may be considered , EV are 1, Transit are 2, Trucks are 3
+    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
 
     FileMod << "set E:={1,2};\n";
-    FileMod << "set DZ:={1,2};\n"; //For Dilemma Zone
+    FileMod << "set DZ:={1,2};\n"; //For Dilemma Zone priority request
 
     FileMod << "\n";
     // //========================Parameters=========================
@@ -305,9 +305,7 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "param alpha:=100,integer;\n";
     FileMod << "param Rl{p in P, j in J}, >=0,  default 0;\n";
     FileMod << "param Ru{p in P, j in J}, >=0,  default 0;\n";
-
-    // FileMod << "param cycle, :=" << dCoordinationCycle << ";\n"; //    # if we have coordination, the cycle length
-    FileMod << "param cycle, :=" << 100 << ";\n";
+    
     FileMod << "param PrioType { t in T}, >=0, default 0;  \n";
     FileMod << "param PrioWeight { t in T}, >=0, default 0;  \n";
     FileMod << "param priorityType{j in J}, >=0, default 0;  \n";
@@ -320,10 +318,10 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     /*************************DilemmaZone***************************/
     FileMod << "param Dl{p in P, dz in DZ}, >=0,  default 0;\n";
     FileMod << "param Du{p in P, dz in DZ}, >=0,  default 0;\n";
+    FileMod << "param DilemmaZoneVehicleClass:=5,integer;\n";
     FileMod << "param DilemmaZoneWeight, default 0;\n";
-    // FileMod << "param DilemmaZoneExtention, default 0;\n";
     FileMod << "param active_dilemmazone_p{p in P, dz in DZ}, integer, :=(if Dl[p,dz]>0 then 1 else	0);\n";
-
+    FileMod << "param DilemmaZoneReqNo:=sum{p in P, dz in DZ} active_dilemmazone_p[p,dz];\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
     FileMod << "\n";
     // ==================== VARIABLES =======================
@@ -523,11 +521,16 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
+    FileMod << "printf \"%3d \\n \", ReqNo + DilemmaZoneReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/OptimizationResults.txt\";\n"; // the  term " coef[p,1]*(p+10*(theta[p,j]))+(1-coef[p,1])*(p+10*(theta[p,j]+1))" is used to know the request is served in which cycle. For example, aasume there is a request for phase 4. If the request is served in firsr cycle, the term will be 4, the second cycle, the term will be 14 and the third cycle, the term will be 24
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/OptimizationResults.txt\";\n"; 
+    FileMod << " } \n";
+    
+    FileMod << "for {p in P,dz in DZ : Dl[p,dz]>0}  \n";
+    FileMod << " {  \n";
+    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Dl[p,dz],Du[p,dz], dilemmazone_d[p,dz] , DilemmaZoneVehicleClass >>\"/nojournal/bin/OptimizationResults.txt\";\n"; 
     FileMod << " } \n";
 
     FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flex>>\"/nojournal/bin/OptimizationResults.txt\"; \n";

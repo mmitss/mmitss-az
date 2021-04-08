@@ -37,6 +37,7 @@ using std::vector;
 #define MINUTES_IN_A_HOUR 60
 #define SECONDS_IN_A_MINUTE 60
 #define SECOND_FROM_MILISECOND 1000
+#define Maximum_Number_Of_Priority_Request 15
 
 enum msgType
 {

@@ -129,7 +129,8 @@ public:
   bool findEVInList();
   bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
-  bool checkSignalCoordinationTimingPlan();
+  bool checkTrafficSignalTimingPlanStatus();
+  bool checkSignalCoordinationTimingPlanStatus();
   bool checkUpdatesForPriorityWeights();
   bool logging();
 };

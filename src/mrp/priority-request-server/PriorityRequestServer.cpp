@@ -176,7 +176,10 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehid; });
 
-	if (ActiveRequestTable.empty() && (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
+	if(ActiveRequestTable.size() >= Maximum_Number_Of_Priority_Request)
+		addRequest = false;
+
+	else if (ActiveRequestTable.empty() && (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
 		addRequest = true;
 
 	else if (!ActiveRequestTable.empty() && (findVehicleIDOnTable == ActiveRequestTable.end()) &&
@@ -389,9 +392,9 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 	int vehid{};
 	int temporarySignalGroup{};
 
-	if (acceptSignalRequest(signalRequest) == true)
+	if (acceptSignalRequest(signalRequest))
 	{
-		if (addToActiveRequestTable(signalRequest) == true)
+		if (addToActiveRequestTable(signalRequest))
 		{
 			setPRSUpdateCount();
 			setVehicleType(signalRequest);
@@ -413,8 +416,9 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 			activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 			ActiveRequestTable.push_back(activeRequest);
+
 			//Add split phase request in the ART
-			if (findEVInRequest(signalRequest) == true)
+			if (findEVInRequest(signalRequest))
 			{
 				activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
 				activeRequest.requestID = signalRequest.getRequestID();
@@ -437,7 +441,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			updateETAInActiveRequestTable();
 		}
 
-		else if (updateActiveRequestTable(signalRequest) == true)
+		else if (updateActiveRequestTable(signalRequest))
 		{
 			setPRSUpdateCount();
 			vehid = signalRequest.getTemporaryVehicleID();
@@ -471,7 +475,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
-				if (findEVInRequest(signalRequest) == true)
+				if (findEVInRequest(signalRequest))
 				{
 					activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
 					activeRequest.requestID = signalRequest.getRequestID();
@@ -516,12 +520,12 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			}
 			updateETAInActiveRequestTable();
 		}
-		else if (deleteRequestfromActiveRequestTable(signalRequest) == true)
+		else if (deleteRequestfromActiveRequestTable(signalRequest))
 		{
 			vehid = signalRequest.getTemporaryVehicleID();
 
 			//If the delete request is for EV we need to delete both EV request (through and left turn phase)
-			if (findEVInRequest(signalRequest) == true)
+			if (findEVInRequest(signalRequest))
 			{
 				for (int i = 0; i < 2; i++)
 				{

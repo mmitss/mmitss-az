@@ -47,7 +47,7 @@
                 "latitude_DecimalDegree": 33.841799199999997,
                 "longitude_DecimalDegree": -112.1399512,
                 "priorityRequestStatus": 4,
-                "requestedSignalGroup": 2,
+                "requestedSignalGroup": 8,
                 "speed_MeterPerSecond": 15.16,
                 "vehicleID": 3127,
                 "vehicleType": 6
