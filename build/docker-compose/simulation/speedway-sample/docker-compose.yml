@@ -1,10 +1,10 @@
 version: "3.8"
 
 x-var: &IMAGE_MRP_SIMULATION
-    mmitssuarizona/mmitss-mrp-$PROCESSOR:1.2
+    mmitssuarizona/mmitss-mrp-$PROCESSOR:2.0
 
 x-var: &IMAGE_SERVER_TOOLS
-    mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:1.2
+    mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:2.0
 
 services:
 
