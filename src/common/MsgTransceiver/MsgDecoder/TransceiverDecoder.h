@@ -1,20 +1,28 @@
-
+#pragma once
+#include <iostream>
+#include <iomanip>
+#include <chrono>
 #include <string>
 
+using std::cout;
+using std::endl;
 using std::string;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 class TransceiverDecoder
 {
     private:
         int messageType;
-        std::string sendingJsonString;
-        std::string MAPIdentifier ="0012";
-        std::string BSMIdentifier = "0014";
-        std::string SRMIdentifier_UpperCase = "001D";
-        std::string SRMIdentifier_LowerCase = "001d";
-        std::string SPaTIdentifier = "0013";
-        std::string SSMIdentifier_UpperCase = "001E";
-        std::string SSMIdentifier_LowerCase = "001e";
+        string sendingJsonString;
+        string MAPIdentifier ="0012";
+        string BSMIdentifier = "0014";
+        string SRMIdentifier_UpperCase = "001D";
+        string SRMIdentifier_LowerCase = "001d";
+        string SPaTIdentifier = "0013";
+        string SSMIdentifier_UpperCase = "001E";
+        string SSMIdentifier_LowerCase = "001e";
         int bsmMsgCount{};
         int srmMsgCount{};
         int ssmMsgCount{};
@@ -22,20 +30,20 @@ class TransceiverDecoder
         int spatMsgCount{};
         int msgSentTime{};
         double timeInterval{0.0};
-        std::string applicationPlatform{};
-        std::string intersectionName{};
+        string applicationPlatform{};
+        string intersectionName{};
 
     public:
         TransceiverDecoder();
         ~TransceiverDecoder();
         
-        int getMessageType(std::string payload);
-        std::string createJsonStingOfMapPayload(std::string mapPayload);
-        std::string bsmDecoder(std::string bsmPayload);
-        std::string srmDecoder(std::string srmPayload);
-        std::string ssmDecoder(std::string ssmPayload);
-        std::string spatDecoder(std::string spatPayload);
-        std::string createJsonStringForSystemPerformanceDataLog(std::string msgCountType);
-        std::string getApplicationPlatform();
+        int getMessageType(string payload);
+        string createJsonStingOfMapPayload(string mapPayload);
+        string bsmDecoder(string bsmPayload);
+        string srmDecoder(string srmPayload);
+        string ssmDecoder(string ssmPayload);
+        string spatDecoder(string spatPayload);
+        string createJsonStringForSystemPerformanceDataLog(string msgCountType);
+        string getApplicationPlatform();
         bool sendSystemPerformanceDataLog();
 };

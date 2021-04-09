@@ -36,7 +36,7 @@ TransceiverDecoder::TransceiverDecoder()
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
     delete reader;
 
@@ -49,10 +49,10 @@ TransceiverDecoder::TransceiverDecoder()
     msgSentTime = static_cast<int>(currentTime);
 }
 
-int TransceiverDecoder::getMessageType(std::string payload)
+int TransceiverDecoder::getMessageType(string payload)
 {
-    std::string subPayload = payload.substr(0, 4);
-    std::vector<std::string> MessageIdentifier;
+    string subPayload = payload.substr(0, 4);
+    std::vector<string> MessageIdentifier;
 
     MessageIdentifier = {MAPIdentifier, BSMIdentifier, SRMIdentifier_UpperCase, SRMIdentifier_LowerCase, SPaTIdentifier, SSMIdentifier_UpperCase, SSMIdentifier_LowerCase};
 
@@ -74,12 +74,12 @@ int TransceiverDecoder::getMessageType(std::string payload)
     return messageType;
 }
 
-std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPayload)
+string TransceiverDecoder::createJsonStingOfMapPayload(string mapPayload)
 {
     std::ofstream outputfile;
-    std::string fmap{};
-    std::string intersection_Name{};
-    std::string mapName{};
+    string fmap{};
+    string intersection_Name{};
+    string mapName{};
     int intersectionID{};
     bool singleFrame = false;
     string deleteFileName = "Map.map.payload";
@@ -90,7 +90,7 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
     delete reader;
 
@@ -127,10 +127,10 @@ std::string TransceiverDecoder::createJsonStingOfMapPayload(std::string mapPaylo
     return jsonString;
 }
 
-std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
+string TransceiverDecoder::bsmDecoder(string bsmPayload)
 {
     BasicVehicle basicVehicle;
-    std::string jsonString{};
+    string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -138,7 +138,7 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    string output;
     size_t cnt = bsmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
@@ -176,11 +176,11 @@ std::string TransceiverDecoder::bsmDecoder(std::string bsmPayload)
     return jsonString;
 }
 
-std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
+string TransceiverDecoder::srmDecoder(string srmPayload)
 {
     SignalRequest signalRequest;
 
-    std::string jsonString{};
+    string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -188,7 +188,7 @@ std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    string output;
     size_t cnt = srmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
@@ -235,12 +235,12 @@ std::string TransceiverDecoder::srmDecoder(std::string srmPayload)
     return jsonString;
 }
 
-std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
+string TransceiverDecoder::ssmDecoder(string ssmPayload)
 {
     SignalStatus signalStatus;
     std::vector<ActiveRequest> ActiveRequestTable;
     ActiveRequest activeRequest;
-    std::string jsonString{};
+    string jsonString{};
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -248,7 +248,7 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    string output;
     size_t cnt = ssmPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
@@ -310,9 +310,9 @@ std::string TransceiverDecoder::ssmDecoder(std::string ssmPayload)
     return jsonString;
 }
 
-std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
+string TransceiverDecoder::spatDecoder(string spatPayload)
 {
-    std::string jsonString;
+    string jsonString;
 
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
@@ -320,7 +320,7 @@ std::string TransceiverDecoder::spatDecoder(std::string spatPayload)
     /// dsrcFrameOut to store UPER decoding result
     Frame_element_t dsrcFrameOut;
 
-    std::string output;
+    string output;
     size_t cnt = spatPayload.length() / 2;
 
     for (size_t i = 0; cnt > i; ++i)
@@ -424,9 +424,9 @@ bool TransceiverDecoder::sendSystemPerformanceDataLog()
     return sendData;
 }
 
-std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std::string msgCountType)
+string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(string msgCountType)
 {
-    std::string systemPerformanceDataLogJsonString{};
+    string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -492,7 +492,7 @@ std::string TransceiverDecoder::createJsonStringForSystemPerformanceDataLog(std:
     return systemPerformanceDataLogJsonString;
 }
 
-std::string TransceiverDecoder::getApplicationPlatform()
+string TransceiverDecoder::getApplicationPlatform()
 {
     return applicationPlatform;
 }

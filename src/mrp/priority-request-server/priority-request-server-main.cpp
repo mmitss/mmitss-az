@@ -109,7 +109,8 @@ int main()
             // ETA will be updated in the ART for the priority requests.
             if (PRS.updateETA())
             {
-                ssmJsonString = PRS.createSSMJsonString(signalStatus);                
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                PRS.printActiveRequestTable();                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);

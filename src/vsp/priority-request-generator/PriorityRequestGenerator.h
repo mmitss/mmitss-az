@@ -28,6 +28,9 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 #define EmergencyVehicle 2
 #define Transit 6
