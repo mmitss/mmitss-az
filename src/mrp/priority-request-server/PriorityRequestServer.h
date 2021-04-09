@@ -89,6 +89,7 @@ public:
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
+    void setETAUpdateTime();
     void loggingData(string jsonString, string communicationType);
     int getMessageType(string jsonString);
     int getIntersectionID();
