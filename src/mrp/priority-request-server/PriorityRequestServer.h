@@ -64,6 +64,7 @@ private:
     int msgSentTime{};
     double expectedTimeOfArrivalToStopBar{};
     double requestTimedOutValue{};
+    double etaUpdateTime{};
     double timeInterval{};
     bool loggingStatus{};
     bool emergencyVehicleStatus{false};

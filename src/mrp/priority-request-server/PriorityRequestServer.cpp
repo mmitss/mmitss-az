@@ -99,6 +99,7 @@ PriorityRequestServer::PriorityRequestServer()
 		loggingStatus = false;
 
 	msgSentTime = static_cast<int>(currentTime);
+	etaUpdateTime = currentTime;
 }
 
 /*
@@ -176,7 +177,7 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehid; });
 
-	if(ActiveRequestTable.size() >= Maximum_Number_Of_Priority_Request)
+	if (ActiveRequestTable.size() >= Maximum_Number_Of_Priority_Request)
 		addRequest = false;
 
 	else if (ActiveRequestTable.empty() && (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
@@ -559,12 +560,13 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehicleID{};
 	int associatedVehicleID{};
 	vehicleID = getRequestTimedOutVehicleID();
-
+	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 	//For EV we have to delete two request
-	if (findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::vehicleType::special) && findVehicleIDOnTable != ActiveRequestTable.end())
+	if ((findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::vehicleType::special)) &&
+		(findVehicleIDOnTable != ActiveRequestTable.end()))
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
@@ -574,7 +576,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 		ActiveRequestTable.erase(findSplitPhaseEV);
 	}
 	//For Coordination Request
-	if (findVehicleIDOnTable->vehicleType == coordinationVehicleType && findVehicleIDOnTable != ActiveRequestTable.end())
+	else if ((findVehicleIDOnTable->vehicleType == coordinationVehicleType) && (findVehicleIDOnTable != ActiveRequestTable.end()))
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
@@ -599,6 +601,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	//For Transit and truck PriorityRequest
 	else if (findVehicleIDOnTable != ActiveRequestTable.end())
 		ActiveRequestTable.erase(findVehicleIDOnTable);
+	cout << "[" << currentTime << "] Deleted Timed-Out Request" << endl;
 }
 
 /*
@@ -650,12 +653,12 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
-			
+
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
 			else
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
-			
+
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLatitude;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLongitude;
@@ -687,19 +690,12 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 bool PriorityRequestServer::updateETA()
 {
 	bool etaUpdateRequirement{false};
-	double timeDifference = abs(getMsOfMinute() / SECOND_FROM_MILISECOND);
+	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
-	if (!ActiveRequestTable.empty())
+	if (!ActiveRequestTable.empty() && (currentTime - etaUpdateTime >= TIME_GAP_BETWEEN_ETA_Update))
 	{
-		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
-		{
-			if (timeDifference - ActiveRequestTable[i].secondOfMinute >= TIME_GAP_BETWEEN_ETA_Update && ActiveRequestTable[i].vehicleETA != 0)
-			{
-				etaUpdateRequirement = true;
-				updateETAInActiveRequestTable();
-				break;
-			}
-		}
+		etaUpdateRequirement = true;
+		updateETAInActiveRequestTable();
 	}
 
 	return etaUpdateRequirement;
@@ -710,12 +706,10 @@ bool PriorityRequestServer::updateETA()
 */
 bool PriorityRequestServer::sendClearRequest()
 {
-	bool clearRequestStatus = false;
+	bool clearRequestStatus{false};
 
-	if (ActiveRequestTable.size() == 0 && sentClearRequest == false)
+	if ((ActiveRequestTable.size() == 0) && (sentClearRequest == false))
 		clearRequestStatus = true;
-	else
-		clearRequestStatus = false;
 
 	return clearRequestStatus;
 }
@@ -725,40 +719,20 @@ bool PriorityRequestServer::sendClearRequest()
 */
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
-	int getSecondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	double timeDifference = currentTime - etaUpdateTime;
+
 	if (!ActiveRequestTable.empty())
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
+			ActiveRequestTable[i].vehicleETA = 	ActiveRequestTable[i].vehicleETA - timeDifference;
+			
 			if (ActiveRequestTable[i].vehicleETA <= 0)
-			{
 				ActiveRequestTable[i].vehicleETA = 0.0;
-				ActiveRequestTable[i].secondOfMinute = getSecondOfMinute;
-				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
-			}
-
-			else if ((ActiveRequestTable[i].secondOfMinute < getSecondOfMinute) &&
-					 ((getSecondOfMinute - ActiveRequestTable[i].secondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update) &&
-					 ActiveRequestTable[i].vehicleETA != 0)
-			{
-				ActiveRequestTable[i].vehicleETA =
-					(ActiveRequestTable[i].vehicleETA - (getSecondOfMinute - ActiveRequestTable[i].secondOfMinute));
-
-				ActiveRequestTable[i].secondOfMinute = getSecondOfMinute;
-				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
-			}
-
-			else if ((ActiveRequestTable[i].secondOfMinute > getSecondOfMinute) &&
-					 ((ActiveRequestTable[i].secondOfMinute - getSecondOfMinute) >= TIME_GAP_BETWEEN_ETA_Update) &&
-					 ActiveRequestTable[i].vehicleETA != 0)
-			{
-				ActiveRequestTable[i].vehicleETA =
-					(ActiveRequestTable[i].vehicleETA - (getSecondOfMinute + SECONDS_IN_A_MINUTE - ActiveRequestTable[i].secondOfMinute));
-
-				ActiveRequestTable[i].secondOfMinute = getSecondOfMinute;
-				ActiveRequestTable[i].minuteOfYear = getMinuteOfYear();
-			}
 		}
+
+		etaUpdateTime = currentTime;
 	}
 }
 
