@@ -1,7 +1,15 @@
 #pragma once
+#include <iostream>
+#include <iomanip>
+#include <chrono>
 #include <string>
 
+using std::cout;
+using std::endl;
 using std::string;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 class TransceiverEncoder
 {

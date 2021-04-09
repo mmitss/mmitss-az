@@ -9,7 +9,7 @@ INCLUDES    := -I$(J2735_INCL) -I$(COMMON_INCL) # tell the compiler where to fin
 LIBS        := -L$(J2735_LIB) -L$(MMITSS_COMMON_LIB) -ldsrc -lasn -lmmitss-common  #tell the linker where to find the libraries
 
 #cpp's go here
-SRC += main.cpp TransceiverEncoder.cpp RsuMsgPacket.cpp
+SRC += transceiver-encoder-main.cpp TransceiverEncoder.cpp RsuMsgPacket.cpp
 #the name of the executable goes here
 TARGET = M_MsgEncoder 
 

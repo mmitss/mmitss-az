@@ -123,7 +123,7 @@ int PriorityRequestServer::getMessageType(string jsonString)
 			messageType = static_cast<int>(msgType::coordinationRequest);
 
 		else
-			cout << "[" << currentTime << "] Message type is unknown" << endl;
+			cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Message type is unknown" << endl;
 	}
 
 	return messageType;
@@ -612,7 +612,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	//For Transit and truck PriorityRequest
 	else if (findVehicleIDOnTable != ActiveRequestTable.end())
 		ActiveRequestTable.erase(findVehicleIDOnTable);
-	cout << "[" << currentTime << "] Deleted Timed-Out Request" << endl;
+	cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Deleted Timed-Out Request" << endl;
 }
 
 /*
@@ -683,7 +683,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
-		cout << "[" << currentTime << "] Sent Clear Request to Solver " << endl;
+		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Sent Clear Request to Solver " << endl;
 		sentClearRequest = true;
 	}
 
@@ -755,7 +755,7 @@ void PriorityRequestServer::printActiveRequestTable()
 	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 	if (!ActiveRequestTable.empty())
 	{
-		cout << "[" << currentTime << "] Active Request Table is following: " << endl;
+		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is following: " << endl;
 		cout << "VehicleID"
 			 << " "
 			 << "VehicleType"
@@ -770,7 +770,7 @@ void PriorityRequestServer::printActiveRequestTable()
 	}
 
 	else
-		cout << "[" << currentTime << "] Active Request Table is empty" << endl;
+		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is empty" << endl;
 }
 
 /*
@@ -1005,7 +1005,7 @@ string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	msgReceived = 0;
 	msgServed = 0;
 	msgRejected = 0;
-	cout << "[" << currentTime << "] System Performance Data Log will sent to data collector" << endl;
+	cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] System Performance Data Log will sent to data collector" << endl;
 
 	return systemPerformanceDataLogJsonString;
 }
