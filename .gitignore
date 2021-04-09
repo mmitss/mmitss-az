@@ -31,5 +31,6 @@ CMake*
 config/*.csv
 config/*/*/*/nojournal/bin/v2x-data/*
 config/*/*/*/nojournal/bin/log/*.txt
+config/*/*/*/nojournal/bin/*.txt
 config/*/*/*/nojournal/bin/*.dat
 config/*/*/*/nojournal/bin/*.mod
