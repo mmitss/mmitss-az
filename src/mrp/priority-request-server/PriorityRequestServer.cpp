@@ -99,7 +99,6 @@ PriorityRequestServer::PriorityRequestServer()
 		loggingStatus = false;
 
 	msgSentTime = static_cast<int>(currentTime);
-	etaUpdateTime = currentTime;
 }
 
 /*
@@ -280,6 +279,17 @@ void PriorityRequestServer::setRequestTimedOutVehicleID(int timedOutVehicleID)
 }
 
 /*
+	-If Active Request Table is empty, set the etaUpdateTime as current time while adding new priority requests
+*/
+void PriorityRequestServer::setETAUpdateTime()
+{
+	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
+	if(ActiveRequestTable.empty())
+		etaUpdateTime = currentTime;
+}
+
+/*
 	-Method for the obtaining the timed out vehicle ID
 */
 int PriorityRequestServer::getRequestTimedOutVehicleID()
@@ -397,6 +407,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 	{
 		if (addToActiveRequestTable(signalRequest))
 		{
+			setETAUpdateTime();
 			setPRSUpdateCount();
 			setVehicleType(signalRequest);
 			temporarySignalGroup = getSignalGroup(signalRequest);
@@ -1014,11 +1025,12 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	string errors{};
 	ActiveRequest activeRequest;
 	activeRequest.reset();
+	setETAUpdateTime();
 
 	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 	delete reader;
 	int noOfCoordinationRequest = jsonObject["noOfCoordinationRequest"].asInt();
-
+	
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 	{
 		if (ActiveRequestTable[i].vehicleType == coordinationVehicleType)
@@ -1046,6 +1058,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	}
 
 	setPriorityRequestStatus();
+	updateETAInActiveRequestTable();
 }
 
 PriorityRequestServer::~PriorityRequestServer()
