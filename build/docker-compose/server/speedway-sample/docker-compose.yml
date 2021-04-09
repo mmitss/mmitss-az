@@ -5,7 +5,7 @@ services:
 # for example /home/<my_home_directory>
 
 x-var: &IMAGE_MRP
-    mmitssuarizona/mmitss-mrp-$PROCESSOR:1.2
+    mmitssuarizona/mmitss-mrp-$PROCESSOR:2.0
 
     speedway-campbell:
         container_name: speedway-campbell
