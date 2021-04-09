@@ -60,7 +60,7 @@ int PriorityRequestSolver::getMessageType(string jsonString)
             messageType = static_cast<int>(msgType::splitData);
 
         else
-            cout << "[" << currentTime << "] Message type is unknown" << std::endl;
+            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Message type is unknown" << std::endl;
     }
 
     return messageType;
@@ -81,7 +81,7 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << currentTime << "] Received Priority Request List from PRS" << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Priority Request List from PRS" << endl;
 
     int noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
 
@@ -625,11 +625,11 @@ void PriorityRequestSolver::GLPKSolver()
     currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
     if (!fail)
-        cout << "[" << currentTime << "] Successfully solved the optimization problem" << endl;
+        cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Successfully solved the optimization problem" << endl;
     else
-        cout << "[" << currentTime << "] Failed to solved the optimization problem successfully" << endl;
+        cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Failed to solved the optimization problem successfully" << endl;
 
-    cout << "[" << currentTime << "] Time requires to Solve the optimization problem " << endOfSolve - startOfSolve << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Time requires to Solve the optimization problem " << endOfSolve - startOfSolve << endl;
 
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
@@ -700,7 +700,7 @@ string PriorityRequestSolver::getClearCommandScheduleforTCI()
     double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     ScheduleManager scheduleManager;
 
-    cout << "[" << currentTime << "] Received Clear Request" << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Clear Request" << endl;
 
     clearScheduleJsonString = scheduleManager.createScheduleJsonString();
 
@@ -880,7 +880,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << currentTime << "] Received Signal Timing Plan" << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Signal Timing Plan" << endl;
     loggingSignalPlanData(jsonString);
 
     trafficSignalPlan.clear();
@@ -1003,7 +1003,7 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << currentTime << "] Received Split Data for Signal Coordination" << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Split Data for Signal Coordination" << endl;
     loggingSplitData(jsonString);
 
     int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
@@ -1214,7 +1214,7 @@ void PriorityRequestSolver::getPriorityWeights()
     CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
 
     priorityWeightsCheckedTime = currentTime;
-    cout << "[" << currentTime << "] priority requests weights are updated " << std::endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] priority requests weights are updated " << std::endl;
 }
 
 /*

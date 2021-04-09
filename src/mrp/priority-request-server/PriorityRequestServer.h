@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <chrono>
 #include "SignalRequest.h"
 #include "SignalStatus.h"
@@ -25,6 +26,9 @@ using std::endl;
 using std::ifstream;
 using std::string;
 using std::vector;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 #define coordinationVehicleType 20
 #define coordinationLaneID 1

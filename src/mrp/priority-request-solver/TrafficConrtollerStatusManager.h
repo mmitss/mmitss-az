@@ -13,6 +13,7 @@
   1. Header file for TrafficConrtollerStatusManager class
 */
 #pragma once
+#include <iomanip>
 #include <chrono>
 #include <vector>
 #include <iostream>
@@ -26,6 +27,9 @@ using std::vector;
 using std::ifstream;
 using std::ios;
 using std::ofstream;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 #define Initialize 0.0
 #define Tolerance 2.0

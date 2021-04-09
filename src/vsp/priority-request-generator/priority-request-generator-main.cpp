@@ -99,7 +99,7 @@ int main()
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
             currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-            cout << "[" << currentTime << "] SSM is received " << endl;
+            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
     }
