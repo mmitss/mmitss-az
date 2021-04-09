@@ -12,7 +12,7 @@ int main()
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
     delete reader;
 
@@ -23,22 +23,24 @@ int main()
     int bsmReceiverPortNo = (jsonObject_config["PortNumber"]["PriorityRequestGenerator"]).asInt();
     const int dataCollectorPortNo = (jsonObject_config["PortNumber"]["DataCollector"]).asInt();
 
-    std::string receivedPayload{};
-    std::string extractedPayload{};
-    std::string bsmJsonString{};
-    std::string applicationPlatform = decoder.getApplicationPlatform();
+    double currentTime{};
+    string receivedPayload{};
+    string extractedPayload{};
+    string bsmJsonString{};
+    string applicationPlatform = decoder.getApplicationPlatform();
 
     while (true)
     {
         receivedPayload = decoderSocket.receivePayloadHexString();
+        currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
 
         size_t pos = receivedPayload.find("0014");
-        if (pos != std::string::npos)
+
+        if (pos != string::npos)
         {
             extractedPayload = receivedPayload.erase(0, pos);
             bsmJsonString = decoder.bsmDecoder(extractedPayload);
-            std::cout << "Decoded HostBSM" << std::endl;
-            std::cout << bsmJsonString << std::endl;
+            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Decoded HostBSM" << endl;
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(bsmReceiverPortNo), bsmJsonString);
             decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), bsmJsonString);
         }
