@@ -46,7 +46,7 @@ int main()
     string ssmJsonString{};
     string solverJsonString{};
     string systemPerformanceDataCollectorJsonString{};
-    char receiveBuffer[15360];
+    char receiveBuffer[40960];
     int msgType{};
     bool timedOutOccur{};
 
@@ -109,13 +109,15 @@ int main()
             // ETA will be updated in the ART for the priority requests.
             if (PRS.updateETA())
             {
-                ssmJsonString = PRS.createSSMJsonString(signalStatus);                
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                PRS.printActiveRequestTable();                
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
             }
         }
     }
+    
     PRSSocket.closeSocket();
     return 0;
 }

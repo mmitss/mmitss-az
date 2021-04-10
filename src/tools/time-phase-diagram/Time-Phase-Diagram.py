@@ -7,9 +7,9 @@ import json
 
 def getStartingPhases():
     """
-    Get the stating phase information from the Results.txt file
+    Get the stating phase information from the OptimizationResults.txt file
     """
-    with open('/nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/OptimizationResults.txt') as f:
         first_line = f.readline()
 
     startingPhase1, startingPhase2 = first_line.split()
@@ -43,7 +43,7 @@ def phaseGroupInRing(startingPhase, ring_phases, phasesInRing):
 
 
 def getInitToPhasesAndElaspedGreenTime():
-    with open('/nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/OptimizationResults.txt') as f:
 
         for i, line in enumerate(f):
             if i == 1:
@@ -60,7 +60,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
     # Storing Left Critcial Points information
     if(CP == 'Left'):
         # Left Critical Points information for first cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 2:
                     break
@@ -80,7 +80,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
                 left_r2_k1_Phase_Times = left_r2_k1_Phase_Times[startingPhase-5:]
 
         #  Left Critical Points information for second cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 3:
                     break
@@ -97,7 +97,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
             left_r2_k1_Phase_Times.extend(left_r2_k2_Phase_Times)
 
         #  Left Critical Points information for third cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 4:
                     break
@@ -120,7 +120,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
     # Storing RIght Critcial Points information
     if(CP == 'Right'):
         # Right Critical Points information for first cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 5:
                     break
@@ -140,7 +140,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
                 right_r2_k1_Phase_Times = right_r2_k1_Phase_Times[startingPhase-5:]
 
         # # Right Critical Points information for second cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 6:
                     break
@@ -157,7 +157,7 @@ def getPhaseDuration(phase_Times, startingPhase, CP, RingNo):
             right_r2_k1_Phase_Times.extend(right_r2_k2_Phase_Times)
 
         # Right Critical Points information for third cycle
-        with open('/nojournal/bin/Results.txt') as f:
+        with open('/nojournal/bin/OptimizationResults.txt') as f:
             for i, line in enumerate(f):
                 if i == 7:
                     break
@@ -256,7 +256,7 @@ def getCummulativePhaseTimes(startingPhase1, startingPhase2, left_ring_Phase_Tim
 
 def getPriorityRequest():
     eta = []
-    with open('/nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/OptimizationResults.txt') as f:
         for i, line in enumerate(f):
             if i == 14:
                 break
@@ -265,7 +265,7 @@ def getPriorityRequest():
     noOfReq = int(noOfReq)
     print("No of Request", noOfReq)
     reqInfoLineNo = 15+noOfReq
-    with open('/nojournal/bin/Results.txt') as f:
+    with open('/nojournal/bin/OptimizationResults.txt') as f:
         for i, line in enumerate(f):
             if i < 15:
                 continue

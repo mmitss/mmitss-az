@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <iomanip>
 #include <chrono>
 #include "SignalRequest.h"
 #include "SignalStatus.h"
@@ -25,6 +26,9 @@ using std::endl;
 using std::ifstream;
 using std::string;
 using std::vector;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 #define coordinationVehicleType 20
 #define coordinationLaneID 1
@@ -37,6 +41,7 @@ using std::vector;
 #define MINUTES_IN_A_HOUR 60
 #define SECONDS_IN_A_MINUTE 60
 #define SECOND_FROM_MILISECOND 1000
+#define Maximum_Number_Of_Priority_Request 15
 
 enum msgType
 {
@@ -63,6 +68,7 @@ private:
     int msgSentTime{};
     double expectedTimeOfArrivalToStopBar{};
     double requestTimedOutValue{};
+    double etaUpdateTime{};
     double timeInterval{};
     bool loggingStatus{};
     bool emergencyVehicleStatus{false};
@@ -87,6 +93,7 @@ public:
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
+    void setETAUpdateTime();
     void loggingData(string jsonString, string communicationType);
     int getMessageType(string jsonString);
     int getIntersectionID();

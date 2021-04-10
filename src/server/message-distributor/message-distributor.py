@@ -51,7 +51,7 @@ if rawBsmLogging == True:
     logfile.write("timestamp,secMark,temporaryId,latitude,longitude,elevation,speed,heading,type,length,width\n")
 
 while True:
-    data, addr = receivingSocket.recvfrom(4096)
+    data, addr = receivingSocket.recvfrom(40960)
     msg = json.loads(data.decode())
     msg = msgDist.timestampMessage(msg)
     messageType = msgDist.distributeMsgToInfrastructureAndGetType(msg)

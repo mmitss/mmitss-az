@@ -5,7 +5,7 @@
 #
 #    Image name: mmitssuarizona/mmitss-arm-base                               # 
 #-----------------------------------------------------------------------------#
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 

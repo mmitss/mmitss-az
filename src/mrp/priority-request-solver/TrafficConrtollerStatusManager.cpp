@@ -61,7 +61,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << currentTime << "] Received Current Signal Status" << endl;
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Current Signal Status" << endl;
 
     const Json::Value values = jsonObject["currentPhases"];
 
@@ -129,7 +129,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 */
                 if (temporaryCurrentPhase == temporaryNextPhase)
                 {
-                    cout << "[" << currentTime << "] Current Phase and next phase is same" << endl;
+                    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Current Phase and next phase is same" << endl;
                     break;
                 }
 

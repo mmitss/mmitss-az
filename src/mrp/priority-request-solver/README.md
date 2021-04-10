@@ -61,7 +61,7 @@ end;
 OptimizationModelManager class has the functionality to write the optimization model file for the different types of priority requests. The static optimization model file for the truck, transit, or coordination is OptimizationModel.mod. The dynamic optimization model file for the emergency vehicle is OptimizationModel_EV.mod.
 
 ### PriorityRequestSolverClass
-PriorityRequestSolverClass has the functionality to manage the priority requests in a list, the current signal timing plan, split data and current signal status. It can also manage dilemma zone request list if emergency vehicle is sending priority requests while heavy vehicles are trapped in the dilemma zone on the opposite approaches. It can provide the optimization model and input data to glpk solver package as an input to solve the optimization problem. The optimal solution is written on Results.txt file. The optimal soultion can be validated. The first two line of the file contains the information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green). The next six lines are the phase duration (first three lines are left critical points of "Hold" points and next three lines are are right critical points or "Force-Off" points) for each phases in cyle 1-3. There are green time for each phases in cycle 1-3 afterwards. The file can contain the information about ETA of the all priority requests and their corresponding delay. An example of such Results.txt file is as follows:
+PriorityRequestSolverClass has the functionality to manage the priority requests in a list, the current signal timing plan, split data and current signal status. It can also manage dilemma zone request list if emergency vehicle is sending priority requests while heavy vehicles are trapped in the dilemma zone on the opposite approaches. It can provide the optimization model and input data to glpk solver package as an input to solve the optimization problem. The optimal solution is written on OptimizationResults.txt file. The optimal soultion can be validated. The first two line of the file contains the information about current signal status (starting phases, time required to start next phase if current phase is on clearance interval, elapsed green time if current phase is on green). The next six lines are the phase duration (first three lines are left critical points of "Hold" points and next three lines are are right critical points or "Force-Off" points) for each phases in cyle 1-3. There are green time for each phases in cycle 1-3 afterwards. The file can contain the information about ETA of the all priority requests and their corresponding delay. An example of such OptimizationResults.txt file is as follows:
 ```
    4    8 
   0.00   0.00 15.00  13.00 
@@ -86,7 +86,7 @@ PriorityRequestSolverClass has the functionality to manage the priority requests
 ```
 
 ### ScheduleManager Class
-The ScheduleManager class can read the Results.txt file and develop optimal schedule in a JSON formatted message. The schedule contains the information about start time, end time of different commands, like- Hold, Force-Off, Omit, Vehicle-Call etc. for each phase. The optimal schedule contains the optimal signal timing plan for two cycles. An example of such JSON formatted optimal schedule is as follows:
+The ScheduleManager class can read the OptimizationResults.txt file and develop optimal schedule in a JSON formatted message. The schedule contains the information about start time, end time of different commands, like- Hold, Force-Off, Omit, Vehicle-Call etc. for each phase. The optimal schedule contains the optimal signal timing plan for two cycles. An example of such JSON formatted optimal schedule is as follows:
 ```
 {
     "MsgType": "Schedule",
@@ -173,4 +173,4 @@ In the `mmitss-phase3-master-config.json` (config) file following keys need to b
 A basic test of the PRSolver software can be done by using tools reside on mmitss/src/mrp/priority-request-solver/test directory. The priorityRequestSender.py can send priority request list as a JSON string to the PRSolver over the UDP socket. The tciMsgSender.py can send current signal timing plan, and current signal status. It can also receive the optimal schedule. The splitDataSender.py can send split data to the PRSolver. The PRSolver can formulate the optimization model and generate optimal schedule.
 
 ## Known issues/limitations
-- None
+- Optimization model can serve 15 priority requests simultaneously.
