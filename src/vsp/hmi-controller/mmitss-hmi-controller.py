@@ -90,7 +90,8 @@ priority_responseStatus = {0 : "unknown",
 basicVehicleRoles = {0 : "basicVehicle",
                     9 : "truck",
                     13 : "ev-fire",
-                    16 : "transit"}
+                    16 : "transit",
+                    11: "coordination"}
 
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
@@ -265,10 +266,15 @@ while True:
                     pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
                     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
+                    # hv_currentLaneSignalGroup must be between 1 and 8 for current hmi. Higher phase groups are not
+                    # currently supported.
                     
                     if hv_currentLaneSignalGroup == 0 :
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-                    else :
+                    else if hv_currentLaneSignalGroup > 8 :
+                        hv_currentLaneSignalGroup == 0 : 
+                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
+                    else:
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
                    
 
