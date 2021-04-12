@@ -25,7 +25,8 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = True
 
-configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+# configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+configfile = open('//Users/klhead/dev/mmitss/config/speedway-sample/field/speedway-mountain/nojournal/bin/mmitss-phase3-master-config.json', 'r')
 config = json.load(configfile)
 controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
 #controllerIP = '127.0.0.1' #use for simulation testing
@@ -271,8 +272,8 @@ while True:
                     
                     if hv_currentLaneSignalGroup == 0 :
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-                    else if hv_currentLaneSignalGroup > 8 :
-                        hv_currentLaneSignalGroup == 0 : 
+                    elif hv_currentLaneSignalGroup > 8 :
+                        hv_currentLaneSignalGroup == 0 
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
                     else:
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
