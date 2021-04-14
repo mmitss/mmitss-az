@@ -52,10 +52,10 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 	string errors{};
 	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
 	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-	
+
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	delete reader;
-	
+
 	// set the request timed out value to avoid clearing the old request in PRS
 	if (parsingSuccessful)
 		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SrmTimeGapValue;
@@ -199,7 +199,7 @@ bool PriorityRequestGenerator::checkPriorityRequestSendingRequirementStatus()
 bool PriorityRequestGenerator::checkRequestSendingRequirement()
 {
 	bool requestSendingRequirement{false};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
 
@@ -214,7 +214,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 
 	//If there is an active map but vehicle is leaving the intersection, it is required to send a cancellation request.
 	else if ((activeMapStatus == true) &&
-			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))))
+			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::onOutbound))))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -233,7 +235,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 	}
 
 	else if ((activeMapStatus == true) && (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
-			 ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 ((static_cast<double>(currentTime) - srmSendingTime) >= SrmTimeGapValue))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -262,7 +264,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		}
 
 		//If vehicleID is in ART and vehicle ETA changes by threshold value, vehicle should send srm
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= allowed_ETA_Difference))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) &&
+				 (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= allowed_ETA_Difference))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -280,7 +283,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && ((currentTime - srmSendingTime) >= requestTimedOutValue))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) &&
+				 ((static_cast<double>(currentTime) - srmSendingTime) >= requestTimedOutValue))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -289,7 +293,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		}
 	}
 	if (requestSendingRequirement == true)
-		srmSendingTime = currentTime;
+		srmSendingTime = static_cast<double>(currentTime);
 
 	return requestSendingRequirement;
 }
@@ -300,7 +304,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInformation> bus_Stop_List)
 {
 	bool requestSendingRequirement{false};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
 	if (!bus_Stop_List.empty())
 		busStopList = bus_Stop_List;
@@ -321,7 +325,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
 	else if ((activeMapStatus == true) &&
-			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))))
+			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::onOutbound))))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -331,7 +337,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 
 	//If there is an active map and vehilce ID is available in the ART but vehicle is leaving the intersection, it is required to send a cancellation request.
 	else if ((activeMapStatus == true) && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
-			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))))
+			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::onOutbound))))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -340,7 +348,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 	}
 
 	else if ((activeMapStatus == true) && (busStopPassedStatus == true) &&
-			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) && ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
+			 ((static_cast<double>(currentTime) - srmSendingTime) >= SrmTimeGapValue))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -387,7 +396,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && ((currentTime - srmSendingTime) >= requestTimedOutValue))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && ((static_cast<double>(currentTime) - srmSendingTime) >= requestTimedOutValue))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -406,7 +415,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 	}
 
 	if (requestSendingRequirement == true)
-		srmSendingTime = currentTime;
+		srmSendingTime = static_cast<double>(currentTime);
 
 	return requestSendingRequirement;
 }
@@ -417,7 +426,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_Status)
 {
 	bool requestSendingRequirement{false};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	lightSirenStatus = light_Siren_Status;
 
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
@@ -434,7 +443,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 
 	//If there is an active map and vehicle is leaving the intersection, it is required to send a cancellation request.
 	else if ((activeMapStatus == true) &&
-			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))))
+			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::onOutbound))))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -444,7 +455,9 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 
 	//If there is an active map and vehilce ID is available in the ART but vehicle is leaving the intersection, it is required to send a cancellation request.
 	else if ((activeMapStatus == true) && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
-			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) || static_cast<int>(MsgEnum::mapLocType::onOutbound))))
+			 (vehicleIntersectionStatus == (static_cast<int>(MsgEnum::mapLocType::insideIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::atIntersectionBox) ||
+											static_cast<int>(MsgEnum::mapLocType::onOutbound))))
 	{
 		requestSendingRequirement = true;
 		requestSendStatus = false;
@@ -453,7 +466,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 	}
 
 	else if ((activeMapStatus == true) && (lightSirenStatus == true) &&
-			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) && ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
+			 ((static_cast<double>(currentTime) - srmSendingTime) >= SrmTimeGapValue))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -500,7 +514,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		}
 
 		//Vehicle needs to send SRM to avoid request Timedout scenario in the PRS
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && ((currentTime - srmSendingTime) >= requestTimedOutValue))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && ((static_cast<double>(currentTime) - srmSendingTime) >= requestTimedOutValue))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -519,7 +533,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 	}
 
 	if (requestSendingRequirement == true)
-		srmSendingTime = currentTime;
+		srmSendingTime = static_cast<double>(currentTime);
 
 	return requestSendingRequirement;
 }
@@ -592,7 +606,7 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 
 		if (busStopDistanceFromStopBar / DISTANCEUNITCONVERSION > vehicleDistanceFromStopBar / DISTANCEUNITCONVERSION)
 			busStopPassedStatus = true;
-		
+
 		else
 			busStopPassedStatus = false;
 	}
@@ -673,7 +687,7 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
-	
+
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 	delete reader;
 
@@ -694,7 +708,6 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 		else if ((jsonObject["MsgType"]).asString() == "LightSirenStatusMessage")
 			messageType = static_cast<int>(msgType::lightSirenStatus);
 	}
-	
 
 	return messageType;
 }
@@ -875,7 +888,7 @@ void PriorityRequestGenerator::setVehicleType()
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
-	
+
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	delete reader;
 
@@ -1114,7 +1127,7 @@ void PriorityRequestGenerator::loggingData(string jsonString, string communicati
 	if (loggingStatus == true)
 	{
 		outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
-		double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		outputfile << "\nThe following message is " << communicationType << " at time : " << currentTime << endl;
 		outputfile << jsonString << endl;
 	}
@@ -1134,7 +1147,7 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
-	
+
 	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	delete reader;
 
@@ -1144,7 +1157,7 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	if (logging == "True")
 	{
 		loggingStatus = true;
-		double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		outputfile.open("/nojournal/bin/log/PRGLog.txt");
 		outputfile << "File opened at time : " << currentTime << endl;
 		outputfile.close();
@@ -1152,7 +1165,6 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	else
 		loggingStatus = false;
 
-	
 	return loggingStatus;
 }
 
@@ -1166,7 +1178,7 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
 	string errors{};
-	
+
 	bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 	delete reader;
 
@@ -1175,7 +1187,7 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 
 		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
 			lightSirenStatus = true;
-		
+
 		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
 			lightSirenStatus = false;
 	}
