@@ -72,7 +72,7 @@ int main()
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
                     currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-                    cout << "[" << currentTime << "] PRGServer sent SRM to MsgDistributor" << endl;
+                    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] PRGServer sent SRM to MsgDistributor" << endl;
                 }
                 // Delete the timed-out vehicle information from the list, if requires
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();
