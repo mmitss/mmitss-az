@@ -38,6 +38,7 @@
 #include "locAware.h"
 #include "geoUtils.h"
 #include "Timestamp.h"
+#include <time.h>
 
 using namespace MsgEnum;
 
@@ -86,8 +87,16 @@ PriorityRequestServer::PriorityRequestServer()
 	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
 	//Check the logging requirement
 	logging = (jsonObject["Logging"]).asString();
-	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + ".txt";
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
+	time_t     now = time(0);
+    struct tm  tstruct;
+    char       logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+
+	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
+
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	if (logging == "True")
 	{
 		loggingStatus = true;

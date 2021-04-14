@@ -18,8 +18,8 @@
 #include <algorithm>
 
 TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
-                                   int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, string file_Name,
-                                   vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
+                                                               int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, string file_Name,
+                                                               vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
 {
     coordinationRequestStatus = coordination_Request_Status;
     cycleLength = cycle_Length;
@@ -198,7 +198,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
         if (loggingStatus)
         {
             outputfile.open(fileName, std::ios_base::app);
-            double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+            auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
             outputfile << "\nThe elapsed time in a cycle at time " << currentTime << " is " << elapsedTimeInCycle << endl;
             outputfile.close();
@@ -206,72 +206,91 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
-            // For coordinated phase
+            // For coordinated phase in ring 1
             if (trafficControllerStatus[i].startingPhase1 == coordinatedPhase1)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-                //compute the early returned and upper limit of green time
+
+                //compute the early returned value and upper limit of green time
                 if (elapsedTimeInCycle > offset)
                     earlyReturnedValue = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
 
                 else
                     earlyReturnedValue = 0.0;
+
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
 
-                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
+                // elasped green time will be set as max green time - Tolerance
+                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase &&
+                    (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
+                //If elapsed green time is greater than the min green time  and early return value is positive, 
+                //early return value will be deducted from elapsed green time.
                 else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen && earlyReturnedValue > 0)
                     trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1 - earlyReturnedValue;
 
                 // If early return value is greater than the gmin, elapsed green time value may become negative.
-                // The elaped green time will be set as min green
+                // The elapsed green time will be set as min green
                 if (trafficControllerStatus[i].elapsedGreen1 < 0)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
             }
-            // For non-coordinated phases
+
+            // For non-coordinated phases in ring 1
             else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
+                //If elapsed green time is greater than the (maxgreen - Tolerance), elaseped green will be set as (maxgreen - Tolerance)
                 if (trafficControllerStatus[i].elapsedGreen1 >= findSignalGroup1->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
             }
-            // For coordinated phase
+
+            // For coordinated phase in ring 2
             if (trafficControllerStatus[i].startingPhase2 == coordinatedPhase2)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-                //compute the early returned and upper limit of green time
+                //compute the early returned value and upper limit of green time
                 if (elapsedTimeInCycle > offset)
                     earlyReturnedValue = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
 
                 else
                     earlyReturnedValue = 0.0;
+
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
 
-                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase && (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
+                // elasped green time will be set as max green time - Tolerance
+                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase &&
+                    (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
+                //If elapsed green time is greater than the min green time  and early return value is positive, 
+                //early return value will be deducted from elapsed green time.
                 else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen && earlyReturnedValue > 0)
                     trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2 - earlyReturnedValue;
 
                 // If early return value is greater than the gmin, elapsed green time value may become negative.
-                // The elaped green time will be set as min green
+                // The elapsed green time will be set as min green
                 if (trafficControllerStatus[i].elapsedGreen2 < 0)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
             }
-            // For non-coordinated phases
+
+            // For non-coordinated phases in ring 2
             else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
                                                                                                            [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                
+                //If elapsed green time is greater than the (maxgreen - Tolerance), elaseped green will be set as (maxgreen - Tolerance)
                 if (trafficControllerStatus[i].elapsedGreen2 >= findSignalGroup2->maxGreen - Tolerance)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
             }
@@ -305,14 +324,14 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
 {
     if (trafficControllerStatus[0].startingPhase1 == 0)
     {
-        trafficControllerStatus[0].startingPhase1 = trafficControllerStatus[0].startingPhase2 - 4;
+        trafficControllerStatus[0].startingPhase1 = trafficControllerStatus[0].startingPhase2 - NumberOfPhasePerRing;
         trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
         trafficControllerStatus[0].initPhase1 = trafficControllerStatus[0].initPhase2;
     }
 
     else if (trafficControllerStatus[0].startingPhase2 == 0)
     {
-        trafficControllerStatus[0].startingPhase2 = trafficControllerStatus[0].startingPhase1 + 4;
+        trafficControllerStatus[0].startingPhase2 = trafficControllerStatus[0].startingPhase1 + NumberOfPhasePerRing;
         trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
         trafficControllerStatus[0].initPhase2 = trafficControllerStatus[0].initPhase1;
     }
