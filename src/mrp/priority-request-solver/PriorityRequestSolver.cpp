@@ -22,6 +22,7 @@
 #include <cmath>
 #include <UdpSocket.h>
 #include "msgEnum.h"
+#include <time.h>
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
@@ -540,13 +541,17 @@ void PriorityRequestSolver::setOptimizationInput()
         getEVPhases();
         getEVTrafficSignalPlan();
         optimizationModelManager.generateEVModFile(trafficSignalPlan_EV, EV_P11, EV_P12, EV_P21, EV_P22);
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
+                                            trafficSignalPlan_EV, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
+                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
     else if (signalCoordinationRequestStatus == true)
     {
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
+                                            trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
+                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
@@ -555,7 +560,9 @@ void PriorityRequestSolver::setOptimizationInput()
 
     else
     {
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus, trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
+                                            trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
+                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
@@ -1283,7 +1290,7 @@ bool PriorityRequestSolver::checkTrafficSignalTimingPlanStatus()
 {
     bool trafficSignalTimingPlanStatus{false};
 
-    if(!trafficSignalPlan.empty())
+    if (!trafficSignalPlan.empty())
         trafficSignalTimingPlanStatus = true;
 
     return trafficSignalTimingPlanStatus;
@@ -1334,13 +1341,20 @@ bool PriorityRequestSolver::logging()
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
     delete reader;
 
+    time_t now = time(0);
+    struct tm tstruct;
+    char logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+
     logging = jsonObject["Logging"].asString();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/PRSolverLog-" + intersectionName + ".txt";
+    fileName = "/nojournal/bin/log/PRSolverLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
+
     if (logging == "True")
     {
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         loggingStatus = true;
-        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
         outputfile.open(fileName);
         outputfile << "File opened at time : " << currentTime << std::endl;
         outputfile.close();
@@ -1362,7 +1376,7 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
     if (loggingStatus == true)
     {
         outputfile.open(fileName, std::ios_base::app);
-        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Priority Request is received from PRS at time " << currentTime << endl;
         outputfile << priorityRequestString << endl;
@@ -1401,7 +1415,7 @@ void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Signal Plan is received from TCI at time " << currentTime << endl;
         outputfile << jsonString << endl;
@@ -1418,7 +1432,7 @@ void PriorityRequestSolver::loggingSplitData(string jsonString)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << currentTime << endl;
         outputfile << jsonString << endl;
@@ -1434,7 +1448,7 @@ void PriorityRequestSolver::loggingClearRequestData(string jsonString)
     {
         ofstream outputfile;
         outputfile.open(fileName, std::ios_base::app);
-        double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
         outputfile << "\nFollowing Clear Request is sent to TCI at time " << currentTime << endl;
         outputfile << jsonString << endl;
