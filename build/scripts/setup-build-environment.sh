@@ -45,7 +45,8 @@ echo "export MMITSS_NETWORK_ADAPTER=$mmitss_network_adapter" >> ~/.bashrc
 echo "Adding PROCESSOR to ~/.bashrc"
 echo "export PROCESSOR=$arch" >> ~/.bashrc
 
-source ~/.bashrc
+echo "Adding environment variable required for SNMP sessions to ~/.bashrc"
+echo "export MIBS=ALL" >> ~/.bashrc
 
 echo "Creating required directories in the root folder."
 sudo rm -r /nojournal/
