@@ -15,11 +15,15 @@
 
 #pragma once
 
+#include <iostream>
 #include <iomanip>
-#include <chrono>
+#include <fstream>
 #include "SignalRequest.h"
 #include "SignalStatus.h"
 #include "ActiveRequest.h"
+#include "Timestamp.h"
+#include "json/json.h"
+#include "msgEnum.h"
 
 using std::cout;
 using std::endl;
@@ -65,7 +69,7 @@ private:
     int msgReceived{};
     int msgServed{};
     int msgRejected{};
-    int msgSentTime{};
+    double msgSentTime{};
     double expectedTimeOfArrivalToStopBar{};
     double requestTimedOutValue{};
     double etaUpdateTime{};
@@ -75,6 +79,8 @@ private:
     bool sentClearRequest{};
     string intersectionName{};
     string fileName{};
+    bool sendSSM{false};
+    bool sendPriorityRequestList{false};
 
 public:
     PriorityRequestServer();
@@ -110,6 +116,8 @@ public:
     bool updateActiveRequestTable(SignalRequest signalRequest);
     bool deleteRequestfromActiveRequestTable(SignalRequest signalRequest);
     bool checkTimedOutRequestDeletingRequirement();
+    bool checkSsmSendingRequirement();
+    bool getPriorityRequestListSendingRequirement();
     bool updateETA();
     bool sendClearRequest();
     bool findEVInList();

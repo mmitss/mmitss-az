@@ -7,7 +7,7 @@
         "msOfMinute":11105,
         "regionalID":0,
         "intersectionID":26379,
-        "priorityRequestType": 1,
+        "priorityRequestType": 3,
         "vehicleID": 615,
         "basicVehicleRole": 16,
         "vehicleType": 6,

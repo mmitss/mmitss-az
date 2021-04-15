@@ -43,7 +43,6 @@ int main()
     int msgType{};
     string tciJsonString{};
 
-    priorityRequestSolver.logging();
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
 
     while (true)

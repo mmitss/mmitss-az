@@ -19,25 +19,20 @@
   7. This application update the ETA of the available requests in the ART and create a JSON formatted SSM message.
   8. This application also delete the timed-out priority request from the ART.
 */
-#include <iostream>
+
 #include <cstddef>
 #include <cstdlib>
-#include <fstream>
-#include <iomanip>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <unistd.h>
 #include <ctime>
 #include <algorithm>
-#include "json/json.h"
 #include "PriorityRequestServer.h"
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include "msgEnum.h"
 #include "locAware.h"
 #include "geoUtils.h"
-#include "Timestamp.h"
 #include <time.h>
 
 using namespace MsgEnum;
@@ -88,26 +83,27 @@ PriorityRequestServer::PriorityRequestServer()
 	//Check the logging requirement
 	logging = (jsonObject["Logging"]).asString();
 
-	time_t     now = time(0);
-    struct tm  tstruct;
-    char       logFileOpenningTime[80];
-    tstruct = *localtime(&now);
-    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+	time_t now = time(0);
+	struct tm tstruct;
+	char logFileOpenningTime[80];
+	tstruct = *localtime(&now);
+	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
 
 	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
 
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
+
 	if (logging == "True")
 	{
 		loggingStatus = true;
 		outputfile.open(fileName);
-		outputfile << "PRS Logfile opened for " << intersectionName << " intersection at time : " << currentTime << endl;
+		outputfile << "PRS Logfile opened for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << endl;
 		outputfile.close();
 	}
 	else
 		loggingStatus = false;
 
-	msgSentTime = static_cast<int>(currentTime);
+	msgSentTime = currentTime;
 }
 
 /*
@@ -116,7 +112,7 @@ PriorityRequestServer::PriorityRequestServer()
 int PriorityRequestServer::getMessageType(string jsonString)
 {
 	int messageType{};
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -132,7 +128,7 @@ int PriorityRequestServer::getMessageType(string jsonString)
 			messageType = static_cast<int>(msgType::coordinationRequest);
 
 		else
-			cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Message type is unknown" << endl;
+			cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Message type is unknown" << endl;
 	}
 
 	return messageType;
@@ -167,6 +163,8 @@ bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
 
 	else
 	{
+		double currentTime = getPosixTimestamp();
+		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Discard the SRM since intersectionId doesn't match" << endl;
 		matchIntersection = false;
 		msgRejected++;
 	}
@@ -292,10 +290,11 @@ void PriorityRequestServer::setRequestTimedOutVehicleID(int timedOutVehicleID)
 */
 void PriorityRequestServer::setETAUpdateTime()
 {
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());;
+	double currentTime = getPosixTimestamp();
+	;
 
-	if(ActiveRequestTable.empty())
-		etaUpdateTime = static_cast<double>(currentTime);
+	if (ActiveRequestTable.empty())
+		etaUpdateTime = currentTime;
 }
 
 /*
@@ -570,6 +569,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
+		sendPriorityRequestList = true;
 	}
 }
 /*
@@ -580,7 +580,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehicleID{};
 	int associatedVehicleID{};
 	vehicleID = getRequestTimedOutVehicleID();
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
@@ -621,7 +621,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	//For Transit and truck PriorityRequest
 	else if (findVehicleIDOnTable != ActiveRequestTable.end())
 		ActiveRequestTable.erase(findVehicleIDOnTable);
-	cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Deleted Timed-Out Request" << endl;
+	cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Deleted Timed-Out Request" << endl;
 }
 
 /*
@@ -630,7 +630,9 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 {
 	string ssmJsonString{};
+	// double currentTime = getPosixTimestamp();
 	signalStatus.reset();
+
 	signalStatus.setMinuteOfYear(getMinuteOfYear());
 	signalStatus.setMsOfMinute(getMsOfMinute());
 	signalStatus.setSequenceNumber(getPRSSequenceNumber());
@@ -638,7 +640,9 @@ string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 	signalStatus.setRegionalID(regionalID);
 	signalStatus.setIntersectionID(intersectionID);
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
+
 	loggingData(ssmJsonString, "sent");
+	// cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent SSM " << endl;
 
 	return ssmJsonString;
 }
@@ -650,19 +654,18 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 {
 	string solverJsonString{};
 	int noOfRequest{};
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
 	builder["indentation"] = "";
 
 	noOfRequest = static_cast<int>(ActiveRequestTable.size());
+	
 	if (noOfRequest > 0)
 	{
 		jsonObject["MsgType"] = "PriorityRequest";
 		jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest;
-		jsonObject["PriorityRequestList"]["minuteOfYear"] = getMinuteOfYear();
-		jsonObject["PriorityRequestList"]["msOfMinute"] = getMsOfMinute();
 		jsonObject["PriorityRequestList"]["regionalID"] = regionalID;
 		jsonObject["PriorityRequestList"]["intersectionID"] = intersectionID;
 		for (int i = 0; i < noOfRequest; i++)
@@ -670,49 +673,68 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"] = ActiveRequestTable[i].vehicleID;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = ActiveRequestTable[i].vehicleType;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
-
+			
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
+
 			else
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
 
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLatitude;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLongitude;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["elstatic_cast<double(evation_Meter"] = ActiveRequestTable[i].vehicleElevation;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = ActiveRequestTable[i].vehicleHeading;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
+		// cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent Priority Request List to Solver " << endl;
 		sentClearRequest = false;
 	}
 
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
-		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Sent Clear Request to Solver " << endl;
+		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent Clear Request to Solver " << endl;
 		sentClearRequest = true;
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
+	sendPriorityRequestList = false;
 	loggingData(solverJsonString, "sent");
 
 	return solverJsonString;
 }
 
 /*
+	- Checking whether PRS need to send SSM or not.
+		- If there is no request in the list, no need to send SSM
+*/
+bool PriorityRequestServer::checkSsmSendingRequirement()
+{
+	bool ssmSendingStatus{false};
+
+	if (!ActiveRequestTable.empty())
+		ssmSendingStatus = true;
+
+	return ssmSendingStatus;
+}
+
+/*
+	- Getter for priority request list sending requirement
+*/
+bool PriorityRequestServer::getPriorityRequestListSendingRequirement()
+{
+	return sendPriorityRequestList;
+}
+
+/*
 	- Checking whether PRS need to update the ETA in the ART.
-		- If there is no request in the list no need to update the ETA
-		- If vehicle ETA is zero no need to update.
+		- If there is no request in the list, no need to update the ETA
+		- If vehicle ETA is zero, no need to update.
 */
 bool PriorityRequestServer::updateETA()
 {
 	bool etaUpdateRequirement{false};
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 
-	if (!ActiveRequestTable.empty() && (static_cast<double>(currentTime) - etaUpdateTime >= TIME_GAP_BETWEEN_ETA_Update))
+	if (!ActiveRequestTable.empty() && (currentTime - etaUpdateTime >= TIME_GAP_BETWEEN_ETA_Update))
 	{
 		etaUpdateRequirement = true;
 		updateETAInActiveRequestTable();
@@ -728,7 +750,7 @@ bool PriorityRequestServer::sendClearRequest()
 {
 	bool clearRequestStatus{false};
 
-	if ((ActiveRequestTable.size() == 0) && (sentClearRequest == false))
+	if (ActiveRequestTable.empty() && (sentClearRequest == false))
 		clearRequestStatus = true;
 
 	return clearRequestStatus;
@@ -739,20 +761,20 @@ bool PriorityRequestServer::sendClearRequest()
 */
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-	double timeDifference = static_cast<double>(currentTime) - etaUpdateTime;
+	double currentTime = getPosixTimestamp();
+	double timeDifference = currentTime - etaUpdateTime;
 
 	if (!ActiveRequestTable.empty())
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			ActiveRequestTable[i].vehicleETA = 	ActiveRequestTable[i].vehicleETA - timeDifference;
-			
+			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - timeDifference;
+
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				ActiveRequestTable[i].vehicleETA = 0.0;
 		}
 
-		etaUpdateTime = static_cast<double>(currentTime);
+		etaUpdateTime = currentTime;
 	}
 }
 
@@ -761,10 +783,11 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 */
 void PriorityRequestServer::printActiveRequestTable()
 {
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
+
 	if (!ActiveRequestTable.empty())
 	{
-		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is following: " << endl;
+		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Active Request Table is following: " << endl;
 		cout << "VehicleID"
 			 << " "
 			 << "VehicleType"
@@ -779,7 +802,7 @@ void PriorityRequestServer::printActiveRequestTable()
 	}
 
 	else
-		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is empty" << endl;
+		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Active Request Table is empty" << endl;
 }
 
 /*
@@ -964,7 +987,7 @@ void PriorityRequestServer::loggingData(string jsonString, string communicationT
 	if (loggingStatus == true)
 	{
 		outputfile.open(fileName, std::ios_base::app);
-		auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		double currentTime = getPosixTimestamp();
 
 		outputfile << "\nThe following message is " << communicationType << " at time : " << currentTime << endl;
 		outputfile << jsonString << endl;
@@ -978,9 +1001,9 @@ void PriorityRequestServer::loggingData(string jsonString, string communicationT
 bool PriorityRequestServer::sendSystemPerformanceDataLog()
 {
 	bool sendData{false};
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 
-	if (static_cast<double>(currentTime) - msgSentTime >= timeInterval)
+	if (currentTime - msgSentTime >= timeInterval)
 		sendData = true;
 
 	return sendData;
@@ -992,7 +1015,7 @@ bool PriorityRequestServer::sendSystemPerformanceDataLog()
 string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 {
 	string systemPerformanceDataLogJsonString{};
-	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -1010,11 +1033,11 @@ string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 
 	systemPerformanceDataLogJsonString = Json::writeString(builder, jsonObject);
 
-	msgSentTime = static_cast<int>(currentTime);
+	msgSentTime = currentTime;
 	msgReceived = 0;
 	msgServed = 0;
 	msgRejected = 0;
-	cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] System Performance Data Log will sent to data collector" << endl;
+	cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] System Performance Data Log will sent to data collector" << endl;
 
 	return systemPerformanceDataLogJsonString;
 }
@@ -1039,7 +1062,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
 	delete reader;
 	int noOfCoordinationRequest = jsonObject["noOfCoordinationRequest"].asInt();
-	
+
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 	{
 		if (ActiveRequestTable[i].vehicleType == coordinationVehicleType)
