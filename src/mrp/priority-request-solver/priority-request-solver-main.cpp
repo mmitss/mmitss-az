@@ -16,8 +16,6 @@
 #include <UdpSocket.h>
 #include "PriorityRequestSolver.h"
 #include "SolverDataManager.h"
-#include <json/json.h>
-#include "Timestamp.h"
 
 int main()
 {
