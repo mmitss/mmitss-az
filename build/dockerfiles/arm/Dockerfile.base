@@ -36,11 +36,13 @@ RUN ln -s /usr/local/lib/mmitss/libdsrc.so.1.0 /usr/local/lib/mmitss/libdsrc.so
 RUN ldconfig
 
 RUN mkdir /mmitss
-
 RUN mkdir -p /mmitss/map
+RUN mkdir /var/net-snmp
+RUN mkdir /var/net-snmp/mib_indexes
 
 WORKDIR /mmitss
 
 # Environment variables
 ENV PATH $PATH:/mmitss
+ENV MIBS=ALL
 
