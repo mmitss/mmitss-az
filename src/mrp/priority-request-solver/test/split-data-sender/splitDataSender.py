@@ -12,16 +12,35 @@ configFile.close()
 
 hostIp = config["HostIp"]
 port = config["PortNumber"]["SignalCoordination"]
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind((hostIp,port))
+splitDataSenderSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+splitDataSenderSocket.bind((hostIp, port))
 
 prirorityRequestSolverPort = config["PortNumber"]["PrioritySolver"]
 communicationInfo = (hostIp, prirorityRequestSolverPort)
 
-f = open(fileName, 'r')
-data = f.read()
-print("Send split data at time", time.time())
-s.sendto(data.encode(),communicationInfo)
 
-f.close()
-s.close()
+def getJsonString(fileName):
+    f = open(fileName, 'r')
+    data = f.read()
+    f.close()
+
+    return data
+
+
+data = getJsonString(fileName)
+splitDataSenderSocket.sendto(data.encode(), communicationInfo)
+print("Send split data at time", time.time())
+
+while(True):
+    # Receive data on the splitDataSender socket
+    data, address = splitDataSenderSocket.recvfrom(10240)
+    data = data.decode()
+    # Load the received data into a json object
+    receivedMessage = json.loads(data)
+
+    if receivedMessage["MsgType"] == "CoordinationPlanRequest":
+        data = getJsonString(fileName)
+        splitDataSenderSocket.sendto(data.encode(), communicationInfo)
+        print("Send split data at time", time.time())
+
+splitDataSenderSocket.close()

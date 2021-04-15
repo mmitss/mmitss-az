@@ -50,7 +50,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     int temporaryNextPhase{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    double currentTime = getPosixTimestamp();
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
 
@@ -61,7 +61,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Current Signal Status" << endl;
+    cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Received Current Signal Status" << endl;
 
     const Json::Value values = jsonObject["currentPhases"];
 
@@ -129,7 +129,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 */
                 if (temporaryCurrentPhase == temporaryNextPhase)
                 {
-                    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Current Phase and next phase is same" << endl;
+                    cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Current Phase and next phase is same" << endl;
                     break;
                 }
 
@@ -198,9 +198,9 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
         if (loggingStatus)
         {
             outputfile.open(fileName, std::ios_base::app);
-            auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            double currentTime = getPosixTimestamp();
 
-            outputfile << "\nThe elapsed time in a cycle at time " << currentTime << " is " << elapsedTimeInCycle << endl;
+            outputfile << "\nThe elapsed time in a cycle at time " << fixed << showpoint << setprecision(4) << currentTime << " is " << elapsedTimeInCycle << endl;
             outputfile.close();
         }
 

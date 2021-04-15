@@ -123,8 +123,6 @@ public:
   string getCurrentSignalStatusRequestString();
   string getSignalCoordinationTimingPlanRequestString();
   int getMessageType(string jsonString);
-  double getSeconds();
-  double getCurrentTime();
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
   bool findCoordinationRequestInList();
