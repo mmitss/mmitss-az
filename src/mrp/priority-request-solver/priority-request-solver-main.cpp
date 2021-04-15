@@ -21,6 +21,8 @@
 
 int main()
 {
+    std::cout << "[" << fixed << showpoint << setprecision(4) << getPosixTimestamp() << "] Application started (posix timestamp)!" << std::endl;
+    std::cout << "[" << getVerboseTimestamp() << "]" << " Application started (verbose timestamp)" << std::endl;
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
