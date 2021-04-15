@@ -30,6 +30,7 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 # include <iostream>
 # include <bits/stdc++.h> 
 # include <chrono>
+# include <sstream>
 # include "SnmpEngine.h"
 # include "Timestamp.h"
 
@@ -45,7 +46,7 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device IP address: " << ip << std::endl;
     std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device NTCIP port: " << port << std::endl;
     std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Verifying the network connection with the target SNMP device" << std::endl << std::endl;
-    
+    std::cout << "--------------------------- PING TEST BEGINS ---------------------------" << std::endl;
     std::string pingCommand = "ping -c 1 " + ip;
     int pingStatus = system(pingCommand.c_str());  
     
@@ -55,10 +56,16 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
         bool ping_ret = WEXITSTATUS(pingStatus);
 
         if(ping_ret==0)
-            std::cout << "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Successfully verified the network connection with the target SNMP device!" << std::endl << std::endl; 
+            {
+                std::cout << "--------------------------- PING TEST SUCCESS ---------------------------" << std::endl << std::endl;
+                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "]";
+                std::cout << "Successfully verified the network connection with the target SNMP device!" << std::endl; 
+            }
         else
         {
-            std::cout<< "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Unable to verify the network connection with the target SNMP device.\nThe program will exit now."<< std::endl << std::endl;
+            std::cout << "--------------------------- PING TEST FAILURE ---------------------------" << std::endl << std::endl;
+            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
+            std::cout << "Unable to verify the network connection with the target SNMP device. The program will exit now."<< std::endl << std::endl;
             exit(0);
         }
     }
@@ -88,12 +95,14 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     // However, if the session fails to open, throw an error and exit from the program.
     if (!ss)
     {
+        
+        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] " ;
         snmp_sess_perror("Error in opening SNMP session! Program will exit now.", &session);
         exit(1);
     }
     else
     {
-        std::cout << "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Ready to forward SNMP GET/SET requests." << std::endl;
+        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Ready to forward SNMP GET/SET requests." << std::endl;
     }
 }
 
@@ -153,11 +162,20 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     else // Identify the reason of failure
     {
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(static_cast<int>(response->errstat)));     
+            {
+                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
+                std::cout << "Error in packet. Reason:" << static_cast<std::string>(snmp_errstring(static_cast<int>(response->errstat))) << std::endl;
+                
+            }
         else if (status == STAT_TIMEOUT)
-            fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
+            {
+                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
+                std::cout << "Timeout: No response from the target SNMP device" << std::endl;                
+            }
         else
-            snmp_sess_perror("Unknown SNMP Error!\n", ss);
+            {
+                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Unknown SNMP Error";
+            }
         if(requestType == "get")
             std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] FAILURE in GET for OID:" << inputOid << std::endl;
         else
