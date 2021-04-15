@@ -31,6 +31,7 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 # include <bits/stdc++.h> 
 # include <chrono>
 # include "SnmpEngine.h"
+# include "Timestamp.h"
 
 /* Instantiates an object of the SnmpEngine class and establishes an SNMP session 
    with the target SNMP device. 
@@ -41,9 +42,9 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
     // Check if the target SNMP device is in the network by executing a ping test.
-    std::cout << "Target device IP address: " << ip << std::endl;
-    std::cout << "Target device NTCIP port: " << port << std::endl;
-    std::cout << "\nVerifying the network connection with the target SNMP device" << std::endl;
+    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device IP address: " << ip << std::endl;
+    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device NTCIP port: " << port << std::endl;
+    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Verifying the network connection with the target SNMP device" << std::endl << std::endl;
     
     std::string pingCommand = "ping -c 1 " + ip;
     int pingStatus = system(pingCommand.c_str());  
@@ -54,10 +55,10 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
         bool ping_ret = WEXITSTATUS(pingStatus);
 
         if(ping_ret==0)
-            std::cout << "\nSuccessfully verified the network connection with the target SNMP device!" << std::endl; 
+            std::cout << "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Successfully verified the network connection with the target SNMP device!" << std::endl << std::endl; 
         else
         {
-            std::cout<<"Unable to verify the network connection with the target SNMP device.\nThe program will exit now."<< std::endl;
+            std::cout<< "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Unable to verify the network connection with the target SNMP device.\nThe program will exit now."<< std::endl << std::endl;
             exit(0);
         }
     }
@@ -92,7 +93,7 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     }
     else
     {
-        std::cout << "Ready to forward SNMP GET/SET requests." << std::endl;
+        std::cout << "\n[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Ready to forward SNMP GET/SET requests." << std::endl;
     }
 }
 
@@ -130,7 +131,6 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     // Process the response
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if (requestType == "get")
         {
             int out[50]{};
@@ -142,11 +142,11 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
                 out[i++] = *aa;
                 value = out[0];
             }  
-            std::cout << "SUCCESS in GET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] SUCCESS in GET for OID:" << inputOid << "; Value=" << value << std::endl;
         }
         else
         {
-            std::cout << "SUCCESS in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] SUCCESS in SET for OID:" << inputOid << "; Value=" << value << std::endl;
         }
         
     }
@@ -158,12 +158,11 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
             fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
         else
             snmp_sess_perror("Unknown SNMP Error!\n", ss);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if(requestType == "get")
-            std::cout << "FAILURE in GET for OID:" << inputOid << " at time:" << timenow << std::endl;
+            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] FAILURE in GET for OID:" << inputOid << std::endl;
         else
         {
-            std::cout << "FAILURE in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] FAILURE in SET for OID:" << inputOid << "; Value=" << value << std::endl;
         }
         value = -1;
 
