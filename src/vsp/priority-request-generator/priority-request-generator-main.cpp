@@ -15,11 +15,8 @@
 
 #include "PriorityRequestGenerator.h"
 #include "PriorityRequestGeneratorStatus.h"
-#include <iostream>
-#include <fstream>
 #include <UdpSocket.h>
-#include "msgEnum.h"
-#include "json/json.h"
+
 
 int main()
 {
@@ -97,8 +94,8 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] SSM is received " << endl;
+            double currentTime = getPosixTimestamp();
+            cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
     }

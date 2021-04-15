@@ -15,8 +15,8 @@
 
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <iomanip>
-#include <chrono>
 #include <string>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
@@ -24,6 +24,9 @@
 #include "ActiveRequest.h"
 #include "MapManager.h"
 #include "BusStopInformation.h"
+#include "msgEnum.h"
+#include "json/json.h"
+#include "Timestamp.h"
 
 using std::cout;
 using std::endl;
@@ -72,6 +75,7 @@ private:
   bool busStopPassedStatus{false};
   string mapFileDirectory{};
   string mapFileName{};
+  string fileName{};
   int temporaryVehicleID{};
   int vehicleLaneID{};
   int vehicleAprroachID{};
