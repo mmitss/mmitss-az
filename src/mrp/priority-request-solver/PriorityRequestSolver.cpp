@@ -1316,11 +1316,11 @@ bool PriorityRequestSolver::logging()
     struct tm tstruct;
     char logFileOpenningTime[80];
     tstruct = *localtime(&now);
-    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
 
     logging = jsonObject["Logging"].asString();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/PRSolverLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
+    fileName = "/nojournal/bin/log/"+ intersectionName + "_PRSolverLog_" +  + logFileOpenningTime + ".txt";
 
     if (logging == "True")
     {
