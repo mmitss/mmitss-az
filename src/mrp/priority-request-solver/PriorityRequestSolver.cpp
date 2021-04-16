@@ -1339,7 +1339,7 @@ void PriorityRequestSolver::readConfigFile()
     {
         double timeStamp = getPosixTimestamp();
         logFile.open(fileName);
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRSolver Logfile opened for " << intersectionName << " intersection" << endl;
+        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRSolver Logfile is opened for " << intersectionName << " intersection" << endl;
     }
 }
 
