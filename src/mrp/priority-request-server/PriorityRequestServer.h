@@ -77,14 +77,15 @@ private:
     double requestTimedOutValue{};
     double etaUpdateTime{};
     double timeInterval{};
-    bool loggingStatus{};
+    bool logging{};
+    bool consoleOutput{};
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
     string mapPayloadFileName{};
     bool sendSSM{false};
     bool sendPriorityRequestList{false};
-    ofstream outputfile;
+    ofstream logFile;
     /* plocAwareLib is a pointer that points to a variable of the type LocAware. This variable is be created in the constructor of this class, as it requires some other parameters that are available in the constructor.*/
     LocAware *plocAwareLib;
 
@@ -107,7 +108,7 @@ public:
     void setSrmMessageStatus(SignalRequest signalRequest);
     void setETAUpdateTime();
     void readconfigFile();
-    void loggingData(string jsonString, string communicationType);
+    void logAndOrDisplay(string logString);
     int getMessageType(string jsonString);
     int getIntersectionID();
     int getRegionalID();
