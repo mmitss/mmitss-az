@@ -77,8 +77,8 @@ private:
     double requestTimedOutValue{};
     double etaUpdateTime{};
     double timeInterval{};
-    bool logging{};
-    bool consoleOutput{};
+    bool logging{false};
+    bool consoleOutput{false};
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
