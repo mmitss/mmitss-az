@@ -92,8 +92,6 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            double currentTime = getPosixTimestamp();
-            cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
     }

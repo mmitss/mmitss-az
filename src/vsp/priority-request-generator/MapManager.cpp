@@ -277,7 +277,6 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 
     if (activeMapList.empty() && !availableMapList.empty())
     {
-
         for (size_t i = 0; i < availableMapList.size(); i++)
         {
             fmap = availableMapList[i].availableMapFileDirectory;
@@ -317,9 +316,6 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
             delete plocAwareLib;
         }
     }
-
-    else if (!activeMapList.empty())
-        cout << "There is a an active MAP in list" << endl;
 }
 
 /*

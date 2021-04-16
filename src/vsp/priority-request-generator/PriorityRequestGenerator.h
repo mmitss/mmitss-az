@@ -36,6 +36,7 @@ using std::showpoint;
 using std::string;
 using std::vector;
 using std::ofstream;
+using std::ifstream;
 
 #define EmergencyVehicle 2
 #define Transit 6
@@ -71,7 +72,8 @@ private:
 
     bool activeMapStatus{false};   //This variables will be used by while checking if vehicle needs to send srm or not. If there is active map the value of this variable will true
     bool requestSendStatus{false}; //Required for HMI json
-    bool loggingStatus{false};
+    bool logging{false};
+    bool consoleOutput{false};
     bool lightSirenStatus{false};
     bool busStopPassedStatus{false};
     string mapFileDirectory{};
@@ -103,6 +105,7 @@ private:
     double mapReferenceLattitude{};
     double mapReferenceLongitue{};
 
+
 public:
     PriorityRequestGenerator();
     ~PriorityRequestGenerator();
@@ -116,7 +119,8 @@ public:
     string getVehicleRequestSentStatus();
     void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
     void readConfigFile();
-    void loggingData(string jsonString, string communicationType);
+    void loggingData(string logString);
+    void displayConsoleData(string consoleString);
     void setIntersectionID(int vehicleNearByIntersectionId);
     void setRegionalID(int vehicleNearByRegionalId);
     void setVehicleID(BasicVehicle basicVehicle);
