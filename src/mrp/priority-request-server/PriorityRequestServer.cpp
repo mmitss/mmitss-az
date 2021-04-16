@@ -231,7 +231,6 @@ void PriorityRequestServer::setRequestTimedOutVehicleID(int timedOutVehicleID)
 void PriorityRequestServer::setETAUpdateTime()
 {
 	double currentTime = getPosixTimestamp();
-	;
 
 	if (ActiveRequestTable.empty())
 		etaUpdateTime = currentTime;
@@ -435,6 +434,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
+				
 				if (findEVInRequest(signalRequest))
 				{
 					activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
@@ -480,6 +480,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			}
 			updateETAInActiveRequestTable();
 		}
+
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
 		{
 			vehid = signalRequest.getTemporaryVehicleID();
@@ -509,6 +510,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
+		sendSSM = true;
 		sendPriorityRequestList = true;
 	}
 }
@@ -636,6 +638,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
+	sendSSM = false;
 	sendPriorityRequestList = false;
 	loggingData(solverJsonString, "sent");
 
@@ -648,12 +651,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 */
 bool PriorityRequestServer::checkSsmSendingRequirement()
 {
-	bool ssmSendingStatus{false};
-
-	if (!ActiveRequestTable.empty())
-		ssmSendingStatus = true;
-
-	return ssmSendingStatus;
+	return sendSSM;
 }
 
 /*
@@ -1083,6 +1081,9 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 
 	setPriorityRequestStatus();
 	updateETAInActiveRequestTable();
+
+	sendSSM = true;
+	sendPriorityRequestList = true;
 }
 
 PriorityRequestServer::~PriorityRequestServer()

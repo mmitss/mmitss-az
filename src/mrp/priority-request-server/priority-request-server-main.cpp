@@ -92,6 +92,11 @@ int main()
             */
             if (PRS.checkTimedOutRequestDeletingRequirement())
             {
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.printActiveRequestTable();
