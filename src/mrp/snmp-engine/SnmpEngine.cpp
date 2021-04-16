@@ -32,6 +32,7 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 # include <chrono>
 # include <sstream>
 # include "SnmpEngine.h"
+
 # include "Timestamp.h"
 
 /* Instantiates an object of the SnmpEngine class and establishes an SNMP session 
@@ -40,13 +41,73 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
     (1) IP address of the target SNMP device (std::string)
     (2) NTCIP port of the target SNMP device. (int)
 */
+
+void SnmpEngine::initializeLogFile(Json::Value jsonObject_config)
+{
+
+
+    std::string intersectionName = jsonObject_config["IntersectionName"].asString();
+
+    time_t now = time(0);
+    struct tm tstruct;
+    char logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
+
+    std::string logfileName = "/nojournal/bin/log/" + intersectionName + "_snmpEngineLog_" + logFileOpenningTime + ".txt";
+    logFile.open(logfileName);
+}
+
+void SnmpEngine::logAndOrDisplay(std::string logString)
+{
+    double timestamp = getPosixTimestamp();
+
+    if(consoleOutput==true)
+    {
+        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        std::cout << logString << std::endl;
+    }
+
+    if(logging==true)
+    {
+        logFile << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        logFile << logString << std::endl;
+    }
+}
+
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
+    Json::Value jsonObject_config;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
+    delete reader;
+    configJson.close();
+    
+    std::string loggingConfigString = jsonObject_config["Logging"].asString();
+    if(loggingConfigString=="true" || loggingConfigString=="True")
+        logging = true;
+    else
+        logging = false;
+
+    if(logging==true)
+    {
+        initializeLogFile(jsonObject_config);
+    }
+
+    if(logging==true)
+    {
+        
+        logAndOrDisplay(("Target device IP address: " + ip));
+        logAndOrDisplay(("Target device NTCIP port: " + std::to_string(port)));
+        logAndOrDisplay("Verifying the network connection with the target SNMP device...");
+        logAndOrDisplay("PING Test Begins");
+    }
+    
     // Check if the target SNMP device is in the network by executing a ping test.
-    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device IP address: " << ip << std::endl;
-    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Target device NTCIP port: " << port << std::endl;
-    std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Verifying the network connection with the target SNMP device" << std::endl << std::endl;
-    std::cout << "--------------------------- PING TEST BEGINS ---------------------------" << std::endl;
     std::string pingCommand = "ping -c 1 " + ip;
     int pingStatus = system(pingCommand.c_str());  
     
@@ -56,16 +117,17 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
         bool ping_ret = WEXITSTATUS(pingStatus);
 
         if(ping_ret==0)
-            {
-                std::cout << "--------------------------- PING TEST SUCCESS ---------------------------" << std::endl << std::endl;
-                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "]";
-                std::cout << "Successfully verified the network connection with the target SNMP device!" << std::endl; 
-            }
+        {
+            logAndOrDisplay("PING test successful");
+            logAndOrDisplay("Successfully verified the network connection with the target SNMP device");
+        }
         else
         {
-            std::cout << "--------------------------- PING TEST FAILURE ---------------------------" << std::endl << std::endl;
-            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
-            std::cout << "Unable to verify the network connection with the target SNMP device. The program will exit now."<< std::endl << std::endl;
+            if(consoleOutput==true)
+            {
+                logAndOrDisplay("PING test failed");
+                logAndOrDisplay("Unable to verify the network connection with the target SNMP device. The program will exit now.");
+            }
             exit(0);
         }
     }
@@ -95,14 +157,12 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     // However, if the session fails to open, throw an error and exit from the program.
     if (!ss)
     {
-        
-        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] " ;
-        snmp_sess_perror("Error in opening SNMP session! Program will exit now.", &session);
+        logAndOrDisplay("Error in opening SNMP session! Program will exit now.");
         exit(1);
     }
     else
     {
-        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Ready to forward SNMP GET/SET requests." << std::endl;
+        logAndOrDisplay("Ready to forward SNMP GET/SET requests");
     }
 }
 
@@ -151,36 +211,35 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
                 out[i++] = *aa;
                 value = out[0];
             }  
-            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] SUCCESS in GET for OID:" << inputOid << "; Value=" << value << std::endl;
+            logAndOrDisplay(("SUCCESS in GET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         else
         {
-            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] SUCCESS in SET for OID:" << inputOid << "; Value=" << value << std::endl;
+            logAndOrDisplay(("SUCCESS in SET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         
     }
     else // Identify the reason of failure
     {
         if (status == STAT_SUCCESS)
-            {
-                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
-                std::cout << "Error in packet. Reason:" << static_cast<std::string>(snmp_errstring(static_cast<int>(response->errstat))) << std::endl;
-                
-            }
+        {
+            logAndOrDisplay(("Error in packet. Reason:" + static_cast<std::string>(snmp_errstring(static_cast<int>(response->errstat)))));
+        }
         else if (status == STAT_TIMEOUT)
             {
-                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] ";
-                std::cout << "Timeout: No response from the target SNMP device" << std::endl;                
+                logAndOrDisplay("Timeout: No response from the target SNMP device");
             }
         else
             {
-                std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] Unknown SNMP Error";
+                logAndOrDisplay("Unknown SNMP Error");
             }
         if(requestType == "get")
-            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] FAILURE in GET for OID:" << inputOid << std::endl;
+            {
+                logAndOrDisplay(("FAILURE in GET for OID:" + inputOid + "; Value=" + std::to_string(value)));
+            }
         else
         {
-            std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << getPosixTimestamp() << "] FAILURE in SET for OID:" << inputOid << "; Value=" << value << std::endl;
+            logAndOrDisplay(("FAILURE in SET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         value = -1;
 
@@ -198,6 +257,7 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
 
 SnmpEngine::~SnmpEngine()
 {
+    logFile.close();
     // Close the opened session
     snmp_close(ss);
 }
