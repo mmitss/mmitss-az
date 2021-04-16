@@ -81,7 +81,6 @@ private:
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
-    string logFileName{};
     string mapPayloadFileName{};
     bool sendSSM{false};
     bool sendPriorityRequestList{false};

@@ -949,14 +949,14 @@ void PriorityRequestServer::readconfigFile()
 						 << " " << intersectionName << " " << mapPayload << endl;
 	mapPayloadOutputfile.close();
 
-	//Create Log File
+	//Create Log File, if requires
 	time_t now = time(0);
 	struct tm tstruct;
 	char logFileOpenningTime[80];
 	tstruct = *localtime(&now);
 	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
 
-	logFileName = "/nojournal/bin/log/" + intersectionName + "_PRSLog_" + +logFileOpenningTime + ".txt";
+	string logFileName = "/nojournal/bin/log/" + intersectionName + "_PRSLog_" + logFileOpenningTime + ".txt";
 
 	if (logging == "True")
 	{

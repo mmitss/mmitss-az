@@ -19,7 +19,6 @@
 #include "BasicVehicle.h"
 #include "Position3D.h"
 #include "Map.h"
-#include "ActiveRequest.h"
 
 using std::cout;
 using std::endl;

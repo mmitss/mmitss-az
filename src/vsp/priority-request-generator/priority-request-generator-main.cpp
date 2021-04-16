@@ -49,8 +49,6 @@ int main()
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
-    PRG.getLoggingStatus();
-    PRG.setVehicleType();
 
     while (true)
     {
