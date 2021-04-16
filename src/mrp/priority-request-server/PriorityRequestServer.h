@@ -23,16 +23,19 @@
 #include "ActiveRequest.h"
 #include "Timestamp.h"
 #include "json/json.h"
+#include "locAware.h"
 #include "msgEnum.h"
 
 using std::cout;
 using std::endl;
-using std::ifstream;
-using std::string;
-using std::vector;
 using std::fixed;
-using std::showpoint;
+using std::ifstream;
+using std::ofstream;
 using std::setprecision;
+using std::showpoint;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 #define coordinationVehicleType 20
 #define coordinationLaneID 1
@@ -78,9 +81,12 @@ private:
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
     string intersectionName{};
-    string fileName{};
+    string mapPayloadFileName{};
     bool sendSSM{false};
     bool sendPriorityRequestList{false};
+    ofstream outputfile;
+    /* plocAwareLib is a pointer that points to a variable of the type LocAware. This variable is be created in the constructor of this class, as it requires some other parameters that are available in the constructor.*/
+    LocAware *plocAwareLib;
 
 public:
     PriorityRequestServer();
@@ -100,6 +106,7 @@ public:
     void setVehicleType(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
     void setETAUpdateTime();
+    void readconfigFile();
     void loggingData(string jsonString, string communicationType);
     int getMessageType(string jsonString);
     int getIntersectionID();

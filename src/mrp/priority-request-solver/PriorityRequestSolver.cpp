@@ -882,7 +882,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     delete reader;
 
     cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Received Signal Timing Plan" << endl;
-    loggingSignalPlanData(jsonString);
+    loggingTimingPlanData(jsonString, "Signal Timing Plan", "TCI");
 
     trafficSignalPlan.clear();
     PhaseNumber.clear();
@@ -1005,7 +1005,7 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     delete reader;
 
     cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Received Split Data for Signal Coordination" << endl;
-    loggingSplitData(jsonString);
+    loggingTimingPlanData(jsonString, "Split Data", "SignalCoordinationRequestGenerator");
 
     int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
     cycleLength = jsonObject["CycleLength"].asDouble();
@@ -1298,11 +1298,10 @@ bool PriorityRequestSolver::checkSignalCoordinationTimingPlanStatus()
 /*
     -Check whether to log data or not
 */
-bool PriorityRequestSolver::logging()
+void PriorityRequestSolver::logging()
 {
     string logging{};
     string intersectionName{};
-    ofstream outputfile;
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
@@ -1328,12 +1327,10 @@ bool PriorityRequestSolver::logging()
         loggingStatus = true;
         outputfile.open(fileName);
         outputfile << "PRSolver Logfile open for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << std::endl;
-        outputfile.close();
     }
+    
     else
         loggingStatus = false;
-
-    return loggingStatus;
 }
 
 /*
@@ -1341,12 +1338,10 @@ bool PriorityRequestSolver::logging()
 */
 void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
 {
-    ofstream outputfile;
     ifstream infile;
 
-    if (loggingStatus == true)
+    if (loggingStatus)
     {
-        outputfile.open(fileName, std::ios_base::app);
         double currentTime = getPosixTimestamp();
 
         outputfile << "\nFollowing Priority Request is received from PRS at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
@@ -1372,44 +1367,23 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 
         outputfile << "\nFollowing Schedule will send to TCI at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
         outputfile << scheduleString << endl;
-
-        outputfile.close();
     }
 }
 
 /*
-    - Loggers to log static signal timing plan data
+    - Loggers to log static signal timing plan data and split data for signal coordination
 */
-void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
+void PriorityRequestSolver::loggingTimingPlanData(string jsonString, string msgTypString, string msgSource)
 {
     if (loggingStatus)
     {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
         double currentTime = getPosixTimestamp();
 
-        outputfile << "\nFollowing Signal Plan is received from TCI at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
+        outputfile << "\nFollowing " << msgTypString << " is received from " << msgSource << " at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
         outputfile << jsonString << endl;
-        outputfile.close();
     }
 }
 
-/*
-    - Loggers to log split data for signal coordinatio
-*/
-void PriorityRequestSolver::loggingSplitData(string jsonString)
-{
-    if (loggingStatus)
-    {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
-        double currentTime = getPosixTimestamp();
-
-        outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
-        outputfile << jsonString << endl;
-        outputfile.close();
-    }
-}
 /*
     - Loggers to log clear request string
 */
@@ -1417,16 +1391,14 @@ void PriorityRequestSolver::loggingClearRequestData(string jsonString)
 {
     if (loggingStatus)
     {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
         double currentTime = getPosixTimestamp();
 
         outputfile << "\nFollowing Clear Request is sent to TCI at time " << fixed << showpoint << setprecision(4) << currentTime << endl;
         outputfile << jsonString << endl;
-        outputfile.close();
     }
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
 {
+    outputfile.close();
 }

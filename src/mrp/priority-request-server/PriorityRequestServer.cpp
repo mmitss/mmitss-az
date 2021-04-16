@@ -31,7 +31,6 @@
 #include "PriorityRequestServer.h"
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
-#include "locAware.h"
 #include "geoUtils.h"
 #include <time.h>
 
@@ -39,71 +38,12 @@ using namespace MsgEnum;
 
 PriorityRequestServer::PriorityRequestServer()
 {
-	string logging{};
-	std::ofstream outputfile;
-	Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
-	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+	bool singleFrame{false};
 
-	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-	reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
-	delete reader;
+	readconfigFile();
 
-	//Delete old map file
-	intersectionName = jsonObject["IntersectionName"].asString();
-	string deleteFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
-	remove(deleteFileName.c_str());
-
-	//Write the map palyload in a file
-	string mapPayload = (jsonObject["MapPayload"]).asString();
-
-	const char *path = "/nojournal/bin";
-	std::stringstream ss;
-	ss << path;
-	string s;
-	ss >> s;
-
-	outputfile.open(s + "/" + intersectionName + ".map.payload");
-
-	outputfile << "payload"
-			   << " "
-			   << intersectionName << " " << mapPayload << endl;
-	outputfile.close();
-
-	//Set the intersection ID
-	intersectionID = (jsonObject["IntersectionID"]).asInt();
-	//set the regional ID
-	regionalID = (jsonObject["RegionalID"]).asInt();
-	// set the request timed out value for clearing the old request
-	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble();
-	// set the time interval for logging the system performance data
-	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
-	//Check the logging requirement
-	logging = (jsonObject["Logging"]).asString();
-
-	time_t now = time(0);
-	struct tm tstruct;
-	char logFileOpenningTime[80];
-	tstruct = *localtime(&now);
-	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
-
-	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
-
-	double currentTime = getPosixTimestamp();
-
-	if (logging == "True")
-	{
-		loggingStatus = true;
-		outputfile.open(fileName);
-		outputfile << "PRS Logfile opened for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << endl;
-		outputfile.close();
-	}
-	else
-		loggingStatus = false;
-
-	msgSentTime = currentTime;
+	LocAware *tempPlocAwareLib = new LocAware(mapPayloadFileName, singleFrame);
+	plocAwareLib = tempPlocAwareLib;
 }
 
 /*
@@ -291,7 +231,6 @@ void PriorityRequestServer::setRequestTimedOutVehicleID(int timedOutVehicleID)
 void PriorityRequestServer::setETAUpdateTime()
 {
 	double currentTime = getPosixTimestamp();
-	;
 
 	if (ActiveRequestTable.empty())
 		etaUpdateTime = currentTime;
@@ -495,6 +434,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
+				
 				if (findEVInRequest(signalRequest))
 				{
 					activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
@@ -540,6 +480,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			}
 			updateETAInActiveRequestTable();
 		}
+
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
 		{
 			vehid = signalRequest.getTemporaryVehicleID();
@@ -569,6 +510,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
+		sendSSM = true;
 		sendPriorityRequestList = true;
 	}
 }
@@ -661,7 +603,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 	builder["indentation"] = "";
 
 	noOfRequest = static_cast<int>(ActiveRequestTable.size());
-	
+
 	if (noOfRequest > 0)
 	{
 		jsonObject["MsgType"] = "PriorityRequest";
@@ -674,7 +616,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"] = ActiveRequestTable[i].vehicleType;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"] = ActiveRequestTable[i].signalGroup;
-			
+
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = 1.0;
 
@@ -696,6 +638,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
+	sendSSM = false;
 	sendPriorityRequestList = false;
 	loggingData(solverJsonString, "sent");
 
@@ -708,12 +651,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 */
 bool PriorityRequestServer::checkSsmSendingRequirement()
 {
-	bool ssmSendingStatus{false};
-
-	if (!ActiveRequestTable.empty())
-		ssmSendingStatus = true;
-
-	return ssmSendingStatus;
+	return sendSSM;
 }
 
 /*
@@ -962,18 +900,75 @@ int PriorityRequestServer::getSignalGroup(SignalRequest signalRequest)
 {
 	int phaseNo{};
 	int approachID{};
-	string fmap{};
-	bool singleFrame = false;
 
-	fmap = "/nojournal/bin/" + intersectionName + ".map.payload";
-
-	LocAware *plocAwareLib = new LocAware(fmap, singleFrame);
 	approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(signalRequest.getInBoundLaneID()));
 	phaseNo = unsigned(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(approachID),
 														  static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
 
-	delete plocAwareLib;
 	return phaseNo;
+}
+/*
+	- The following method delete the mapPayload file which has *.map.payload extension.
+	- The method writes mapPayload in .map.payload formatted file based on the configuration file.
+	- It also checks the logging requirement in the config file
+*/
+void PriorityRequestServer::readconfigFile()
+{
+	string logging{};
+	string pathDirectory{};
+	string mapPayload{};
+	double currentTime = getPosixTimestamp();
+	ofstream mapPayloadOutputfile;
+	Json::Value jsonObject;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	string errors{};
+	ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+
+	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
+	delete reader;
+
+	//Get intersection ID, regional ID, request timed out value for clearing the old request, time interval for logging the system performance data, logging requirement, mapPayload and intersection name
+	intersectionID = (jsonObject["IntersectionID"]).asInt();
+	regionalID = (jsonObject["RegionalID"]).asInt();
+	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble();
+	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
+	logging = (jsonObject["Logging"]).asString();
+	mapPayload = (jsonObject["MapPayload"]).asString();
+	intersectionName = jsonObject["IntersectionName"].asString();
+	
+	mapPayloadFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
+
+	//Delete old map file	
+	remove(mapPayloadFileName.c_str());
+
+	//Write the map palyload in a file
+	mapPayloadOutputfile.open(mapPayloadFileName);
+	mapPayloadOutputfile << "payload"
+						 << " " << intersectionName << " " << mapPayload << endl;
+	mapPayloadOutputfile.close();
+
+	//Create Log File, if requires
+	time_t now = time(0);
+	struct tm tstruct;
+	char logFileOpenningTime[80];
+	tstruct = *localtime(&now);
+	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
+
+	string logFileName = "/nojournal/bin/log/" + intersectionName + "_PRSLog_" + logFileOpenningTime + ".txt";
+
+	if (logging == "True")
+	{
+		loggingStatus = true;
+		outputfile.open(logFileName);
+		outputfile << "PRS Logfile opened for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << endl;
+	}
+
+	else
+		loggingStatus = false;
+
+	msgSentTime = currentTime;
 }
 
 /*
@@ -981,17 +976,12 @@ int PriorityRequestServer::getSignalGroup(SignalRequest signalRequest)
 */
 void PriorityRequestServer::loggingData(string jsonString, string communicationType)
 {
-	std::ofstream outputfile;
-	std::ifstream infile;
-
 	if (loggingStatus == true)
 	{
-		outputfile.open(fileName, std::ios_base::app);
 		double currentTime = getPosixTimestamp();
 
 		outputfile << "\nThe following message is " << communicationType << " at time : " << currentTime << endl;
 		outputfile << jsonString << endl;
-		outputfile.close();
 	}
 }
 
@@ -1091,8 +1081,13 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 
 	setPriorityRequestStatus();
 	updateETAInActiveRequestTable();
+
+	sendSSM = true;
+	sendPriorityRequestList = true;
 }
 
 PriorityRequestServer::~PriorityRequestServer()
 {
+	outputfile.close();
+	delete plocAwareLib;
 }

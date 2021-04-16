@@ -43,36 +43,25 @@ using namespace MsgEnum;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
-	Json::Value jsonObject;
-	Json::CharReaderBuilder builder;
-	Json::CharReader *reader = builder.newCharReader();
-	string errors{};
-	std::ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
-	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
-
-	bool parsingSuccessful = reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
-	delete reader;
-
-	// set the request timed out value to avoid clearing the old request in PRS
-	if (parsingSuccessful)
-		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SrmTimeGapValue;
+	readConfigFile();
+	setVehicleType();		
 }
 
 /*
 	- The following method can create Active request Table in the vehicle side based on the received ssm
 	- updating existing ART can be an expensive process since each time it has to be checked if any fields has been updated for each requests in the ART. If two vehicle information is removed from the ART by PRS, it may cause problem.).
 */
-std::vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
+vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
 {
 	//storing the information of ssm
-	std::vector<int> vehicleID{};
-	std::vector<int> requestID{};
-	std::vector<int> msgCount_ssm{}; //insted of msgCount, msgCount_ssm is declared otherwise it shadowed the declaration
-	std::vector<int> inBoundLaneID{};
-	std::vector<int> basicVehicleRole_ssm{}; //insted of basicVehicleRole, basicVehicleRole_ssm is declared, otherwise it shadowed the declaration
-	std::vector<int> expectedTimeOfArrival_Minute{};
-	std::vector<double> expectedTimeOfArrival_Second{};
-	std::vector<int> priorityRequestStatus{};
+	vector<int> vehicleID{};
+	vector<int> requestID{};
+	vector<int> msgCount_ssm{}; //insted of msgCount, msgCount_ssm is declared otherwise it shadowed the declaration
+	vector<int> inBoundLaneID{};
+	vector<int> basicVehicleRole_ssm{}; //insted of basicVehicleRole, basicVehicleRole_ssm is declared, otherwise it shadowed the declaration
+	vector<int> expectedTimeOfArrival_Minute{};
+	vector<double> expectedTimeOfArrival_Second{};
+	vector<int> priorityRequestStatus{};
 	ActiveRequest activeRequest;
 
 	//creating the active request table based on the stored information
@@ -594,7 +583,7 @@ bool PriorityRequestGenerator::checkPassedNearestBusStop()
 		std::bitset<4> maneuvers;
 		struct dist2go_t dist2go_t_1 = {0.0, 0.0};
 		struct connectTo_t connectTo_t_1 = {0, 0, 0, maneuverType::straightAhead};
-		std::vector<connectTo_t> connect2go1;
+		vector<connectTo_t> connect2go1;
 		connect2go1.push_back(connectTo_t_1);
 		struct locationAware_t locationAware_t_1 = {0, 0, 0, 0, 0.0, maneuvers, dist2go_t_1, connect2go1};
 		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
@@ -713,7 +702,7 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 	return messageType;
 }
 
-std::vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManager mapManager)
+vector<Map::ActiveMap> PriorityRequestGenerator::getActiveMapList(MapManager mapManager)
 {
 	activeMapList = mapManager.getActiveMapList();
 
@@ -768,7 +757,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 		std::bitset<4> maneuvers;
 		struct dist2go_t dist2go_t_1 = {0.0, 0.0};
 		struct connectTo_t connectTo_t_1 = {0, 0, 0, maneuverType::straightAhead};
-		std::vector<connectTo_t> connect2go1;
+		vector<connectTo_t> connect2go1;
 		connect2go1.push_back(connectTo_t_1);
 		struct locationAware_t locationAware_t_1 = {0, 0, 0, 0, 0.0, maneuvers, dist2go_t_1, connect2go1};
 		struct signalAware_t signalAware_t_1 = {phaseColor::dark, phaseState::redLight, unknown_timeDetail, unknown_timeDetail, unknown_timeDetail};
@@ -1073,7 +1062,7 @@ string PriorityRequestGenerator::getVehicleRequestSentStatus()
 /*
 	- Getters for ART table
 */
-std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
+vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
 {
 	return ActiveRequestTable;
 }
@@ -1083,13 +1072,13 @@ std::vector<ActiveRequest> PriorityRequestGenerator::getActiveRequestTable()
 	-If vehicle in on Map then for the active map, activeMapStatus will be true for the active map
 	-If vehicle is leaving the map (either leaving the intersection or going to parking lot) then activeMapStatus will be false for all available map
 */
-std::vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvailableMapList(MapManager mapManager)
+vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvailableMapList(MapManager mapManager)
 {
 	mapManager.updateMapAge();
 	mapManager.deleteMap();
 	if (!activeMapList.empty())
 	{
-		std::vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
+		vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
 																			  [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
 
 		if (findActiveMap != availableMapList.end())
@@ -1112,7 +1101,7 @@ std::vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvaila
 /*
 	- This function is for printing Active request table. Here only few attributes are printed
 */
-void PriorityRequestGenerator::printART()
+void PriorityRequestGenerator::printActiveRequestTable()
 {
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << " " << endl;
@@ -1127,10 +1116,11 @@ void PriorityRequestGenerator::loggingData(string jsonString, string communicati
 
 	if (loggingStatus == true)
 	{
-		outputfile.open("/nojournal/bin/log/PRGLog.txt", std::ios_base::app);
+		outputfile.open(logFileName, std::ios_base::app);
 		double currentTime = getPosixTimestamp();
 		outputfile << "\nThe following message is " << fixed << showpoint << setprecision(4) << communicationType << " at time : " << currentTime << endl;
 		outputfile << jsonString << endl;
+		outputfile.close();
 	}
 }
 
@@ -1138,7 +1128,7 @@ void PriorityRequestGenerator::loggingData(string jsonString, string communicati
 	- Check the logging requirement from the confid file.
 	- If it is required to log the data, the following method will the open log file
 */
-bool PriorityRequestGenerator::getLoggingStatus()
+void PriorityRequestGenerator::readConfigFile()
 {
 	string logging{};
 	std::ofstream outputfile;
@@ -1153,20 +1143,31 @@ bool PriorityRequestGenerator::getLoggingStatus()
 	delete reader;
 
 	if (parsingSuccessful)
+	{
+		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SrmTimeGapValue;
 		logging = (jsonObject["Logging"]).asString();
+	}
+
+	//Create Log File, if requires
+	time_t now = time(0);
+	struct tm tstruct;
+	char logFileOpenningTime[80];
+	tstruct = *localtime(&now);
+	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
+
+	logFileName = string("/nojournal/bin/log/vehicle_PRGLog_") + logFileOpenningTime + ".txt";
 
 	if (logging == "True")
 	{
 		loggingStatus = true;
 		double currentTime = getPosixTimestamp();
-		outputfile.open("/nojournal/bin/log/PRGLog.txt");
+		outputfile.open(logFileName);
 		outputfile << "File opened at time : " << fixed << showpoint << setprecision(4) << currentTime << endl;
 		outputfile.close();
 	}
+
 	else
 		loggingStatus = false;
-
-	return loggingStatus;
 }
 
 /*

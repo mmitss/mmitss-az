@@ -7,7 +7,7 @@
         "msOfMinute":11105,
         "regionalID":0,
         "intersectionID":26379,
-        "priorityRequestType": 3,
+        "priorityRequestType": 1,
         "vehicleID": 615,
         "basicVehicleRole": 16,
         "vehicleType": 6,
@@ -20,7 +20,7 @@
         {
             "ETA_Minute": 0,
             "ETA_Second" : 25.0,
-            "ETA_Duration": 2.0
+            "ETA_Duration": 4.0
         },
         "position":
         {
