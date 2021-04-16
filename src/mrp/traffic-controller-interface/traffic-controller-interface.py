@@ -36,9 +36,15 @@ following functions:
 import json
 import socket
 import time, datetime
+import atexit
+from Logger import Logger
 from SignalController import SignalController
 from PhaseControlScheduler import PhaseControlScheduler
 from GeneralScheduler import GeneralScheduler
+
+def destruct_logger(logger:Logger):
+    logger.write("TCI is shutting down now!")
+    del logger
 
 def main():
     # Read the config file into a json object:
@@ -48,12 +54,6 @@ def main():
     # Close the config file:
     configFile.close()
 
-    # Read the logging status:
-    logging = config["Logging"]
-
-    if (logging.lower() == "True" or logging.lower() == "true"): logging = True
-    elif (logging.lower() == "False" or logging.lower() == "false"): logging = False
-
     # Open a socket and bind it to the IP and port dedicated for this application:
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
@@ -62,9 +62,17 @@ def main():
     s.bind(tci_commInfo)
     
     # Create objects of the related modules:
-    asc = SignalController()
-    phaseControlScheduler = PhaseControlScheduler(asc)
-    generalScheduler = GeneralScheduler(asc)
+    consoleStatus = config["ConsoleOutput"]
+    loggingStatus = config["Logging"]
+    intersectionName = config["IntersectionName"]
+
+    logger = Logger(consoleStatus, loggingStatus, intersectionName)
+    
+    atexit.register(lambda: destruct_logger(logger))
+
+    asc = SignalController(logger)
+    phaseControlScheduler = PhaseControlScheduler(asc, logger)
+    generalScheduler = GeneralScheduler(asc, logger)
 
     while(True):
         # Receive data on the TCI socket
@@ -75,30 +83,30 @@ def main():
 
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
-                print("[" + str(datetime.datetime.now()) + "] " + "Received a clear request at time:" + str(time.time()))
+                logger.write("Received a clear request")
                 phaseControlScheduler.backgroundScheduler.remove_all_jobs()
                 # Clear all holds, forceoffs, calls, and omits from the ASC signal controller:
                 phaseControlScheduler.clearAllNtcipCommandsFromSignalController()
                 # Clear all phase controls from the SignalController class of the Schedule class.
                 phaseControlScheduler.signalController.resetAllPhaseControls()
             else:
-                print("[" + str(datetime.datetime.now()) + "] " + "Received a new schedule at time:" + str(time.time())) 
-                if logging: print(receivedMessage)
+                logger.write("Received a new schedule") 
+                logger.write(receivedMessage)
                 phaseControlScheduler.signalController.resetAllPhaseControls()
                 phaseControlScheduler.processReceivedSchedule(receivedMessage)
 
         elif receivedMessage["MsgType"]=="CurrNextPhaseRequest":
             # Let the object of SignalController class do the needful to send the information about current and next phase to the requestor.
-            print("[" + str(datetime.datetime.now()) + "] " + "Received CurrNextPhaseRequest at time " + str(time.time()))
+            logger.write("Received CurrNextPhaseRequest")
             asc.sendCurrentAndNextPhasesDict(address)
-            print("[" + str(datetime.datetime.now()) + "] " + "Sent currNextPhaseStatus")
+            logger.write("Sent currNextPhaseStatus the requestor")
 
         elif receivedMessage["MsgType"]=="TimingPlanRequest":
             # Read the current timing plan from the object of SignalController class
             currentTimingPlan = asc.currentTimingPlanJson
             # Send the current timing plan to the requestor
             s.sendto(currentTimingPlan.encode(),address)
-            if logging: print(currentTimingPlan)
+            logger.write(currentTimingPlan)
 
         elif receivedMessage["MsgType"]=="SpecialFunction":
             # Extract status
@@ -113,12 +121,12 @@ def main():
                     generalScheduler.activateAndScheduleSpecialFunctionMaintenance(functionId, startTime, endTime)
                 else: 
                     # This is a current limitations of TCI. If the special function is already ON, then further requests to set it ON will be discarded till it is ON.
-                    print("Special function is already in the required status. Discarding the new request!")
+                    logger.write("Special function {} is already in the required status. Discarding the new request!".format(functionId))
             elif requiredStatus == False:
                 functionId = receivedMessage["Id"]
                 asc.updateSpecialFunctionLocalStatus(functionId, requiredStatus)
                 asc.setSpecialFunctionControllerStatus(functionId)
-        else: print("[" + str(datetime.datetime.now()) + "] " + "Invalid message received!")
+        else: logger.write("Received invalid message of type: " + receivedMessage["MsgType"])
         
     s.close()
 

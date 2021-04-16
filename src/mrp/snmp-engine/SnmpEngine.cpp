@@ -32,7 +32,6 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 # include <chrono>
 # include <sstream>
 # include "SnmpEngine.h"
-
 # include "Timestamp.h"
 
 /* Instantiates an object of the SnmpEngine class and establishes an SNMP session 
@@ -41,39 +40,6 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
     (1) IP address of the target SNMP device (std::string)
     (2) NTCIP port of the target SNMP device. (int)
 */
-
-void SnmpEngine::initializeLogFile(Json::Value jsonObject_config)
-{
-
-
-    std::string intersectionName = jsonObject_config["IntersectionName"].asString();
-
-    time_t now = time(0);
-    struct tm tstruct;
-    char logFileOpenningTime[80];
-    tstruct = *localtime(&now);
-    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
-
-    std::string logfileName = "/nojournal/bin/log/" + intersectionName + "_snmpEngineLog_" + logFileOpenningTime + ".txt";
-    logFile.open(logfileName);
-}
-
-void SnmpEngine::logAndOrDisplay(std::string logString)
-{
-    double timestamp = getPosixTimestamp();
-
-    if(consoleOutput==true)
-    {
-        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
-        std::cout << logString << std::endl;
-    }
-
-    if(logging==true)
-    {
-        logFile << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
-        logFile << logString << std::endl;
-    }
-}
 
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
@@ -86,26 +52,21 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
     delete reader;
     configJson.close();
-    
-    std::string loggingConfigString = jsonObject_config["Logging"].asString();
-    if(loggingConfigString=="true" || loggingConfigString=="True")
-        logging = true;
-    else
-        logging = false;
+
+    logging = jsonObject_config["Logging"].asBool();
+    consoleOutput = jsonObject_config["ConsoleOutput"].asBool();
 
     if(logging==true)
     {
         initializeLogFile(jsonObject_config);
     }
 
-    if(logging==true)
-    {
         
-        logAndOrDisplay(("Target device IP address: " + ip));
-        logAndOrDisplay(("Target device NTCIP port: " + std::to_string(port)));
-        logAndOrDisplay("Verifying the network connection with the target SNMP device...");
-        logAndOrDisplay("PING Test Begins");
-    }
+    logAndOrDisplay(("Target device IP address: " + ip));
+    logAndOrDisplay(("Target device NTCIP port: " + std::to_string(port)));
+    logAndOrDisplay("Verifying the network connection with the target SNMP device...");
+    logAndOrDisplay("PING test begins");
+
     
     // Check if the target SNMP device is in the network by executing a ping test.
     std::string pingCommand = "ping -c 1 " + ip;
@@ -163,6 +124,37 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     else
     {
         logAndOrDisplay("Ready to forward SNMP GET/SET requests");
+    }
+}
+
+void SnmpEngine::initializeLogFile(Json::Value jsonObject_config)
+{
+    std::string intersectionName = jsonObject_config["IntersectionName"].asString();
+
+    time_t now = time(0);
+    struct tm tstruct;
+    char logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
+
+    std::string logfileName = "/nojournal/bin/log/" + intersectionName + "_snmpEngineLog_" + logFileOpenningTime + ".log";
+    logFile.open(logfileName);
+}
+
+void SnmpEngine::logAndOrDisplay(std::string logString)
+{
+    double timestamp = getPosixTimestamp();
+
+    if(consoleOutput==true)
+    {
+        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        std::cout << logString << std::endl;
+    }
+
+    if(logging==true)
+    {
+        logFile << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        logFile << logString << std::endl;
     }
 }
 

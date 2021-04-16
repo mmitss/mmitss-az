@@ -51,7 +51,7 @@ class SnmpEngine
         oid anOID[MAX_OID_LEN];
         int status;
         
-        bool consoleOutput = true;
+        bool consoleOutput = false;
         bool logging = false;
         std::ofstream logFile{};
 
