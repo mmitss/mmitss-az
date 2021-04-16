@@ -104,8 +104,6 @@ int main()
                 if (priorityRequestSolver.getOptimalSolutionValidationStatus())
                     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
 
-                // If requires (logging is "True" in the config file), received priority requests list, dat file, OptimizationResults.txt file, optimal schedule will be written in the log file.
-                priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
 
                 //If requires, check for the priority weights update from the config file
                 if (priorityRequestSolver.checkUpdatesForPriorityWeights())
@@ -120,9 +118,6 @@ int main()
         {
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-
-            // If requires (logging is "True" in the config file), clear request message and schedule will be written in the log file.
-            priorityRequestSolver.loggingClearRequestData(tciJsonString);
         }
     }
 
