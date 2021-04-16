@@ -67,7 +67,10 @@ int PriorityRequestServer::getMessageType(string jsonString)
 			messageType = static_cast<int>(msgType::coordinationRequest);
 
 		else
-			logAndOrDisplay("Message type is unknown");
+		{
+			displayConsoleData("Message type is unknown");
+			loggingData("Message type is unknown");
+		}
 	}
 
 	return messageType;
@@ -102,7 +105,8 @@ bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
 
 	else
 	{
-		logAndOrDisplay("Discard the SRM since intersectionId doesn't match");		
+		displayConsoleData("Discard the SRM since intersectionId doesn't match");
+		loggingData("Discard the SRM since intersectionId doesn't match");
 		matchIntersection = false;
 		msgRejected++;
 	}
@@ -348,8 +352,9 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 	int vehid{};
 	int temporarySignalGroup{};
 
-	logAndOrDisplay("Received Priority Request from MsgDecoder");
-	
+	displayConsoleData("Received Priority Request from MsgDecoder");
+	loggingData("Received Priority Request from MsgDecoder");
+
 	if (acceptSignalRequest(signalRequest))
 	{
 		if (addToActiveRequestTable(signalRequest))
@@ -564,7 +569,8 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	else if (findVehicleIDOnTable != ActiveRequestTable.end())
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
-	logAndOrDisplay("Deleted Timed-Out Request");
+	displayConsoleData("Deleted Timed-Out Request");
+	loggingData("Deleted Timed-Out Request");
 }
 
 /*
@@ -583,8 +589,9 @@ string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 	signalStatus.setIntersectionID(intersectionID);
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
 
-	logAndOrDisplay("SSM will send to MsgEncoder");
-	logAndOrDisplay(ssmJsonString);
+	displayConsoleData("SSM will send to MsgEncoder");
+	loggingData("SSM will send to MsgEncoder");
+	loggingData(ssmJsonString);
 
 	return ssmJsonString;
 }
@@ -627,22 +634,23 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 		}
 
 		sentClearRequest = false;
-		logAndOrDisplay("Priority Request Message will send to PRSolver");
+		displayConsoleData("Priority Request Message will send to PRSolver");
+		loggingData("Priority Request Message will send to PRSolver");
 	}
 
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
 		sentClearRequest = true;
-		logAndOrDisplay("Clear Request Message will send to PRSolver");
-		
+		displayConsoleData("Clear Request Message will send to PRSolver");
+		loggingData("Clear Request Message will send to PRSolver");
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
-	logAndOrDisplay(solverJsonString);
+	loggingData(solverJsonString);
 	sendSSM = false;
 	sendPriorityRequestList = false;
-	
+
 	return solverJsonString;
 }
 
@@ -722,11 +730,11 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 */
 void PriorityRequestServer::printActiveRequestTable()
 {
-	double timestamp = getPosixTimestamp();
+	double timeStamp = getPosixTimestamp();
 
 	if (!ActiveRequestTable.empty() && consoleOutput)
 	{
-		cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] Active Request Table is following: " << endl;
+		cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Active Request Table is following: " << endl;
 		cout << "VehicleID"
 			 << " "
 			 << "VehicleType"
@@ -742,7 +750,10 @@ void PriorityRequestServer::printActiveRequestTable()
 	}
 
 	else
-		logAndOrDisplay("Active Request Table is empty");
+	{
+		displayConsoleData("Active Request Table is empty");
+		loggingData("Active Request Table is empty");
+	}
 }
 
 /*
@@ -966,30 +977,35 @@ void PriorityRequestServer::readconfigFile()
 		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRS Logfile opened for " << intersectionName << " intersection" << endl;
 	}
 
-	else
-		logging = false;
-
 	msgSentTime = timeStamp;
 }
 
 /*
-	Method for logging sending or receied JSON sting.
+	- Method for logging data in a file
 */
-void PriorityRequestServer::logAndOrDisplay(string logString)
+void PriorityRequestServer::loggingData(string logString)
+{
+	double timeStamp = getPosixTimestamp();
+
+	if (logging)
+	{
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
+		logFile << logString << endl;
+	}
+}
+
+/*
+	- Method for displaying console output
+*/
+void PriorityRequestServer::displayConsoleData(string consoleString)
 {
 	double timestamp = getPosixTimestamp();
 
-    if(consoleOutput)
-    {
-        cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
-        cout << logString << endl;
-    }
-
-    if(logging)
-    {
-        logFile << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
-        logFile << logString << endl;
-    }
+	if (consoleOutput)
+	{
+		cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+		cout << consoleString << endl;
+	}
 }
 
 /*
@@ -1028,12 +1044,13 @@ string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	jsonObject["MsgInformation"]["Timestamp_verbose"] = getVerboseTimestamp();
 
 	systemPerformanceDataLogJsonString = Json::writeString(builder, jsonObject);
-	logAndOrDisplay("System Performance Data Log will send to data collector");
+	displayConsoleData("System Performance Data Log will send to data collector");
+	loggingData("System Performance Data Log will send to data collector");
 	msgSentTime = getPosixTimestamp();
 	msgReceived = 0;
 	msgServed = 0;
 	msgRejected = 0;
-		
+
 	return systemPerformanceDataLogJsonString;
 }
 
@@ -1052,7 +1069,8 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	string errors{};
 	ActiveRequest activeRequest;
 	activeRequest.reset();
-	logAndOrDisplay("Received Coordination Request from Signal Coordination Request Generator");
+	displayConsoleData("Received Coordination Request from Signal Coordination Request Generator");
+	loggingData("Received Coordination Request from Signal Coordination Request Generator");
 	setETAUpdateTime();
 
 	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
