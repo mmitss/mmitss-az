@@ -1298,7 +1298,7 @@ bool PriorityRequestSolver::checkSignalCoordinationTimingPlanStatus()
 /*
     -Check whether to log data or not
 */
-bool PriorityRequestSolver::logging()
+void PriorityRequestSolver::logging()
 {
     string logging{};
     string intersectionName{};
@@ -1319,7 +1319,7 @@ bool PriorityRequestSolver::logging()
 
     logging = jsonObject["Logging"].asString();
     intersectionName = jsonObject["IntersectionName"].asString();
-    string fileName = "/nojournal/bin/log/"+ intersectionName + "_PRSolverLog_" +  + logFileOpenningTime + ".txt";
+    fileName = "/nojournal/bin/log/"+ intersectionName + "_PRSolverLog_" +  + logFileOpenningTime + ".txt";
 
     if (logging == "True")
     {
@@ -1328,10 +1328,9 @@ bool PriorityRequestSolver::logging()
         outputfile.open(fileName);
         outputfile << "PRSolver Logfile open for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << std::endl;
     }
+    
     else
         loggingStatus = false;
-
-    return loggingStatus;
 }
 
 /*
@@ -1341,7 +1340,7 @@ void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString
 {
     ifstream infile;
 
-    if (loggingStatus == true)
+    if (loggingStatus)
     {
         double currentTime = getPosixTimestamp();
 

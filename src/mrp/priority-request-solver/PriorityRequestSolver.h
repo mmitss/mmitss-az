@@ -64,6 +64,7 @@ private:
   double offset{};
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
+  string fileName{};
   ofstream outputfile;
 
   vector<RequestList> priorityRequestList{};
@@ -112,8 +113,8 @@ public:
   void getCurrentSignalStatus(string jsonString);
   void validateEVTrafficSignalPlan();
   void getPriorityWeights();
+  void logging();
   void loggingTimingPlanData(string jsonString, string msgTypString, string msgSource);
-  void loggingSplitData(string jsonString);
   void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
   void loggingClearRequestData(string jsonString);
   void printSignalPlan();
@@ -130,5 +131,4 @@ public:
   bool checkTrafficSignalTimingPlanStatus();
   bool checkSignalCoordinationTimingPlanStatus();
   bool checkUpdatesForPriorityWeights();
-  bool logging();
 };
