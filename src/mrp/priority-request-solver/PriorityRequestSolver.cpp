@@ -1344,7 +1344,7 @@ void PriorityRequestSolver::readConfigFile()
 }
 
 /*
-	Method for logging data in a file
+	- Method for logging data in a file
 */
 void PriorityRequestSolver::loggingData(string logString)
 {
@@ -1358,7 +1358,7 @@ void PriorityRequestSolver::loggingData(string logString)
 }
 
 /*
-	Method for displaying console output
+	- Method for displaying console output
 */
 void PriorityRequestSolver::displayConsoleData(string consoleString)
 {
