@@ -64,7 +64,6 @@ private:
   double offset{};
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
-  string fileName{};
   ofstream outputfile;
 
   vector<RequestList> priorityRequestList{};

@@ -1319,7 +1319,7 @@ bool PriorityRequestSolver::logging()
 
     logging = jsonObject["Logging"].asString();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/"+ intersectionName + "_PRSolverLog_" +  + logFileOpenningTime + ".txt";
+    string fileName = "/nojournal/bin/log/"+ intersectionName + "_PRSolverLog_" +  + logFileOpenningTime + ".txt";
 
     if (logging == "True")
     {
