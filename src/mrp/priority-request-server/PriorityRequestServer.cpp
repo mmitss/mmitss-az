@@ -974,7 +974,7 @@ void PriorityRequestServer::readconfigFile()
 	if (logging)
 	{
 		logFile.open(logFileName);
-		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRS Logfile opened for " << intersectionName << " intersection" << endl;
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRS Logfile is opened for " << intersectionName << " intersection" << endl;
 	}
 
 	msgSentTime = timeStamp;
