@@ -248,7 +248,7 @@ class SignalController:
             groupInt = phaseControlDict["status"].uint
             self.snmp.setValue(phaseControlDict["oid"], groupInt)
             phaseList = self.snmp.getPhaseListFromBitArray(phaseControlDict["status"])
-            self.logger.write(phaseControlDict["name"] + " " + str(phaseList) + "(Integer={}) ".format(groupInt) + ". Time elapsed since the receipt of the new schedule: " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
+            self.logger.write(phaseControlDict["name"] + " " + str(phaseList) + " (Value={})".format(groupInt) + ". Time elapsed since the receipt of the new schedule: " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
             
 
     ######################## Definition End: phaseControl(self, action, phases) ########################

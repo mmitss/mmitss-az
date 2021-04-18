@@ -91,7 +91,7 @@ def main():
                 phaseControlScheduler.signalController.resetAllPhaseControls()
             else:
                 logger.write("Received a new schedule") 
-                logger.write(receivedMessage)
+                logger.write(str(receivedMessage))
                 phaseControlScheduler.signalController.resetAllPhaseControls()
                 phaseControlScheduler.processReceivedSchedule(receivedMessage)
 
