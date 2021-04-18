@@ -1177,7 +1177,7 @@ void PriorityRequestGenerator::readConfigFile()
 	tstruct = *localtime(&now);
 	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
 
-	logFileName = string("/nojournal/bin/log/vehicle_prgLog_") + logFileOpenningTime + ".txt";
+	logFileName = string("/nojournal/bin/log/vehicle_prgLog_") + logFileOpenningTime + ".log";
 
 	if (logging)
 	{

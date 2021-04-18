@@ -1333,7 +1333,7 @@ void PriorityRequestSolver::readConfigFile()
     logging = jsonObject["Logging"].asBool();
     consoleOutput = jsonObject["ConsoleOutput"].asBool();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/" + intersectionName + "_prsolverLog_" + +logFileOpenningTime + ".txt";
+    fileName = "/nojournal/bin/log/" + intersectionName + "_prsolverLog_" + logFileOpenningTime + ".log";
 
     if (logging)
     {
