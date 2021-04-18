@@ -127,8 +127,8 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
 */
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
 {
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-    cout << "[" << currentTime << "] Received SSM" << endl;
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received SSM" << endl;
     
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
@@ -328,9 +328,9 @@ int PriorityRequestGeneratorServer::getTimedOutVehicleID()
 */
 double PriorityRequestGeneratorServer::getCurrentTimeInSeconds()
 {
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    return currentTime;
+    return static_cast<double>(currentTime);
 }
 
 /*
@@ -338,13 +338,14 @@ double PriorityRequestGeneratorServer::getCurrentTimeInSeconds()
 */
 void PriorityRequestGeneratorServer::printPRGServerList()
 {
+    auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     if (!PRGServerList.empty())
     {
         for (size_t i = 0; i < PRGServerList.size(); i++)
             cout << PRGServerList[i].vehicleID << " " << PRGServerList[i].vehicleType << " " << PRGServerList[i].updateTime << endl;
     }
     else
-        std::cout << "Active Request Table is empty" << std::endl;
+        cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is empty" << endl;
 }
 
 PriorityRequestGeneratorServer::~PriorityRequestGeneratorServer()

@@ -17,6 +17,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
+#include <string>
 #include "BasicVehicle.h"
 #include "SignalStatus.h"
 #include "SignalRequest.h"

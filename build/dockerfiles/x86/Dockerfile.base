@@ -10,10 +10,10 @@ FROM ubuntu:20.04
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 # perform a sysupgrade and install some necessary packages -
-#RUN apt-get update && apt-get upgrade -y && apt-get install -y ssh libssl-dev
+#RUN apt-get update && apt-get upgrade -y && apt-get install -y  ssh libssl-dev
 # iputils-ping iproute2 gdb ddd  build-essential wget libperl-dev libglpk-dev gdb
 
-RUN apt-get update && apt-get install -y supervisor iputils-ping net-tools
+RUN apt-get update && apt-get install -y apt-utils supervisor iputils-ping net-tools
 RUN mkdir -p /var/log/supervisor
 
 COPY lib/x86/system/libssl.so.1.1 /usr/lib/x86_64-linux-gnu/

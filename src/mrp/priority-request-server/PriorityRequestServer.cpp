@@ -38,6 +38,7 @@
 #include "locAware.h"
 #include "geoUtils.h"
 #include "Timestamp.h"
+#include <time.h>
 
 using namespace MsgEnum;
 
@@ -86,8 +87,16 @@ PriorityRequestServer::PriorityRequestServer()
 	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
 	//Check the logging requirement
 	logging = (jsonObject["Logging"]).asString();
-	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + ".txt";
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
+	time_t     now = time(0);
+    struct tm  tstruct;
+    char       logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+
+	fileName = "/nojournal/bin/log/PRSLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
+
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	if (logging == "True")
 	{
 		loggingStatus = true;
@@ -107,7 +116,7 @@ PriorityRequestServer::PriorityRequestServer()
 int PriorityRequestServer::getMessageType(string jsonString)
 {
 	int messageType{};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -283,10 +292,10 @@ void PriorityRequestServer::setRequestTimedOutVehicleID(int timedOutVehicleID)
 */
 void PriorityRequestServer::setETAUpdateTime()
 {
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());;
 
 	if(ActiveRequestTable.empty())
-		etaUpdateTime = currentTime;
+		etaUpdateTime = static_cast<double>(currentTime);
 }
 
 /*
@@ -571,7 +580,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehicleID{};
 	int associatedVehicleID{};
 	vehicleID = getRequestTimedOutVehicleID();
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
@@ -641,7 +650,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 {
 	string solverJsonString{};
 	int noOfRequest{};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -673,7 +682,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLatitude;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"] = ActiveRequestTable[i].vehicleLongitude;
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["elevation_Meter"] = ActiveRequestTable[i].vehicleElevation;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["elstatic_cast<double(evation_Meter"] = ActiveRequestTable[i].vehicleElevation;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"] = ActiveRequestTable[i].vehicleHeading;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
@@ -701,9 +710,9 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 bool PriorityRequestServer::updateETA()
 {
 	bool etaUpdateRequirement{false};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-	if (!ActiveRequestTable.empty() && (currentTime - etaUpdateTime >= TIME_GAP_BETWEEN_ETA_Update))
+	if (!ActiveRequestTable.empty() && (static_cast<double>(currentTime) - etaUpdateTime >= TIME_GAP_BETWEEN_ETA_Update))
 	{
 		etaUpdateRequirement = true;
 		updateETAInActiveRequestTable();
@@ -730,8 +739,8 @@ bool PriorityRequestServer::sendClearRequest()
 */
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-	double timeDifference = currentTime - etaUpdateTime;
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+	double timeDifference = static_cast<double>(currentTime) - etaUpdateTime;
 
 	if (!ActiveRequestTable.empty())
 	{
@@ -743,7 +752,7 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 				ActiveRequestTable[i].vehicleETA = 0.0;
 		}
 
-		etaUpdateTime = currentTime;
+		etaUpdateTime = static_cast<double>(currentTime);
 	}
 }
 
@@ -752,7 +761,7 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 */
 void PriorityRequestServer::printActiveRequestTable()
 {
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	if (!ActiveRequestTable.empty())
 	{
 		cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Active Request Table is following: " << endl;
@@ -969,9 +978,9 @@ void PriorityRequestServer::loggingData(string jsonString, string communicationT
 bool PriorityRequestServer::sendSystemPerformanceDataLog()
 {
 	bool sendData{false};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-	if (currentTime - msgSentTime >= timeInterval)
+	if (static_cast<double>(currentTime) - msgSentTime >= timeInterval)
 		sendData = true;
 
 	return sendData;
@@ -983,7 +992,7 @@ bool PriorityRequestServer::sendSystemPerformanceDataLog()
 string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 {
 	string systemPerformanceDataLogJsonString{};
-	double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+	auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";

@@ -52,7 +52,6 @@ int main()
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
-    double currentTime{};
     PRG.getLoggingStatus();
     PRG.setVehicleType();
 
@@ -98,7 +97,7 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+            auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
             cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
