@@ -2,7 +2,7 @@
 #    Dockerfile to build an arm platform image for an intersection            #
 #    Image name: mmitssuarizona/mmitss-simulation_server-tools-arm            #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-arm-base:2.0
+FROM mmitssuarizona/mmitss-arm-base:2.1
 
 COPY build/bin/PriorityRequestGeneratorServer/arm/M_PriorityRequestGeneratorServer /mmitss
 COPY build/bin/MessageDistributor/arm/M_MessageDistributor /mmitss
