@@ -52,7 +52,6 @@ PriorityRequestServer::PriorityRequestServer()
 int PriorityRequestServer::getMessageType(string jsonString)
 {
 	int messageType{};
-	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -68,7 +67,10 @@ int PriorityRequestServer::getMessageType(string jsonString)
 			messageType = static_cast<int>(msgType::coordinationRequest);
 
 		else
-			cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Message type is unknown" << endl;
+		{
+			displayConsoleData("Message type is unknown");
+			loggingData("Message type is unknown");
+		}
 	}
 
 	return messageType;
@@ -103,8 +105,8 @@ bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
 
 	else
 	{
-		double currentTime = getPosixTimestamp();
-		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Discard the SRM since intersectionId doesn't match" << endl;
+		displayConsoleData("Discard the SRM since intersectionId doesn't match");
+		loggingData("Discard the SRM since intersectionId doesn't match");
 		matchIntersection = false;
 		msgRejected++;
 	}
@@ -350,6 +352,9 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 	int vehid{};
 	int temporarySignalGroup{};
 
+	displayConsoleData("Received Priority Request from MsgDecoder");
+	loggingData("Received Priority Request from MsgDecoder");
+
 	if (acceptSignalRequest(signalRequest))
 	{
 		if (addToActiveRequestTable(signalRequest))
@@ -434,7 +439,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
 				ActiveRequestTable.push_back(activeRequest);
-				
+
 				if (findEVInRequest(signalRequest))
 				{
 					activeRequest.vehicleID = signalRequest.getTemporaryVehicleID();
@@ -522,7 +527,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	int vehicleID{};
 	int associatedVehicleID{};
 	vehicleID = getRequestTimedOutVehicleID();
-	double currentTime = getPosixTimestamp();
+
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
@@ -563,7 +568,9 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 	//For Transit and truck PriorityRequest
 	else if (findVehicleIDOnTable != ActiveRequestTable.end())
 		ActiveRequestTable.erase(findVehicleIDOnTable);
-	cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Deleted Timed-Out Request" << endl;
+
+	displayConsoleData("Deleted Timed-Out Request");
+	loggingData("Deleted Timed-Out Request");
 }
 
 /*
@@ -572,7 +579,6 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 {
 	string ssmJsonString{};
-	// double currentTime = getPosixTimestamp();
 	signalStatus.reset();
 
 	signalStatus.setMinuteOfYear(getMinuteOfYear());
@@ -583,8 +589,9 @@ string PriorityRequestServer::createSSMJsonString(SignalStatus signalStatus)
 	signalStatus.setIntersectionID(intersectionID);
 	ssmJsonString = signalStatus.signalStatus2Json(ActiveRequestTable);
 
-	loggingData(ssmJsonString, "sent");
-	// cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent SSM " << endl;
+	displayConsoleData("SSM will send to MsgEncoder");
+	loggingData("SSM will send to MsgEncoder");
+	loggingData(ssmJsonString);
 
 	return ssmJsonString;
 }
@@ -596,7 +603,6 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 {
 	string solverJsonString{};
 	int noOfRequest{};
-	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -626,21 +632,24 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
-		// cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent Priority Request List to Solver " << endl;
+
 		sentClearRequest = false;
+		displayConsoleData("Priority Request Message will send to PRSolver");
+		loggingData("Priority Request Message will send to PRSolver");
 	}
 
 	else
 	{
 		jsonObject["MsgType"] = "ClearRequest";
-		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Sent Clear Request to Solver " << endl;
 		sentClearRequest = true;
+		displayConsoleData("Clear Request Message will send to PRSolver");
+		loggingData("Clear Request Message will send to PRSolver");
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
+	loggingData(solverJsonString);
 	sendSSM = false;
 	sendPriorityRequestList = false;
-	loggingData(solverJsonString, "sent");
 
 	return solverJsonString;
 }
@@ -721,11 +730,11 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 */
 void PriorityRequestServer::printActiveRequestTable()
 {
-	double currentTime = getPosixTimestamp();
+	double timeStamp = getPosixTimestamp();
 
-	if (!ActiveRequestTable.empty())
+	if (!ActiveRequestTable.empty() && consoleOutput)
 	{
-		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Active Request Table is following: " << endl;
+		cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Active Request Table is following: " << endl;
 		cout << "VehicleID"
 			 << " "
 			 << "VehicleType"
@@ -734,13 +743,17 @@ void PriorityRequestServer::printActiveRequestTable()
 			 << " "
 			 << "ETADuration"
 			 << " "
-			 << "SignalGroup\t" << endl;
+			 << "SignalGroup" << endl;
+
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 			cout << "   " << ActiveRequestTable[i].vehicleID << "       " << ActiveRequestTable[i].vehicleType << "        " << ActiveRequestTable[i].vehicleETA << "       " << ActiveRequestTable[i].vehicleETADuration << "         " << ActiveRequestTable[i].signalGroup << endl;
 	}
 
 	else
-		cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Active Request Table is empty" << endl;
+	{
+		displayConsoleData("Active Request Table is empty");
+		loggingData("Active Request Table is empty");
+	}
 }
 
 /*
@@ -914,10 +927,9 @@ int PriorityRequestServer::getSignalGroup(SignalRequest signalRequest)
 */
 void PriorityRequestServer::readconfigFile()
 {
-	string logging{};
 	string pathDirectory{};
 	string mapPayload{};
-	double currentTime = getPosixTimestamp();
+	double timeStamp = getPosixTimestamp();
 	ofstream mapPayloadOutputfile;
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
@@ -930,17 +942,18 @@ void PriorityRequestServer::readconfigFile()
 	delete reader;
 
 	//Get intersection ID, regional ID, request timed out value for clearing the old request, time interval for logging the system performance data, logging requirement, mapPayload and intersection name
-	intersectionID = (jsonObject["IntersectionID"]).asInt();
-	regionalID = (jsonObject["RegionalID"]).asInt();
-	requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble();
-	timeInterval = (jsonObject["SystemPerformanceTimeInterval"]).asDouble();
-	logging = (jsonObject["Logging"]).asString();
-	mapPayload = (jsonObject["MapPayload"]).asString();
+	intersectionID = jsonObject["IntersectionID"].asInt();
+	regionalID = jsonObject["RegionalID"].asInt();
+	requestTimedOutValue = jsonObject["SRMTimedOutTime"].asDouble();
+	timeInterval = jsonObject["SystemPerformanceTimeInterval"].asDouble();
+	logging = jsonObject["Logging"].asBool();
+	consoleOutput = jsonObject["ConsoleOutput"].asBool();
+	mapPayload = jsonObject["MapPayload"].asString();
 	intersectionName = jsonObject["IntersectionName"].asString();
-	
+
 	mapPayloadFileName = "/nojournal/bin/" + intersectionName + ".map.payload";
 
-	//Delete old map file	
+	//Delete old map file
 	remove(mapPayloadFileName.c_str());
 
 	//Write the map palyload in a file
@@ -956,32 +969,42 @@ void PriorityRequestServer::readconfigFile()
 	tstruct = *localtime(&now);
 	strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
 
-	string logFileName = "/nojournal/bin/log/" + intersectionName + "_PRSLog_" + logFileOpenningTime + ".txt";
+	string logFileName = "/nojournal/bin/log/" + intersectionName + "_prsLog_" + logFileOpenningTime + ".log";
 
-	if (logging == "True")
+	if (logging)
 	{
-		loggingStatus = true;
-		outputfile.open(logFileName);
-		outputfile << "PRS Logfile opened for " << intersectionName << " intersection at time : " << fixed << showpoint << setprecision(4) << currentTime << endl;
+		logFile.open(logFileName);
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRS Logfile is opened for " << intersectionName << " intersection" << endl;
 	}
 
-	else
-		loggingStatus = false;
-
-	msgSentTime = currentTime;
+	msgSentTime = timeStamp;
 }
 
 /*
-	Method for logging sending or receied JSON sting.
+	- Method for logging data in a file
 */
-void PriorityRequestServer::loggingData(string jsonString, string communicationType)
+void PriorityRequestServer::loggingData(string logString)
 {
-	if (loggingStatus == true)
-	{
-		double currentTime = getPosixTimestamp();
+	double timeStamp = getPosixTimestamp();
 
-		outputfile << "\nThe following message is " << communicationType << " at time : " << currentTime << endl;
-		outputfile << jsonString << endl;
+	if (logging)
+	{
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
+		logFile << logString << endl;
+	}
+}
+
+/*
+	- Method for displaying console output
+*/
+void PriorityRequestServer::displayConsoleData(string consoleString)
+{
+	double timestamp = getPosixTimestamp();
+
+	if (consoleOutput)
+	{
+		cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+		cout << consoleString << endl;
 	}
 }
 
@@ -1005,7 +1028,6 @@ bool PriorityRequestServer::sendSystemPerformanceDataLog()
 string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 {
 	string systemPerformanceDataLogJsonString{};
-	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -1022,12 +1044,12 @@ string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 	jsonObject["MsgInformation"]["Timestamp_verbose"] = getVerboseTimestamp();
 
 	systemPerformanceDataLogJsonString = Json::writeString(builder, jsonObject);
-
-	msgSentTime = currentTime;
+	displayConsoleData("System Performance Data Log will send to data collector");
+	loggingData("System Performance Data Log will send to data collector");
+	msgSentTime = getPosixTimestamp();
 	msgReceived = 0;
 	msgServed = 0;
 	msgRejected = 0;
-	cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] System Performance Data Log will sent to data collector" << endl;
 
 	return systemPerformanceDataLogJsonString;
 }
@@ -1047,6 +1069,8 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	string errors{};
 	ActiveRequest activeRequest;
 	activeRequest.reset();
+	displayConsoleData("Received Coordination Request from Signal Coordination Request Generator");
+	loggingData("Received Coordination Request from Signal Coordination Request Generator");
 	setETAUpdateTime();
 
 	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
@@ -1081,13 +1105,12 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 
 	setPriorityRequestStatus();
 	updateETAInActiveRequestTable();
-
 	sendSSM = true;
 	sendPriorityRequestList = true;
 }
 
 PriorityRequestServer::~PriorityRequestServer()
 {
-	outputfile.close();
+	logFile.close();
 	delete plocAwareLib;
 }

@@ -65,7 +65,7 @@ int main()
                 PRS.manageCoordinationRequest(receivedJsonString);
 
             //Storing the received message in the logfile, if logging is true in config file
-            PRS.loggingData(receivedJsonString, "received");
+            PRS.loggingData(receivedJsonString);
 
             //Creating SSM JSON string
             if (PRS.checkSsmSendingRequirement())
