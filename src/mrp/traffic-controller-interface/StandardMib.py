@@ -53,6 +53,7 @@ PHASE_CONTROL_PEDCALL           =   "1.3.6.1.4.1.1206.4.2.1.1.5.1.7.1"
 
 # Phase calls:
 VEHICLE_CALLS                   =   "1.3.6.1.4.1.1206.4.2.1.1.4.1.8.1"
+PEDESTRIAN_CALLS                =   "1.3.6.1.4.1.1206.4.2.1.1.4.1.9.1"
 
 # NTCIP Backup Time Parameter
 NTCIP_UNIT_BACKUP_TIME          =   "1.3.6.1.4.1.1206.4.2.1.3.3.1"
