@@ -518,6 +518,12 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 		sendSSM = true;
 		sendPriorityRequestList = true;
 	}
+
+	else
+	{
+		sendSSM = false;
+		sendPriorityRequestList = false;
+	}
 }
 /*
 	Method to delete vehicle info from Active Request Table if Infrustracture doesn't receive and SRM for predefined time
@@ -974,7 +980,7 @@ void PriorityRequestServer::readconfigFile()
 	if (logging)
 	{
 		logFile.open(logFileName);
-		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRS Logfile is opened for " << intersectionName << " intersection" << endl;
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRS log file for " << intersectionName << " intersection" << endl;
 	}
 
 	msgSentTime = timeStamp;
@@ -989,7 +995,7 @@ void PriorityRequestServer::loggingData(string logString)
 
 	if (logging)
 	{
-		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
+		logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
 		logFile << logString << endl;
 	}
 }
@@ -1003,7 +1009,7 @@ void PriorityRequestServer::displayConsoleData(string consoleString)
 
 	if (consoleOutput)
 	{
-		cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+		cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
 		cout << consoleString << endl;
 	}
 }
@@ -1089,24 +1095,33 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 		}
 	}
 
-	for (int i = 0; i < noOfCoordinationRequest; i++)
+	if (noOfCoordinationRequest > 0)
 	{
-		activeRequest.minuteOfYear = getMinuteOfYear();
-		activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
-		activeRequest.basicVehicleRole = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
-		activeRequest.signalGroup = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["requestedPhase"].asInt();
-		activeRequest.vehicleID = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
-		activeRequest.vehicleType = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
-		activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
-		activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asDouble();
-		activeRequest.vehicleLaneID = coordinationLaneID;
-		ActiveRequestTable.push_back(activeRequest);
+		for (int i = 0; i < noOfCoordinationRequest; i++)
+		{
+			activeRequest.minuteOfYear = getMinuteOfYear();
+			activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+			activeRequest.basicVehicleRole = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
+			activeRequest.signalGroup = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["requestedPhase"].asInt();
+			activeRequest.vehicleID = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
+			activeRequest.vehicleType = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
+			activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
+			activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asDouble();
+			activeRequest.vehicleLaneID = coordinationLaneID;
+			ActiveRequestTable.push_back(activeRequest);
+		}
+
+		setPriorityRequestStatus();
+		updateETAInActiveRequestTable();
+		sendSSM = true;
+		sendPriorityRequestList = true;
 	}
 
-	setPriorityRequestStatus();
-	updateETAInActiveRequestTable();
-	sendSSM = true;
-	sendPriorityRequestList = true;
+	else
+	{
+		sendSSM = false;
+		sendPriorityRequestList = false;
+	}
 }
 
 PriorityRequestServer::~PriorityRequestServer()

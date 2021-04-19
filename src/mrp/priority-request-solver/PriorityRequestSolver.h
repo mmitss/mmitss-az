@@ -65,6 +65,7 @@ private:
   double offset{};
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
+  string scheduleJsonString{};
   string fileName{};
   ofstream logFile;
 

@@ -648,8 +648,7 @@ skip:
 */
 string PriorityRequestSolver::getScheduleforTCI()
 {
-    string scheduleJsonString{};
-
+    scheduleJsonString.clear();
     findEVInList();
     findCoordinationRequestInList();
     setOptimizationInput();
@@ -689,11 +688,6 @@ string PriorityRequestSolver::getScheduleforTCI()
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
     trafficControllerStatus.clear();
-
-    loggingOptimizationData();
-    displayConsoleData("The optimal schedule will send to TCI");
-    loggingData("The optimal schedule will send to TCI");
-    loggingData(scheduleJsonString);
 
     return scheduleJsonString;
 }
@@ -1193,6 +1187,20 @@ bool PriorityRequestSolver::findCoordinationRequestInList()
 
 bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
 {
+    if (optimalSolutionStatus)
+    {
+        loggingOptimizationData();
+        displayConsoleData("The optimal schedule will send to TCI");
+        loggingData("The optimal schedule will send to TCI");
+        loggingData(scheduleJsonString);
+    }
+
+    else
+    {
+        displayConsoleData("The schedule will not send to TCI since it doesn't pass validation process");
+        loggingData("The schedule will not send to TCI since it doesn't pass validation process");
+    }
+
     return optimalSolutionStatus;
 }
 
@@ -1339,7 +1347,7 @@ void PriorityRequestSolver::readConfigFile()
     {
         double timeStamp = getPosixTimestamp();
         logFile.open(fileName);
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRSolver Logfile is opened for " << intersectionName << " intersection" << endl;
+        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
     }
 }
 
@@ -1352,7 +1360,7 @@ void PriorityRequestSolver::loggingData(string logString)
 
     if (logging)
     {
-        logFile << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
         logFile << logString << endl;
     }
 }
@@ -1366,7 +1374,7 @@ void PriorityRequestSolver::displayConsoleData(string consoleString)
 
     if (consoleOutput)
     {
-        cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
         cout << consoleString << endl;
     }
 }
@@ -1382,13 +1390,13 @@ void PriorityRequestSolver::loggingOptimizationData()
     {
         double timeStamp = getPosixTimestamp();
 
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization data file is following\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization data file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationModelData.dat");
         for (string line; getline(infile, line);)
             logFile << line << endl;
         infile.close();
 
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization results file is following\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization results file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationResults.txt");
         for (std::string line; getline(infile, line);)
             logFile << line << endl;

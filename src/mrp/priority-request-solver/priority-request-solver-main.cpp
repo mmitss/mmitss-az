@@ -45,6 +45,7 @@ int main()
     string tciJsonString{};
 
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
+    // priorityRequestSolver.terminateProgram();
 
     while (true)
     {
@@ -103,7 +104,6 @@ int main()
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 if (priorityRequestSolver.getOptimalSolutionValidationStatus())
                     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-
 
                 //If requires, check for the priority weights update from the config file
                 if (priorityRequestSolver.checkUpdatesForPriorityWeights())
