@@ -287,13 +287,13 @@ class Ntcip1202v2Blob:
                                             "Phase": self.currentPhases[0],
                                             "State": self.vehCurrState[self.currentPhases[0]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1],
-                                            "GMaxEndTime" : gMaxEndTime[0]
+                                            "RemainingGMax" : gMaxEndTime[0]
                                         },
                                         {   
                                             "Phase": self.currentPhases[1],
                                             "State": self.vehCurrState[self.currentPhases[1]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1],
-                                            "GMaxEndTime" : gMaxEndTime[1]
+                                            "RemainingGMax" : gMaxEndTime[1]
                                         }
                                     ]
                             }

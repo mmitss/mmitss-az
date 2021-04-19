@@ -345,11 +345,12 @@ class SignalController:
         currentAndNextPhasesDict["MsgType"] = "CurrNextPhaseStatus"
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
         currentAndNextPhasesDict["vehicleCalls"] = phaseCallsDict["vehicleCalls"]
+        currentAndNextPhasesDict["totalVehicleCalls"] = len(phaseCallsDict["vehicleCalls"])
 
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        self.logger.write("Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
+        self.logger.write("Sent curr and NextPhasestatus to solver:" + str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
