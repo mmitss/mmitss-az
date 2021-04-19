@@ -5,23 +5,24 @@
         {
             "Phase": 1,
             "State": "green",
-            "ElapsedTime": 400,
+            "ElapsedTime": 4,
             "RemainingGMax": 347
         },
         {
             "Phase": 5,
             "State": "green",
-            "ElapsedTime": 400,
+            "ElapsedTime": 4,
             "RemainingGMax": 347
         }
     ],
+    
     "nextPhases": [
         0
     ],
     "vehicleCalls": [
         2,
-        1,
+        4,
         6,
-        5
-    ]
+        8
+    ]    
 }

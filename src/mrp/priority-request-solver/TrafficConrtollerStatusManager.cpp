@@ -304,9 +304,9 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
     }
 
     else
-    { 
+    {
         getConflictingPhaseCallStatus();
-        
+
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
             temporaryPhase = trafficControllerStatus[i].startingPhase1;
@@ -314,9 +314,9 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if(conflictingPhaseCall)
+            if (conflictingPhaseCall)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - trafficControllerStatus[i].remainingGMax1;
-            
+
             else if (!conflictingPhaseCall && trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
@@ -324,10 +324,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-            
-            if(conflictingPhaseCall)
+
+            if (conflictingPhaseCall)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - trafficControllerStatus[i].remainingGMax2;
-            
+
             else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
 
@@ -367,7 +367,7 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
 
     if (trafficControllerStatus[0].elapsedGreen1 < 0)
         trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
-    
+
     if (trafficControllerStatus[0].elapsedGreen2 < 0)
         trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
 }
@@ -380,27 +380,30 @@ void TrafficConrtollerStatusManager::getConflictingPhaseCallStatus()
     vector<int> phasesInRingBarrierGroup1{1, 2, 5, 6};
     vector<int> phasesInRingBarrierGroup2{3, 4, 7, 8};
 
-    if (trafficControllerStatus[0].startingPhase1 <= 2)
-        phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
-
-    else if (trafficControllerStatus[0].startingPhase1 > 2 && trafficControllerStatus[0].startingPhase1 <= 4)
-        phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
-    
-    else if (trafficControllerStatus[0].startingPhase2 <= 6)
-        phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
-
-    else if (trafficControllerStatus[0].startingPhase2 > 6 && trafficControllerStatus[0].startingPhase2 <= 8)
-        phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
-
-    for (size_t i = 0; i < phasesInRingBarrierGroup.size(); i++)
+    if (!vehicleCallList.empty())
     {
-        temporaryPhase = phasesInRingBarrierGroup.at(i);
-        it = std::find(vehicleCallList.begin(), vehicleCallList.end(), temporaryPhase);
+        if (trafficControllerStatus[0].startingPhase1 <= 2)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
 
-        if (it != vehicleCallList.end())
+        else if (trafficControllerStatus[0].startingPhase1 > 2 && trafficControllerStatus[0].startingPhase1 <= 4)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
+
+        else if (trafficControllerStatus[0].startingPhase2 <= 6)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
+
+        else if (trafficControllerStatus[0].startingPhase2 > 6 && trafficControllerStatus[0].startingPhase2 <= 8)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
+
+        for (size_t i = 0; i < phasesInRingBarrierGroup.size(); i++)
         {
-            conflictingPhaseCall = true;
-            break;
+            temporaryPhase = phasesInRingBarrierGroup.at(i);
+            it = std::find(vehicleCallList.begin(), vehicleCallList.end(), temporaryPhase);
+
+            if (it != vehicleCallList.end())
+            {
+                conflictingPhaseCall = true;
+                break;
+            }
         }
     }
 }
