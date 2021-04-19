@@ -1122,7 +1122,7 @@ void PriorityRequestGenerator::loggingData(string logString)
 	if (logging)
 	{
 		logFile.open(logFileName, std::ios_base::app);
-		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
+		logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] ";
 		logFile << logString << endl;
 		logFile.close();
 	}
@@ -1139,7 +1139,7 @@ void PriorityRequestGenerator::displayConsoleData(string consoleString)
 	if (consoleOutput)
 	{	
 		logFile.open(logFileName, std::ios_base::app);
-		cout << "[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+		cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
 		cout << consoleString << endl;
 		logFile.close();
 	}
@@ -1182,7 +1182,7 @@ void PriorityRequestGenerator::readConfigFile()
 	if (logging)
 	{
 		logFile.open(logFileName);
-		logFile  << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRG Logfile is opened " << endl;
+		logFile  << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRG logfile" << endl;
 		logFile.close();
 	}
 }
