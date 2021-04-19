@@ -301,6 +301,26 @@ class SignalController:
                 nextPhasesDict= {"nextPhases":[nextPhasesList[0], nextPhasesList[1]]}
             self.logger.write("Current next phases are " + str(nextPhasesList))
             return nextPhasesDict
+        
+        def getPhasesCallsDict() -> dict:
+            """
+            requests the "veh and ped calls" in the controller through an Snmp::getValue method.
+                        
+            Returns:
+            --------
+                A dictionary containing the list of next phases.
+            """
+            vehCallsList = []
+            vehCallsInt = int(self.snmp.getValue(StandardMib.VEHICLE_CALLS))
+            vehCallsStr = str(f'{(vehCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if vehCallsStr[i]=="1":
+                    vehCallsList = vehCallsList + [i+1]
+
+            phaseCallsDict = {"vehicleCalls":vehCallsList}
+            
+            return phaseCallsDict
+
         ######################## Definition End: getNextPhasesDict() ########################
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -315,9 +335,17 @@ class SignalController:
         else:
             nextPhasesDict = getNextPhasesDict()
 
+        if ((currentPhasesDict["currentPhases"][0]["State"]=="green") or (currentPhasesDict["currentPhases"][1]["State"]=="green")):
+            phaseCallsDict = getPhasesCallsDict()
+        else: 
+            phaseCallsDict = {"vehicleCalls":[]}
+
+
         currentAndNextPhasesDict = currentPhasesDict
         currentAndNextPhasesDict["MsgType"] = "CurrNextPhaseStatus"
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
+        currentAndNextPhasesDict["vehicleCalls"] = phaseCallsDict["vehicleCalls"]
+
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
