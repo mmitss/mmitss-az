@@ -13,7 +13,6 @@
   1. An API for PriorityRequestSolver  
 */
 
-#include <UdpSocket.h>
 #include "PriorityRequestSolver.h"
 #include "SolverDataManager.h"
 
