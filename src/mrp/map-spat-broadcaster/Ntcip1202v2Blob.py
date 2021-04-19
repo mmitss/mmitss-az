@@ -141,7 +141,7 @@ class Ntcip1202v2Blob:
         for i in range(4,8):
             if self.vehCurrState[i] == GREEN:
                 self.currentPhases[1] = (i+1)
-
+        
         # PhaseStatusPermissive:
         leftTurns = [1,3,5,7]
         for leftTurn in leftTurns:
@@ -273,18 +273,27 @@ class Ntcip1202v2Blob:
         return self.msOfMinute
 
     def getCurrentPhasesDict(self):
+        gMaxEndTime = [None, None]
+
+        if (self.vehCurrState[self.currentPhases[0]-1] == "green"):
+            gMaxEndTime[0] = self.vehMaxEndTime[self.currentPhases[0]-1]
+        if (self.vehCurrState[self.currentPhases[1]-1] == "green"):
+            gMaxEndTime[1] = self.vehMaxEndTime[self.currentPhases[1]-1]
+        
         currentPhasesDict = {
                                 "currentPhases":
                                     [ 
                                         {   
                                             "Phase": self.currentPhases[0],
                                             "State": self.vehCurrState[self.currentPhases[0]-1],
-                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1] 
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1],
+                                            "GMaxEndTime" : gMaxEndTime[0]
                                         },
                                         {   
                                             "Phase": self.currentPhases[1],
                                             "State": self.vehCurrState[self.currentPhases[1]-1],
-                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1] 
+                                            "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1],
+                                            "GMaxEndTime" : gMaxEndTime[1]
                                         }
                                     ]
                             }

@@ -47,7 +47,7 @@ def main():
     
     snmpEngineAddress = (mrpIp, config["PortNumber"]["SnmpEngine"])
     msgEncoderAddress = (mrpIp, config["PortNumber"]["MessageTransceiver"]["MessageEncoder"])
-    dataCollectorServerAddress = (config["DataCollectorIP"], config["PortNumber"]["DataCollector"])
+    dataCollectorServerAddress = (config["DataTransfer"]["server"]["ip_address"], config["PortNumber"]["DataCollector"])
     localDataCollectorAddress = (config["HostIp"], config["PortNumber"]["DataCollector"])
     msgDistributorAddress = (config["MessageDistributorIP"], config["PortNumber"]["MessageDistributor"])
     tci_currPhaseAddress = (mrpIp, config["PortNumber"]["TrafficControllerCurrPhaseListener"])
@@ -116,7 +116,7 @@ def main():
         elif addr[0] == controllerIp:
             spatBlob = data
             if spatBroadcastSuccessFlag == False:
-                print("\nStarted receiving packets from the Signal Controller. SPAT Broadcast Set Successfully!")
+                print("\nStarted receiving packets from the Signal Controller. MAP/SPAT Broadcast Set Successfully!")
                 spatBroadcastSuccessFlag = True
             # Send spat blob to external clients:       
             for client in clients_spatBlob:
@@ -142,8 +142,8 @@ def main():
             currentSpatObject.setmsgCnt(msgCnt)
             currentSpatObject.fillSpatInformation(currentBlob)
             spatJsonString = currentSpatObject.Spat2Json()
-            currentPhasesJson = json.dumps(currentBlob.getCurrentPhasesDict())
-
+            currentPhasesDict = currentBlob.getCurrentPhasesDict()
+            currentPhasesJson = json.dumps(currentPhasesDict)
             vehCurrStateJson = json.dumps({
                 "MsgType": "CurrentState_VehiclePhases",
                 "Intersection": intersectionName,
@@ -164,7 +164,6 @@ def main():
             if spatMapMsgCount > 9:
                 s.sendto(mapPayload.encode(), msgEncoderAddress)
                 s.sendto(mapJson.encode(), msgDistributorAddress)
-                print("MapSpatBroadcaster Sent Map")
                 spatMapMsgCount = 0
         
 def checkIfProcessRunning(processName):
