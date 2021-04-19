@@ -15,7 +15,7 @@
 */
 
 #include "PriorityRequestSolver.h"
-
+#include "glpk.h"
 #include <stdio.h>
 #include <sys/time.h>
 #include <algorithm>
