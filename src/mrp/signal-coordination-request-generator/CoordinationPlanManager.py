@@ -37,13 +37,15 @@ import datetime
 import time
 import calendar
 from datetime import date
+from Logger import Logger
 
 MinuteToSecondCoversion = 60.0
 HourToSecondConversion = 3600.0
 
 
 class CoordinationPlanManager:
-    def __init__(self, coordinationConfigData, config):
+    def __init__(self, coordinationConfigData, config, logger:Logger):
+        self.logger = logger
         self.coordinationConfigData = coordinationConfigData
         self.config = config
         self.activePlanCheckingTime = 0.0
@@ -109,9 +111,8 @@ class CoordinationPlanManager:
                         self.coordinationEndTime_Hour = parameters['CoordinationEndTime_Hour']
                         self.coordinationEndTime_Minute = parameters['CoordinationEndTime_Minute']
                         self.fillUpCoordinationParametersDictionary()
-
-                        print("\n[" + str(datetime.datetime.now()) + "] " + "Active Coordination Parameter at time " + str(
-                            time.time()) + " is following: \n", self.coordinationParametersDictionary)
+                        self.logger.loggingAndConsoleDisplay("Active Coordination Parameter is following:")
+                        self.logger.loggingAndConsoleDisplay(str(self.coordinationParametersDictionary))
                         break
 
         return self.coordinationParametersDictionary
@@ -151,8 +152,7 @@ class CoordinationPlanManager:
                     }
             })
         if bool(self.coordinationSplitDataDictionary):
-            print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination Split Data at time " +
-                  str(time.time()) + " is following: \n", self.coordinationSplitDataDictionary)
+            self.logger.loggingAndConsoleDisplay(str(self.coordinationSplitDataDictionary))                       
 
         return self.coordinationSplitDataDictionary
 
@@ -172,8 +172,7 @@ class CoordinationPlanManager:
                     HourToSecondConversion) + self.coordinationEndTime_Minute * float(MinuteToSecondCoversion)
 
                 if currentTime > coordinationEndTime and parameters['CoordinationPlanName'] == self.coordinationPlanName:
-                    print("\n[" + str(datetime.datetime.now()) + "] " + "Cleared timed-out coordination plan (" +
-                          self.coordinationPlanName + ") at time " + str(time.time()))
+                    self.logger.loggingAndConsoleDisplay("Cleared timed-out coordination plan")
                     self.coordinationPlanName = ""
                     self.coordinationParametersDictionary.clear()
                     clearTimedOutCoordinationPlan = True

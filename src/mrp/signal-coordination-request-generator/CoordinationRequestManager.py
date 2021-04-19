@@ -26,6 +26,7 @@ The methods available from this class are the following:
 - updateETAInCoordinationRequestTable(): Method to update ETA and coordination split for each coordination priority request
 - deleteTimeOutRequestFromCoordinationRequestTable(): Method to delete the coordination priority requestfor whom coordination split value is zero
 - clearTimedOutCoordinationPlan(): Method to clear coordination parameters for old coordination plan
+- getCoordinationClearRequestDictionary(): Method to get the Coordination clear requests if coordination request is empty or active coordination plan gets timed-out 
 - getCoordinationPriorityRequestDictionary(): Method to obtain json string for the coordination priority requests after deleting the old requests.
 - getCoordinationParametersDictionary(dictionary): Method to load the coordination prarameters dictionary
 - getCurrentTime(): Method to obtain the current time of today
@@ -35,6 +36,7 @@ import datetime
 import time
 import json
 from CoordinatedPhase import CoordinatedPhase
+from Logger import Logger
 
 HOURSINADAY = 24.0
 MINUTESINAHOUR = 60.0
@@ -43,7 +45,8 @@ HourToSecondConversion =  3600.0
 SECONDTOMILISECOND = 1000.0
 
 class CoordinationRequestManager:
-    def __init__(self, config):
+    def __init__(self, config, logger:Logger):
+        self.logger = logger
         self.config = config
         self.SRM_GAPOUT_TIME = 2.0
         self.requestTimedOutValue = self.config['SRMTimedOutTime'] - self.SRM_GAPOUT_TIME
@@ -55,6 +58,7 @@ class CoordinationRequestManager:
         self.priorityRequest = 1
         self.requestUpdate = 2
         self.coordinationPriorityRequestDictionary = {}
+        self.coordinationClearRequestDictionary = {}
         self.ETA_Update_Time = 1.0
         self.Minimum_ETA = 0.0
         self.Request_Delete_Time = 0.0
@@ -126,9 +130,10 @@ class CoordinationRequestManager:
             "msOfMinute": self.getMsOfMinute(),
             "CoordinationRequestList":{"requestorInfo": coordinationRequestDict}
         }
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Virtual Coordination Request at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
+
         self.requestSentTime = time.time()
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
+        self.logger.looging(coordinationPriorityRequestJsonString)
 
         return coordinationPriorityRequestJsonString
 
@@ -156,9 +161,9 @@ class CoordinationRequestManager:
         self.updateETAInCoordinationRequestTable()
         self.deleteTimeOutRequestFromCoordinationRequestTable        
         self.requestSentTime = time.time()
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Updated Coordination Request to avoid PRS timed-out at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-
+        self.logger.looging(coordinationPriorityRequestJsonString)
+        
         return coordinationPriorityRequestJsonString
 
     def updateETAInCoordinationRequestTable(self):
@@ -185,7 +190,6 @@ class CoordinationRequestManager:
                         self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] - (currentTime_UTC - temporaryRequestUpdateTime)
                     
                     self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
-                    # print("\n[" + str(datetime.datetime.now()) + "] " + "Update ETA in the Coordination Request List at time " + str(time.time()))
 
     def deleteTimeOutRequestFromCoordinationRequestTable(self):
         """
@@ -224,8 +228,7 @@ class CoordinationRequestManager:
             self.coordinationPriorityRequestDictionary = {}
 
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination request List after deletion process at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
-
+                
         return coordinationPriorityRequestJsonString
     
     def clearTimedOutCoordinationPlan(self):
@@ -234,7 +237,20 @@ class CoordinationRequestManager:
         """
         self.coordinationParametersDictionary.clear()
         self.coordinationPriorityRequestDictionary.clear()
-
+    
+    def getCoordinationClearRequestDictionary(self):
+        """
+        Method to get the Coordination clear requests if coordination request is empty or coordination plan gets timed-out 
+        """
+        self.coordinationClearRequestDictionary = {
+            "MsgType": "CoordinationRequest",
+            "noOfCoordinationRequest": 0
+            }
+        coordinationClearRequestJsonString = json.dumps(self.coordinationClearRequestDictionary)
+        self.logger.looging(coordinationClearRequestJsonString)
+        
+        return coordinationClearRequestJsonString
+    
     def getCoordinationParametersDictionary(self, dictionary):
         """
         Method to load the coordination prarameters dictionary
