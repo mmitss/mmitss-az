@@ -47,12 +47,13 @@ private:
   bool logging{};
   bool consoleOutput{};
   bool coordinationRequestStatus{};
+  bool conflictingPhaseCall{false};
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
   int coordinatedPhase1{};
   int coordinatedPhase2{};
-
+  vector<int> vehicleCallList{};
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
@@ -69,6 +70,7 @@ public:
   void manageCurrentSignalStatus(string jsonString);
   void modifyTrafficControllerStatus();
   void validateTrafficControllerStatus();
+  void getConflictingPhaseCallStatus();
   double getCurrentTime();
   vector<TrafficControllerData::TrafficConrtollerStatus> getTrafficControllerStatus(string jsonString);
 };

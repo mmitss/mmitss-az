@@ -1,18 +1,27 @@
 {
+    "MsgType": "CurrNextPhaseStatus",
+    "totalVehicleCalls": 4,
     "currentPhases": [
         {
-            "Phase": 4,
+            "Phase": 1,
             "State": "green",
-            "ElapsedTime": 85
+            "ElapsedTime": 400,
+            "RemainingGMax": 347
         },
         {
-            "Phase": 8,
+            "Phase": 5,
             "State": "green",
-            "ElapsedTime": 200
+            "ElapsedTime": 400,
+            "RemainingGMax": 347
         }
     ],
-    "MsgType": "CurrNextPhaseStatus",
     "nextPhases": [
         0
+    ],
+    "vehicleCalls": [
+        2,
+        1,
+        6,
+        5
     ]
 }
