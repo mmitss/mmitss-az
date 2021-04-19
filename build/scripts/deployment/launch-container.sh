@@ -24,5 +24,7 @@
 read -p "Full absolute path of MMITSS configuration directory (with no trailing /): " -e config_path
 read -p "Name of container image on the Dockerhub : " container_image
 read -p "Name of container: " container_name
+read -p "Specify timezone string: " timezone
 
-docker run --privileged -d --restart always -v $config_path:/nojournal --network host --name $container_name $container_image > /dev/null 2>&1 &
+
+docker run --privileged -d --restart always -v $config_path:/nojournal -e TZ=$timezone --network host --name $container_name $container_image > /dev/null 2>&1 &

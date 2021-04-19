@@ -52,7 +52,8 @@ private:
   bool emergencyVehicleStatus{};
   bool signalCoordinationRequestStatus{};
   bool optimalSolutionStatus{};
-  bool loggingStatus{};
+  bool logging{};
+  bool consoleOutput{};
   double EmergencyVehicleWeight{};
   double EmergencyVehicleSplitPhaseWeight{};
   double TransitWeight{};
@@ -64,7 +65,9 @@ private:
   double offset{};
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
+  string scheduleJsonString{};
   string fileName{};
+  ofstream logFile;
 
   vector<RequestList> priorityRequestList{};
   vector<RequestList> dilemmaZoneRequestList{};
@@ -112,10 +115,10 @@ public:
   void getCurrentSignalStatus(string jsonString);
   void validateEVTrafficSignalPlan();
   void getPriorityWeights();
-  void loggingSignalPlanData(string jsonString);
-  void loggingSplitData(string jsonString);
-  void loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString);
-  void loggingClearRequestData(string jsonString);
+  void readConfigFile();
+  void loggingData(string logString);
+  void displayConsoleData(string consoleString);
+  void loggingOptimizationData();  
   void printSignalPlan();
   string getScheduleforTCI();
   string getClearCommandScheduleforTCI();
@@ -123,8 +126,6 @@ public:
   string getCurrentSignalStatusRequestString();
   string getSignalCoordinationTimingPlanRequestString();
   int getMessageType(string jsonString);
-  double getSeconds();
-  double getCurrentTime();
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   bool findEVInList();
   bool findCoordinationRequestInList();
@@ -132,5 +133,4 @@ public:
   bool checkTrafficSignalTimingPlanStatus();
   bool checkSignalCoordinationTimingPlanStatus();
   bool checkUpdatesForPriorityWeights();
-  bool logging();
 };

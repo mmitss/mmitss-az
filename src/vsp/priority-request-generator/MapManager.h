@@ -22,14 +22,18 @@
 
 using std::cout;
 using std::endl;
+using std::string;
+using std::vector;
+using std::ofstream;
+using std::stringstream;
 
 class MapManager
 {
 private:
-  std::vector<Map::ActiveMap> activeMapList;
-  std::string mapPayload{};
-  std::string intersectionMapName{};
-  std::string timedOutMapPayLoad{};
+  vector<Map::ActiveMap> activeMapList;
+  string mapPayload{};
+  string intersectionMapName{};
+  string timedOutMapPayLoad{};
   int intersectinID{};
   int regionalID{};
   double mapReferenceLatitude{};
@@ -39,10 +43,10 @@ private:
 public:
   MapManager();
   ~MapManager();
-  std::vector<Map::AvailableMap> availableMapList;
-  void json2MapPayload(std::string jsonString);
-  void setTimedOutMapPayLoad(std::string timedOutPayLoad);
-  std::string getTimedOutMapPayLoad();
+  vector<Map::AvailableMap> availableMapList;
+  void json2MapPayload(string jsonString);
+  void setTimedOutMapPayLoad(string timedOutPayLoad);
+  string getTimedOutMapPayLoad();
   void writeMAPPayloadInFile();
   bool addToMapInList();
   bool updateMapPayLoadList();
@@ -58,7 +62,7 @@ public:
   void printAvailableMapList();
   void createActiveMapList(BasicVehicle basicVehicle);
   void deleteActiveMapfromList();
-  std::vector<Map::ActiveMap> getActiveMapList();
-  std::vector<Map::AvailableMap> getAvailableMapList();
+  vector<Map::ActiveMap> getActiveMapList();
+  vector<Map::AvailableMap> getAvailableMapList();
   void updateMapAge();
 };

@@ -17,9 +17,9 @@
 #include <cmath>
 #include <algorithm>
 
-TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
-                                                               int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, string file_Name,
-                                                               vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
+TrafficConrtollerStatusManager:: TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
+                                   int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, bool console_Output_Status,
+                                   vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
 {
     coordinationRequestStatus = coordination_Request_Status;
     cycleLength = cycle_Length;
@@ -27,8 +27,8 @@ TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination
     coordinationStartTime = coordination_StartTime;
     coordinatedPhase1 = coordinated_Phase1;
     coordinatedPhase2 = coordinated_Phase2;
-    loggingStatus = logging_Status;
-    fileName = file_Name;
+    logging = logging_Status;
+    consoleOutput = console_Output_Status;
 
     if (!traffic_Signal_Timing_Plan.empty())
         trafficSignalPlan = traffic_Signal_Timing_Plan;
@@ -50,7 +50,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     int temporaryNextPhase{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    double timeStamp = getPosixTimestamp();
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
     trafficControllerStatus.clear();
 
@@ -60,8 +60,6 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     string errors{};
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
-
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Current Signal Status" << endl;
 
     const Json::Value values = jsonObject["currentPhases"];
 
@@ -129,7 +127,8 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 */
                 if (temporaryCurrentPhase == temporaryNextPhase)
                 {
-                    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Current Phase and next phase is same" << endl;
+                    if (consoleOutput)
+                        cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current Phase and next phase is same" << endl;
                     break;
                 }
 
@@ -191,17 +190,12 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
         currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
 
-        //Temporary logging code for debugging coordination
-        ofstream outputfile;
-        ifstream infile;
-
-        if (loggingStatus)
+        //Temporary displaying output for debugging coordination
+        if (consoleOutput)
         {
-            outputfile.open(fileName, std::ios_base::app);
-            auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            double timeStamp = getPosixTimestamp();
 
-            outputfile << "\nThe elapsed time in a cycle at time " << currentTime << " is " << elapsedTimeInCycle << endl;
-            outputfile.close();
+            cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] The elapsed time in a cycle is " << elapsedTimeInCycle << endl;
         }
 
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)

@@ -75,7 +75,8 @@ class ConfigurationForm(FlaskForm):
     messageDistributorIP    = StringField('Message Distributor IP')
     priorityRequestGeneratorServerIP = StringField('Priority Request Generator Server IP Address (optional)')
     vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
-    logging                         = SelectField('Logging', choices = ["True", "False"])
+    logging                         = BooleanField('Logging')
+    consoleOutput                   = BooleanField('Console Output')
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
@@ -189,6 +190,7 @@ class SysConfig:
         self.priorityRequestGeneratorServerIP = data['PriorityRequestGeneratorServerIP']
         self.vehicleType = data['VehicleType']
         self.logging = data['Logging']
+        self.consoleOutput = data['ConsoleOutput']
         self.srmTimedOutTime = data['SRMTimedOutTime']
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
@@ -314,7 +316,7 @@ def prepareJSONData(data, form):
     data['PriorityRequestGeneratorServerIP']= form.priorityRequestGeneratorServerIP.data
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
-    data['Logging']= form.logging.data
+    data['ConsoleOutput']=form.consoleOutput.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= 'Deprecated'
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)

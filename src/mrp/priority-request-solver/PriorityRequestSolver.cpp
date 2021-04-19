@@ -20,12 +20,12 @@
 #include <sys/time.h>
 #include <algorithm>
 #include <cmath>
-#include <UdpSocket.h>
 #include "msgEnum.h"
 #include <time.h>
 
 PriorityRequestSolver::PriorityRequestSolver()
 {
+    readConfigFile();
     getPriorityWeights();
 }
 
@@ -35,7 +35,7 @@ PriorityRequestSolver::PriorityRequestSolver()
 int PriorityRequestSolver::getMessageType(string jsonString)
 {
     int messageType{};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -61,7 +61,7 @@ int PriorityRequestSolver::getMessageType(string jsonString)
             messageType = static_cast<int>(msgType::splitData);
 
         else
-            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Message type is unknown" << std::endl;
+            displayConsoleData("Message type is unknown");
     }
 
     return messageType;
@@ -73,7 +73,6 @@ int PriorityRequestSolver::getMessageType(string jsonString)
 void PriorityRequestSolver::createPriorityRequestList(string jsonString)
 {
     RequestList requestList;
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     priorityRequestList.clear();
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
@@ -82,7 +81,9 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Priority Request List from PRS" << endl;
+    displayConsoleData("Received Priority Request List from PRS");
+    loggingData("Received Priority Request List from PRS");
+    loggingData(jsonString);
 
     int noOfRequest = (jsonObject["PriorityRequestList"]["noOfRequest"]).asInt();
 
@@ -92,15 +93,9 @@ void PriorityRequestSolver::createPriorityRequestList(string jsonString)
         requestList.vehicleID = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
         requestList.vehicleType = jsonObject["PriorityRequestList"]["requestorInfo"][i]["vehicleType"].asInt();
         requestList.basicVehicleRole = jsonObject["PriorityRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
-        requestList.laneID = jsonObject["PriorityRequestList"]["requestorInfo"][i]["inBoundLaneID"].asInt();
         requestList.vehicleETA = jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"].asDouble();
         requestList.vehicleETA_Duration = jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"].asDouble();
         requestList.requestedPhase = jsonObject["PriorityRequestList"]["requestorInfo"][i]["requestedSignalGroup"].asInt();
-        requestList.prioritystatus = jsonObject["PriorityRequestList"]["requestorInfo"][i]["priorityRequestStatus"].asInt();
-        requestList.vehicleLatitude = jsonObject["PriorityRequestList"]["requestorInfo"][i]["latitude_DecimalDegree"].asDouble();
-        requestList.vehicleLongitude = jsonObject["PriorityRequestList"]["requestorInfo"][i]["longitude_DecimalDegree"].asDouble();
-        requestList.vehicleElevation = jsonObject["PriorityRequestList"]["requestorInfo"][i]["elevation_Meter"].asDouble();
-        requestList.vehicleHeading = jsonObject["PriorityRequestList"]["requestorInfo"][i]["heading_Degree"].asDouble();
         requestList.vehicleSpeed = jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"].asDouble();
         requestList.vehicleDistanceFromStopBar = requestList.vehicleSpeed * 3.28084 * requestList.vehicleETA;
         priorityRequestList.push_back(requestList);
@@ -586,9 +581,8 @@ void PriorityRequestSolver::getRequestedSignalGroup()
 */
 void PriorityRequestSolver::GLPKSolver()
 {
-    double startOfSolve = getSeconds();
+    double startOfSolve = getPosixTimestamp();
     double endOfSolve{};
-    double currentTime{};
     int ret{};
     int fail{0};
     char modFile[128] = "/nojournal/bin/OptimizationModel.mod";
@@ -628,15 +622,16 @@ void PriorityRequestSolver::GLPKSolver()
     glp_simplex(mip, NULL);
 
     fail = glp_intopt(mip, NULL);
-    endOfSolve = getSeconds();
-    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    endOfSolve = getPosixTimestamp();
 
     if (!fail)
-        cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Successfully solved the optimization problem" << endl;
-    else
-        cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Failed to solved the optimization problem successfully" << endl;
+        displayConsoleData("Successfully solved the optimization problem");
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Time requires to Solve the optimization problem " << endOfSolve - startOfSolve << endl;
+    else
+        displayConsoleData(" Failed to solved the optimization problem successfully");
+
+    displayConsoleData("Time requires to Solve the optimization problem is " + std::to_string(endOfSolve - startOfSolve));
+    loggingData("Time requires to Solve the optimization problem is " + std::to_string(endOfSolve - startOfSolve));
 
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
@@ -653,8 +648,7 @@ skip:
 */
 string PriorityRequestSolver::getScheduleforTCI()
 {
-    string scheduleJsonString{};
-
+    scheduleJsonString.clear();
     findEVInList();
     findCoordinationRequestInList();
     setOptimizationInput();
@@ -704,12 +698,15 @@ string PriorityRequestSolver::getScheduleforTCI()
 string PriorityRequestSolver::getClearCommandScheduleforTCI()
 {
     string clearScheduleJsonString{};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     ScheduleManager scheduleManager;
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Clear Request" << endl;
-
     clearScheduleJsonString = scheduleManager.createScheduleJsonString();
+
+    displayConsoleData("Received Clear Request from PRS");
+    loggingData("Received Clear Request from PRS");
+    displayConsoleData("Clear Request message will send to TCI");
+    loggingData("Clear Request message will send to TCI");
+    loggingData(clearScheduleJsonString);
 
     return clearScheduleJsonString;
 }
@@ -865,8 +862,13 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
     bool coordinationRequestStatus = findCoordinationRequestInList();
 
-    TrafficConrtollerStatusManager trafficConrtollerStatusManager(coordinationRequestStatus, cycleLength, offset, coordinationStartTime,
-                                                                  coordinatedPhase1, coordinatedPhase2, loggingStatus, fileName,
+    displayConsoleData("Received Current Signal Status from TCI");
+    loggingData("Received Current Signal Status from TCI");
+    loggingData(jsonString);
+
+    TrafficConrtollerStatusManager trafficConrtollerStatusManager(coordinationRequestStatus, cycleLength, offset,
+                                                                  coordinationStartTime, coordinatedPhase1, coordinatedPhase2,
+                                                                  logging, consoleOutput,
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
@@ -879,7 +881,6 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 {
     OptimizationModelManager optimizationModelManager;
     TrafficControllerData::TrafficSignalPlan signalPlan;
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -887,8 +888,9 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Signal Timing Plan" << endl;
-    loggingSignalPlanData(jsonString);
+    displayConsoleData("Received Signal Timing Plan from TCI");
+    loggingData("Received Signal Timing Plan from TCI");
+    loggingData(jsonString);
 
     trafficSignalPlan.clear();
     PhaseNumber.clear();
@@ -1002,7 +1004,6 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     TrafficControllerData::TrafficSignalPlan signalPlan;
     trafficSignalPlan_SignalCoordination.clear();
     double splitValue{};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader *reader = builder.newCharReader();
@@ -1010,8 +1011,9 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
     reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     delete reader;
 
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Received Split Data for Signal Coordination" << endl;
-    loggingSplitData(jsonString);
+    displayConsoleData("Received Split Data form SignalCoordinationRequestGenerator");
+    loggingData("Received Split Data form SignalCoordinationRequestGenerator");
+    loggingData(jsonString);
 
     int noOfSplitData = (jsonObject["TimingPlan"]["NoOfPhase"]).asInt();
     cycleLength = jsonObject["CycleLength"].asDouble();
@@ -1185,13 +1187,27 @@ bool PriorityRequestSolver::findCoordinationRequestInList()
 
 bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
 {
+    if (optimalSolutionStatus)
+    {
+        loggingOptimizationData();
+        displayConsoleData("The optimal schedule will send to TCI");
+        loggingData("The optimal schedule will send to TCI");
+        loggingData(scheduleJsonString);
+    }
+
+    else
+    {
+        displayConsoleData("The schedule will not send to TCI since it doesn't pass validation process");
+        loggingData("The schedule will not send to TCI since it doesn't pass validation process");
+    }
+
     return optimalSolutionStatus;
 }
 
 bool PriorityRequestSolver::checkUpdatesForPriorityWeights()
 {
     bool priorityWeightsCheckingRequirement{false};
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    double currentTime = getPosixTimestamp();
 
     if (currentTime - priorityWeightsCheckedTime > 120.0)
         priorityWeightsCheckingRequirement = true;
@@ -1203,7 +1219,7 @@ bool PriorityRequestSolver::checkUpdatesForPriorityWeights()
 */
 void PriorityRequestSolver::getPriorityWeights()
 {
-    double currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+    double currentTime = getPosixTimestamp();
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
@@ -1221,7 +1237,7 @@ void PriorityRequestSolver::getPriorityWeights()
     CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
 
     priorityWeightsCheckedTime = currentTime;
-    cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] priority requests weights are updated " << std::endl;
+    displayConsoleData("priority requests weights are updated");
 }
 
 /*
@@ -1260,29 +1276,6 @@ string PriorityRequestSolver::getSignalCoordinationTimingPlanRequestString()
     return jsonString;
 }
 
-double PriorityRequestSolver::getSeconds()
-{
-    struct timeval tv_tt;
-    gettimeofday(&tv_tt, NULL);
-    return (static_cast<double>(tv_tt.tv_sec) + static_cast<double>(tv_tt.tv_usec) / 1.e6);
-}
-
-double PriorityRequestSolver::getCurrentTime()
-{
-    double currentTime{};
-    time_t s = 1;
-    struct tm *current_time;
-
-    // time in seconds
-    s = time(NULL);
-
-    // to get current time
-    current_time = localtime(&s);
-
-    currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
-
-    return currentTime;
-}
 /*
     -Check whether static traffic signal timing plan is available or not
 */
@@ -1327,11 +1320,9 @@ bool PriorityRequestSolver::checkSignalCoordinationTimingPlanStatus()
 /*
     -Check whether to log data or not
 */
-bool PriorityRequestSolver::logging()
+void PriorityRequestSolver::readConfigFile()
 {
-    string logging{};
     string intersectionName{};
-    ofstream outputfile;
     Json::Value jsonObject;
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
@@ -1345,117 +1336,75 @@ bool PriorityRequestSolver::logging()
     struct tm tstruct;
     char logFileOpenningTime[80];
     tstruct = *localtime(&now);
-    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%Y-%m-%d-%X", &tstruct);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
 
-    logging = jsonObject["Logging"].asString();
+    logging = jsonObject["Logging"].asBool();
+    consoleOutput = jsonObject["ConsoleOutput"].asBool();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/PRSolverLog-" + intersectionName + "-" + logFileOpenningTime + ".txt";
+    fileName = "/nojournal/bin/log/" + intersectionName + "_prsolverLog_" + logFileOpenningTime + ".log";
 
-    if (logging == "True")
+    if (logging)
     {
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        loggingStatus = true;
-        outputfile.open(fileName);
-        outputfile << "File opened at time : " << currentTime << std::endl;
-        outputfile.close();
+        double timeStamp = getPosixTimestamp();
+        logFile.open(fileName);
+        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
     }
-    else
-        loggingStatus = false;
+}
 
-    return loggingStatus;
+/*
+	- Method for logging data in a file
+*/
+void PriorityRequestSolver::loggingData(string logString)
+{
+    double timestamp = getPosixTimestamp();
+
+    if (logging)
+    {
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        logFile << logString << endl;
+    }
+}
+
+/*
+	- Method for displaying console output
+*/
+void PriorityRequestSolver::displayConsoleData(string consoleString)
+{
+    double timestamp = getPosixTimestamp();
+
+    if (consoleOutput)
+    {
+        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        cout << consoleString << endl;
+    }
 }
 
 /*
     - Loggers to log priority request string, signal status string, OptimizationModelData.dat and OptimizationResults.txt files
 */
-void PriorityRequestSolver::loggingOptimizationData(string priorityRequestString, string signalStatusString, string scheduleString)
+void PriorityRequestSolver::loggingOptimizationData()
 {
-    ofstream outputfile;
     ifstream infile;
 
-    if (loggingStatus == true)
+    if (logging)
     {
-        outputfile.open(fileName, std::ios_base::app);
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        double timeStamp = getPosixTimestamp();
 
-        outputfile << "\nFollowing Priority Request is received from PRS at time " << currentTime << endl;
-        outputfile << priorityRequestString << endl;
-
-        outputfile << "\nFollowing Signal Status is received from TCI at time " << currentTime << endl;
-        outputfile << signalStatusString << endl;
-
-        outputfile << "\nCurrent Dat File at time : " << currentTime << endl;
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization data file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationModelData.dat");
-
         for (string line; getline(infile, line);)
-            outputfile << line << endl;
-
+            logFile << line << endl;
         infile.close();
 
-        outputfile << "\nCurrent Results File at time : " << currentTime << endl;
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization results file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationResults.txt");
         for (std::string line; getline(infile, line);)
-            outputfile << line << endl;
-
+            logFile << line << endl;
         infile.close();
-
-        outputfile << "\nFollowing Schedule will send to TCI at time " << currentTime << endl;
-        outputfile << scheduleString << endl;
-
-        outputfile.close();
-    }
-}
-
-/*
-    - Loggers to log static signal timing plan data
-*/
-void PriorityRequestSolver::loggingSignalPlanData(string jsonString)
-{
-    if (loggingStatus)
-    {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-        outputfile << "\nFollowing Signal Plan is received from TCI at time " << currentTime << endl;
-        outputfile << jsonString << endl;
-        outputfile.close();
-    }
-}
-
-/*
-    - Loggers to log split data for signal coordinatio
-*/
-void PriorityRequestSolver::loggingSplitData(string jsonString)
-{
-    if (loggingStatus)
-    {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-        outputfile << "\nFollowing Split Data is received from Signal Coordination Generator at time " << currentTime << endl;
-        outputfile << jsonString << endl;
-        outputfile.close();
-    }
-}
-/*
-    - Loggers to log clear request string
-*/
-void PriorityRequestSolver::loggingClearRequestData(string jsonString)
-{
-    if (loggingStatus)
-    {
-        ofstream outputfile;
-        outputfile.open(fileName, std::ios_base::app);
-        auto currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-
-        outputfile << "\nFollowing Clear Request is sent to TCI at time " << currentTime << endl;
-        outputfile << jsonString << endl;
-        outputfile.close();
     }
 }
 
 PriorityRequestSolver::~PriorityRequestSolver()
 {
+    logFile.close();
 }

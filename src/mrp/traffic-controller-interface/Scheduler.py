@@ -2,9 +2,11 @@ import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from SignalController import SignalController
 from abc import ABC
+from Logger import Logger
 
 class Scheduler(ABC):
-    def __init__(self, signalController):
+    def __init__(self, signalController, logger:Logger):
+        self.logger = logger
         self.signalController = signalController
         self.ntcipBackupTime_Sec = signalController.ntcipBackupTime_sec
 

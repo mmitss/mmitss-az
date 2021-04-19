@@ -2,7 +2,7 @@
 #    Dockerfile to build an x86 platform image for the vsp                    #
 #    Image name: mmitssuarizona/mmitss-vsp-x86                                #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-x86-base:2.0
+FROM mmitssuarizona/mmitss-x86-base:2.1
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY build/bin/WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss

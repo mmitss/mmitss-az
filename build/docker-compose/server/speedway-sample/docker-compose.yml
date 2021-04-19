@@ -5,7 +5,10 @@ services:
 # for example /home/<my_home_directory>
 
 x-var: &IMAGE_MRP
-    mmitssuarizona/mmitss-mrp-$PROCESSOR:2.0
+    mmitssuarizona/mmitss-mrp-$PROCESSOR:2.1
+
+x-var: &TIMEZONE_STRING
+    America/Phoenix
 
     speedway-campbell:
         container_name: speedway-campbell
@@ -17,7 +20,9 @@ x-var: &IMAGE_MRP
             mmitss_vlan:
                 ipv4_address: 10.12.6.3
         image: *IMAGE_MRP
-
+        environment: 
+            - TZ=*TIMEZONE_STRING
+            
     speedway-cherry:
         container_name: speedway-cherry
         volumes:
@@ -28,6 +33,8 @@ x-var: &IMAGE_MRP
             mmitss_vlan:
                 ipv4_address: 10.12.6.6
         image: *IMAGE_MRP
+        environment: 
+            - TZ=*TIMEZONE_STRING
 
     speedway-mountain:
         container_name: speedway-mountain
@@ -39,6 +46,8 @@ x-var: &IMAGE_MRP
             mmitss_vlan:
                 ipv4_address: 10.12.6.9      
         image: *IMAGE_MRP
+        environment: 
+            - TZ=*TIMEZONE_STRING
 
     speedway-park:
         container_name: 10.12.6.12
@@ -50,6 +59,8 @@ x-var: &IMAGE_MRP
             mmitss_vlan:
                 ipv4_address: 10.12.6.12       
         image: *IMAGE_MRP
+        environment: 
+            - TZ=*TIMEZONE_STRING
 
 networks:
     mmitss_vlan:

@@ -14,22 +14,22 @@
 */
 #pragma once
 #include <iomanip>
-#include <chrono>
 #include <vector>
 #include <iostream>
 #include "TrafficSignalPlan.h"
 #include "json/json.h"
+#include "Timestamp.h"
 
 using std::cout;
 using std::endl;
-using std::string;
-using std::vector;
+using std::fixed;
 using std::ifstream;
 using std::ios;
 using std::ofstream;
-using std::fixed;
-using std::showpoint;
 using std::setprecision;
+using std::showpoint;
+using std::string;
+using std::vector;
 
 #define Initialize 0.0
 #define Tolerance 2.0
@@ -44,29 +44,31 @@ using std::setprecision;
 class TrafficConrtollerStatusManager
 {
 private:
-    bool loggingStatus{};
-    bool coordinationRequestStatus{};
-    double cycleLength{};
-    double offset{};
-    double coordinationStartTime{};
-    int coordinatedPhase1{};
-    int coordinatedPhase2{};
-    string fileName{};
+  bool logging{};
+  bool consoleOutput{};
+  bool coordinationRequestStatus{};
+  double cycleLength{};
+  double offset{};
+  double coordinationStartTime{};
+  int coordinatedPhase1{};
+  int coordinatedPhase2{};
 
-    vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
-    vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
-    vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
+  vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
+  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
+  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
 
 public:
-    TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
-                                   int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, string file_Name,
-                                   vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan);
+  TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value,
+                                 double coordination_StartTime, int coordinated_Phase1, int coordinated_Phase2,
+                                 bool logging_Status, bool console_Output_Status,
+                                 vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan,
+                                 vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan);
 
-    ~TrafficConrtollerStatusManager();
+  ~TrafficConrtollerStatusManager();
 
-    void manageCurrentSignalStatus(string jsonString);
-    void modifyTrafficControllerStatus();
-    void validateTrafficControllerStatus();
-    double getCurrentTime();
-    vector<TrafficControllerData::TrafficConrtollerStatus> getTrafficControllerStatus(string jsonString);
+  void manageCurrentSignalStatus(string jsonString);
+  void modifyTrafficControllerStatus();
+  void validateTrafficControllerStatus();
+  double getCurrentTime();
+  vector<TrafficControllerData::TrafficConrtollerStatus> getTrafficControllerStatus(string jsonString);
 };

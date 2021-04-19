@@ -13,12 +13,8 @@
   1. This script is the demonstration of Prioririty Request Server API.
 */
 
-#include <iostream>
-#include <fstream>
 #include "PriorityRequestServer.h"
 #include <UdpSocket.h>
-#include "msgEnum.h"
-#include "json/json.h"
 
 int main()
 {
@@ -26,9 +22,9 @@ int main()
     std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
-    Json::CharReader * reader = builder.newCharReader();
+    Json::CharReader *reader = builder.newCharReader();
     std::string errors{};
-    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
     delete reader;
 
     PriorityRequestServer PRS;
@@ -40,9 +36,9 @@ int main()
     const int solverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
     const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
-   
+
     const string LOCALHOST = jsonObject["HostIp"].asString();
-    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();    
+    const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
     string ssmJsonString{};
     string solverJsonString{};
     string systemPerformanceDataCollectorJsonString{};
@@ -69,17 +65,23 @@ int main()
                 PRS.manageCoordinationRequest(receivedJsonString);
 
             //Storing the received message in the logfile, if logging is true in config file
-            PRS.loggingData(receivedJsonString, "received");
-            
+            PRS.loggingData(receivedJsonString);
+
             //Creating SSM JSON string
-            ssmJsonString = PRS.createSSMJsonString(signalStatus);
-            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
-            PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
-            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+            if (PRS.checkSsmSendingRequirement())
+            {
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+            }
             //Creating JSON string for solver
-            solverJsonString = PRS.createJsonStringForPrioritySolver();
-            PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
-            PRS.printActiveRequestTable();
+            if (PRS.getPriorityRequestListSendingRequirement())
+            {
+                solverJsonString = PRS.createJsonStringForPrioritySolver();
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
+                PRS.printActiveRequestTable();
+            }
         }
 
         else
@@ -90,6 +92,11 @@ int main()
             */
             if (PRS.checkTimedOutRequestDeletingRequirement())
             {
+                ssmJsonString = PRS.createSSMJsonString(signalStatus);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
+                PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
+                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
+                
                 solverJsonString = PRS.createJsonStringForPrioritySolver();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
                 PRS.printActiveRequestTable();
@@ -101,7 +108,7 @@ int main()
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(solverPortNo), solverJsonString);
             }
             // System Performance data will send to the data-collector software component
-            if(PRS.sendSystemPerformanceDataLog())
+            if (PRS.sendSystemPerformanceDataLog())
             {
                 systemPerformanceDataCollectorJsonString = PRS.createJsonStringForSystemPerformanceDataLog();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), systemPerformanceDataCollectorJsonString);
@@ -110,14 +117,14 @@ int main()
             if (PRS.updateETA())
             {
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                PRS.printActiveRequestTable();                
+                PRS.printActiveRequestTable();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
             }
         }
     }
-    
+
     PRSSocket.closeSocket();
     return 0;
 }

@@ -30,7 +30,9 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 # include <iostream>
 # include <bits/stdc++.h> 
 # include <chrono>
+# include <sstream>
 # include "SnmpEngine.h"
+# include "Timestamp.h"
 
 /* Instantiates an object of the SnmpEngine class and establishes an SNMP session 
    with the target SNMP device. 
@@ -38,13 +40,35 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
     (1) IP address of the target SNMP device (std::string)
     (2) NTCIP port of the target SNMP device. (int)
 */
+
 SnmpEngine::SnmpEngine(std::string ip, int port)
 {
-    // Check if the target SNMP device is in the network by executing a ping test.
-    std::cout << "Target device IP address: " << ip << std::endl;
-    std::cout << "Target device NTCIP port: " << port << std::endl;
-    std::cout << "\nVerifying the network connection with the target SNMP device" << std::endl;
+    Json::Value jsonObject_config;
+    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    std::string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
+    Json::CharReaderBuilder builder;
+    Json::CharReader * reader = builder.newCharReader();
+    std::string errors{};
+    reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject_config, &errors);        
+    delete reader;
+    configJson.close();
+
+    logging = jsonObject_config["Logging"].asBool();
+    consoleOutput = jsonObject_config["ConsoleOutput"].asBool();
+
+    if(logging==true)
+    {
+        initializeLogFile(jsonObject_config);
+    }
+
+        
+    logAndOrDisplay(("Target device IP address: " + ip));
+    logAndOrDisplay(("Target device NTCIP port: " + std::to_string(port)));
+    logAndOrDisplay("Verifying the network connection with the target SNMP device...");
+    logAndOrDisplay("PING test begins");
+
     
+    // Check if the target SNMP device is in the network by executing a ping test.
     std::string pingCommand = "ping -c 1 " + ip;
     int pingStatus = system(pingCommand.c_str());  
     
@@ -54,10 +78,17 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
         bool ping_ret = WEXITSTATUS(pingStatus);
 
         if(ping_ret==0)
-            std::cout << "\nSuccessfully verified the network connection with the target SNMP device!" << std::endl; 
+        {
+            logAndOrDisplay("PING test successful");
+            logAndOrDisplay("Successfully verified the network connection with the target SNMP device");
+        }
         else
         {
-            std::cout<<"Unable to verify the network connection with the target SNMP device.\nThe program will exit now."<< std::endl;
+            if(consoleOutput==true)
+            {
+                logAndOrDisplay("PING test failed");
+                logAndOrDisplay("Unable to verify the network connection with the target SNMP device. The program will exit now.");
+            }
             exit(0);
         }
     }
@@ -87,12 +118,43 @@ SnmpEngine::SnmpEngine(std::string ip, int port)
     // However, if the session fails to open, throw an error and exit from the program.
     if (!ss)
     {
-        snmp_sess_perror("Error in opening SNMP session! Program will exit now.", &session);
+        logAndOrDisplay("Error in opening SNMP session! Program will exit now.");
         exit(1);
     }
     else
     {
-        std::cout << "Ready to forward SNMP GET/SET requests." << std::endl;
+        logAndOrDisplay("Ready to forward SNMP GET/SET requests");
+    }
+}
+
+void SnmpEngine::initializeLogFile(Json::Value jsonObject_config)
+{
+    std::string intersectionName = jsonObject_config["IntersectionName"].asString();
+
+    time_t now = time(0);
+    struct tm tstruct;
+    char logFileOpenningTime[80];
+    tstruct = *localtime(&now);
+    strftime(logFileOpenningTime, sizeof(logFileOpenningTime), "%m%d%Y_%H%M%S", &tstruct);
+
+    std::string logfileName = "/nojournal/bin/log/" + intersectionName + "_snmpEngineLog_" + logFileOpenningTime + ".log";
+    logFile.open(logfileName);
+}
+
+void SnmpEngine::logAndOrDisplay(std::string logString)
+{
+    double timestamp = getPosixTimestamp();
+
+    if(consoleOutput==true)
+    {
+        std::cout << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        std::cout << logString << std::endl;
+    }
+
+    if(logging==true)
+    {
+        logFile << "[" << std::fixed << std::showpoint << std::setprecision(4) << timestamp << "] ";
+        logFile << logString << std::endl;
     }
 }
 
@@ -130,7 +192,6 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
     // Process the response
     if (status == STAT_SUCCESS && response->errstat == SNMP_ERR_NOERROR)
     {
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
         if (requestType == "get")
         {
             int out[50]{};
@@ -142,28 +203,35 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
                 out[i++] = *aa;
                 value = out[0];
             }  
-            std::cout << "SUCCESS in GET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            logAndOrDisplay(("SUCCESS in GET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         else
         {
-            std::cout << "SUCCESS in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            logAndOrDisplay(("SUCCESS in SET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         
     }
     else // Identify the reason of failure
     {
         if (status == STAT_SUCCESS)
-            fprintf(stderr, "Error in packet. Reason: %s\n",snmp_errstring(static_cast<int>(response->errstat)));     
+        {
+            logAndOrDisplay(("Error in packet. Reason:" + static_cast<std::string>(snmp_errstring(static_cast<int>(response->errstat)))));
+        }
         else if (status == STAT_TIMEOUT)
-            fprintf(stderr, "Timeout: No response from the target SNMP device.\n");
+            {
+                logAndOrDisplay("Timeout: No response from the target SNMP device");
+            }
         else
-            snmp_sess_perror("Unknown SNMP Error!\n", ss);
-        auto timenow = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+            {
+                logAndOrDisplay("Unknown SNMP Error");
+            }
         if(requestType == "get")
-            std::cout << "FAILURE in GET for OID:" << inputOid << " at time:" << timenow << std::endl;
+            {
+                logAndOrDisplay(("FAILURE in GET for OID:" + inputOid + "; Value=" + std::to_string(value)));
+            }
         else
         {
-            std::cout << "FAILURE in SET for OID:" << inputOid << " at time: " << timenow << ". Value=" << value << std::endl;
+            logAndOrDisplay(("FAILURE in SET for OID:" + inputOid + "; Value=" + std::to_string(value)));
         }
         value = -1;
 
@@ -181,6 +249,7 @@ int SnmpEngine::processSnmpRequest(std::string requestType, std::string inputOid
 
 SnmpEngine::~SnmpEngine()
 {
+    logFile.close();
     // Close the opened session
     snmp_close(ss);
 }

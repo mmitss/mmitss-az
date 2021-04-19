@@ -74,10 +74,10 @@
             "ActionPlan": [
                 {
                     "CoordinationPatternNo": 1,
-                    "CoordinationStartTime_Hour": 0,
-                    "CoordinationStartTime_Minute": 1,
-                    "CoordinationEndTime_Hour": 23,
-                    "CoordinationEndTime_Minute": 55
+                    "CoordinationStartTime_Hour": 7,
+                    "CoordinationStartTime_Minute": 0,
+                    "CoordinationEndTime_Hour": 7,
+                    "CoordinationEndTime_Minute": 30
                 },
                 {
                     "CoordinationPatternNo": 2,

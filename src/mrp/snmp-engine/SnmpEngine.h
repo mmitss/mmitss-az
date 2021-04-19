@@ -31,6 +31,8 @@ http://net-snmp.sourceforge.net/wiki/index.php/TUT:Simple_Application
 // Import the headers required to utilise Net-Snmp library:
 #include <net-snmp/net-snmp-config.h>
 #include <net-snmp/net-snmp-includes.h>
+#include <fstream>
+# include "json/json.h"
 
 class SnmpEngine
 {
@@ -48,9 +50,15 @@ class SnmpEngine
         size_t anOID_len = MAX_OID_LEN;
         oid anOID[MAX_OID_LEN];
         int status;
+        
+        bool consoleOutput = false;
+        bool logging = false;
+        std::ofstream logFile{};
 
     public:
         SnmpEngine(std::string ip, int port);
         int processSnmpRequest(std::string requestType, std::string inputOid, int value);
+        void initializeLogFile(Json::Value jsonObject_config);
+        void logAndOrDisplay(std::string logString);
         ~SnmpEngine();
 };

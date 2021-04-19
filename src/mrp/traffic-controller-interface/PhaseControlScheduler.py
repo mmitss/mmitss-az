@@ -46,15 +46,16 @@ from apscheduler.triggers import date
 import Command
 from SignalController import SignalController
 from Scheduler import Scheduler
+from Logger import Logger
 
 class PhaseControlScheduler(Scheduler):
 
-    def __init__(self, signalController:SignalController):
+    def __init__(self, signalController:SignalController, logger:Logger):
         """
         extracts NTCIP_BackupTime, starts the background scheduler, and registers a call 
         to stopBackgroundScheduler() at exit.
         """
-        super().__init__(signalController)      
+        super().__init__(signalController, logger)      
         self.scheduleReceiptTime = 0
 
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -212,7 +213,7 @@ class PhaseControlScheduler(Scheduler):
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
-        print("[" + str(datetime.datetime.now()) + "] " + "Clearing old schedule")
+        self.logger.write("Clearing old schedule - actions will be maintained if new schedule begins with them!")
         # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
         clearOldSchedule(scheduleDataStructure, self.scheduleReceiptTime)
 
@@ -373,9 +374,11 @@ if __name__ == "__main__":
     import time
 
     asc = SignalController()
+    logger = Logger(True, False, "speedway-mountain")
+
 
     # Create an object of Scheduler class
-    scheduler = PhaseControlScheduler(asc)
+    scheduler = PhaseControlScheduler(asc, logger)
 
     # Open a dummy schedule and load it into a json object
     scheduleFile = open("test/schedule3.json", "r")

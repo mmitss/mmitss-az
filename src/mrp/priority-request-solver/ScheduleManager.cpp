@@ -132,12 +132,12 @@ void ScheduleManager::readOptimalSignalPlan()
     vector<double> rightCriticalPoints{};
     vector<double> leftCriticalPoints_GreenTime{};
     vector<double> rightCriticalPoints_GreenTime{};
+    double currentTime = getPosixTimestamp();
 
     infile.open("/nojournal/bin/OptimizationResults.txt");
-    // getline(infile, lineread);
 
     if (infile.fail())
-        std::cout << "Fail to open file" << std::endl;
+        cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Fail to open file" << endl;
 
     else
     {
