@@ -316,8 +316,15 @@ class SignalController:
             for i in range(0,8):
                 if vehCallsStr[i]=="1":
                     vehCallsList = vehCallsList + [i+1]
+            
+            pedCallsList = []
+            pedCallsInt = int(self.snmp.getValue(StandardMib.PEDESTRIAN_CALLS))
+            pedCallsStr = str(f'{(pedCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if pedCallsStr[i]=="1":
+                    pedCallsList = pedCallsList + [i+1]
 
-            phaseCallsDict = {"vehicleCalls":vehCallsList}
+            phaseCallsDict = {"vehicleCalls": vehCallsList, "pedestrianCalls": pedCallsList}
             
             return phaseCallsDict
 
@@ -338,7 +345,7 @@ class SignalController:
         if ((currentPhasesDict["currentPhases"][0]["State"]=="green") or (currentPhasesDict["currentPhases"][1]["State"]=="green")):
             phaseCallsDict = getPhasesCallsDict()
         else: 
-            phaseCallsDict = {"vehicleCalls":[]}
+            phaseCallsDict = {"vehicleCalls":[], "pedestrianCalls":[]}
 
 
         currentAndNextPhasesDict = currentPhasesDict
@@ -346,6 +353,8 @@ class SignalController:
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
         currentAndNextPhasesDict["vehicleCalls"] = phaseCallsDict["vehicleCalls"]
         currentAndNextPhasesDict["totalVehicleCalls"] = len(phaseCallsDict["vehicleCalls"])
+        currentAndNextPhasesDict["pedestrianCalls"] = phaseCallsDict["pedestrianCalls"]
+        currentAndNextPhasesDict["totalPedestrianCalls"] = len(phaseCallsDict["pedestrianCalls"])
 
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
