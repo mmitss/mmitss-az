@@ -884,7 +884,11 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
     if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
+    {
         conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
+        displayConsoleData("Conflicting Ped Call is available!");
+        loggingData("Conflicting Ped Call is available!");
+    }
 }
 
 /*
