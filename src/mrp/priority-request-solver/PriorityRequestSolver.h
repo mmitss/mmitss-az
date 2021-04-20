@@ -94,6 +94,7 @@ private:
   vector<int> EV_P22{};
   vector<int> requestedSignalGroup{};
   vector<int> plannedEVPhases{};
+  vector<int> conflictingPedCallList{};
 
 public:
   PriorityRequestSolver();

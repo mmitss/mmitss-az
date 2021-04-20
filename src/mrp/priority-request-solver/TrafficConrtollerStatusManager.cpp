@@ -49,6 +49,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     int temporaryCurrentPhase{};
     int temporaryNextPhase{};
     int noOfVehicleCall{};
+    int noOfPedCall{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
     double temporaryRemainingGmax{};
@@ -64,9 +65,15 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     delete reader;
 
     noOfVehicleCall = (jsonObject["totalVehicleCalls"]).asInt();
+    noOfPedCall = (jsonObject["totalPedestrianCalls"]).asInt();
 
     for (int i = 0; i < noOfVehicleCall; i++)
         vehicleCallList.push_back((jsonObject["vehicleCalls"][i]).asInt());
+
+    for (int i = 0; i < noOfPedCall; i++)
+        pedCallList.push_back((jsonObject["pedestrianCalls"][i]).asInt());
+
+    setPhaseCallList();
 
     const Json::Value values = jsonObject["currentPhases"];
 
@@ -230,8 +237,11 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
                 //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
                 // elasped green time will be set as max green time - Tolerance
-                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase &&
-                    (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                // if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase &&
+                //     (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                //     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
+
+                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)                   
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
                 //If elapsed green time is greater than the min green time  and early return value is positive,
@@ -274,8 +284,11 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
                 //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
                 // elasped green time will be set as max green time - Tolerance
-                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase &&
-                    (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                // if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase &&
+                //     (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
+                //     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
+
+                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
                 //If elapsed green time is greater than the min green time  and early return value is positive,
@@ -305,7 +318,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
     else
     {
-        getConflictingPhaseCallStatus();
+        setConflictingPhaseCallStatus();
 
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
@@ -314,10 +327,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if (conflictingPhaseCall)
+            if (conflictingPhaseCallStatus)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - trafficControllerStatus[i].remainingGMax1;
 
-            else if (!conflictingPhaseCall && trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+            else if (!conflictingPhaseCallStatus && trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
             temporaryPhase = trafficControllerStatus[i].startingPhase2;
@@ -325,7 +338,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if (conflictingPhaseCall)
+            if (conflictingPhaseCallStatus)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - trafficControllerStatus[i].remainingGMax2;
 
             else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
@@ -372,7 +385,7 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
         trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
 }
 
-void TrafficConrtollerStatusManager::getConflictingPhaseCallStatus()
+void TrafficConrtollerStatusManager::setConflictingPhaseCallStatus()
 {
     int temporaryPhase{};
     vector<int>::iterator it;
@@ -380,7 +393,7 @@ void TrafficConrtollerStatusManager::getConflictingPhaseCallStatus()
     vector<int> phasesInRingBarrierGroup1{1, 2, 5, 6};
     vector<int> phasesInRingBarrierGroup2{3, 4, 7, 8};
 
-    if (!vehicleCallList.empty())
+    if (!phaseCallList.empty())
     {
         if (trafficControllerStatus[0].startingPhase1 <= 2)
             phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
@@ -397,13 +410,77 @@ void TrafficConrtollerStatusManager::getConflictingPhaseCallStatus()
         for (size_t i = 0; i < phasesInRingBarrierGroup.size(); i++)
         {
             temporaryPhase = phasesInRingBarrierGroup.at(i);
-            it = std::find(vehicleCallList.begin(), vehicleCallList.end(), temporaryPhase);
+            it = std::find(phaseCallList.begin(), phaseCallList.end(), temporaryPhase);
 
-            if (it != vehicleCallList.end())
+            if (it != phaseCallList.end())
             {
-                conflictingPhaseCall = true;
+                conflictingPhaseCallStatus = true;
                 break;
             }
+        }
+    }
+}
+
+void TrafficConrtollerStatusManager::setConflictingPedCallStatus()
+{
+    int temporaryPhase{};
+    vector<int>::iterator it;
+    vector<int> phasesInRingBarrierGroup{};
+    vector<int> phasesInRingBarrierGroup1{1, 2, 5, 6};
+    vector<int> phasesInRingBarrierGroup2{3, 4, 7, 8};
+
+    if (!pedCallList.empty())
+    {
+        if (trafficControllerStatus[0].startingPhase1 <= 2)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
+
+        else if (trafficControllerStatus[0].startingPhase1 > 2 && trafficControllerStatus[0].startingPhase1 <= 4)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
+
+        else if (trafficControllerStatus[0].startingPhase2 <= 6)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup2;
+
+        else if (trafficControllerStatus[0].startingPhase2 > 6 && trafficControllerStatus[0].startingPhase2 <= 8)
+            phasesInRingBarrierGroup = phasesInRingBarrierGroup1;
+
+        for (size_t i = 0; i < phasesInRingBarrierGroup.size(); i++)
+        {
+            temporaryPhase = phasesInRingBarrierGroup.at(i);
+            it = std::find(pedCallList.begin(), pedCallList.end(), temporaryPhase);
+
+            if (it != pedCallList.end())
+            {
+                conflictingPedCallStatus = true;
+                break;
+            }
+        }
+    }
+}
+
+/*
+    - The following method merge pedCallList and vehicleCallList elements (phases) into phaseCallList
+    - All the phases of pedCallList will insert into the phaseCallList
+    - If phaseCallList is empty (pedCallList is empty), vehicleCallList phases will be inserted into the phaseCallList
+    - If phaseCallList is not empty, ehicleCallList phases will be inserted into the phaseCallList only if it is not present in the phaseCallList
+*/
+void TrafficConrtollerStatusManager::setPhaseCallList()
+{
+    int temporaryPhase{};
+    vector<int>::iterator it;
+    phaseCallList.clear();
+    phaseCallList.insert(phaseCallList.end(), pedCallList.begin(), pedCallList.end());
+
+    if (phaseCallList.empty())
+        phaseCallList.insert(phaseCallList.end(), vehicleCallList.begin(), vehicleCallList.end());
+
+    else
+    {
+        for (size_t i = 0; i < vehicleCallList.size(); i++)
+        {
+            temporaryPhase = vehicleCallList.at(i);
+            it = std::find(phaseCallList.begin(), phaseCallList.end(), temporaryPhase);
+            if (it == phaseCallList.end())
+                phaseCallList.push_back(temporaryPhase);
         }
     }
 }
@@ -413,6 +490,29 @@ vector<TrafficControllerData::TrafficConrtollerStatus> TrafficConrtollerStatusMa
     manageCurrentSignalStatus(jsonString);
 
     return trafficControllerStatus;
+}
+
+bool TrafficConrtollerStatusManager::getConflictingPedCallStatus()
+{
+    setConflictingPedCallStatus();
+    return conflictingPedCallStatus;
+}
+/*
+    - Method to find the list of conflicting ped call
+*/
+vector<int> TrafficConrtollerStatusManager::getConflictingPedCallList()
+{
+    vector<int> conflictingPedCallList{};
+    int temporaryPhase{};
+
+    for (size_t i = 0; i < pedCallList.size(); i++)
+    {
+        temporaryPhase = pedCallList.at(i);
+        if ((temporaryPhase != trafficControllerStatus[0].startingPhase1) && (temporaryPhase != trafficControllerStatus[0].startingPhase2))
+            conflictingPedCallList.push_back(temporaryPhase);
+    }
+
+    return conflictingPedCallList;
 }
 
 double TrafficConrtollerStatusManager::getCurrentTime()

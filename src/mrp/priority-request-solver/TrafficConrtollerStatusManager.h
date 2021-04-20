@@ -32,7 +32,7 @@ using std::string;
 using std::vector;
 
 #define Initialize 0.0
-#define Tolerance 2.0
+#define Tolerance 1.0
 #define FirstPhaseOfRing1 1
 #define FirstPhaseOfRing2 5
 #define LastPhaseOfRing1 4
@@ -47,13 +47,16 @@ private:
   bool logging{};
   bool consoleOutput{};
   bool coordinationRequestStatus{};
-  bool conflictingPhaseCall{false};
+  bool conflictingPhaseCallStatus{false};
+  bool conflictingPedCallStatus{false};
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
   int coordinatedPhase1{};
   int coordinatedPhase2{};
   vector<int> vehicleCallList{};
+  vector<int> pedCallList{};
+  vector<int> phaseCallList{};
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
@@ -70,7 +73,11 @@ public:
   void manageCurrentSignalStatus(string jsonString);
   void modifyTrafficControllerStatus();
   void validateTrafficControllerStatus();
-  void getConflictingPhaseCallStatus();
+  void setConflictingPhaseCallStatus();
+  void setConflictingPedCallStatus();
+  void setPhaseCallList();
+  bool getConflictingPedCallStatus();
   double getCurrentTime();
+  vector<int> getConflictingPedCallList();
   vector<TrafficControllerData::TrafficConrtollerStatus> getTrafficControllerStatus(string jsonString);
 };

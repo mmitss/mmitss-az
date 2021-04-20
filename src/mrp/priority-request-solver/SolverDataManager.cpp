@@ -29,7 +29,11 @@ SolverDataManager::SolverDataManager(vector<RequestList> requestList)
         priorityRequestList = requestList;
 }
 
-SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight)
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList,
+                                     vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus,
+                                     vector<TrafficControllerData::TrafficSignalPlan> signalPlan, vector<int> listOfConflictingPedCall,
+                                     double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight,
+                                     double DZ_Request_Weight, double Coordination_Weight)
 {
     if (!requestList.empty())
         priorityRequestList = requestList;
@@ -42,6 +46,9 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 
     if (!dilemmaZoneList.empty())
         dilemmaZoneRequestList = dilemmaZoneList;
+
+    if (!listOfConflictingPedCall.empty())
+        conflictingPedCallList = listOfConflictingPedCall;
 
     EmergencyVehicleWeight = EV_Weight;
     EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
@@ -124,12 +131,48 @@ void SolverDataManager::addAssociatedSignalGroup()
 */
 void SolverDataManager::modifyGreenMax()
 {
-    for (auto i = requestedSignalGroup.begin(); i != requestedSignalGroup.end(); ++i)
+    int temporaryPhase{};
+
+    for (size_t i = 0; i < requestedSignalGroup.size(); i++)
     {
+        temporaryPhase = requestedSignalGroup.at(i);
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == *i; });
+                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
         if (findSignalGroup != trafficSignalPlan.end())
             findSignalGroup->maxGreen = findSignalGroup->maxGreen * 1.15;
+    }
+}
+
+/*
+    - The function can modify gmin, gmax time for conflicting ped calls
+        - If there is ped call on conflicting direction, the function will calculate the ped walk and ped clear time for those phases
+        - If the phase gmin is less than the pedServiceTime (pedWalk and pedClear time), gmin will be set as pedServiceTime
+        - If the phase gmax is less than the pedServiceTime (pedWalk and pedClear time), gmax will be set as pedServiceTime
+*/
+void SolverDataManager::modifyGreenForConflictingPedCalls()
+{
+    int temporaryPhase{};
+    double pedistrianServiceTime{};
+
+    if (!conflictingPedCallList.empty())
+    {
+        for (size_t i = 0; i < conflictingPedCallList.size(); i++)
+        {
+            temporaryPhase = conflictingPedCallList.at(i);
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findConflictingPedCallSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+            if (findConflictingPedCallSignalGroup != trafficSignalPlan.end())
+            {
+                pedistrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
+
+                if (findConflictingPedCallSignalGroup->minGreen < pedistrianServiceTime)
+                    findConflictingPedCallSignalGroup->minGreen = pedistrianServiceTime;
+
+                if (findConflictingPedCallSignalGroup->maxGreen < pedistrianServiceTime)
+                    findConflictingPedCallSignalGroup->maxGreen = pedistrianServiceTime;
+            }
+        }
     }
 }
 

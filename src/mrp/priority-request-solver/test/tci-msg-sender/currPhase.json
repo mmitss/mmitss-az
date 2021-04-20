@@ -1,28 +1,33 @@
 {
-    "MsgType": "CurrNextPhaseStatus",
-    "totalVehicleCalls": 4,
     "currentPhases": [
         {
             "Phase": 1,
             "State": "green",
-            "ElapsedTime": 4,
-            "RemainingGMax": 347
+            "ElapsedTime": 18,
+            "RemainingGMax": 333
         },
         {
             "Phase": 5,
             "State": "green",
-            "ElapsedTime": 4,
-            "RemainingGMax": 347
+            "ElapsedTime": 18,
+            "RemainingGMax": 333
         }
     ],
-    
+    "MsgType": "CurrNextPhaseStatus",
     "nextPhases": [
         0
     ],
     "vehicleCalls": [
         2,
         4,
+        6
+    ],
+    "totalVehicleCalls": 3,
+    "pedestrianCalls": [
+        2,
+        4,
         6,
         8
-    ]    
+    ],
+    "totalPedestrianCalls": 4
 }

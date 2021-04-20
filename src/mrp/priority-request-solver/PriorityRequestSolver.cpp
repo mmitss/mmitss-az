@@ -536,31 +536,41 @@ void PriorityRequestSolver::setOptimizationInput()
         getEVPhases();
         getEVTrafficSignalPlan();
         optimizationModelManager.generateEVModFile(trafficSignalPlan_EV, EV_P11, EV_P12, EV_P21, EV_P22);
+
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
-                                            trafficSignalPlan_EV, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
-                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+                                            trafficSignalPlan_EV, conflictingPedCallList, EmergencyVehicleWeight,
+                                            EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
+                                            DilemmaZoneRequestWeight, CoordinationWeight);
+
+        solverDataManager.modifyGreenForConflictingPedCalls();
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
     else if (signalCoordinationRequestStatus == true)
     {
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
-                                            trafficSignalPlan_SignalCoordination, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
-                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+                                            trafficSignalPlan_SignalCoordination, conflictingPedCallList, EmergencyVehicleWeight,
+                                            EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
+                                            DilemmaZoneRequestWeight, CoordinationWeight);
+
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
+        solverDataManager.modifyGreenForConflictingPedCalls();
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 
     else
     {
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
-                                            trafficSignalPlan, EmergencyVehicleWeight, EmergencyVehicleSplitPhaseWeight,
-                                            TransitWeight, TruckWeight, DilemmaZoneRequestWeight, CoordinationWeight);
+                                            trafficSignalPlan, conflictingPedCallList, EmergencyVehicleWeight,
+                                            EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
+                                            DilemmaZoneRequestWeight, CoordinationWeight);
+
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax();
+        solverDataManager.modifyGreenForConflictingPedCalls();
         solverDataManager.generateDatFile(emergencyVehicleStatus);
     }
 }
@@ -636,6 +646,7 @@ void PriorityRequestSolver::GLPKSolver()
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");
+    
 skip:
     glp_mpl_free_wksp(tran);
     glp_delete_prob(mip);
@@ -872,6 +883,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
+    if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
+        conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
 }
 
 /*
@@ -1030,10 +1043,14 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
             signalPlan.reset();
 
             signalPlan.phaseNumber = jsonObject["TimingPlan"]["PhaseNumber"][i].asInt();
+            signalPlan.pedWalk = trafficSignalPlan[i].pedWalk;
+            signalPlan.pedClear = trafficSignalPlan[i].pedClear;
+            signalPlan.minGreen = trafficSignalPlan[i].minGreen;
+            signalPlan.passage = trafficSignalPlan[i].passage;
             signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
             signalPlan.redClear = trafficSignalPlan[i].redClear;
-            signalPlan.minGreen = trafficSignalPlan[i].minGreen;
             signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
+            
             if (splitValue != 0)
                 signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
 
