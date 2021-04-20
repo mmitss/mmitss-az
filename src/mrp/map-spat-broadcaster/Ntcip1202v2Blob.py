@@ -51,16 +51,21 @@ class Ntcip1202v2Blob:
 
         ########### Vehicle Phases ###########        
         self.numVehPhases = numVehPhases
+        
         # Individual Colours
         self.vehPhaseStatusReds = [0]*numVehPhases
         self.vehPhaseStatusYellows = [0]*numVehPhases
         self.vehPhaseStatusGreens = [0]*numVehPhases
+        
         # Phase status
         self.vehCurrState = [0]*numVehPhases
         self.vehPrevState = [0]*numVehPhases
+
         # Values required in J2735 SPaT Message
         self.vehStartTime = [0]*numVehPhases
         self.vehElapsedTime = [0]*numVehPhases
+        self.vehElapsedTimeInGMaxFlag = [False]*numVehPhases
+        self.vehElapsedTimeInGMax = [0]*numVehPhases
         self.vehMinEndTime = [0]*numVehPhases
         self.vehMaxEndTime = [0]*numVehPhases
         self.vehMinEndTimeByteMap = [[3,4],[16,17],[29,30],[42,43],[55,56],[68,69],[81,82],[94,95]]      
@@ -287,13 +292,15 @@ class Ntcip1202v2Blob:
                                             "Phase": self.currentPhases[0],
                                             "State": self.vehCurrState[self.currentPhases[0]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1],
-                                            "RemainingGMax" : gMaxEndTime[0]
+                                            "RemainingGMax" : gMaxEndTime[0],
+                                            "PedState": self.pedCurrState[self.currentPhases[0]-1],
                                         },
                                         {   
                                             "Phase": self.currentPhases[1],
                                             "State": self.vehCurrState[self.currentPhases[1]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1],
-                                            "RemainingGMax" : gMaxEndTime[1]
+                                            "RemainingGMax" : gMaxEndTime[1],
+                                            "PedState": self.pedCurrState[self.currentPhases[1]-1],
                                         }
                                     ]
                             }
