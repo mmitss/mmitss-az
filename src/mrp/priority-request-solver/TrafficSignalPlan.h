@@ -50,6 +50,8 @@ namespace TrafficControllerData
         double initPhase2{};
         double elapsedGreen1{};
         double elapsedGreen2{};
+        double remainingGMax1{};
+        double remainingGMax2{};
 
         void reset()
         {
@@ -59,9 +61,9 @@ namespace TrafficControllerData
             initPhase2 = 0.0;
             elapsedGreen1 = 0.0;
             elapsedGreen2 = 0.0;
+            remainingGMax1 = 0.0;
+            remainingGMax2 = 0.0;
         }
-        
-            
     };
 
 }; // namespace TrafficControllerData
