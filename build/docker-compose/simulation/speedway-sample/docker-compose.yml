@@ -6,9 +6,6 @@ x-var: &IMAGE_MRP_SIMULATION
 x-var: &IMAGE_SERVER_TOOLS
     mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:2.1
 
-x-var: &TIMEZONE_STRING
-    America/Phoenix
-
 services:
 
     speedway-campbell:
