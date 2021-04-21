@@ -65,14 +65,20 @@ public:
                     double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight,
                     double DZ_Request_Weight, double Coordination_Weight);
 
+  SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList,
+                    vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus,
+                    vector<TrafficControllerData::TrafficSignalPlan> signalPlan, vector<int> listOfConflictingPedCall,
+                    vector<int> requested_Signal_Group, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, 
+                    double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight);
+
   ~SolverDataManager();
 
   vector<int> getRequestedSignalGroupFromPriorityRequestList();
   void removeDuplicateSignalGroup();
   void addAssociatedSignalGroup();
-  void modifyGreenMax();
-  void modifyGreenForConflictingPedCalls();
+  void modifyGreenMax(bool emergencyVehicleStatus);
+  void modifyGreenTimeForConflictingPedCalls();
   void modifyCurrentSignalStatus();
-  void generateDatFile(bool emergencyVehicleStatus);
+  void generateDatFile();
   bool findSignalGroupInList(int signalGroup);
 };

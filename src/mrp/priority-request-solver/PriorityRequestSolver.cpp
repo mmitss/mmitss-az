@@ -207,7 +207,7 @@ void PriorityRequestSolver::modifyPriorityRequestList()
         - If all the requested signal group are in same Barrier grup, delete all the left turn priority request from the list.
         - If ring barrier group is missing, then the method adds dummy through phases to the missing ring barrier group.
 */
-void PriorityRequestSolver::deleteSplitPhasesFromPriorityRequestList()
+void PriorityRequestSolver::managePriorityRequestListForEV()
 {
     int temporaryPhase{};
     int tempSignalGroup{};
@@ -532,18 +532,19 @@ void PriorityRequestSolver::setOptimizationInput()
         createDilemmaZoneRequestList();
         modifyPriorityRequestList();
         getRequestedSignalGroup();
-        deleteSplitPhasesFromPriorityRequestList();
+        managePriorityRequestListForEV();
         getEVPhases();
         getEVTrafficSignalPlan();
         optimizationModelManager.generateEVModFile(trafficSignalPlan_EV, EV_P11, EV_P12, EV_P21, EV_P22);
 
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
-                                            trafficSignalPlan_EV, conflictingPedCallList, EmergencyVehicleWeight,
+                                            trafficSignalPlan_EV, conflictingPedCallList, requestedSignalGroup, EmergencyVehicleWeight,
                                             EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
                                             DilemmaZoneRequestWeight, CoordinationWeight);
 
-        solverDataManager.modifyGreenForConflictingPedCalls();
-        solverDataManager.generateDatFile(emergencyVehicleStatus);
+        solverDataManager.modifyGreenMax(emergencyVehicleStatus);
+        solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.generateDatFile();
     }
 
     else if (signalCoordinationRequestStatus == true)
@@ -555,9 +556,9 @@ void PriorityRequestSolver::setOptimizationInput()
 
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
-        solverDataManager.modifyGreenMax();
-        solverDataManager.modifyGreenForConflictingPedCalls();
-        solverDataManager.generateDatFile(emergencyVehicleStatus);
+        solverDataManager.modifyGreenMax(emergencyVehicleStatus);
+        solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.generateDatFile();
     }
 
     else
@@ -569,9 +570,9 @@ void PriorityRequestSolver::setOptimizationInput()
 
         solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
         solverDataManager.addAssociatedSignalGroup();
-        solverDataManager.modifyGreenMax();
-        solverDataManager.modifyGreenForConflictingPedCalls();
-        solverDataManager.generateDatFile(emergencyVehicleStatus);
+        solverDataManager.modifyGreenMax(emergencyVehicleStatus);
+        solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.generateDatFile();
     }
 }
 
@@ -879,7 +880,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 
     TrafficConrtollerStatusManager trafficConrtollerStatusManager(coordinationRequestStatus, cycleLength, offset,
                                                                   coordinationStartTime, coordinatedPhase1, coordinatedPhase2,
-                                                                  logging, consoleOutput,
+                                                                  logging, consoleOutput, dummyPhasesList,
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
@@ -1010,6 +1011,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
     }
 
     optimizationModelManager.generateModFile(noOfPhase, PhaseNumber, P11, P12, P21, P22);
+    getDummyPhases();
     modifySignalTimingPlan();
 }
 
@@ -1061,6 +1063,18 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
             trafficSignalPlan_SignalCoordination.push_back(signalPlan);
         }
         modifyCoordinationSignalTimingPlan();
+    }
+}
+
+/*
+    - Method for getting the phases are not in use, based on the Gmin value in the traffic signal plan
+*/
+void PriorityRequestSolver::getDummyPhases()
+{
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+    {
+        if(trafficSignalPlan[i].minGreen == 0)
+            dummyPhasesList.push_back(trafficSignalPlan[i].phaseNumber);
     }
 }
 

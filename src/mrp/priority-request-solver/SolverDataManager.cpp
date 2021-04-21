@@ -17,7 +17,6 @@
 #include "SolverDataManager.h"
 #include "msgEnum.h"
 
-const double MAXGREEN = 100.0;
 
 SolverDataManager::SolverDataManager()
 {
@@ -49,6 +48,38 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 
     if (!listOfConflictingPedCall.empty())
         conflictingPedCallList = listOfConflictingPedCall;
+
+    EmergencyVehicleWeight = EV_Weight;
+    EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
+    TransitWeight = Transit_Weight;
+    TruckWeight = Truck_Weight;
+    DilemmaZoneRequestWeight = DZ_Request_Weight;
+    CoordinationWeight = Coordination_Weight;
+}
+
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList,
+                                     vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus,
+                                     vector<TrafficControllerData::TrafficSignalPlan> signalPlan, vector<int> listOfConflictingPedCall,
+                                     vector<int> requested_Signal_Group, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight,
+                                     double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight)
+{
+    if (!requestList.empty())
+        priorityRequestList = requestList;
+
+    if (!signalStatus.empty())
+        trafficControllerStatus = signalStatus;
+
+    if (!signalPlan.empty())
+        trafficSignalPlan = signalPlan;
+
+    if (!dilemmaZoneList.empty())
+        dilemmaZoneRequestList = dilemmaZoneList;
+
+    if (!listOfConflictingPedCall.empty())
+        conflictingPedCallList = listOfConflictingPedCall;
+
+    if (!requested_Signal_Group.empty())
+        requestedSignalGroup = requested_Signal_Group;
 
     EmergencyVehicleWeight = EV_Weight;
     EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
@@ -129,7 +160,7 @@ void SolverDataManager::addAssociatedSignalGroup()
 /*
     - This function will increase the  value of green max by 15% if there is Transit or Truck in the priority request list.
 */
-void SolverDataManager::modifyGreenMax()
+void SolverDataManager::modifyGreenMax(bool emergencyVehicleStatus)
 {
     int temporaryPhase{};
 
@@ -138,7 +169,10 @@ void SolverDataManager::modifyGreenMax()
         temporaryPhase = requestedSignalGroup.at(i);
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-        if (findSignalGroup != trafficSignalPlan.end())
+        if (emergencyVehicleStatus && findSignalGroup != trafficSignalPlan.end())
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen * 1.50;
+
+        else if (!emergencyVehicleStatus && findSignalGroup != trafficSignalPlan.end())
             findSignalGroup->maxGreen = findSignalGroup->maxGreen * 1.15;
     }
 }
@@ -149,7 +183,7 @@ void SolverDataManager::modifyGreenMax()
         - If the phase gmin is less than the pedServiceTime (pedWalk and pedClear time), gmin will be set as pedServiceTime
         - If the phase gmax is less than the pedServiceTime (pedWalk and pedClear time), gmax will be set as pedServiceTime
 */
-void SolverDataManager::modifyGreenForConflictingPedCalls()
+void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 {
     int temporaryPhase{};
     double pedistrianServiceTime{};
@@ -240,7 +274,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
+void SolverDataManager::generateDatFile()
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -281,17 +315,10 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     fs << ";\n";
 
     fs << "param gmax      \t:=";
-    if (emergencyVehicleStatus == true)
-    {
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-    }
 
-    else
-    {
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-    }
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+        fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
+
     fs << ";\n";
 
     fs << "param priorityType:= ";

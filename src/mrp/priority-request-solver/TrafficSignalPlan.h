@@ -50,6 +50,8 @@ namespace TrafficControllerData
         double initPhase2{};
         double elapsedGreen1{};
         double elapsedGreen2{};
+        double elapsedGreenInGmax1{};
+        double elapsedGreenInGmax2{};
         double remainingGMax1{};
         double remainingGMax2{};
 
@@ -61,6 +63,8 @@ namespace TrafficControllerData
             initPhase2 = 0.0;
             elapsedGreen1 = 0.0;
             elapsedGreen2 = 0.0;
+            elapsedGreenInGmax1 = 0.0;
+            elapsedGreenInGmax2 = 0.0;
             remainingGMax1 = 0.0;
             remainingGMax2 = 0.0;
         }
