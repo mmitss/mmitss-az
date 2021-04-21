@@ -108,6 +108,7 @@ class Ntcip1202v2Blob:
 
     def processNewData(self, receivedBlob):
         # Derived from system time (Not controller's time)
+        currentTimeMs = int(round(time.time() * 10))
         startOfTheYear = datetime.datetime((datetime.datetime.now().year), 1, 1)
         timeSinceStartOfTheYear = (datetime.datetime.now() - startOfTheYear)
         self.minuteOfYear = int(timeSinceStartOfTheYear.total_seconds()/60)
@@ -160,6 +161,18 @@ class Ntcip1202v2Blob:
                 elif ((self.vehCurrState[leftTurn-1] == RED) and (self.vehCurrState[self.splitPhases[str(leftTurn)]-1] == YELLOW)):
                     self.vehCurrState[leftTurn-1] = YELLOW    
    
+        # Time since change to current state - check inactive phases first:
+        for i in range(0,self.numVehPhases):
+            if i+1 in self.inactiveVehPhases:
+                self.vehElapsedTime[i] = 0.0            
+            else:
+                if self.vehCurrState[i] == self.vehPrevState[i]:
+                    self.vehElapsedTime[i] = currentTimeMs - self.vehStartTime[i]
+                else: 
+                    self.vehStartTime[i] = currentTimeMs
+                    self.vehElapsedTime[i] = 0.0
+                self.vehPrevState[i] = self.vehCurrState[i]
+
         # Minimum time to change from current state:
         for i in range(0,self.numVehPhases):
             firstByte = str(f'{receivedBlob[self.vehMinEndTimeByteMap[i][0]]:08b}')
@@ -175,31 +188,19 @@ class Ntcip1202v2Blob:
             completeByte = firstByte+secondByte
             self.vehMaxEndTime[i] = int(completeByte, 2)
 
-        # Time since change to current state - check inactive phases first:
-        for i in range(0,self.numVehPhases):
-            if i+1 in self.inactiveVehPhases:
-                self.vehElapsedTime[i] = 0.0            
-            else:
-                if self.vehCurrState[i] == self.vehPrevState[i]:
-                    self.vehElapsedTime[i] = int(round(time.time() * 10)) - self.vehStartTime[i]
-                else: 
-                    self.vehStartTime[i] = int(round(time.time() * 10))
-                    self.vehElapsedTime[i] = 0.0
-                self.vehPrevState[i] = self.vehCurrState[i]
-
         # Time elapsed since Gmax counter had began:
         for i in range(0,self.numVehPhases):
             if (self.vehCurrState[i] == "green"):
                 if (self.vehPrevState[i] != "green"):
                     self.vehElapsedTimeInGMaxFlag[i] = False
                 elif ((self.vehElapsedTimeInGMaxFlag[i] == False) and (self.vehMaxEndTime[i]!=self.vehPrevMaxEndTime[i]) and self.vehElapsedTime[i] > 0):                            
-                    self.vehElapsedTimeInGMaxFlag[i] = int(round(time.time() * 10))          
+                    self.vehElapsedTimeInGMaxFlag[i] = True          
             else: 
                 self.vehElapsedTimeInGMaxFlag[i] = False
 
         for i in range(0,self.numVehPhases):
-            if (self.vehElapsedTimeInGMaxFlag[i] != False):
-                self.vehElapsedTimeInGMax[i] += int(round(time.time() * 10)) - self.vehElapsedTimeInGMaxFlag[i]
+            if (self.vehElapsedTimeInGMaxFlag[i] == True):
+                self.vehElapsedTimeInGMax[i] += 1
             elif self.vehCurrState[i] != "green":
                 self.vehElapsedTimeInGMax[i] = None
             else:
@@ -238,9 +239,9 @@ class Ntcip1202v2Blob:
                 self.pedElapsedTime[i] = 0.0
             else:
                 if self.pedCurrState[i] == self.pedPrevState[i]:
-                    self.pedElapsedTime[i] = int(round(time.time() * 10)) - self.pedStartTime[i]
+                    self.pedElapsedTime[i] = currentTimeMs - self.pedStartTime[i]
                 else: 
-                    self.pedStartTime[i] = int(round(time.time() * 10))
+                    self.pedStartTime[i] = currentTimeMs
                     self.pedElapsedTime[i] = 0.0
                 self.pedPrevState[i] = self.pedCurrState[i]
         
