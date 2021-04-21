@@ -18,7 +18,7 @@
 #include <algorithm>
 
 TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
-                                                               int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, bool console_Output_Status,
+                                                               int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                                                vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
 {
     coordinationRequestStatus = coordination_Request_Status;
@@ -29,6 +29,9 @@ TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination
     coordinatedPhase2 = coordinated_Phase2;
     logging = logging_Status;
     consoleOutput = console_Output_Status;
+
+    if(!listOfDummyPhases.empty())
+        dummyPhasesList = listOfDummyPhases;
 
     if (!traffic_Signal_Timing_Plan.empty())
         trafficSignalPlan = traffic_Signal_Timing_Plan;
@@ -52,6 +55,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     int noOfPedCall{};
     string temporaryPhaseState{};
     double temporaryElaspedTime{};
+    double temporaryElapsedTimeInGmax{}; //It starts when gmax starts timing (vehicle calls on the conflicting phase)
     double temporaryRemainingGmax{};
     double timeStamp = getPosixTimestamp();
     TrafficControllerData::TrafficConrtollerStatus tcStatus;
@@ -90,6 +94,9 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             else if (values[i].getMemberNames()[j] == "ElapsedTime")
                 temporaryElaspedTime = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
 
+            else if (values[i].getMemberNames()[j] == "ElapsedTimeInGmax")
+                temporaryElapsedTimeInGmax = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
+
             else if (values[i].getMemberNames()[j] == "RemainingGMax")
                 temporaryRemainingGmax = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
         }
@@ -99,6 +106,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             tcStatus.startingPhase1 = temporaryCurrentPhase;
             tcStatus.initPhase1 = Initialize;
             tcStatus.elapsedGreen1 = temporaryElaspedTime;
+            tcStatus.elapsedGreenInGmax1 = temporaryElapsedTimeInGmax;
             tcStatus.remainingGMax1 = temporaryRemainingGmax;
         }
 
@@ -107,6 +115,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             tcStatus.startingPhase2 = temporaryCurrentPhase;
             tcStatus.initPhase2 = Initialize;
             tcStatus.elapsedGreen2 = temporaryElaspedTime;
+            tcStatus.elapsedGreenInGmax2 = temporaryElapsedTimeInGmax;
             tcStatus.remainingGMax2 = temporaryRemainingGmax;
         }
 
@@ -203,6 +212,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
     double upperLimitOfGreenTimeForCoordinatedPhase{};
     double elapsedTimeInCycle{};
     int temporaryPhase{};
+    double temporaryElapsedGmax{};
 
     if (coordinationRequestStatus)
     {
@@ -241,7 +251,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 //     (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
                 //     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
-                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)                   
+                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
                 //If elapsed green time is greater than the min green time  and early return value is positive,
@@ -316,6 +326,18 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
         }
     }
 
+    /*
+        - If elapsed green time is less then Gmin, elapsed green time will be as it is
+        - If elapsed time is greater than Gmin and there is conflicting phase call,
+            - If  and remaining Gmax is greater than zero (Gmax is timing) and 
+                elaspedGmax (Gmax - remainingGmax) less than  Gmin, than elapsed green time will be Gmin
+            - If  and remaining Gmax is greater than zero (Gmax is timing) and 
+                elaspedGmax (Gmax - remainingGmax) greater than  Gmin, than elapsed green time will be elaspedGmax
+            - If  and remaining Gmax is zero (Gmax is timed already) and 
+                elaspedGmax (Gmax - remainingGmax) greater than  zero (it will be more than Gmax), 
+                than elapsed green time will be elaspedGmax
+            
+    */
     else
     {
         setConflictingPhaseCallStatus();
@@ -327,10 +349,24 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if (conflictingPhaseCallStatus)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - trafficControllerStatus[i].remainingGMax1;
+            if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
+                continue;
 
-            else if (!conflictingPhaseCallStatus && trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen))
+            {
+                temporaryElapsedGmax = findSignalGroup1->maxGreen - trafficControllerStatus[i].remainingGMax1;
+
+                if ((trafficControllerStatus[i].remainingGMax1 > 0) && (temporaryElapsedGmax < findSignalGroup1->minGreen))
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+                else if ((trafficControllerStatus[i].remainingGMax1 > 0) && (temporaryElapsedGmax > findSignalGroup1->minGreen))
+                    trafficControllerStatus[i].elapsedGreen1 = temporaryElapsedGmax;
+
+                else if ((trafficControllerStatus[i].remainingGMax1 == 0) && temporaryElapsedGmax > 0)
+                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreenInGmax1;
+            }
+
+            else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
                 trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
             temporaryPhase = trafficControllerStatus[i].startingPhase2;
@@ -338,18 +374,66 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            if (conflictingPhaseCallStatus)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - trafficControllerStatus[i].remainingGMax2;
+            if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
+                continue;
+
+            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen))
+            {
+                temporaryElapsedGmax = findSignalGroup2->maxGreen - trafficControllerStatus[i].remainingGMax2;
+
+                if ((trafficControllerStatus[i].remainingGMax2 > 0) && (temporaryElapsedGmax < findSignalGroup2->minGreen))
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+
+                else if ((trafficControllerStatus[i].remainingGMax2 > 0) && (temporaryElapsedGmax > findSignalGroup2->minGreen))
+                    trafficControllerStatus[i].elapsedGreen2 = temporaryElapsedGmax;
+
+                else if ((trafficControllerStatus[i].remainingGMax2 == 0) && temporaryElapsedGmax > 0)
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreenInGmax2;
+            }
 
             else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
 
+            // remainingGMax, elapsedTimeInGmax value for the dummy phases in T-interction (or any intersection having missing signal head), 
+            // elapsed green time is required to set as the value of elapsed time of the phases in opposite ring 
+            // if(conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen) &&
+            // (trafficControllerStatus[i].remainingGMax1 == 0) && (trafficControllerStatus[i].elapsedGreenInGmax1 == 0))
+            //     trafficControllerStatus[i].elapsedGreen1 == trafficControllerStatus[i].elapsedGreen2;
+
+            // if(conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen) &&
+            // (trafficControllerStatus[i].remainingGMax2 == 0) && (trafficControllerStatus[i].elapsedGreenInGmax2 == 0))
+            //     trafficControllerStatus[i].elapsedGreen2 == trafficControllerStatus[i].elapsedGreen1;
+            
+            
             // Check if elapased time for any of the starting phase is less than zero or not
-            validateTrafficControllerStatus();
+            validateElapsedGreenTime();
         }
     }
 }
 
+void TrafficConrtollerStatusManager::validateElapsedGreenTime()
+{
+    if (trafficControllerStatus[0].elapsedGreen1 < 0 && trafficControllerStatus[0].elapsedGreen2 < 0)
+    {
+        trafficControllerStatus[0].elapsedGreen1 = 0.0;
+        trafficControllerStatus[0].elapsedGreen2 = 0.0;
+    }
+
+    if (trafficControllerStatus[0].elapsedGreen1 < 0)
+        trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
+
+    if (trafficControllerStatus[0].elapsedGreen2 < 0)
+        trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
+    
+    for (size_t i = 0; i < dummyPhasesList.size(); i++)
+    {
+        if(trafficControllerStatus[0].startingPhase1 == dummyPhasesList.at(i))
+            trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
+        
+        else if(trafficControllerStatus[0].startingPhase2 == dummyPhasesList.at(i))
+            trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
+    }
+}
 /*
     - The method is responsible for avoiding edge condition. It checks whether starting phase1 is in ring 1 and starting phase2 is in ring 2
     - For T-intersection starting phase can be zero. In that case, the method fills the the elapsed green time and the init time values with the elapsed green time and the init time values of other starting phase.
@@ -372,17 +456,17 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
         trafficControllerStatus[0].remainingGMax2 = trafficControllerStatus[0].remainingGMax1;
     }
 
-    if (trafficControllerStatus[0].elapsedGreen1 < 0 && trafficControllerStatus[0].elapsedGreen2 < 0)
-    {
-        trafficControllerStatus[0].elapsedGreen1 = 0.0;
-        trafficControllerStatus[0].elapsedGreen2 = 0.0;
-    }
+    // if (trafficControllerStatus[0].elapsedGreen1 < 0 && trafficControllerStatus[0].elapsedGreen2 < 0)
+    // {
+    //     trafficControllerStatus[0].elapsedGreen1 = 0.0;
+    //     trafficControllerStatus[0].elapsedGreen2 = 0.0;
+    // }
 
-    if (trafficControllerStatus[0].elapsedGreen1 < 0)
-        trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
+    // if (trafficControllerStatus[0].elapsedGreen1 < 0)
+    //     trafficControllerStatus[0].elapsedGreen1 = trafficControllerStatus[0].elapsedGreen2;
 
-    if (trafficControllerStatus[0].elapsedGreen2 < 0)
-        trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
+    // if (trafficControllerStatus[0].elapsedGreen2 < 0)
+    //     trafficControllerStatus[0].elapsedGreen2 = trafficControllerStatus[0].elapsedGreen1;
 }
 
 void TrafficConrtollerStatusManager::setConflictingPhaseCallStatus()
