@@ -67,7 +67,11 @@ class Ntcip1202v2Blob:
         self.vehElapsedTimeInGMaxFlag = [False]*numVehPhases
         self.vehElapsedTimeInGMax = [0]*numVehPhases
         self.vehMinEndTime = [0]*numVehPhases
+
         self.vehMaxEndTime = [0]*numVehPhases
+        self.vehPrevMaxEndTime = [0]*numVehPhases
+        self.vehPrev2MaxEndTime = [0]*numVehPhases
+        
         self.vehMinEndTimeByteMap = [[3,4],[16,17],[29,30],[42,43],[55,56],[68,69],[81,82],[94,95]]      
         self.vehMaxEndTimeByteMap = [[5,6],[18,19],[31,32],[44,45],[57,58],[70,71],[83,84],[96,97]]
 
@@ -168,7 +172,7 @@ class Ntcip1202v2Blob:
                     self.vehStartTime[i] = currentTimeMs
                     self.vehElapsedTime[i] = 0.0
                 self.vehPrevState[i] = self.vehCurrState[i]
-        
+
         # Minimum time to change from current state:
         for i in range(0,self.numVehPhases):
             firstByte = str(f'{receivedBlob[self.vehMinEndTimeByteMap[i][0]]:08b}')
@@ -178,11 +182,31 @@ class Ntcip1202v2Blob:
 
         # Maximum time to change from current state:
         for i in range(0,self.numVehPhases):
+            self.vehPrevMaxEndTime[i] = self.vehMaxEndTime[i]
             firstByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][0]]:08b}')
             secondByte = str(f'{receivedBlob[self.vehMaxEndTimeByteMap[i][1]]:08b}')
             completeByte = firstByte+secondByte
             self.vehMaxEndTime[i] = int(completeByte, 2)
 
+        # Time elapsed since Gmax counter had began:
+        for i in range(0,self.numVehPhases):
+            if (self.vehCurrState[i] == "green"):
+                if (self.vehPrevState[i] != "green"):
+                    self.vehElapsedTimeInGMaxFlag[i] = False
+                elif ((self.vehElapsedTimeInGMaxFlag[i] == False) and (self.vehMaxEndTime[i]!=self.vehPrevMaxEndTime[i]) and self.vehElapsedTime[i] > 0):                            
+                    self.vehElapsedTimeInGMaxFlag[i] = True          
+            else: 
+                self.vehElapsedTimeInGMaxFlag[i] = False
+
+        for i in range(0,self.numVehPhases):
+            if (self.vehElapsedTimeInGMaxFlag[i] == True):
+                self.vehElapsedTimeInGMax[i] += 1
+            elif self.vehCurrState[i] != "green":
+                self.vehElapsedTimeInGMax[i] = None
+            else:
+                self.vehElapsedTimeInGMax[i] = 0
+
+        
         
 ##################################### PED INFORMATION ####################################################################
         DONTWALK = 'do_not_walk'
@@ -292,6 +316,7 @@ class Ntcip1202v2Blob:
                                             "Phase": self.currentPhases[0],
                                             "State": self.vehCurrState[self.currentPhases[0]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[0]-1],
+                                            "ElapsedTimeInGMax": self.vehElapsedTimeInGMax[self.currentPhases[0]-1],
                                             "RemainingGMax" : gMaxEndTime[0],
                                             "PedState": self.pedCurrState[self.currentPhases[0]-1],
                                         },
@@ -299,6 +324,7 @@ class Ntcip1202v2Blob:
                                             "Phase": self.currentPhases[1],
                                             "State": self.vehCurrState[self.currentPhases[1]-1],
                                             "ElapsedTime": self.vehElapsedTime[self.currentPhases[1]-1],
+                                            "ElapsedTimeInGMax": self.vehElapsedTimeInGMax[self.currentPhases[1]-1],
                                             "RemainingGMax" : gMaxEndTime[1],
                                             "PedState": self.pedCurrState[self.currentPhases[1]-1],
                                         }
