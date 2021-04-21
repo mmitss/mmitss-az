@@ -14,6 +14,9 @@
 */
 
 #pragma once
+#include <string>
+
+using std::string;
 
 namespace TrafficControllerData
 {
@@ -54,6 +57,8 @@ namespace TrafficControllerData
         double elapsedGreenInGmax2{};
         double remainingGMax1{};
         double remainingGMax2{};
+        string pedState1{};
+        string pedState2{};
 
         void reset()
         {
@@ -67,6 +72,8 @@ namespace TrafficControllerData
             elapsedGreenInGmax2 = 0.0;
             remainingGMax1 = 0.0;
             remainingGMax2 = 0.0;
+            pedState1 = "";
+            pedState2 = "";
         }
     };
 

@@ -78,6 +78,7 @@ public:
   void setConflictingPhaseCallStatus();
   void setConflictingPedCallStatus();
   void setPhaseCallList();
+  bool getPedCallStatus();
   bool getConflictingPedCallStatus();
   double getCurrentTime();
   vector<int> getConflictingPedCallList();

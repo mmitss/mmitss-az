@@ -54,6 +54,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
     int noOfVehicleCall{};
     int noOfPedCall{};
     string temporaryPhaseState{};
+    string temporaryPedState{};
     double temporaryElaspedTime{};
     double temporaryElapsedTimeInGmax{}; //It starts when gmax starts timing (vehicle calls on the conflicting phase)
     double temporaryRemainingGmax{};
@@ -94,11 +95,14 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             else if (values[i].getMemberNames()[j] == "ElapsedTime")
                 temporaryElaspedTime = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
 
-            else if (values[i].getMemberNames()[j] == "ElapsedTimeInGmax")
+            else if (values[i].getMemberNames()[j] == "ElapsedTimeInGMax")
                 temporaryElapsedTimeInGmax = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
 
             else if (values[i].getMemberNames()[j] == "RemainingGMax")
                 temporaryRemainingGmax = (values[i][values[i].getMemberNames()[j]].asDouble()) / 10.0;
+            
+            else if (values[i].getMemberNames()[j] == "PedState")
+                temporaryPedState = (values[i][values[i].getMemberNames()[j]].asString());
         }
 
         if (temporaryCurrentPhase < FirstPhaseOfRing2 && temporaryPhaseState == "green")
@@ -108,6 +112,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             tcStatus.elapsedGreen1 = temporaryElaspedTime;
             tcStatus.elapsedGreenInGmax1 = temporaryElapsedTimeInGmax;
             tcStatus.remainingGMax1 = temporaryRemainingGmax;
+            tcStatus.pedState1 = temporaryPedState;
         }
 
         else if (temporaryCurrentPhase > LastPhaseOfRing1 && temporaryPhaseState == "green")
@@ -117,6 +122,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             tcStatus.elapsedGreen2 = temporaryElaspedTime;
             tcStatus.elapsedGreenInGmax2 = temporaryElapsedTimeInGmax;
             tcStatus.remainingGMax2 = temporaryRemainingGmax;
+            tcStatus.pedState2 = temporaryPedState;
         }
 
         else if (temporaryPhaseState == "yellow")
@@ -581,6 +587,21 @@ bool TrafficConrtollerStatusManager::getConflictingPedCallStatus()
     setConflictingPedCallStatus();
     return conflictingPedCallStatus;
 }
+
+bool TrafficConrtollerStatusManager::getPedCallStatus()
+{
+    bool pedStatus{};
+
+    if ((trafficControllerStatus[0].pedState1 == "walk") || (trafficControllerStatus[0].pedState1 =="ped_clear"))
+        pedStatus = true;
+    
+    else if ((trafficControllerStatus[0].pedState2 == "walk" ) || (trafficControllerStatus[0].pedState1 =="ped_clear"))
+        pedStatus = true;
+
+    return pedStatus;
+
+}
+
 /*
     - Method to find the list of conflicting ped call
 */
