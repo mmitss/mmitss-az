@@ -544,6 +544,8 @@ void PriorityRequestSolver::setOptimizationInput()
 
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.validateGmaxForEVSignalTimingPlan(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.generateDatFile();
     }
 
@@ -558,6 +560,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.generateDatFile();
     }
 
@@ -572,6 +575,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.addAssociatedSignalGroup();
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.generateDatFile();
     }
 }
@@ -647,7 +651,7 @@ void PriorityRequestSolver::GLPKSolver()
     ret = glp_mpl_postsolve(tran, mip, GLP_MIP);
     if (ret != 0)
         fprintf(stderr, "Error on postsolving model\n");
-    
+
 skip:
     glp_mpl_free_wksp(tran);
     glp_delete_prob(mip);
@@ -766,6 +770,7 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
     trafficSignalPlan_EV.clear();
     trafficSignalPlan_EV.insert(trafficSignalPlan_EV.end(), trafficSignalPlan.begin(), trafficSignalPlan.end());
 
+    // Delete the phases which are in the plannedEVPhases element
     for (size_t j = 0; j < plannedEVPhases.size(); j++)
     {
         temporaryPhase = plannedEVPhases.at(j);
@@ -775,6 +780,7 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
             temporaryPhaseNumber.erase(it);
     }
 
+    // Delete the signal plan object which are in trafficSignalPlan_EV vector
     for (size_t i = 0; i < temporaryPhaseNumber.size(); i++)
     {
         temporaryPhase = temporaryPhaseNumber.at(i);
@@ -895,7 +901,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
-void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
+void PriorityRequestSolver::setCurrentSignalTimingPlan(string jsonString)
 {
     OptimizationModelManager optimizationModelManager;
     TrafficControllerData::TrafficSignalPlan signalPlan;
@@ -1018,7 +1024,7 @@ void PriorityRequestSolver::getCurrentSignalTimingPlan(string jsonString)
 /*
     - The following method modify the gmax of the traffic signal plan based on Split data
 */
-void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
+void PriorityRequestSolver::setSignalCoordinationTimingPlan(string jsonString)
 {
     TrafficControllerData::TrafficSignalPlan signalPlan;
     trafficSignalPlan_SignalCoordination.clear();
@@ -1056,7 +1062,7 @@ void PriorityRequestSolver::getSignalCoordinationTimingPlan(string jsonString)
             signalPlan.yellowChange = trafficSignalPlan[i].yellowChange;
             signalPlan.redClear = trafficSignalPlan[i].redClear;
             signalPlan.phaseRing = trafficSignalPlan[i].phaseRing;
-            
+
             if (splitValue != 0)
                 signalPlan.maxGreen = splitValue - trafficSignalPlan[i].yellowChange - trafficSignalPlan[i].redClear;
 
@@ -1073,7 +1079,7 @@ void PriorityRequestSolver::getDummyPhases()
 {
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
-        if(trafficSignalPlan[i].minGreen == 0)
+        if (trafficSignalPlan[i].minGreen == 0)
             dummyPhasesList.push_back(trafficSignalPlan[i].phaseNumber);
     }
 }
@@ -1103,12 +1109,12 @@ void PriorityRequestSolver::modifySignalTimingPlan()
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
-        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
+        if ((temporarySignalGroup % 2 != 0) && (trafficSignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < FirstPhaseOfRing2)
-                temporaryCompitableSignalGroup = temporarySignalGroup + NumberOfPhasePerRing;
+                temporaryCompitableSignalGroup = temporarySignalGroup + 5;
             else if (temporarySignalGroup > LastPhaseOfRing1)
-                temporaryCompitableSignalGroup = temporarySignalGroup - NumberOfPhasePerRing;
+                temporaryCompitableSignalGroup = temporarySignalGroup - 3;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
