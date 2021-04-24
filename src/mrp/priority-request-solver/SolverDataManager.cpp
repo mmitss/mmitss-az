@@ -611,7 +611,11 @@ void SolverDataManager::generateDatFile()
     fs << "end;";
     fs.close();
 }
-
+/*
+    - The method will sorted all the phases based on their ring barrier group. EV_P11 and EV_P21 phases are in ring barrier group1 whereas, EV_P12 and EV_P22 phases are in ring barrier group2
+    - Gmax value for each phases per ring barrier group will be stored in the corresponding vector
+    - Largest gmax value per ring barrier group will be computed
+*/
 void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22)
 {
     vector<int> phasesForRingBarrierGroup1{};

@@ -299,19 +299,7 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
             else if ((trafficControllerStatus[j].startingPhase1 == 3) || (trafficControllerStatus[j].startingPhase1 == 4))
                 requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase1);
 
-            else if ((trafficControllerStatus[j].startingPhase1 == 5) || (trafficControllerStatus[j].startingPhase1 == 6))
-                requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase1);
-
-            else if ((trafficControllerStatus[j].startingPhase1 == 7) || (trafficControllerStatus[j].startingPhase1 == 8))
-                requestedEV_P22.push_back(trafficControllerStatus[j].startingPhase1);
-
-            if ((trafficControllerStatus[j].startingPhase2 == 1) || (trafficControllerStatus[j].startingPhase2 == 2))
-                requestedEV_P11.push_back(trafficControllerStatus[j].startingPhase2);
-
-            else if ((trafficControllerStatus[j].startingPhase2 == 3) || (trafficControllerStatus[j].startingPhase2 == 4))
-                requestedEV_P12.push_back(trafficControllerStatus[j].startingPhase2);
-
-            else if ((trafficControllerStatus[j].startingPhase2 == 5) || (trafficControllerStatus[j].startingPhase2 == 6))
+            if ((trafficControllerStatus[j].startingPhase2 == 5) || (trafficControllerStatus[j].startingPhase2 == 6))
                 requestedEV_P21.push_back(trafficControllerStatus[j].startingPhase2);
 
             else if ((trafficControllerStatus[j].startingPhase2 == 7) || (trafficControllerStatus[j].startingPhase2 == 8))
@@ -363,7 +351,7 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                     requestedSignalGroup.push_back(tempSignalGroup);
             }
         }
-        //If second ring-barrier group is empty, the left turn phases (1,5) of first ring-barrier groupcan be removed (if they are not starting phase). Dummy through phases (4,8) will be inserted in the second ring-barrier group.
+        //If second ring-barrier group is empty, the left turn phases (1,5) of first ring-barrier group can be removed (if they are not starting phase). Dummy through phases (4,8) will be inserted in the second ring-barrier group.
         else if (requestedEV_P12.empty() && requestedEV_P22.empty())
         {
             if ((trafficControllerStatus[0].startingPhase1 != 1))
@@ -824,33 +812,35 @@ void PriorityRequestSolver::validateEVTrafficSignalPlan()
     for (size_t i = 0; i < trafficSignalPlan_EV.size(); i++)
     {
         temporarySignalGroup = trafficSignalPlan_EV[i].phaseNumber;
-        if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
-            associatedSignalGroup = temporarySignalGroup + 4;
 
-        else if (temporarySignalGroup % 2 == 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
-            associatedSignalGroup = temporarySignalGroup - 4;
-
-        else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup < 5)
-            associatedSignalGroup = temporarySignalGroup + 5;
-
-        else if (temporarySignalGroup % 2 != 0 && trafficSignalPlan_EV[i].minGreen == 0 && temporarySignalGroup > 4)
-            associatedSignalGroup = temporarySignalGroup - 3;
-
-        else
-            continue;
-
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findAssociatedSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
-                                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == associatedSignalGroup; });
-
-        if (findAssociatedSignalGroupOnList != trafficSignalPlan_EV.end())
+        if (trafficSignalPlan_EV[i].minGreen == 0)
         {
-            trafficSignalPlan_EV[i].pedWalk = findAssociatedSignalGroupOnList->pedWalk;
-            trafficSignalPlan_EV[i].pedClear = findAssociatedSignalGroupOnList->pedClear;
-            trafficSignalPlan_EV[i].minGreen = findAssociatedSignalGroupOnList->minGreen;
-            trafficSignalPlan_EV[i].passage = findAssociatedSignalGroupOnList->passage;
-            trafficSignalPlan_EV[i].maxGreen = findAssociatedSignalGroupOnList->maxGreen;
-            trafficSignalPlan_EV[i].yellowChange = findAssociatedSignalGroupOnList->yellowChange;
-            trafficSignalPlan_EV[i].redClear = findAssociatedSignalGroupOnList->redClear;
+            if ((temporarySignalGroup % 2 == 0) && (temporarySignalGroup < FirstPhaseOfRing2))
+                associatedSignalGroup = temporarySignalGroup + 4;
+
+            else if ((temporarySignalGroup % 2 == 0) && (temporarySignalGroup > LastPhaseOfRing1))
+                associatedSignalGroup = temporarySignalGroup - 4;
+
+            else if ((temporarySignalGroup % 2 != 0) && (temporarySignalGroup < FirstPhaseOfRing2))
+                associatedSignalGroup = temporarySignalGroup + 5;
+
+            else if ((temporarySignalGroup % 2 != 0) && (temporarySignalGroup > LastPhaseOfRing1))
+                associatedSignalGroup = temporarySignalGroup - 3;
+
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findAssociatedSignalGroupOnList =
+                std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == associatedSignalGroup; });
+
+            if (findAssociatedSignalGroupOnList != trafficSignalPlan_EV.end())
+            {
+                trafficSignalPlan_EV[i].pedWalk = findAssociatedSignalGroupOnList->pedWalk;
+                trafficSignalPlan_EV[i].pedClear = findAssociatedSignalGroupOnList->pedClear;
+                trafficSignalPlan_EV[i].minGreen = findAssociatedSignalGroupOnList->minGreen;
+                trafficSignalPlan_EV[i].passage = findAssociatedSignalGroupOnList->passage;
+                trafficSignalPlan_EV[i].maxGreen = findAssociatedSignalGroupOnList->maxGreen;
+                trafficSignalPlan_EV[i].yellowChange = findAssociatedSignalGroupOnList->yellowChange;
+                trafficSignalPlan_EV[i].redClear = findAssociatedSignalGroupOnList->redClear;
+            }
         }
     }
 }
