@@ -50,6 +50,7 @@ def main():
     dataCollectorServerAddress = (config["DataTransfer"]["server"]["ip_address"], config["PortNumber"]["DataCollector"])
     localDataCollectorAddress = (config["HostIp"], config["PortNumber"]["DataCollector"])
     msgDistributorAddress = (config["MessageDistributorIP"], config["PortNumber"]["MessageDistributor"])
+    tciAddress = (mrpIp, config["PortNumber"]["TrafficControllerInterface"])
     tci_currPhaseAddress = (mrpIp, config["PortNumber"]["TrafficControllerCurrPhaseListener"])
     
     # Read controllerIp from the config file and store it.
@@ -95,6 +96,23 @@ def main():
     mmitssSpatObject.setIntersectionID(intersectionID)
     mmitssSpatObject.setRegionalID(regionalID)
 
+    # Check if TCI is running:
+    tciIsRunning = checkIfProcessRunning("M_TrafficControllerInterface")
+    snmpEngineIsRunning = checkIfProcessRunning("M_SnmpEngine")
+    
+    if (tciIsRunning and snmpEngineIsRunning):
+        isTimingPlanReceived = False
+        s.sendto('{"MsgType":"TimingPlanRequest"}'.encode(), tciAddress)
+        
+        while(isTimingPlanReceived == False):
+            data, addr = s.recvfrom(1024)
+            
+            if (addr[0]==mrpIp): 
+                internalMsg = json.loads(data.decode())
+                if internalMsg["MsgType"]=="ActiveTimingPlan":
+                    mmitssSpatObject.phaseClearanceTimes = [(phase[0]+phase[1]) for phase in zip(internalMsg["TimingPlan"]["YellowChange"], internalMsg["TimingPlan"]["RedClear"])]                
+                    isTimingPlanReceived = True    
+
     msgCnt = 0
     spatMapMsgCount = 0
 
@@ -112,6 +130,8 @@ def main():
             if(internalMsg["MsgType"]=="ActivePhaseControlSchedule"):
                 phaseControlSchedule = internalMsg
                 mmitssSpatObject.extract_local_phase_control_schedule(phaseControlSchedule)
+            if(internalMsg["MsgType"]=="ActiveTimingPlan"):
+                mmitssSpatObject.phaseClearanceTimes = [(phase[0]+phase[1]) for phase in zip(internalMsg["TimingPlan"]["YellowChange"], internalMsg["TimingPlan"]["RedClear"])]                
 
         elif addr[0] == controllerIp:
             spatBlob = data

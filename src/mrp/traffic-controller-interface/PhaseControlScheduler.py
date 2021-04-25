@@ -336,31 +336,46 @@ class PhaseControlScheduler(Scheduler):
                                         "MsgType":"ActivePhaseControlSchedule",
                                         "ScheduledActivePhaseControls":
                                         {
-                                            "Holds": None,
-                                            "ForceOffs":None
+                                            "Cycle1":
+                                            {
+                                                "Holds": None,
+                                                "ForceOffs":None
+                                            },
+                                            "Cycle2":
+                                            {
+                                                "Holds": None,
+                                                "ForceOffs":None
+                                            }
                                         }
                                     }
 
         holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
         
         if len(holdCommands) > 0:     
-            scheduledHolds = [-1,-1,-1,-1,-1,-1,-1,-1]
+            scheduledHolds_cycle1 = [-1,-1,-1,-1,-1,-1,-1,-1]
+            scheduledHolds_cycle2 = [-1,-1,-1,-1,-1,-1,-1,-1]
+            
             # Filter holds for current cycle
             for phaseIndex in range(8):
                 holdEndTimes_phase = [command["commandEndTime"] for command in holdCommands if (command["commandPhase"] == phaseIndex+1)]
                 if len(holdEndTimes_phase) > 0:
-                    scheduledHolds[phaseIndex] = (min(holdEndTimes_phase))*10
-            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Holds"] = scheduledHolds
+                    scheduledHolds_cycle1[phaseIndex] = (min(holdEndTimes_phase))*10
+                    scheduledHolds_cycle2[phaseIndex] = (max(holdEndTimes_phase))*10
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Cycle1"]["Holds"] = scheduledHolds_cycle1
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Cycle2"]["Holds"] = scheduledHolds_cycle2
         
         forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
         if len(forceOffCommands) > 0:        
-            scheduledForceOffs = [-1,-1,-1,-1,-1,-1,-1,-1]
+            scheduledForceOffs_cycle1 = [-1,-1,-1,-1,-1,-1,-1,-1]
+            scheduledForceOffs_cycle2 = [-1,-1,-1,-1,-1,-1,-1,-1]
             # Filter forceoffs for current cycle
             for phaseIndex in range(8):
                 forceoffTimes_phase = [command["commandStartTime"] for command in forceOffCommands if (command["commandPhase"] == phaseIndex+1)]
                 if len(forceoffTimes_phase) > 0:
-                    scheduledForceOffs[phaseIndex] = (min(forceoffTimes_phase))*10            
-            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["ForceOffs"] = scheduledForceOffs
+                    scheduledForceOffs_cycle1[phaseIndex] = (min(forceoffTimes_phase))*10            
+                    scheduledForceOffs_cycle2[phaseIndex] = (max(forceoffTimes_phase))*10            
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Cycle1"]["ForceOffs"] = scheduledForceOffs_cycle1
+            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Cycle2"]["ForceOffs"] = scheduledForceOffs_cycle2
 
         scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
