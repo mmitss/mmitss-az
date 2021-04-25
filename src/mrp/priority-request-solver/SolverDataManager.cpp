@@ -674,55 +674,6 @@ void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, ve
         }
     }
 }
-// void SolverDataManager::validateStartingPhaseTimingPlan()
-// {
-//     int temporaryPhase{};
-//     int temporaryCompitablePhase{};
-
-//     temporaryPhase = trafficControllerStatus[0].startingPhase1;
-//     vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
-//         std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-//     if ((temporaryPhase % 2 != 0) && (findSignalGroup1->minGreen == 0))
-//     {
-//         temporaryCompitablePhase = temporaryPhase + 5;
-
-//         vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitablePhaseOnList1 =
-//             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitablePhase; });
-
-//         findSignalGroup1->pedWalk = findCompitablePhaseOnList1->pedWalk;
-//         findSignalGroup1->pedClear = findCompitablePhaseOnList1->pedClear;
-//         findSignalGroup1->minGreen = findCompitablePhaseOnList1->minGreen;
-//         findSignalGroup1->passage = findCompitablePhaseOnList1->passage;
-//         findSignalGroup1->maxGreen = findCompitablePhaseOnList1->maxGreen;
-//         findSignalGroup1->yellowChange = findCompitablePhaseOnList1->yellowChange;
-//         findSignalGroup1->redClear = findCompitablePhaseOnList1->redClear;
-//     }
-
-//     temporaryPhase = trafficControllerStatus[0].startingPhase2;
-//     vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
-//         std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-//     if ((temporaryPhase % 2 != 0) && (findSignalGroup2->minGreen == 0))
-//     {
-//         temporaryCompitablePhase = temporaryPhase - 3;
-
-//         vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitablePhaseOnList2 =
-//             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-//                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitablePhase; });
-
-//         findSignalGroup2->pedWalk = findCompitablePhaseOnList2->pedWalk;
-//         findSignalGroup2->pedClear = findCompitablePhaseOnList2->pedClear;
-//         findSignalGroup2->minGreen = findCompitablePhaseOnList2->minGreen;
-//         findSignalGroup2->passage = findCompitablePhaseOnList2->passage;
-//         findSignalGroup2->maxGreen = findCompitablePhaseOnList2->maxGreen;
-//         findSignalGroup2->yellowChange = findCompitablePhaseOnList2->yellowChange;
-//         findSignalGroup2->redClear = findCompitablePhaseOnList2->redClear;
-//     }
-// }
 
 SolverDataManager::~SolverDataManager()
 {
