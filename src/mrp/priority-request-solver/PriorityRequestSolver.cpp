@@ -1099,12 +1099,12 @@ void PriorityRequestSolver::modifySignalTimingPlan()
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
 
-        if ((temporarySignalGroup % 2 != 0) && (trafficSignalPlan[i].minGreen == 0))
+        if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
         {
             if (temporarySignalGroup < FirstPhaseOfRing2)
-                temporaryCompitableSignalGroup = temporarySignalGroup + 5;
+                temporaryCompitableSignalGroup = temporarySignalGroup + NumberOfPhasePerRing;
             else if (temporarySignalGroup > LastPhaseOfRing1)
-                temporaryCompitableSignalGroup = temporarySignalGroup - 3;
+                temporaryCompitableSignalGroup = temporarySignalGroup - NumberOfPhasePerRing;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                                       [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
