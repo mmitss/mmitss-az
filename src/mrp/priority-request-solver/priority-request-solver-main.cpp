@@ -61,10 +61,10 @@ int main()
             - If clear request message is received from the PRS, a clear request schedule will be formulated and send to the TCI.
         */
         if (msgType == static_cast<int>(msgType::signalPlan))
-            priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
+            priorityRequestSolver.setCurrentSignalTimingPlan(receivedJsonString);
 
         else if (msgType == static_cast<int>(msgType::splitData))
-            priorityRequestSolver.getSignalCoordinationTimingPlan(receivedJsonString);
+            priorityRequestSolver.setSignalCoordinationTimingPlan(receivedJsonString);
 
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
@@ -82,7 +82,7 @@ int main()
                     std::string receivedCoordinationPlanString(receivedCoordinationPlanBuffer);
 
                     if (priorityRequestSolver.getMessageType(receivedCoordinationPlanString) == static_cast<int>(msgType::splitData))
-                        priorityRequestSolver.getSignalCoordinationTimingPlan(receivedCoordinationPlanString);
+                        priorityRequestSolver.setSignalCoordinationTimingPlan(receivedCoordinationPlanString);
                 }
 
                 /*

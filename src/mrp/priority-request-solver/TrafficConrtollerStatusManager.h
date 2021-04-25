@@ -49,6 +49,9 @@ private:
   bool coordinationRequestStatus{};
   bool conflictingPhaseCallStatus{false};
   bool conflictingPedCallStatus{false};
+  bool currentPedCallStatus{false};
+  bool currentPedCallStatus1{false};
+  bool currentPedCallStatus2{false};
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
@@ -78,7 +81,7 @@ public:
   void setConflictingPhaseCallStatus();
   void setConflictingPedCallStatus();
   void setPhaseCallList();
-  bool getPedCallStatus();
+  void setCurrentPedCallStatus();
   bool getConflictingPedCallStatus();
   double getCurrentTime();
   vector<int> getConflictingPedCallList();

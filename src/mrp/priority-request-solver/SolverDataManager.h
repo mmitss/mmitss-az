@@ -78,7 +78,9 @@ public:
   void addAssociatedSignalGroup();
   void modifyGreenMax(bool emergencyVehicleStatus);
   void modifyGreenTimeForConflictingPedCalls();
+  void modifyGreenTimeForCurrentPedCalls();
   void modifyCurrentSignalStatus();
   void generateDatFile();
+  void validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22);
   bool findSignalGroupInList(int signalGroup);
 };

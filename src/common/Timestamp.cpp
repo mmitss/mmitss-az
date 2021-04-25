@@ -20,6 +20,6 @@ double getPosixTimestamp()
 
 	struct timeval tv_tt;
 	gettimeofday(&tv_tt, NULL);
-	return (tv_tt.tv_sec+tv_tt.tv_usec/1.0e6);  
+	return (static_cast<double>(tv_tt.tv_sec)+static_cast<double>(tv_tt.tv_usec)/1.0e6);  
 
 }

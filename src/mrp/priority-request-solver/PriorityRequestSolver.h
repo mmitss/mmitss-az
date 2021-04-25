@@ -108,8 +108,8 @@ public:
   void modifyCoordinationSignalTimingPlan();
   void managePriorityRequestListForEV();
   void GLPKSolver();
-  void getCurrentSignalTimingPlan(string jsonString);
-  void getSignalCoordinationTimingPlan(string jsonString);
+  void setCurrentSignalTimingPlan(string jsonString);
+  void setSignalCoordinationTimingPlan(string jsonString);
   void setOptimizationInput();
   void getRequestedSignalGroup();
   void getEVPhases();

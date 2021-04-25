@@ -35,7 +35,9 @@ struct ActiveRequest
     double vehicleLongitude;
     double vehicleElevation;
     double vehicleHeading;
-    double vehicleSpeed; 
+    double vehicleSpeed;
+    double msgReceivedTime;
+    double etaUpdateTime; 
     void reset()
     {
         vehicleID = 0;
@@ -56,5 +58,7 @@ struct ActiveRequest
         vehicleElevation = 0.0;
         vehicleHeading = 0.0;
         vehicleSpeed = 0.0;
+        msgReceivedTime = 0.0;
+        etaUpdateTime = 0.0;
     }
 };
