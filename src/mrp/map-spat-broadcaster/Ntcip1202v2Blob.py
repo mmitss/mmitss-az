@@ -331,3 +331,35 @@ class Ntcip1202v2Blob:
                                     ]
                             }
         return currentPhasesDict
+
+
+if __name__=="__main__":
+    import json
+    import socket
+
+    # Read a config file by creating an object of the time MapSpatBroadcasterConfig
+    configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
+    config = (json.load(configFile))
+
+    # Establish a socket and bind it to IP and port
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    mrpIp = config["HostIp"]
+    MapSpatBroadcastAddress = (mrpIp, config["PortNumber"]["MapSPaTBroadcaster"])
+    s.bind(MapSpatBroadcastAddress)
+
+    permissiveEnabled = config["SignalController"]["PermissiveEnabled"]
+    splitPhases = config["SignalController"]["SplitPhases"]
+
+    # Get inactive vehicle and ped phases from the configuration file
+    inactiveVehPhases = config["SignalController"]["InactiveVehPhases"]
+    inactivePedPhases = config["SignalController"]["InactivePedPhases"]
+
+    # Create an empty Ntcip1202v2Blob object to store the information to be received from the signal controller:
+    currentBlob = Ntcip1202v2Blob(permissiveEnabled, splitPhases, inactiveVehPhases, inactivePedPhases)
+
+    while True:
+        data, addr = s.recvfrom(1024)
+        blobReceiptTime = time.time()
+        currentBlob.processNewData(data)
+        processingTime = time.time()-blobReceiptTime
+        print(processingTime)
