@@ -193,20 +193,13 @@ bool PriorityRequestServer::deleteRequestfromActiveRequestTable(SignalRequest si
 bool PriorityRequestServer::checkTimedOutRequestDeletingRequirement()
 {
 	bool deleteSignalRequest{false};
-	int getSecondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+	double currentTime = getPosixTimestamp();
 
 	if (!ActiveRequestTable.empty())
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			if ((getSecondOfMinute > ActiveRequestTable[i].secondOfMinute) && (getSecondOfMinute - ActiveRequestTable[i].secondOfMinute) >= requestTimedOutValue)
-			{
-				deleteSignalRequest = true;
-				setRequestTimedOutVehicleID(ActiveRequestTable[i].vehicleID);
-				deleteTimedOutRequestfromActiveRequestTable();
-				break;
-			}
-			else if ((getSecondOfMinute < ActiveRequestTable[i].secondOfMinute) && (getSecondOfMinute + SECONDS_IN_A_MINUTE - ActiveRequestTable[i].secondOfMinute) >= requestTimedOutValue)
+			if ((currentTime - ActiveRequestTable[i].msgReceivedTime) >= requestTimedOutValue)
 			{
 				deleteSignalRequest = true;
 				setRequestTimedOutVehicleID(ActiveRequestTable[i].vehicleID);
@@ -347,10 +340,11 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 */
 void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest)
 {
-	ActiveRequest activeRequest;
-	activeRequest.reset();
 	int vehid{};
 	int temporarySignalGroup{};
+	double currentTime = getPosixTimestamp();
+	ActiveRequest activeRequest;
+	activeRequest.reset();
 
 	displayConsoleData("Received Priority Request from MsgDecoder");
 	loggingData("Received Priority Request from MsgDecoder");
@@ -379,6 +373,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
 			activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 			activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+			activeRequest.msgReceivedTime = currentTime;
+			activeRequest.etaUpdateTime = currentTime;
 			ActiveRequestTable.push_back(activeRequest);
 
 			//Add split phase request in the ART
@@ -400,6 +396,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+				activeRequest.msgReceivedTime = currentTime;
+				activeRequest.etaUpdateTime = currentTime;
 				ActiveRequestTable.push_back(activeRequest);
 			}
 			updateETAInActiveRequestTable();
@@ -438,6 +436,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
 				activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 				activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+				activeRequest.msgReceivedTime = currentTime;
+				activeRequest.etaUpdateTime = currentTime;
 				ActiveRequestTable.push_back(activeRequest);
 
 				if (findEVInRequest(signalRequest))
@@ -458,6 +458,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 					activeRequest.vehicleElevation = signalRequest.getElevation_Meter();
 					activeRequest.vehicleHeading = signalRequest.getHeading_Degree();
 					activeRequest.vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+					activeRequest.msgReceivedTime = currentTime;
+					activeRequest.etaUpdateTime = currentTime;
 					ActiveRequestTable.push_back(activeRequest);
 				}
 			}
@@ -482,6 +484,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				findVehicleIDOnTable->vehicleElevation = signalRequest.getElevation_Meter();
 				findVehicleIDOnTable->vehicleHeading = signalRequest.getHeading_Degree();
 				findVehicleIDOnTable->vehicleSpeed = signalRequest.getSpeed_MeterPerSecond();
+				findVehicleIDOnTable->msgReceivedTime = currentTime;
+				findVehicleIDOnTable->etaUpdateTime = currentTime;
 			}
 			updateETAInActiveRequestTable();
 		}
@@ -715,13 +719,13 @@ bool PriorityRequestServer::sendClearRequest()
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
 	double currentTime = getPosixTimestamp();
-	double timeDifference = currentTime - etaUpdateTime;
 
 	if (!ActiveRequestTable.empty())
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - timeDifference;
+			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime -ActiveRequestTable[i].etaUpdateTime);
+			ActiveRequestTable[i].etaUpdateTime = currentTime;
 
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				ActiveRequestTable[i].vehicleETA = 0.0;
@@ -1069,6 +1073,7 @@ string PriorityRequestServer::createJsonStringForSystemPerformanceDataLog()
 */
 void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 {
+	double currentTime = getPosixTimestamp();
 	Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -1108,6 +1113,8 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 			activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
 			activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asDouble();
 			activeRequest.vehicleLaneID = coordinationLaneID;
+			activeRequest.msgReceivedTime = currentTime;
+			activeRequest.etaUpdateTime = currentTime;
 			ActiveRequestTable.push_back(activeRequest);
 		}
 
