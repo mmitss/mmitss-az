@@ -237,8 +237,11 @@ void SignalStatus::reset()
 std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveRequestTable)
 {
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
-    std::string jsonString;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+    std::string jsonString{};
+
     jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
     jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "SSM";
@@ -263,16 +266,20 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
         jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
     }
 
-    jsonString = fastWriter.write(jsonObject);
+    jsonString = Json::writeString(builder, jsonObject);
     return jsonString;
 }
 
 void SignalStatus::json2SignalStatus(std::string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	std::string errors{};
 
-    reader.parse(jsonString.c_str(), jsonObject);
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
+
     const Json::Value values = jsonObject["SignalStatus"]["requestorInfo"];
 
     noOfRequest = (jsonObject["noOfRequest"]).asInt();
