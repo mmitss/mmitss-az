@@ -82,6 +82,5 @@ public:
   void modifyCurrentSignalStatus();
   void generateDatFile();
   void validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22);
-  // void validateStartingPhaseTimingPlan();
   bool findSignalGroupInList(int signalGroup);
 };
