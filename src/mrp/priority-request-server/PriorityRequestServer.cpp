@@ -120,10 +120,10 @@ bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
 bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 {
 	bool addRequest{false};
-	int vehid = signalRequest.getTemporaryVehicleID();
+	int vehicleID = signalRequest.getTemporaryVehicleID();
 
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																		[&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 	if (ActiveRequestTable.size() >= Maximum_Number_Of_Priority_Request)
 		addRequest = false;
@@ -145,9 +145,9 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest)
 {
 	bool updateValue{false};
-	int vehid = signalRequest.getTemporaryVehicleID();
+	int vehicleID = signalRequest.getTemporaryVehicleID();
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																		[&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 	if (ActiveRequestTable.empty())
 		updateValue = false;
@@ -169,10 +169,10 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 bool PriorityRequestServer::deleteRequestfromActiveRequestTable(SignalRequest signalRequest)
 {
 	bool deleteRequest{false};
-	int vehid = signalRequest.getTemporaryVehicleID();
+	int vehicleID = signalRequest.getTemporaryVehicleID();
 
 	std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																			 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																			 [&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 	if (ActiveRequestTable.empty())
 		deleteRequest = false;
@@ -340,7 +340,7 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 */
 void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest)
 {
-	int vehid{};
+	int vehicleID{};
 	int temporarySignalGroup{};
 	double currentTime = getPosixTimestamp();
 	ActiveRequest activeRequest;
@@ -406,14 +406,14 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 		else if (updateActiveRequestTable(signalRequest))
 		{
 			setPRSUpdateCount();
-			vehid = signalRequest.getTemporaryVehicleID();
+			vehicleID = signalRequest.getTemporaryVehicleID();
 			//For EV prioriry requests
 			if (signalRequest.getBasicVehicleRole() == static_cast<int>(MsgEnum::basicRole::fire))
 			{
 				for (int i = 0; i < 2; i++)
 				{
 					std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																							 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																							 [&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 				}
@@ -467,7 +467,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			else
 			{
 				std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																						 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																						 [&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 				findVehicleIDOnTable->vehicleID = signalRequest.getTemporaryVehicleID();
 				findVehicleIDOnTable->requestID = signalRequest.getRequestID();
@@ -492,7 +492,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
 		{
-			vehid = signalRequest.getTemporaryVehicleID();
+			vehicleID = signalRequest.getTemporaryVehicleID();
 
 			//If the delete request is for EV we need to delete both EV request (through and left turn phase)
 			if (findEVInRequest(signalRequest))
@@ -500,17 +500,25 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				for (int i = 0; i < 2; i++)
 				{
 					std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																							 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																							 [&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 
 					if (findVehicleIDOnTable != ActiveRequestTable.end())
 						ActiveRequestTable.erase(findVehicleIDOnTable);
+				}
+
+				if (!ActiveRequestTable.empty())
+				{
+					std::vector<ActiveRequest>::iterator findVehicleTypeOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+																							   [&](ActiveRequest const &p) { return p.vehicleType == emergencyVehicleType; });
+					if (findVehicleTypeOnTable == ActiveRequestTable.end())
+						sentClearRequestForEV = true;
 				}
 			}
 
 			else
 			{
 				std::vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																						 [&](ActiveRequest const &p) { return p.vehicleID == vehid; });
+																						 [&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 				if (findVehicleIDOnTable != ActiveRequestTable.end())
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 			}
@@ -551,6 +559,14 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 		vector<ActiveRequest>::iterator findSplitPhaseEV = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																		[&](ActiveRequest const &p) { return p.vehicleID == vehicleID; });
 		ActiveRequestTable.erase(findSplitPhaseEV);
+
+		if (!ActiveRequestTable.empty())
+		{
+			std::vector<ActiveRequest>::iterator findVehicleTypeOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+																					   [&](ActiveRequest const &p) { return p.vehicleType == emergencyVehicleType; });
+			if (findVehicleTypeOnTable == ActiveRequestTable.end())
+				sentClearRequestForEV = true;
+		}
 	}
 	//For Coordination Request
 	else if ((findVehicleIDOnTable->vehicleType == coordinationVehicleType) && (findVehicleIDOnTable != ActiveRequestTable.end()))
@@ -620,7 +636,16 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 
 	noOfRequest = static_cast<int>(ActiveRequestTable.size());
 
-	if (noOfRequest > 0)
+	if (sentClearRequestForEV || ActiveRequestTable.empty())
+	{
+		jsonObject["MsgType"] = "ClearRequest";
+		sentClearRequest = true;
+		sentClearRequestForEV = false;
+		displayConsoleData("Clear Request Message will send to PRSolver");
+		loggingData("Clear Request Message will send to PRSolver");
+	}
+
+	else if (noOfRequest > 0)
 	{
 		jsonObject["MsgType"] = "PriorityRequest";
 		jsonObject["PriorityRequestList"]["noOfRequest"] = noOfRequest;
@@ -646,14 +671,6 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 		sentClearRequest = false;
 		displayConsoleData("Priority Request Message will send to PRSolver");
 		loggingData("Priority Request Message will send to PRSolver");
-	}
-
-	else
-	{
-		jsonObject["MsgType"] = "ClearRequest";
-		sentClearRequest = true;
-		displayConsoleData("Clear Request Message will send to PRSolver");
-		loggingData("Clear Request Message will send to PRSolver");
 	}
 
 	solverJsonString = Json::writeString(builder, jsonObject);
@@ -724,7 +741,7 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 	{
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
-			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime -ActiveRequestTable[i].etaUpdateTime);
+			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime - ActiveRequestTable[i].etaUpdateTime);
 			ActiveRequestTable[i].etaUpdateTime = currentTime;
 
 			if (ActiveRequestTable[i].vehicleETA <= 0)
