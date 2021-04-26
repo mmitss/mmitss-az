@@ -46,24 +46,28 @@ class ScheduleSpatTranslator:
         return [int(element) for element in npList]
     
     def get_previous_phase_and_clearance_time(self, phaseNo:int):
-        phaseRing = self.phaseRings[phaseNo-1]
-        otherPhasesInRing = [phaseIndex+1 for phaseIndex in range(8) if (self.phaseRings[phaseIndex]==phaseRing and phaseIndex+1 != phaseNo)]
-        phaseLastHoldStartTime =  max([command["commandStartTime"] for 
-                        command in self.schedule if (command["commandType"] == "hold" and 
-                                                     command["commandPhase"]==phaseNo)])
-        
-        # identify the phases in the same ring that have hold start time less than or equal to the subject phase's first hold start time:
-        previousHoldsInRing = [command for command in self.schedule if (command["commandType"]=="hold" and 
-                                                                   command["commandStartTime"]<phaseLastHoldStartTime and 
-                                                                   command["commandPhase"] in otherPhasesInRing)]
+        # Check if the phase exists in the schedule
+        if not any(command["commandPhase"] == phaseNo for command in self.schedule):
+            return False, False
+        else:
+            phaseRing = self.phaseRings[phaseNo-1]
+            otherPhasesInRing = [phaseIndex+1 for phaseIndex in range(8) if (self.phaseRings[phaseIndex]==phaseRing and phaseIndex+1 != phaseNo)]
+            phaseLastHoldStartTime =  max([command["commandStartTime"] for 
+                            command in self.schedule if (command["commandType"] == "hold" and 
+                                                        command["commandPhase"]==phaseNo)])
+            
+            # identify the phases in the same ring that have hold start time less than or equal to the subject phase's first hold start time:
+            previousHoldsInRing = [command for command in self.schedule if (command["commandType"]=="hold" and 
+                                                                    command["commandStartTime"]<phaseLastHoldStartTime and 
+                                                                    command["commandPhase"] in otherPhasesInRing)]
 
-        penultimateHoldStartTime = max([command["commandStartTime"] for command in previousHoldsInRing])
+            penultimateHoldStartTime = max([command["commandStartTime"] for command in previousHoldsInRing])
 
-        previousPhase = [command["commandPhase"] for command in previousHoldsInRing if np.isclose(command["commandStartTime"],penultimateHoldStartTime)][0]
+            previousPhase = [command["commandPhase"] for command in previousHoldsInRing if np.isclose(command["commandStartTime"],penultimateHoldStartTime)][0]
 
-        previousPhaseClearanceTime = self.clearanceTimes[previousPhase-1]
+            previousPhaseClearanceTime = self.clearanceTimes[previousPhase-1]
 
-        return previousPhase, previousPhaseClearanceTime  
+            return previousPhase, previousPhaseClearanceTime  
         
 
     def construct_initial_spat_table(self, schedule:dict, clearanceTimes:list, phaseRings:list):
@@ -85,17 +89,26 @@ class ScheduleSpatTranslator:
                 # Get previous phases and their clearance times
                 phase.previousPhaseNo, phase.previousPhaseClearanceTime = self.get_previous_phase_and_clearance_time(phase.phaseNo)
 
-                # Get initial MaxEndTime when in Green
-                phase.initialGMaxTimeToEnd = self.get_gmax_end_times(phase.phaseNo)
+                if (phase.previousPhaseNo == False and phase.previousPhaseClearanceTime == False):
+                    phase.initialGMaxTimeToEnd = [False,False]
+                    phase.initialGMinTimeToEnd = [False,False]
+                    phase.initialRMaxTimeToEnd = [False,False]
+                    phase.initialRMinTimeToEnd = [False,False]
+                    #phase.omit = True
+                    self.omittedPhases += [phase.phaseNo]
+                else:
 
-                # Get initial MinEndTime when in Green
-                phase.initialGMinTimeToEnd = self.get_gmin_end_times(phase.phaseNo)
+                    # Get initial MaxEndTime when in Green
+                    phase.initialGMaxTimeToEnd = self.get_gmax_end_times(phase.phaseNo)
 
-                # Get initial MaxEndTime when in Red
-                phase.initialRMaxTimeToEnd = self.get_rmax_end_times(phase.phaseNo)
+                    # Get initial MinEndTime when in Green
+                    phase.initialGMinTimeToEnd = self.get_gmin_end_times(phase.phaseNo)
 
-                # Get initial MinEndTime when in Red
-                phase.initialRMinTimeToEnd = self.get_rmin_end_times(phase.phaseNo)
+                    # Get initial MaxEndTime when in Red
+                    phase.initialRMaxTimeToEnd = self.get_rmax_end_times(phase.phaseNo)
+
+                    # Get initial MinEndTime when in Red
+                    phase.initialRMinTimeToEnd = self.get_rmin_end_times(phase.phaseNo)
 
             for cycle in range(2):
                 self.gMaxEndTimes[cycle] = [phase.initialGMaxTimeToEnd[cycle] for phase in self.phases]
@@ -146,7 +159,7 @@ if __name__=="__main__":
     import json
     import time
 
-    with open("test/schedule_nonev.json", 'r') as fp:
+    with open("test/schedule1.json", 'r') as fp:
         phaseRings = [1,1,1,1,2,2,2,2]
         clearanceTimes = [10,9,8,7,6,5,4,3]
         startTime = time.time()

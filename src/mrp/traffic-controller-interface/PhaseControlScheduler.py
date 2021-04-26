@@ -203,9 +203,9 @@ class PhaseControlScheduler(Scheduler):
         
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
                 s.sendto(scheduleSpatTranslationJson.encode(), self.mapSpatBroadcasterAddress)
-                logger.write("Sent Schedule-Spat Translation to Map-Spat-Broadcaster: {}".format(scheduleSpatTranslationJson))
+                self.logger.write("Sent Schedule-Spat Translation to Map-Spat-Broadcaster: {}".format(scheduleSpatTranslationJson))
         except Exception as e:
-            logger.write("*****ERROR IN TRANSLATING SCHEDULE TO SPAT*****:" + str(e))
+            self.logger.write("*****ERROR IN TRANSLATING SCHEDULE TO SPAT*****:" + str(e))
         
         self.signalController.resetAllPhaseControls()
         scheduleJson = scheduleJson["Schedule"]
@@ -362,7 +362,7 @@ if __name__ == "__main__":
     scheduler = PhaseControlScheduler(asc, logger)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule_nonev.json", "r")
+    scheduleFile = open("test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
     scheduleFile.close()
 
