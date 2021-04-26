@@ -126,7 +126,11 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
     - The method uses Signal status class to maintain Active Request Table
 */
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
-{   
+{
+    double timeStamp = getPosixTimestamp();
+    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Received SSM" << std::endl;
+    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] jsonString" << std::endl;
+    
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
         PRGServerList[i].signalStatus.json2SignalStatus(jsonString);
@@ -301,7 +305,7 @@ int PriorityRequestGeneratorServer::getMessageType(string jsonString)
         else
             cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Message type is unknown" << std::endl;
     }
-    
+
     return messageType;
 }
 
@@ -326,7 +330,8 @@ int PriorityRequestGeneratorServer::getTimedOutVehicleID()
 */
 double PriorityRequestGeneratorServer::getCurrentTimeInSeconds()
 {
-    double currentTime = getPosixTimestamp();;
+    double currentTime = getPosixTimestamp();
+    ;
 
     return currentTime;
 }
