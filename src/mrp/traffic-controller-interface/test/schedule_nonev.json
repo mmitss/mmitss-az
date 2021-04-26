@@ -216,18 +216,6 @@
 			"commandPhase": 6,
 			"commandStartTime": 0.0,
 			"commandType": "call_veh"
-		},
-		{
-            "commandEndTime": 20.0,
-            "commandPhase": 4,
-            "commandStartTime": 0.0,
-            "commandType": "omit_veh"
-        },
-        {
-            "commandEndTime": 20.0,
-            "commandPhase": 3,
-            "commandStartTime": 0.0,
-            "commandType": "omit_veh"
-        }
+		}
 	]
 }

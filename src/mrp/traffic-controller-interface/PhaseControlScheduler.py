@@ -362,7 +362,7 @@ if __name__ == "__main__":
     scheduler = PhaseControlScheduler(asc, logger)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule_ev.json", "r")
+    scheduleFile = open("test/schedule_nonev.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
     scheduleFile.close()
 

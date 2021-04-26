@@ -58,6 +58,8 @@ def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     mrpIp = config["HostIp"]
     port = config["PortNumber"]["TrafficControllerInterface"]
+    mapSpatBroadcasterPort = config["PortNumber"]["MapSPaTBroadcaster"]
+
     tci_commInfo = (mrpIp, port)
     s.bind(tci_commInfo)
     
@@ -84,6 +86,9 @@ def main():
         if receivedMessage["MsgType"]=="Schedule":
             if receivedMessage["Schedule"] == "Clear":
                 logger.write("Received a clear request")
+                clearSignal = json.dumps(dict({"MsgType": "ScheduleSpatClear"}))
+                s.sendto(clearSignal.encode(), (mrpIp, mapSpatBroadcasterPort))
+                logger.write("Forwarded clear signal to MapSPaTBroadcaster")
                 phaseControlScheduler.backgroundScheduler.remove_all_jobs()
                 # Clear all holds, forceoffs, calls, and omits from the ASC signal controller:
                 phaseControlScheduler.clearAllNtcipCommandsFromSignalController()

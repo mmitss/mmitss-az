@@ -30,14 +30,14 @@ class ScheduleSpatTranslator:
         previousPhase = self.phases[phaseNo-1].previousPhaseNo
         previousPhaseClearanceTime = self.phases[phaseNo-1].previousPhaseClearanceTime
             
-        return [int((command["commandStartTime"] * 10) +previousPhaseClearanceTime) for command in self.schedule if (command["commandType"]=="forceoff" and
+        return [int(command["commandStartTime"] + previousPhaseClearanceTime) * 10 for command in self.schedule if (command["commandType"]=="forceoff" and
                                                                                                           command["commandPhase"]==previousPhase)]
 
     def get_rmin_end_times(self, phaseNo):
         previousPhase = self.phases[phaseNo-1].previousPhaseNo
         previousPhaseClearanceTime = self.phases[phaseNo-1].previousPhaseClearanceTime
         
-        return [int((command["commandEndTime"] * 10) + previousPhaseClearanceTime) for command in self.schedule if (command["commandType"]=="hold" and
+        return [int(command["commandEndTime"] + previousPhaseClearanceTime) * 10 for command in self.schedule if (command["commandType"]=="hold" and
                                                                                      command["commandPhase"]==previousPhase)]        
         
 

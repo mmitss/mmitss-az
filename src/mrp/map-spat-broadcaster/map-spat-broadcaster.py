@@ -96,23 +96,6 @@ def main():
     mmitssSpatObject.setIntersectionID(intersectionID)
     mmitssSpatObject.setRegionalID(regionalID)
 
-    # Check if TCI is running:
-    tciIsRunning = checkIfProcessRunning("M_TrafficControllerInterface")
-    snmpEngineIsRunning = checkIfProcessRunning("M_SnmpEngine")
-    
-    if (tciIsRunning and snmpEngineIsRunning):
-        isTimingPlanReceived = False
-        s.sendto('{"MsgType":"TimingPlanRequest"}'.encode(), tciAddress)
-        
-        while(isTimingPlanReceived == False):
-            data, addr = s.recvfrom(1024)
-            
-            if (addr[0]==mrpIp): 
-                internalMsg = json.loads(data.decode())
-                if internalMsg["MsgType"]=="ActiveTimingPlan":
-                    mmitssSpatObject.phaseClearanceTimes = [(phase[0]+phase[1]) for phase in zip(internalMsg["TimingPlan"]["YellowChange"], internalMsg["TimingPlan"]["RedClear"])]                
-                    isTimingPlanReceived = True    
-
     msgCnt = 0
     spatMapMsgCount = 0
 
@@ -127,11 +110,11 @@ def main():
         if addr[0] == mrpIp:
             internalMsg = data.decode()
             internalMsg = json.loads(internalMsg)
-            if(internalMsg["MsgType"]=="ActivePhaseControlSchedule"):
-                phaseControlSchedule = internalMsg
-                mmitssSpatObject.extract_local_phase_control_schedule(phaseControlSchedule)
-            if(internalMsg["MsgType"]=="ActiveTimingPlan"):
-                mmitssSpatObject.phaseClearanceTimes = [(phase[0]+phase[1]) for phase in zip(internalMsg["TimingPlan"]["YellowChange"], internalMsg["TimingPlan"]["RedClear"])]                
+            if(internalMsg["MsgType"]=="ScheduleSpatTranslation"):
+                scheduleSpatTranslation = internalMsg
+                mmitssSpatObject.initialize(scheduleSpatTranslation)
+            elif(internalMsg["MsgType"]=="ScheduleSpatClear"):
+                mmitssSpatObject.reset()
 
         elif addr[0] == controllerIp:
             spatBlob = data
@@ -151,12 +134,11 @@ def main():
             # Check if TCI is running:
             tciIsRunning = checkIfProcessRunning("M_TrafficControllerInterface")
             snmpEngineIsRunning = checkIfProcessRunning("M_SnmpEngine")
-            scheduleIsActive = mmitssSpatObject.isScheduleActive
+            scheduleIsActive = mmitssSpatObject.isActive
 
             if (tciIsRunning and snmpEngineIsRunning and scheduleIsActive):
                 currentSpatObject = mmitssSpatObject
-                currentSpatObject.update_current_phase_status(currentBlob)
-                currentSpatObject.update_local_phase_control_schedule()
+                currentSpatObject.update(currentBlob)
             else: currentSpatObject = spatObject
 
             currentSpatObject.setmsgCnt(msgCnt)
