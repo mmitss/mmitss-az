@@ -1,8 +1,5 @@
-from Phase import Phase
-
-class MmitssPhase(Phase):
+class MmitssPhase():
     def __init__(self, phaseNo:int):
-        super().__init__()
         self.phaseNo = phaseNo
         self.currentCycle = 0
         self.previousPhaseNo = False
