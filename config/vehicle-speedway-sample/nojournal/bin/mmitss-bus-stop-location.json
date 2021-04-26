@@ -1,26 +1,6 @@
 {
-    "NoOfBusStop": 5,
+    "NoOfBusStop": 3,
     "BusStopInformation": [
-        {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "NorthBound",
-            "ApproachNo": 3,
-            "Latitude_DecimalDegree":  32.234937,
-            "Longitude_DecimalDegree": -110.952312,
-            "Elevation_Meter": 744,
-            "Heading_Degree": 0.0
-        },
-        {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "SouthBound",
-            "ApproachNo": 7,
-            "Latitude_DecimalDegree": 32.237225,
-            "Longitude_DecimalDegree": -110.952498,
-            "Elevation_Meter": 742,
-            "Heading_Degree": 180.0
-        },
         {
             "IntersectionName": "Speedway-Mountain",
             "IntersectionID": 26379,

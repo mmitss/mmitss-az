@@ -25,11 +25,9 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = True
 
-# configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
-configfile = open('//Users/klhead/dev/mmitss/config/speedway-sample/field/speedway-mountain/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
 config = json.load(configfile)
 controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
-#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = config["PortNumber"]["HMIController"]
 controller = (controllerIP, controllerPort)
 
