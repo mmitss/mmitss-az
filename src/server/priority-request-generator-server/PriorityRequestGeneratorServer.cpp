@@ -128,8 +128,8 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
 {
     double timeStamp = getPosixTimestamp();
-    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Received SSM" << std::endl;
-    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] jsonString" << std::endl;
+    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Received SSM" << endl;
+    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "]" << jsonString << endl;
     
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
