@@ -32,7 +32,7 @@ using std::string;
 using std::vector;
 
 #define Initialize 0.0
-#define Tolerance 2.0
+#define Tolerance 1.0
 #define FirstPhaseOfRing1 1
 #define FirstPhaseOfRing2 5
 #define LastPhaseOfRing1 4
@@ -47,12 +47,20 @@ private:
   bool logging{};
   bool consoleOutput{};
   bool coordinationRequestStatus{};
+  bool conflictingPhaseCallStatus{false};
+  bool conflictingPedCallStatus{false};
+  bool currentPedCallStatus{false};
+  bool currentPedCallStatus1{false};
+  bool currentPedCallStatus2{false};
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
   int coordinatedPhase1{};
   int coordinatedPhase2{};
-
+  vector<int> vehicleCallList{};
+  vector<int> pedCallList{};
+  vector<int> phaseCallList{};
+  vector<int> dummyPhasesList{};
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
@@ -60,7 +68,7 @@ private:
 public:
   TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value,
                                  double coordination_StartTime, int coordinated_Phase1, int coordinated_Phase2,
-                                 bool logging_Status, bool console_Output_Status,
+                                 bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                  vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan,
                                  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan);
 
@@ -69,6 +77,13 @@ public:
   void manageCurrentSignalStatus(string jsonString);
   void modifyTrafficControllerStatus();
   void validateTrafficControllerStatus();
+  void validateElapsedGreenTime();
+  void setConflictingPhaseCallStatus();
+  void setConflictingPedCallStatus();
+  void setPhaseCallList();
+  void setCurrentPedCallStatus();
+  bool getConflictingPedCallStatus();
   double getCurrentTime();
+  vector<int> getConflictingPedCallList();
   vector<TrafficControllerData::TrafficConrtollerStatus> getTrafficControllerStatus(string jsonString);
 };

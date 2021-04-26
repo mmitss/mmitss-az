@@ -17,8 +17,6 @@
 #include "SolverDataManager.h"
 #include "msgEnum.h"
 
-const double MAXGREEN = 100.0;
-
 SolverDataManager::SolverDataManager()
 {
 }
@@ -29,7 +27,11 @@ SolverDataManager::SolverDataManager(vector<RequestList> requestList)
         priorityRequestList = requestList;
 }
 
-SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList, vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus, vector<TrafficControllerData::TrafficSignalPlan> signalPlan, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight)
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList,
+                                     vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus,
+                                     vector<TrafficControllerData::TrafficSignalPlan> signalPlan, vector<int> listOfConflictingPedCall,
+                                     double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight, double Truck_Weight,
+                                     double DZ_Request_Weight, double Coordination_Weight)
 {
     if (!requestList.empty())
         priorityRequestList = requestList;
@@ -42,6 +44,41 @@ SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector
 
     if (!dilemmaZoneList.empty())
         dilemmaZoneRequestList = dilemmaZoneList;
+
+    if (!listOfConflictingPedCall.empty())
+        conflictingPedCallList = listOfConflictingPedCall;
+
+    EmergencyVehicleWeight = EV_Weight;
+    EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
+    TransitWeight = Transit_Weight;
+    TruckWeight = Truck_Weight;
+    DilemmaZoneRequestWeight = DZ_Request_Weight;
+    CoordinationWeight = Coordination_Weight;
+}
+
+SolverDataManager::SolverDataManager(vector<RequestList> dilemmaZoneList, vector<RequestList> requestList,
+                                     vector<TrafficControllerData::TrafficConrtollerStatus> signalStatus,
+                                     vector<TrafficControllerData::TrafficSignalPlan> signalPlan, vector<int> listOfConflictingPedCall,
+                                     vector<int> requested_Signal_Group, double EV_Weight, double EV_SplitPhase_Weight, double Transit_Weight,
+                                     double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight)
+{
+    if (!requestList.empty())
+        priorityRequestList = requestList;
+
+    if (!signalStatus.empty())
+        trafficControllerStatus = signalStatus;
+
+    if (!signalPlan.empty())
+        trafficSignalPlan = signalPlan;
+
+    if (!dilemmaZoneList.empty())
+        dilemmaZoneRequestList = dilemmaZoneList;
+
+    if (!listOfConflictingPedCall.empty())
+        conflictingPedCallList = listOfConflictingPedCall;
+
+    if (!requested_Signal_Group.empty())
+        requestedSignalGroup = requested_Signal_Group;
 
     EmergencyVehicleWeight = EV_Weight;
     EmergencyVehicleSplitPhaseWeight = EV_SplitPhase_Weight;
@@ -122,14 +159,91 @@ void SolverDataManager::addAssociatedSignalGroup()
 /*
     - This function will increase the  value of green max by 15% if there is Transit or Truck in the priority request list.
 */
-void SolverDataManager::modifyGreenMax()
+void SolverDataManager::modifyGreenMax(bool emergencyVehicleStatus)
 {
-    for (auto i = requestedSignalGroup.begin(); i != requestedSignalGroup.end(); ++i)
+    int temporaryPhase{};
+
+    for (size_t i = 0; i < requestedSignalGroup.size(); i++)
     {
+        temporaryPhase = requestedSignalGroup.at(i);
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == *i; });
-        if (findSignalGroup != trafficSignalPlan.end())
+                                                                                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        if (emergencyVehicleStatus && findSignalGroup != trafficSignalPlan.end())
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen * 1.50;
+
+        else if (!emergencyVehicleStatus && findSignalGroup != trafficSignalPlan.end())
             findSignalGroup->maxGreen = findSignalGroup->maxGreen * 1.15;
+    }
+}
+
+/*
+    - The function can modify gmin, gmax time for conflicting ped calls
+        - If there is ped call on conflicting direction, the function will calculate the ped walk and ped clear time for those phases
+        - If the phase gmin is less than the pedServiceTime (pedWalk and pedClear time), gmin will be set as pedServiceTime
+        - If the phase gmax is less than the pedServiceTime (pedWalk and pedClear time), gmax will be set as pedServiceTime
+*/
+void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
+{
+    int temporaryPhase{};
+    double pedistrianServiceTime{};
+
+    if (!conflictingPedCallList.empty())
+    {
+        for (size_t i = 0; i < conflictingPedCallList.size(); i++)
+        {
+            temporaryPhase = conflictingPedCallList.at(i);
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findConflictingPedCallSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+            if (findConflictingPedCallSignalGroup != trafficSignalPlan.end())
+            {
+                pedistrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
+
+                if (findConflictingPedCallSignalGroup->minGreen < pedistrianServiceTime)
+                    findConflictingPedCallSignalGroup->minGreen = pedistrianServiceTime;
+
+                if (findConflictingPedCallSignalGroup->maxGreen < pedistrianServiceTime)
+                    findConflictingPedCallSignalGroup->maxGreen = pedistrianServiceTime;
+            }
+        }
+    }
+}
+
+void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
+{
+    int temporaryPhase{};
+    double remaningPedServiceTime{};
+
+    if (trafficControllerStatus[0].currentPedCallStatus1)
+    {
+        temporaryPhase = trafficControllerStatus[0].startingPhase1;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
+            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        remaningPedServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear - trafficControllerStatus[0].pedServiceElapsedTime1;
+
+        if (findSignalGroup1->minGreen < remaningPedServiceTime)
+            findSignalGroup1->minGreen = remaningPedServiceTime;
+
+        if (findSignalGroup1->maxGreen < remaningPedServiceTime)
+            findSignalGroup1->maxGreen = remaningPedServiceTime;
+    }
+
+    if (trafficControllerStatus[0].currentPedCallStatus2)
+    {
+        temporaryPhase = trafficControllerStatus[0].startingPhase2;
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
+            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        remaningPedServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear - trafficControllerStatus[0].pedServiceElapsedTime2;
+
+        if (findSignalGroup2->minGreen < remaningPedServiceTime)
+            findSignalGroup2->minGreen = remaningPedServiceTime;
+
+        if (findSignalGroup2->maxGreen < remaningPedServiceTime)
+            findSignalGroup2->maxGreen = remaningPedServiceTime;
     }
 }
 
@@ -197,7 +311,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
+void SolverDataManager::generateDatFile()
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -238,17 +352,10 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     fs << ";\n";
 
     fs << "param gmax      \t:=";
-    if (emergencyVehicleStatus == true)
-    {
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << MAXGREEN;
-    }
 
-    else
-    {
-        for (size_t i = 0; i < trafficSignalPlan.size(); i++)
-            fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
-    }
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+        fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].maxGreen;
+
     fs << ";\n";
 
     fs << "param priorityType:= ";
@@ -503,6 +610,69 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus)
     fs << ";\n";
     fs << "end;";
     fs.close();
+}
+/*
+    - The method will sorted all the phases based on their ring barrier group. EV_P11 and EV_P21 phases are in ring barrier group1 whereas, EV_P12 and EV_P22 phases are in ring barrier group2
+    - Gmax value for each phases per ring barrier group will be stored in the corresponding vector
+    - Largest gmax value per ring barrier group will be computed
+*/
+void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22)
+{
+    vector<int> phasesForRingBarrierGroup1{};
+    vector<int> phasesForRingBarrierGroup2{};
+    vector<double> gmaxForRingBarrierGroup1{};
+    vector<double> gmaxForRingBarrierGroup2{};
+    vector<int>::iterator it1;
+    vector<int>::iterator it2;
+    int temporaryPhase{};
+    double largestGmaxForRingBarrierGroup1{};
+    double largestGmaxForRingBarrierGroup2{};
+
+    phasesForRingBarrierGroup1.insert(phasesForRingBarrierGroup1.end(), EV_P11.begin(), EV_P11.end());
+    phasesForRingBarrierGroup2.insert(phasesForRingBarrierGroup2.end(), EV_P12.begin(), EV_P12.end());
+
+    for (size_t i = 0; i < EV_P21.size(); i++)
+        phasesForRingBarrierGroup1.push_back(EV_P21.at(i));
+
+    for (size_t i = 0; i < EV_P22.size(); i++)
+        phasesForRingBarrierGroup2.push_back(EV_P22.at(i));
+
+    for (size_t i = 0; i < phasesForRingBarrierGroup1.size(); i++)
+    {
+        temporaryPhase = phasesForRingBarrierGroup1.at(i);
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        gmaxForRingBarrierGroup1.push_back(findSignalGroup->maxGreen);
+    }
+
+    for (size_t i = 0; i < phasesForRingBarrierGroup2.size(); i++)
+    {
+        temporaryPhase = phasesForRingBarrierGroup2.at(i);
+        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+        gmaxForRingBarrierGroup2.push_back(findSignalGroup->maxGreen);
+    }
+
+    largestGmaxForRingBarrierGroup1 = *max_element(gmaxForRingBarrierGroup1.begin(), gmaxForRingBarrierGroup1.end());
+    largestGmaxForRingBarrierGroup2 = *max_element(gmaxForRingBarrierGroup2.begin(), gmaxForRingBarrierGroup2.end());
+
+    for (size_t i = 0; i < trafficSignalPlan.size(); i++)
+    {
+        if (trafficSignalPlan[i].minGreen > 0)
+        {
+            temporaryPhase = trafficSignalPlan[i].phaseNumber;
+
+            if (std::find(phasesForRingBarrierGroup1.begin(), phasesForRingBarrierGroup1.end(), temporaryPhase) != phasesForRingBarrierGroup1.end())
+                trafficSignalPlan[i].maxGreen = largestGmaxForRingBarrierGroup1;
+
+            else if (std::find(phasesForRingBarrierGroup2.begin(), phasesForRingBarrierGroup2.end(), temporaryPhase) != phasesForRingBarrierGroup2.end())
+                trafficSignalPlan[i].maxGreen = largestGmaxForRingBarrierGroup2;
+        }
+    }
 }
 
 SolverDataManager::~SolverDataManager()

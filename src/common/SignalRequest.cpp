@@ -257,7 +257,11 @@ int SignalRequest::getVehicleType()
 std::string SignalRequest::signalRequest2Json()
 {
     Json::Value jsonObject;
-    Json::FastWriter fastWriter;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+    std::string jsonString{};
+
     jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
     jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "SRM";
@@ -281,7 +285,8 @@ std::string SignalRequest::signalRequest2Json()
     jsonObject["SignalRequest"]["speed_MeterPerSecond"] = speed_MeterPerSecond;
     jsonObject["SignalRequest"]["vehicleType"] = vehicleType;
 
-    std::string jsonString = fastWriter.write(jsonObject);
+    jsonString = Json::writeString(builder, jsonObject);
+
     return jsonString;
 }
 
@@ -289,9 +294,12 @@ std::string SignalRequest::signalRequest2Json()
 void SignalRequest::json2SignalRequest(std::string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	std::string errors{};
 
-    reader.parse(jsonString.c_str(), jsonObject);
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
 
     minuteOfYear = (jsonObject["SignalRequest"]["minuteOfYear"]).asInt();
     msOfMinute = (jsonObject["SignalRequest"]["msOfMinute"]).asInt();

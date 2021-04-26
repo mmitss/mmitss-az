@@ -38,6 +38,7 @@ using std::stringstream;
 using std::vector;
 
 #define coordinationVehicleType 20
+#define emergencyVehicleType 2
 #define coordinationLaneID 1
 #define Minimum_ETA 1.0
 #define ETA_Delete_Time 1.0
@@ -81,6 +82,7 @@ private:
     bool consoleOutput{false};
     bool emergencyVehicleStatus{false};
     bool sentClearRequest{};
+    bool sentClearRequestForEV{};
     string intersectionName{};
     string mapPayloadFileName{};
     bool sendSSM{false};

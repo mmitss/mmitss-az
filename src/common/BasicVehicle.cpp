@@ -137,6 +137,11 @@ int BasicVehicle::getWidth_cm()
 string BasicVehicle::basicVehicle2Json()
 {
     Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+    std::string jsonString{};
+
     jsonObject["Timestamp_verbose"] = getVerboseTimestamp();
     jsonObject["Timestamp_posix"] = getPosixTimestamp();
     jsonObject["MsgType"] = "BSM";
@@ -151,14 +156,20 @@ string BasicVehicle::basicVehicle2Json()
     jsonObject["BasicVehicle"]["size"]["length_cm"] = length_cm;
     jsonObject["BasicVehicle"]["size"]["width_cm"] = width_cm;
     
-    Json::FastWriter fastWriter;
-    return fastWriter.write(jsonObject);                                            
+    jsonString = Json::writeString(builder, jsonObject);
+
+    return jsonString;                                            
 }
 void BasicVehicle::json2BasicVehicle(string jsonString)
 {
     Json::Value jsonObject;
-    Json::Reader reader;
-    reader.parse(jsonString.c_str(), jsonObject);
+	Json::CharReaderBuilder builder;
+	Json::CharReader *reader = builder.newCharReader();
+	std::string errors{};
+
+    reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
+	delete reader;
+
     temporaryID = (jsonObject["BasicVehicle"]["temporaryID"]).asInt();
     type = (jsonObject["BasicVehicle"]["type"]).asString();
     speed_MeterPerSecond = (jsonObject["BasicVehicle"]["speed_MeterPerSecond"]).asDouble();

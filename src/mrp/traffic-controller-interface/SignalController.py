@@ -301,6 +301,33 @@ class SignalController:
                 nextPhasesDict= {"nextPhases":[nextPhasesList[0], nextPhasesList[1]]}
             self.logger.write("Current next phases are " + str(nextPhasesList))
             return nextPhasesDict
+        
+        def getPhasesCallsDict() -> dict:
+            """
+            requests the "veh and ped calls" in the controller through an Snmp::getValue method.
+                        
+            Returns:
+            --------
+                A dictionary containing the list of next phases.
+            """
+            vehCallsList = []
+            vehCallsInt = int(self.snmp.getValue(StandardMib.VEHICLE_CALLS))
+            vehCallsStr = str(f'{(vehCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if vehCallsStr[i]=="1":
+                    vehCallsList = vehCallsList + [i+1]
+            
+            pedCallsList = []
+            pedCallsInt = int(self.snmp.getValue(StandardMib.PEDESTRIAN_CALLS))
+            pedCallsStr = str(f'{(pedCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if pedCallsStr[i]=="1":
+                    pedCallsList = pedCallsList + [i+1]
+
+            phaseCallsDict = {"vehicleCalls": vehCallsList, "pedestrianCalls": pedCallsList}
+            
+            return phaseCallsDict
+
         ######################## Definition End: getNextPhasesDict() ########################
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -315,13 +342,24 @@ class SignalController:
         else:
             nextPhasesDict = getNextPhasesDict()
 
+        if ((currentPhasesDict["currentPhases"][0]["State"]=="green") or (currentPhasesDict["currentPhases"][1]["State"]=="green")):
+            phaseCallsDict = getPhasesCallsDict()
+        else: 
+            phaseCallsDict = {"vehicleCalls":[], "pedestrianCalls":[]}
+
+
         currentAndNextPhasesDict = currentPhasesDict
         currentAndNextPhasesDict["MsgType"] = "CurrNextPhaseStatus"
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
+        currentAndNextPhasesDict["vehicleCalls"] = phaseCallsDict["vehicleCalls"]
+        currentAndNextPhasesDict["totalVehicleCalls"] = len(phaseCallsDict["vehicleCalls"])
+        currentAndNextPhasesDict["pedestrianCalls"] = phaseCallsDict["pedestrianCalls"]
+        currentAndNextPhasesDict["totalPedestrianCalls"] = len(phaseCallsDict["pedestrianCalls"])
+
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        self.logger.write("Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
+        self.logger.write("Sent curr and NextPhasestatus to solver:" + str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 

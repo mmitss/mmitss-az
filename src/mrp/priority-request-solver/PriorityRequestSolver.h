@@ -94,6 +94,8 @@ private:
   vector<int> EV_P22{};
   vector<int> requestedSignalGroup{};
   vector<int> plannedEVPhases{};
+  vector<int> conflictingPedCallList{};
+  vector<int> dummyPhasesList{};
 
 public:
   PriorityRequestSolver();
@@ -104,10 +106,10 @@ public:
   void modifyPriorityRequestList();
   void modifySignalTimingPlan();
   void modifyCoordinationSignalTimingPlan();
-  void deleteSplitPhasesFromPriorityRequestList();
+  void managePriorityRequestListForEV();
   void GLPKSolver();
-  void getCurrentSignalTimingPlan(string jsonString);
-  void getSignalCoordinationTimingPlan(string jsonString);
+  void setCurrentSignalTimingPlan(string jsonString);
+  void setSignalCoordinationTimingPlan(string jsonString);
   void setOptimizationInput();
   void getRequestedSignalGroup();
   void getEVPhases();
@@ -115,6 +117,7 @@ public:
   void getCurrentSignalStatus(string jsonString);
   void validateEVTrafficSignalPlan();
   void getPriorityWeights();
+  void getDummyPhases();
   void readConfigFile();
   void loggingData(string logString);
   void displayConsoleData(string consoleString);

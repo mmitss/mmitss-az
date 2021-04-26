@@ -6,9 +6,6 @@ x-var: &IMAGE_MRP_SIMULATION
 x-var: &IMAGE_SERVER_TOOLS
     mmitssuarizona/mmitss-simulation_server-tools-$PROCESSOR:2.1
 
-x-var: &TIMEZONE_STRING
-    America/Phoenix
-
 services:
 
     speedway-campbell:
@@ -22,7 +19,7 @@ services:
                 ipv4_address: 10.12.6.3
         image: *IMAGE_MRP_SIMULATION
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     speedway-cherry:
         container_name: speedway-cherry
@@ -35,7 +32,7 @@ services:
                 ipv4_address: 10.12.6.6
         image: *IMAGE_MRP_SIMULATION
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     speedway-mountain:
         container_name: speedway-mountain
@@ -48,7 +45,7 @@ services:
                 ipv4_address: 10.12.6.9
         image: *IMAGE_MRP_SIMULATION
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     speedway-park:
         container_name: speedway-park
@@ -61,7 +58,7 @@ services:
                 ipv4_address: 10.12.6.12
         image: *IMAGE_MRP_SIMULATION
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     simulation_server-tools:
         container_name: simulation_server-tools
@@ -74,7 +71,7 @@ services:
                 ipv4_address: 10.12.6.20
         image: *IMAGE_SERVER_TOOLS
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
             
 networks:
     mmitss_vlan:

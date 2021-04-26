@@ -7,9 +7,6 @@ services:
 x-var: &IMAGE_MRP
     mmitssuarizona/mmitss-mrp-$PROCESSOR:2.1
 
-x-var: &TIMEZONE_STRING
-    America/Phoenix
-
     speedway-campbell:
         container_name: speedway-campbell
         volumes:
@@ -21,7 +18,7 @@ x-var: &TIMEZONE_STRING
                 ipv4_address: 10.12.6.3
         image: *IMAGE_MRP
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
             
     speedway-cherry:
         container_name: speedway-cherry
@@ -34,7 +31,7 @@ x-var: &TIMEZONE_STRING
                 ipv4_address: 10.12.6.6
         image: *IMAGE_MRP
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     speedway-mountain:
         container_name: speedway-mountain
@@ -47,7 +44,7 @@ x-var: &TIMEZONE_STRING
                 ipv4_address: 10.12.6.9      
         image: *IMAGE_MRP
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
     speedway-park:
         container_name: 10.12.6.12
@@ -60,7 +57,7 @@ x-var: &TIMEZONE_STRING
                 ipv4_address: 10.12.6.12       
         image: *IMAGE_MRP
         environment: 
-            - TZ=*TIMEZONE_STRING
+            - TZ=America/Phoenix
 
 networks:
     mmitss_vlan:
