@@ -107,14 +107,13 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 /*
 	- Create srm json string based on te bsm and associated information obtained based on the active map (laneID, approachID, ETA)
 */
-string PriorityRequestGenerator::createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
+string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
 {
 	string srmJsonString{};
 	int vehExpectedTimeOfArrival_Minute{};
 	double vehExpectedTimeOfArrival_Second{};
-	double vehicleETA_Duration{};
-
-	vehExpectedTimeOfArrival_Second = remquo((getTime2Go() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
+	
+	vehExpectedTimeOfArrival_Second = remquo((getETA() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
 	vehicleETA_Duration = minimumETA_Duration;
 	setMsgCount(msgCount);
 	tempVehicleSpeed = getVehicleSpeed(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
@@ -196,7 +195,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 		requestSendingRequirement = true;
 		requestSendStatus = false;
 		setPriorityRequestType(static_cast<int>(MsgEnum::requestType::priorityCancellation));
-		
+
 		displayConsoleData("SRM is sent since vehicle is out off the map");
 	}
 
@@ -647,18 +646,16 @@ void PriorityRequestGenerator::setSignalGroup(int phaseNo)
 /*
 	-calculation for ETA. Units will be second
 */
-void PriorityRequestGenerator::setTime2Go(double distance2go, double vehicle_Speed)
+void PriorityRequestGenerator::setETA(double distance2go, double vehicle_Speed)
 {
-	double vehicleLength = Vehicle_Length;
 	if (vehicle_Speed >= minimumVehicleSpeed)
 		vehicleETA = static_cast<double>((distance2go / DISTANCEUNITCONVERSION) / vehicle_Speed); //distance2go is cm. DISTANCEUNITCONVERSION is used converst distance2go into meter
 
 	else
-	{
-		vehicleETA = static_cast<double>(((distance2go / DISTANCEUNITCONVERSION) / vehicleLength) * 2);
-		if (vehicleETA < minimumETA)
-			vehicleETA = minimumETA;
-	}
+		vehicleETA = minimumETA + vehicleStartUpLossTime;
+
+	if (vehicleETA <= 0)
+		vehicleETA = minimumETA;
 }
 
 /*
@@ -781,7 +778,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 				setSignalGroup(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(vehicleAprroachID), static_cast<uint8_t>(vehicleLaneID))); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 				plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 				vehicleDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
-				setTime2Go(vehicleDistanceFromStopBar, vehicleSpeed);
+				setETA(vehicleDistanceFromStopBar, vehicleSpeed);
 				setVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 			}
 			//If vehicle is not on Map, clear the active map related information
@@ -809,7 +806,7 @@ void PriorityRequestGenerator::getVehicleInformationFromMAP(MapManager mapManage
 			setSignalGroup(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(vehicleAprroachID), static_cast<uint8_t>(vehicleLaneID))); //Method for obtaining signal group based on vehicle laneID and approachID using MapEngine Library.
 			plocAwareLib->getPtDist2D(vehicleTracking_t_1, point2D_t_2);
 			vehicleDistanceFromStopBar = unsigned(point2D_t_1.distance2pt(point2D_t_2)); //unit of centimeters
-			setTime2Go(vehicleDistanceFromStopBar, vehicleSpeed);
+			setETA(vehicleDistanceFromStopBar, vehicleSpeed);
 			setVehicleID(basicVehicle); //Vehicle change its ID on a regular basis. Need to check the vehicle id.
 			counter_VehicleInMap++;
 		}
@@ -860,7 +857,7 @@ double PriorityRequestGenerator::getVehicleDistanceFromStopBar()
 	return vehicleDistanceFromStopBar;
 }
 
-double PriorityRequestGenerator::getTime2Go()
+double PriorityRequestGenerator::getETA()
 {
 	return vehicleETA;
 }
@@ -1137,7 +1134,7 @@ void PriorityRequestGenerator::displayConsoleData(string consoleString)
 	double timestamp = getPosixTimestamp();
 
 	if (consoleOutput)
-	{	
+	{
 		logFile.open(logFileName, std::ios_base::app);
 		cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
 		cout << consoleString << endl;
@@ -1182,7 +1179,7 @@ void PriorityRequestGenerator::readConfigFile()
 	if (logging)
 	{
 		logFile.open(logFileName);
-		logFile  << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRG logfile" << endl;
+		logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRG logfile" << endl;
 		logFile.close();
 	}
 }

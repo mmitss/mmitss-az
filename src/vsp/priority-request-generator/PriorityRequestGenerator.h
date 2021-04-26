@@ -41,7 +41,6 @@ using std::ifstream;
 #define EmergencyVehicle 2
 #define Transit 6
 #define Truck 9
-#define Vehicle_Length 6.096
 #define SrmTimeGapValue 2.0
 #define DISTANCEUNITCONVERSION 100
 #define SECONDSINAMINUTE 60.0
@@ -51,8 +50,9 @@ using std::ifstream;
 #define Degree_Conversion 10000000.0
 #define maxMsgCount 127
 #define minMsgCount 1
-#define minimumETA 3.0
+#define minimumETA 2.0
 #define minimumETA_Duration 4.0
+#define vehicleStartUpLossTime 2.0
 #define minimumVehicleSpeed 4.0
 #define vehicleSpeedDeviationLimit 4.0
 #define allowed_ETA_Difference 6.0
@@ -95,6 +95,7 @@ private:
     double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
     double vehicleDistanceFromStopBar{};
     double vehicleETA{};
+    double vehicleETA_Duration{};
     double vehicleSpeed{};
     double srmSendingTime{}; //temporary store the time when last SRM has been sent
     double requestTimedOutValue{};
@@ -114,7 +115,7 @@ public:
     vector<ActiveRequest> getActiveRequestTable();
     vector<Map::AvailableMap> manageMapStatusInAvailableMapList(MapManager mapManager);
     vector<Map::ActiveMap> getActiveMapList(MapManager mapManager);
-    string createSRMJsonObject(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
+    string createSRMJsonString(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager);
     string getVehicleMapStatus();
     string getVehicleRequestSentStatus();
     void getVehicleInformationFromMAP(MapManager mapManager, BasicVehicle basicVehicle);
@@ -128,7 +129,7 @@ public:
     void setLaneID(int laneId);
     void setApproachID(int approachID);
     void setSignalGroup(int phaseNo);
-    void setTime2Go(double distance2go, double vehicle_Speed);
+    void setETA(double distance2go, double vehicle_Speed);
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
     void setVehicleType();
     void setSimulationVehicleType(string vehType); //For PRGServer
@@ -155,7 +156,7 @@ public:
     int getActiveMapStatus();
     double getVehicleSpeed();
     double getVehicleDistanceFromStopBar();
-    double getTime2Go();
+    double getETA();
     double getRequestTimedOutValue();
     bool addToActiveRequestTable(SignalStatus signalStatus);
     bool checkPriorityRequestSendingRequirementStatus();
