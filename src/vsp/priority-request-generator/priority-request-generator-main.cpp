@@ -67,7 +67,7 @@ int main()
             // Formulate srm JSON string, if requires and send it over the socket.
             if (PRG.checkPriorityRequestSendingRequirementStatus())
             {
-                srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
+                srmJsonString = PRG.createSRMJsonString(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
             }
