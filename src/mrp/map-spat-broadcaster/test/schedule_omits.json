@@ -1,0 +1,11 @@
+{
+    "MsgType": "Schedule",
+    "Schedule": [
+        {
+            "commandEndTime": 20.0,
+            "commandPhase": 4,
+            "commandStartTime": 0.0,
+            "commandType": "omit_veh"
+        }
+    ]
+}
