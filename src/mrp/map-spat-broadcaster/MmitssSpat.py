@@ -39,6 +39,8 @@ class MmitssSpat(Spat):
         self.prevTimestamp = 0
         self.timestep = 0
 
+        self.yellowStartPhaseIndices = []
+
     def initialize(self, scheduleSpatTranslation:dict):
 
         self.reset()
@@ -60,6 +62,9 @@ class MmitssSpat(Spat):
 
         self.prevTimestamp = int(time.time() * 10)
 
+        self.firstBlob = True
+        
+
     def update(self, spatBlob:Ntcip1202v2Blob):
         currentTime = int(time.time() * 10)
         self.timestep = currentTime - self.prevTimestamp
@@ -67,7 +72,31 @@ class MmitssSpat(Spat):
         
         def deduct_timestep(dSecond):
             return max(dSecond-self.timestep, 0)
+
+        if self.firstBlob == True:
+            currentStates = spatBlob.getVehCurrState()
+            for phaseIndex in range(len(currentStates)):
+                if currentStates[phaseIndex]=="yellow":
+                    self.yellowStartPhaseIndices += [phaseIndex]
         
+            self.firstBlob = False
+
+        else:
+            if len(self.yellowStartPhaseIndices) != 0:
+                currentStates = spatBlob.getVehCurrState()
+                indicesToPop = []
+                for phaseIndex in self.yellowStartPhaseIndices:
+                    if currentStates[phaseIndex] != "yellow":
+                        indicesToPop += [phaseIndex]
+
+                for index in indicesToPop:
+                    self.yellowStartPhaseIndices.remove(index)
+                    
+
+        
+        
+
+
         # Update internal variables
         self.gMaxEndTimes_cycle1 = list(map(deduct_timestep, self.gMaxEndTimes_cycle1))
         self.gMaxEndTimes_cycle2 = list(map(deduct_timestep, self.gMaxEndTimes_cycle2))
@@ -87,8 +116,9 @@ class MmitssSpat(Spat):
         self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "red"]
         self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "yellow"]
         for phaseIndex in self.yellowPhaseIndices:
-            if phaseIndex+1 not in self.servedAtleastOnce:
-                self.servedAtleastOnce += [phaseIndex+1]
+            if phaseIndex not in self.yellowStartPhaseIndices:
+                if phaseIndex+1 not in self.servedAtleastOnce:
+                    self.servedAtleastOnce += [phaseIndex+1]
 
     def getVehMinTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMinEndTimeList = [UNKNOWN for phase in range(8)]
