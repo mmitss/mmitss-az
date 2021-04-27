@@ -91,11 +91,16 @@ class MmitssSpat(Spat):
 
                 for index in indicesToPop:
                     self.yellowStartPhaseIndices.remove(index)
-                    
 
-        
-        
-
+        # Update current states of vehicle phases
+        vehCurrStateList = super().getVehCurrStateList(spatBlob)
+        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "green"]
+        self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "red"]
+        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "yellow"]
+        for phaseIndex in self.yellowPhaseIndices:
+            if phaseIndex not in self.yellowStartPhaseIndices:
+                if phaseIndex+1 not in self.servedAtleastOnce:
+                    self.servedAtleastOnce += [phaseIndex+1]
 
         # Update internal variables
         self.gMaxEndTimes_cycle1 = list(map(deduct_timestep, self.gMaxEndTimes_cycle1))
@@ -110,15 +115,15 @@ class MmitssSpat(Spat):
         self.rMinEndTimes_cycle1 = list(map(deduct_timestep, self.rMinEndTimes_cycle1))
         self.rMinEndTimes_cycle2 = list(map(deduct_timestep, self.rMinEndTimes_cycle2))
 
-        # Update current states of vehicle phases
-        vehCurrStateList = super().getVehCurrStateList(spatBlob)
-        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "green"]
-        self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "red"]
-        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "yellow"]
-        for phaseIndex in self.yellowPhaseIndices:
-            if phaseIndex not in self.yellowStartPhaseIndices:
-                if phaseIndex+1 not in self.servedAtleastOnce:
-                    self.servedAtleastOnce += [phaseIndex+1]
+        # If schedule is completed, mark it as inactive
+        if not(any(self.gMaxEndTimes_cycle1) or any(self.gMaxEndTimes_cycle2) or
+               any(self.gMinEndTimes_cycle1) or any(self.gMinEndTimes_cycle2) or
+               any(self.rMaxEndTimes_cycle1) or any(self.rMaxEndTimes_cycle2) or
+               any(self.rMinEndTimes_cycle1) or any(self.rMinEndTimes_cycle2)):
+               
+            self.isActive = False
+
+
 
     def getVehMinTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMinEndTimeList = [UNKNOWN for phase in range(8)]
