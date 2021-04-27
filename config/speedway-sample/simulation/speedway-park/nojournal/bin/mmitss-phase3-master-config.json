@@ -103,10 +103,10 @@
 			"7": 4
 		},
 		"PermissiveEnabled": {
-			"1": true,
-			"3": true,
-			"5": true,
-			"7": true
+			"1": false,
+			"3": false,
+			"5": false,
+			"7": false
 		}
 	},
 	"IntersectionReferencePoint": {
