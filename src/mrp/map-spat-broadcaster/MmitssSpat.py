@@ -13,7 +13,6 @@ class MmitssSpat(Spat):
     def reset(self):
         
         # Reset all internal variable
-        super().__init__()
         self.isActive = False
         
         self.greenPhaseIndices = []
