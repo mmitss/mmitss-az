@@ -25,13 +25,20 @@ from BasicVehicle import BasicVehicle
 
 DEBUG = True
 
-configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+try :
+    configfile = open('mmitss-phase3-hmi-config.json', 'r')
+except :
+    print("Unable to open mmitss-phase3-hmi-config.json")
+    exit()
+
 config = json.load(configfile)
 controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
+#controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = config["PortNumber"]["HMIController"]
+
 controller = (controllerIP, controllerPort)
 
-hmiIP = '127.0.0.1'
+hmiIP = '127.0.0.1' #hmi runs on the same computer/laptop
 hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
@@ -88,9 +95,13 @@ priority_responseStatus = {0 : "unknown",
 
 basicVehicleRoles = {0 : "basicVehicle",
                     9 : "truck",
-                    13 : "ev-fire",
+                    13 : "ev",
                     16 : "transit",
-                    11: "coordination"}
+                    11: "coord"}
+
+vehicleTypes = {2: "ev",
+                6: "transit",
+                9: "truck"}
 
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
@@ -207,7 +218,11 @@ if DEBUG == True :
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Bind the created socket to the server information.
-s.bind((controller))
+try :
+    s.bind((controller))
+except :
+    print("Unable to open network:", controllerIP, ":", controllerPort)
+    exit()
 
 
 while True:
@@ -265,15 +280,10 @@ while True:
                     pedSPaT = changeSPaTTimes2Strings(pedSPaT)
 
                     # don't send raw spat data to hmi, send current phase state in red, yellow, green as True/False
-                    # hv_currentLaneSignalGroup must be between 1 and 8 for current hmi. Higher phase groups are not
-                    # currently supported.
                     
                     if hv_currentLaneSignalGroup == 0 :
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-                    elif hv_currentLaneSignalGroup > 8 :
-                        hv_currentLaneSignalGroup == 0 
-                        current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup])
-                    else:
+                    else :
                         current_phase_status = signal_head(hv_currentLaneSignalGroup, SPaT[hv_currentLaneSignalGroup-1])
                    
 
@@ -310,7 +320,7 @@ while True:
 
         # process the host vehicle and infrastructure data
         hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
-        hv_vehicleType = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
+        hv_vehicleTypeEnum = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
         hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
         hv_longitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["longitude_DecimalDegree"], 8)
         hv_elevation_Meter= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["elevation_Meter"], 1)
@@ -321,6 +331,13 @@ while True:
         # Create a Basic Vehicle that represents the host vehicle
         hv_position = Position3D(hv_latitude_DecimalDegree, hv_longitude_DecimalDegree, hv_elevation_Meter)
         hostVehicle = BasicVehicle(hv_tempID, secMark, hv_position, hv_speed_mph, hv_heading_Degree, hv_vehicleType)
+
+        # convert the vehicle type to a string
+        vehicleType = vehicleTypes.get(hv_vehicleTypeEnum)
+        if vehicleType :
+            hv_vehicleType = vehicleType
+        else :
+            hv_vehicleType = hv_vehicleTypeEnum
 
         #need to acquire current lane and current lane signal group
         hv_currentLane = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["laneID"])
@@ -362,7 +379,7 @@ while True:
             if vehicleRole : 
                 request["basicVehicleRole"] = vehicleRole
             else :
-                request['BasicVehicleRole'] = vehicleRoleEnum 
+                request["basicVehicleRole"] = vehicleRoleEnum 
             
 
 
