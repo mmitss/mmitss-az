@@ -131,7 +131,7 @@ class MmitssSpat(Spat):
             if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
                 if phaseIndex in self.greenPhaseIndices:
                     # Substitute with the value from gMinEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 in self.servedAtleastOnce:
+                    if phaseIndex+1 not in self.servedAtleastOnce:
                         vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle1[phaseIndex]
                     
                     # Substitute with the value from gMinEndTimes_cycle2 if it is already served
@@ -143,7 +143,7 @@ class MmitssSpat(Spat):
 
                 elif phaseIndex in self.redPhaseIndices:
                     # Substitute with the value from rMinEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 in self.servedAtleastOnce:
+                    if phaseIndex+1 not in self.servedAtleastOnce:
                         vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle1[phaseIndex]
                     
                     # Substitute with the value from rMinEndTimes_cycle2 if it is already served
@@ -156,7 +156,7 @@ class MmitssSpat(Spat):
         vehMaxEndTimeList = [UNKNOWN for phase in range(8)]
         for phaseIndex in range(len(8)):
             if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
-                if phaseIndex in self.greenPhaseIndices:
+                if phaseIndex not in self.greenPhaseIndices:
                     # Substitute with the value from gMaxEndTimes_cycle1 if it is not yet served
                     if phaseIndex+1 in self.servedAtleastOnce:
                         vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle1[phaseIndex]
@@ -170,7 +170,7 @@ class MmitssSpat(Spat):
 
                 elif phaseIndex in self.redPhaseIndices:
                     # Substitute with the value from rMaxEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 in self.servedAtleastOnce:
+                    if phaseIndex+1 not in self.servedAtleastOnce:
                         vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle1[phaseIndex]
                     
                     # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
