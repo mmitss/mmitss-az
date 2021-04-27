@@ -125,7 +125,7 @@ class MmitssSpat(Spat):
 
 
 
-    def getVehMinTimeList(self, spatBlob:Ntcip1202v2Blob):
+    def getVehMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMinEndTimeList = [UNKNOWN for phase in range(8)]
         for phaseIndex in range(len(8)):
             if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
@@ -152,13 +152,13 @@ class MmitssSpat(Spat):
 
         return vehMinEndTimeList
 
-    def getVehMaxTimeList(self, spatBlob:Ntcip1202v2Blob):
+    def getVehMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMaxEndTimeList = [UNKNOWN for phase in range(8)]
         for phaseIndex in range(len(8)):
             if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
-                if phaseIndex not in self.greenPhaseIndices:
+                if phaseIndex in self.greenPhaseIndices:
                     # Substitute with the value from gMaxEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 in self.servedAtleastOnce:
+                    if phaseIndex+1 not in self.servedAtleastOnce:
                         vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle1[phaseIndex]
                     
                     # Substitute with the value from gMaxEndTimes_cycle2 if it is already served
