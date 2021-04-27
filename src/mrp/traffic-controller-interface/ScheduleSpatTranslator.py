@@ -75,6 +75,12 @@ class ScheduleSpatTranslator:
         self.schedule = schedule["Schedule"]
         self.clearanceTimes = clearanceTimes
         self.phaseRings = phaseRings
+        
+        # Adjust phase rings if any of them are missing
+        for phaseIndex in range(len(phaseRings)):
+            if phaseRings[phaseIndex] == 0:
+                if phaseIndex < 4: phaseRings[phaseIndex] = 1 
+                else: phaseRings[phaseIndex] = 2
 
         # Identify ommitted phases
         self.omittedPhases = self.get_omitted_phases()
