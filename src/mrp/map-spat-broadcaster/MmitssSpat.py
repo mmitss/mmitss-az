@@ -1,5 +1,7 @@
+import time
 from Ntcip1202v2Blob import Ntcip1202v2Blob
 from Spat import Spat
+
 
 UNKNOWN = 36001
 
@@ -34,6 +36,9 @@ class MmitssSpat(Spat):
 
         self.servedAtleastOnce = []
 
+        self.prevTimestamp = 0
+        self.timestep = 0
+
     def initialize(self, scheduleSpatTranslation:dict):
 
         self.reset()
@@ -53,22 +58,28 @@ class MmitssSpat(Spat):
         self.rMinEndTimes_cycle1 = scheduleSpatTranslation["RedStates"]["Cycle1"]["MinEndTime"]
         self.rMinEndTimes_cycle2 = scheduleSpatTranslation["RedStates"]["Cycle2"]["MinEndTime"]
 
+        self.prevTimestamp = int(time.time() * 10)
+
     def update(self, spatBlob:Ntcip1202v2Blob):
-        def deduct_one(dSecond):
-            return max(dSecond-1, 0)
+        currentTime = int(time.time() * 10)
+        self.timestep = currentTime - self.prevTimestamp
+        self.prevTimestamp = currentTime
+        
+        def deduct_timestep(dSecond):
+            return max(dSecond-self.timestep, 0)
         
         # Update internal variables
-        self.gMaxEndTimes_cycle1 = list(map(deduct_one, self.gMaxEndTimes_cycle1))
-        self.gMaxEndTimes_cycle2 = list(map(deduct_one, self.gMaxEndTimes_cycle2))
+        self.gMaxEndTimes_cycle1 = list(map(deduct_timestep, self.gMaxEndTimes_cycle1))
+        self.gMaxEndTimes_cycle2 = list(map(deduct_timestep, self.gMaxEndTimes_cycle2))
         
-        self.gMinEndTimes_cycle1 = list(map(deduct_one, self.gMinEndTimes_cycle1))
-        self.gMinEndTimes_cycle2 = list(map(deduct_one, self.gMinEndTimes_cycle2))
+        self.gMinEndTimes_cycle1 = list(map(deduct_timestep, self.gMinEndTimes_cycle1))
+        self.gMinEndTimes_cycle2 = list(map(deduct_timestep, self.gMinEndTimes_cycle2))
         
-        self.rMaxEndTimes_cycle1 = list(map(deduct_one, self.rMaxEndTimes_cycle1))
-        self.rMaxEndTimes_cycle2 = list(map(deduct_one, self.rMaxEndTimes_cycle2))
+        self.rMaxEndTimes_cycle1 = list(map(deduct_timestep, self.rMaxEndTimes_cycle1))
+        self.rMaxEndTimes_cycle2 = list(map(deduct_timestep, self.rMaxEndTimes_cycle2))
         
-        self.rMinEndTimes_cycle1 = list(map(deduct_one, self.rMinEndTimes_cycle1))
-        self.rMinEndTimes_cycle2 = list(map(deduct_one, self.rMinEndTimes_cycle2))
+        self.rMinEndTimes_cycle1 = list(map(deduct_timestep, self.rMinEndTimes_cycle1))
+        self.rMinEndTimes_cycle2 = list(map(deduct_timestep, self.rMinEndTimes_cycle2))
 
         # Update current states of vehicle phases
         vehCurrStateList = super().getVehCurrStateList(spatBlob)
@@ -102,6 +113,7 @@ class MmitssSpat(Spat):
                     
                     # Substitute with the value from rMinEndTimes_cycle2 if it is already served
                     else: vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle2[phaseIndex]
+            else: vehMinEndTimeList[phaseIndex] = UNKNOWN
 
         return vehMinEndTimeList
 
@@ -128,6 +140,7 @@ class MmitssSpat(Spat):
                     
                     # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
                     else: vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle2[phaseIndex]
+            else: vehMaxEndTimeList[phaseIndex] = UNKNOWN
 
         return vehMaxEndTimeList
 
