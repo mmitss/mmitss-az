@@ -78,6 +78,7 @@ int main()
             // Formulate PRGStatus JSON string and send it to HMI-Controller
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
+            PRG.loggingData(prgStatusJsonString);
         }
 
         //The received MAP will be either added or updated in the availableMapList.

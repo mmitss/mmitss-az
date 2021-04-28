@@ -72,6 +72,7 @@ int main()
                     priorityRequestGeneratorServerSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
                     timeStamp = getPosixTimestamp();
                     cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRGServer sent SRM to MsgDistributor" << endl;
+                    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "]" << srmJsonString << endl;
                 }
                 // Delete the timed-out vehicle information from the list, if requires
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();

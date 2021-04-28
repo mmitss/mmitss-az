@@ -132,13 +132,16 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 temporaryNextPhase = (jsonObject["nextPhases"][k]).asInt();
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
-                if (temporaryNextPhase > 0 && temporaryNextPhase < FirstPhaseOfRing2)
+                if ((temporaryCurrentPhase < FirstPhaseOfRing2) && (temporaryNextPhase > 0) &&
+                    (temporaryNextPhase < FirstPhaseOfRing2))
                 {
                     tcStatus.startingPhase1 = temporaryNextPhase;
                     tcStatus.initPhase1 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
                     tcStatus.elapsedGreen1 = Initialize;
                 }
-                else if (temporaryNextPhase > LastPhaseOfRing1 && temporaryNextPhase <= LastPhaseOfRing2)
+
+                else if ((temporaryCurrentPhase > LastPhaseOfRing1) && (temporaryNextPhase > LastPhaseOfRing1) &&
+                         (temporaryNextPhase <= LastPhaseOfRing2))
                 {
                     tcStatus.startingPhase2 = temporaryNextPhase;
                     tcStatus.initPhase2 = findSignalGroup->yellowChange + findSignalGroup->redClear - temporaryElaspedTime;
@@ -169,7 +172,8 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                                                                                                           [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCurrentPhase; });
 
-                if (temporaryNextPhase > 0 && temporaryNextPhase < FirstPhaseOfRing2)
+                if ((temporaryCurrentPhase < FirstPhaseOfRing2) && (temporaryNextPhase > 0) &&
+                    (temporaryNextPhase < FirstPhaseOfRing2))
                 {
                     tcStatus.startingPhase1 = temporaryNextPhase;
                     //If red clearance time for both phases are not same, One phase will be in red rest. In that case we will get negative init time.
@@ -182,7 +186,8 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                     tcStatus.elapsedGreen1 = Initialize;
                 }
 
-                else if (temporaryNextPhase > LastPhaseOfRing1 && temporaryNextPhase <= LastPhaseOfRing2)
+                else if ((temporaryCurrentPhase > LastPhaseOfRing1) && (temporaryNextPhase > LastPhaseOfRing1) &&
+                         (temporaryNextPhase <= LastPhaseOfRing2))
                 {
                     tcStatus.startingPhase2 = temporaryNextPhase;
 
