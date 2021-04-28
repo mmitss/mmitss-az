@@ -151,71 +151,75 @@ class MmitssSpat(Spat):
 
     def getVehMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMinEndTimeList = super().getVehMinEndTimeList(spatBlob)
-        for phaseIndex in range((8)):
-            if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
-                if phaseIndex in self.greenPhaseIndices:
-                    # Substitute with the value from gMinEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 not in self.servedAtleastOnce:
-                        vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle1[phaseIndex]
-                    
-                    # Substitute with the value from gMinEndTimes_cycle2 if it is already served
-                    else: vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle2[phaseIndex]
+        try:
+            for phaseIndex in range((8)):
+                if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
+                    if phaseIndex in self.greenPhaseIndices:
+                        # Substitute with the value from gMinEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from gMinEndTimes_cycle2 if it is already served
+                        else: vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle2[phaseIndex]
 
-                elif phaseIndex in self.redPhaseIndices:
-                    # Substitute with the value from rMinEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 not in self.servedAtleastOnce:
-                        if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
-                            vehMinEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]
-                        else:
-                            vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle1[phaseIndex]
-            else: vehMinEndTimeList[phaseIndex] = UNKNOWN
+                    elif phaseIndex in self.redPhaseIndices:
+                        # Substitute with the value from rMinEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
+                                vehMinEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]
+                            else:
+                                vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle1[phaseIndex]
+                else: vehMinEndTimeList[phaseIndex] = UNKNOWN
 
-        # Adjust permissive_left turn phases
-        for phase in LEFT_TURNS:
-            phaseIndex = phase - 1
-            splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
-            if phaseIndex+1 not in self.omittedPhases:
-                if (phaseIndex in self.permissivePhaseIndices):
-                    vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
-                elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
-                    vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
-
-
+            # Adjust permissive_left turn phases
+            for phase in LEFT_TURNS:
+                phaseIndex = phase - 1
+                splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+                if phaseIndex+1 not in self.omittedPhases:
+                    if (phaseIndex in self.permissivePhaseIndices):
+                        vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+                    elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                        vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+        except:
+            pass
         return vehMinEndTimeList
 
     def getVehMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
         vehMaxEndTimeList = super().getVehMaxEndTimeList(spatBlob)
-        for phaseIndex in range((8)):
-            if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
-                if phaseIndex in self.greenPhaseIndices:
-                    # Substitute with the value from gMaxEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 not in self.servedAtleastOnce:
-                        vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle1[phaseIndex]
-                    
-                    # Substitute with the value from gMaxEndTimes_cycle2 if it is already served
-                    else: vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle2[phaseIndex]
+        try:
+            for phaseIndex in range((8)):
+                if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
+                    if phaseIndex in self.greenPhaseIndices:
+                        # Substitute with the value from gMaxEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from gMaxEndTimes_cycle2 if it is already served
+                        else: vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle2[phaseIndex]
 
-                elif phaseIndex in self.redPhaseIndices:
-                    # Substitute with the value from rMaxEndTimes_cycle1 if it is not yet served
-                    if phaseIndex+1 not in self.servedAtleastOnce:
-                        if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
-                            vehMaxEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]                        
-                        else:
-                            vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle1[phaseIndex]
-                    
-                    # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
-                    else: vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle2[phaseIndex]
-            else: vehMaxEndTimeList[phaseIndex] = UNKNOWN
-        
-        # Adjust permissive_left turn phases
-        for phase in LEFT_TURNS:
-            phaseIndex = phase - 1
-            splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
-            if phaseIndex+1 not in self.omittedPhases:
-                if (phaseIndex in self.permissivePhaseIndices):
-                    vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
-                elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
-                    vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+                    elif phaseIndex in self.redPhaseIndices:
+                        # Substitute with the value from rMaxEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
+                                vehMaxEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]                        
+                            else:
+                                vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
+                        else: vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle2[phaseIndex]
+                else: vehMaxEndTimeList[phaseIndex] = UNKNOWN
+            
+            # Adjust permissive_left turn phases
+            for phase in LEFT_TURNS:
+                phaseIndex = phase - 1
+                splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+                if phaseIndex+1 not in self.omittedPhases:
+                    if (phaseIndex in self.permissivePhaseIndices):
+                        vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+                    elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                        vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+        except:
+            pass
 
         return vehMaxEndTimeList
 
