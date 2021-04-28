@@ -201,8 +201,8 @@ class Ntcip1202v2Blob:
 
         # Time elapsed since Gmax counter had began:
         for i in range(0,self.numVehPhases):
-            if (self.vehCurrState[i] == "green"):
-                if (self.vehPrevState[i] != "green"):
+            if (self.vehCurrState[i] == GREEN):
+                if (self.vehPrevState[i] != GREEN):
                     self.vehElapsedTimeInGMaxFlag[i] = False
                 elif ((self.vehElapsedTimeInGMaxFlag[i] == False) and (self.vehMaxEndTime[i]!=self.vehPrevMaxEndTime[i]) and self.vehElapsedTime[i] > 0):                            
                     self.vehElapsedTimeInGMaxFlag[i] = True          
@@ -212,7 +212,7 @@ class Ntcip1202v2Blob:
         for i in range(0,self.numVehPhases):
             if (self.vehElapsedTimeInGMaxFlag[i] == True):
                 self.vehElapsedTimeInGMax[i] += 1
-            elif self.vehCurrState[i] != "green":
+            elif self.vehCurrState[i] != GREEN:
                 self.vehElapsedTimeInGMax[i] = None
             else:
                 self.vehElapsedTimeInGMax[i] = 0
