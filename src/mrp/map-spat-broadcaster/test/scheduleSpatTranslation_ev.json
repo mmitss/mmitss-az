@@ -1,0 +1,101 @@
+{
+    "MsgType": "ScheduleSpatTranslation",
+    "OmittedPhases": [
+        1,
+        3,
+        5,
+        8
+    ],
+    "GreenStates": {
+        "Cycle1": {
+            "MaxEndTime": [
+                false,
+                110,
+                false,
+                685,
+                false,
+                110,
+                685,
+                false
+            ],
+            "MinEndTime": [
+                false,
+                0,
+                false,
+                240,
+                false,
+                0,
+                240,
+                false
+            ]
+        },
+        "Cycle2": {
+            "MaxEndTime": [
+                false,
+                1085,
+                false,
+                1285,
+                false,
+                1085,
+                1285,
+                false
+            ],
+            "MinEndTime": [
+                false,
+                440,
+                false,
+                640,
+                false,
+                440,
+                640,
+                false
+            ]
+        }
+    },
+    "RedStates": {
+        "Cycle1": {
+            "MaxEndTime": [
+                false,
+                730,
+                false,
+                160,
+                false,
+                680,
+                160,
+                false
+            ],
+            "MinEndTime": [
+                false,
+                290,
+                false,
+                50,
+                false,
+                240,
+                50,
+                false
+            ]
+        },
+        "Cycle2": {
+            "MaxEndTime": [
+                false,
+                1330,
+                false,
+                1130,
+                false,
+                1280,
+                1130,
+                false
+            ],
+            "MinEndTime": [
+                false,
+                690,
+                false,
+                490,
+                false,
+                640,
+                490,
+                false
+            ]
+        }
+    }
+}

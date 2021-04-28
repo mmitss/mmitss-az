@@ -103,6 +103,9 @@ class SignalController:
         self.currPhaseListenerAddress = (mrpIp, currPhaseListenerPort)
 
         # Create a tuple to store the address of consumer of the timing plan.
+        mapSpatBroadcasterPort = config["PortNumber"]["PrioritySolver"]
+        self.mapSpatBroadcasterAddress = (mrpIp, mapSpatBroadcasterPort)
+        
         solverPort = config["PortNumber"]["PrioritySolver"]
         self.solverAddress = (mrpIp, solverPort)
 
@@ -359,13 +362,13 @@ class SignalController:
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        self.logger.write("Sent curr and NextPhasestatus to solver:" + str(currentAneNextPhasesJson))
+        self.logger.write("Sent curr and NextPhasestatus to priority-request-solver:" + str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
     def updateAndSendActiveTimingPlan(self):
         """
-        updates the active timing plan and sends the active timing plan to PriorityRequestSolver.
+        updates the active timing plan and sends the active timing plan to PriorityRequestSolver and MapSpatBroadcaster.
 
         For Econolite signal controllers, this function first checks the ID of currently active timing plan, through Snmp::getValue function.
         If the ID does not match the ID of the timing plan currently stored in the class attribute, 
@@ -464,8 +467,9 @@ class SignalController:
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.bind(self.timingPlanSenderAddress)
                 s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+                s.sendto((self.currentTimingPlanJson).encode(), self.mapSpatBroadcasterAddress)
                 s.close()
-                self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver")
+                self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver and MapSpatBroadcaster")
                 self.logger.write(self.currentTimingPlanJson)
 
         else:
@@ -550,8 +554,9 @@ class SignalController:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.bind(self.timingPlanSenderAddress)
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+            s.sendto((self.currentTimingPlanJson).encode(), self.mapSpatBroadcasterAddress)
             s.close()
-            self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver")
+            self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver and MapSpatBroadcaster")
             self.logger.write(self.currentTimingPlanJson)
             
     ######################## Definition End: updateActiveTimingPlan(self) ########################
