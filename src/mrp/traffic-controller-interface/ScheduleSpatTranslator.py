@@ -38,7 +38,38 @@ class ScheduleSpatTranslator:
         previousPhaseClearanceTime = self.phases[phaseNo-1].previousPhaseClearanceTime
         
         return [int((command["commandEndTime"] + previousPhaseClearanceTime) * 10) for command in self.schedule if (command["commandType"]=="hold" and
-                                                                                     command["commandPhase"]==previousPhase)]        
+                                                                                     command["commandPhase"]==previousPhase)]    
+
+    def get_rminmax_end_times_cycle0(self):
+        rminmaxEndTimes = [0 for phase in range(8)]
+
+        phasesRing1 = [phaseIndex+1 for phaseIndex in range(8) if (self.phaseRings[phaseIndex]==1)]
+        phasesRing2 = [phaseIndex+1 for phaseIndex in range(8) if (self.phaseRings[phaseIndex]==2)]
+        
+        # identify first hold start time for ring1:
+        startTimeRing1 = min([command["commandStartTime"] for command in self.schedule if (command["commandPhase"] in phasesRing1 and
+                                                                                           command["commandType"]=="hold")])
+
+        startingPhaseRing1 = [command["commandPhase"] for command in self.schedule if (command["commandType"]=="hold" and  
+                                                                                       np.isclose(command["commandStartTime"],startTimeRing1) and 
+                                                                                       command["commandPhase"] in phasesRing1)][0]
+
+        rminmaxEndTimes[startingPhaseRing1-1] = int(startTimeRing1*10)
+
+        # identify first hold start time for ring1:
+        startTimeRing2 = min([command["commandStartTime"] for command in self.schedule if (command["commandPhase"] in phasesRing2 and
+                                                                                           command["commandType"]=="hold")])
+
+        startingPhaseRing2 = [command["commandPhase"] for command in self.schedule if (command["commandType"]=="hold" and  
+                                                                                                np.isclose(command["commandStartTime"],startTimeRing2) and 
+                                                                                       command["commandPhase"] in phasesRing2)][0]
+
+        rminmaxEndTimes[startingPhaseRing2-1] = int(startTimeRing2*10)
+
+        return rminmaxEndTimes
+
+        
+    
         
 
     def get_omitted_phases(self):
@@ -121,7 +152,7 @@ class ScheduleSpatTranslator:
                 self.gMinEndTimes[cycle] = [phase.initialGMinTimeToEnd[cycle] for phase in self.phases]
                 self.rMaxEndTimes[cycle] = [phase.initialRMaxTimeToEnd[cycle] for phase in self.phases]
                 self.rMinEndTimes[cycle] = [phase.initialRMinTimeToEnd[cycle] for phase in self.phases]
-
+            
     def get_schedule_spat_translation_json(self, schedule:dict, clearanceTimes:list, phaseRings:list):
         try:
             self.construct_initial_spat_table(schedule, clearanceTimes, phaseRings)
@@ -153,6 +184,10 @@ class ScheduleSpatTranslator:
                     {
                         "MaxEndTime": self.rMaxEndTimes[1],
                         "MinEndTime": self.rMinEndTimes[1]
+                    },
+                    "Cycle0":
+                    {
+                        "MinMaxEndTime": self.get_rminmax_end_times_cycle0()
                     }
                 }
             })
@@ -165,7 +200,7 @@ if __name__=="__main__":
     import json
     import time
 
-    with open("test/schedule1.json", 'r') as fp:
+    with open("test/schedule_nonev_yellow.json", 'r') as fp:
         phaseRings = [1,1,1,1,2,2,2,2]
         clearanceTimes = [10,9,8,7,6,5,4,3]
         startTime = time.time()
