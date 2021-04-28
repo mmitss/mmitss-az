@@ -87,7 +87,7 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
 
     if (findVehicleIDInList->PRG.checkPriorityRequestSendingRequirementStatus())
     {
-        srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonObject(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
+        srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonString(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
         sendSRM = true;
     }
 
