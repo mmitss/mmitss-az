@@ -4,11 +4,31 @@ from Spat import Spat
 
 
 UNKNOWN = 36001
+RED = "red"
+GREEN = "green"
+YELLOW = "yellow"
+PERMISSIVE = "permissive_yellow"
+LEFT_TURNS = [1,3,5,7]
 
 class MmitssSpat(Spat):
-    def __init__(self):
+    def __init__(self, splitPhasesDict:dict):
         super().__init__()
         self.reset()
+        self.splitPhasesDict = splitPhasesDict
+        self.splitPhasesList = self.get_left_turn_split_phases(splitPhasesDict)
+
+
+
+    def get_left_turn_split_phases(self, splitPhasesDict):
+        splitPhasesList = [0 for phase in range(8)]
+
+        for phaseIndex in range(8):
+            splitPhaseJsonKey = str(phaseIndex+1)
+            if splitPhaseJsonKey in splitPhasesDict:
+                splitPhasesList[phaseIndex] = splitPhasesDict[splitPhaseJsonKey]
+
+        return splitPhasesList
+
 
     def reset(self):
         
@@ -77,7 +97,7 @@ class MmitssSpat(Spat):
         if self.firstBlob == True:
             currentStates = spatBlob.getVehCurrState()
             for phaseIndex in range(len(currentStates)):
-                if currentStates[phaseIndex]=="yellow":
+                if currentStates[phaseIndex]==YELLOW:
                     self.yellowStartPhaseIndices += [phaseIndex]
         
             self.firstBlob = False
@@ -87,7 +107,7 @@ class MmitssSpat(Spat):
                 currentStates = spatBlob.getVehCurrState()
                 indicesToPop = []
                 for phaseIndex in self.yellowStartPhaseIndices:
-                    if currentStates[phaseIndex] != "yellow":
+                    if currentStates[phaseIndex] != YELLOW:
                         indicesToPop += [phaseIndex]
 
                 for index in indicesToPop:
@@ -95,9 +115,10 @@ class MmitssSpat(Spat):
 
         # Update current states of vehicle phases
         vehCurrStateList = super().getVehCurrStateList(spatBlob)
-        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "green"]
-        self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "red"]
-        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "yellow"]
+        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == GREEN]
+        self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == RED]
+        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == YELLOW]
+        self.permissivePhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == PERMISSIVE]
         for phaseIndex in self.yellowPhaseIndices:
             if phaseIndex not in self.yellowStartPhaseIndices:
                 if phaseIndex+1 not in self.servedAtleastOnce:
@@ -147,10 +168,18 @@ class MmitssSpat(Spat):
                             vehMinEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]
                         else:
                             vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle1[phaseIndex]
-                    
-                    # Substitute with the value from rMinEndTimes_cycle2 if it is already served
-                    else: vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle2[phaseIndex]
             else: vehMinEndTimeList[phaseIndex] = UNKNOWN
+
+        # Adjust permissive_left turn phases
+        for phase in LEFT_TURNS:
+            phaseIndex = phase - 1
+            splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+            if phaseIndex+1 not in self.omittedPhases:
+                if (phaseIndex in self.permissivePhaseIndices):
+                    vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+                elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                    vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+
 
         return vehMinEndTimeList
 
@@ -177,6 +206,16 @@ class MmitssSpat(Spat):
                     # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
                     else: vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle2[phaseIndex]
             else: vehMaxEndTimeList[phaseIndex] = UNKNOWN
+        
+        # Adjust permissive_left turn phases
+        for phase in LEFT_TURNS:
+            phaseIndex = phase - 1
+            splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+            if phaseIndex+1 not in self.omittedPhases:
+                if (phaseIndex in self.permissivePhaseIndices):
+                    vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+                elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                    vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
 
         return vehMaxEndTimeList
 

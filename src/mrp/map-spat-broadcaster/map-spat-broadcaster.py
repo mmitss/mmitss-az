@@ -50,7 +50,6 @@ def main():
     dataCollectorServerAddress = (config["DataTransfer"]["server"]["ip_address"], config["PortNumber"]["DataCollector"])
     localDataCollectorAddress = (config["HostIp"], config["PortNumber"]["DataCollector"])
     msgDistributorAddress = (config["MessageDistributorIP"], config["PortNumber"]["MessageDistributor"])
-    tciAddress = (mrpIp, config["PortNumber"]["TrafficControllerInterface"])
     tci_currPhaseAddress = (mrpIp, config["PortNumber"]["TrafficControllerCurrPhaseListener"])
     
     # Read controllerIp from the config file and store it.
@@ -92,7 +91,7 @@ def main():
     spatObject.setIntersectionID(intersectionID)
     spatObject.setRegionalID(regionalID)
 
-    mmitssSpatObject = MmitssSpat.MmitssSpat()
+    mmitssSpatObject = MmitssSpat.MmitssSpat(splitPhases)
     mmitssSpatObject.setIntersectionID(intersectionID)
     mmitssSpatObject.setRegionalID(regionalID)
 
