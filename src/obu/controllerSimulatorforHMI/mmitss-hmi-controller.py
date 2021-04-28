@@ -23,22 +23,17 @@ import os
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
-DEBUG = False
+DEBUG = True
 
-try :
-    configfile = open('mmitss-phase3-hmi-config.json', 'r')
-except :
-    print("Unable to open mmitss-phase3-hmi-config.json")
-    exit()
-
+#configfile = open('/nojournal/bin/mmitss-phase3-master-config.json', 'r')
+configfile = open('/klhead/mmitss-phase3-master-config.json', 'r')
 config = json.load(configfile)
 controllerIP = config["HostIp"] #actual configuraiton data (should be from global config)
 #controllerIP = '127.0.0.1' #use for simulation testing
 controllerPort = config["PortNumber"]["HMIController"]
-
 controller = (controllerIP, controllerPort)
 
-hmiIP = '127.0.0.1' #hmi runs on the same computer/laptop
+hmiIP = '127.0.0.1'
 hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
@@ -218,11 +213,7 @@ if DEBUG == True :
 # Create a socket
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Bind the created socket to the server information.
-try :
-    s.bind((controller))
-except :
-    print("Unable to open network:", controllerIP, ":", controllerPort)
-    exit()
+s.bind((controller))
 
 
 while True:
