@@ -7,13 +7,37 @@
         "regionalID": 0,
         "requestorInfo": [
             {
+                "ETA_Duration": 18.0,
+                "ETA_Minute": 0,
+                "ETA_Second": 0.0,
+                "basicVehicleRole": 11,
+                "inBoundApproachID": 0,
+                "inBoundLaneID": 1,
+                "msgCount": 10,
+                "priorityRequestStatus": 4,
+                "requestID": 0,
+                "vehicleID": 1
+            },
+            {
+                "ETA_Duration": 18.0,
+                "ETA_Minute": 0,
+                "ETA_Second": 0.0,
+                "basicVehicleRole": 11,
+                "inBoundApproachID": 0,
+                "inBoundLaneID": 1,
+                "msgCount": 10,
+                "priorityRequestStatus": 4,
+                "requestID": 0,
+                "vehicleID": 2
+            },
+            {
                 "ETA_Duration": 20.0,
                 "ETA_Minute": 1,
                 "ETA_Second": 17.0,
                 "basicVehicleRole": 11,
                 "inBoundApproachID": 0,
                 "inBoundLaneID": 1,
-                "msgCount": 0,
+                "msgCount": 10,
                 "priorityRequestStatus": 4,
                 "requestID": 0,
                 "vehicleID": 3
@@ -25,7 +49,7 @@
                 "basicVehicleRole": 11,
                 "inBoundApproachID": 0,
                 "inBoundLaneID": 1,
-                "msgCount": 0,
+                "msgCount": 10,
                 "priorityRequestStatus": 4,
                 "requestID": 0,
                 "vehicleID": 4
@@ -48,5 +72,5 @@
     },
     "Timestamp_posix": 1619652930.133302,
     "Timestamp_verbose": "2021-04-28 23:35:30.133",
-    "noOfRequest": 3
+    "noOfRequest": 5
 }
