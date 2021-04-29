@@ -53,7 +53,6 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 */
 vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
 {
-	//storing the information of ssm
 	vector<int> vehicleID{};
 	vector<int> requestID{};
 	vector<int> msgCount_ssm{}; //insted of msgCount, msgCount_ssm is declared otherwise it shadowed the declaration
@@ -66,7 +65,6 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 	ActiveRequest activeRequest;
 	activeRequest.reset();
 
-	displayConsoleData("Received SSM");
 	//creating the active request table based on the stored information
 	if (addToActiveRequestTable(signalStatus) == true)
 	{
@@ -696,6 +694,7 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 		else if ((jsonObject["MsgType"]).asString() == "SSM")
 		{
 			messageType = MsgEnum::DSRCmsgID_ssm;
+			displayConsoleData("Received SSM");
 			loggingData(jsonString);
 		}
 
