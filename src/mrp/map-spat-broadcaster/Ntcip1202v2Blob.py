@@ -188,10 +188,21 @@ class Ntcip1202v2Blob:
             completeByte = firstByte+secondByte
             self.vehMaxEndTime[i] = int(completeByte, 2)
 
+        # MinEndTime and MaxEndTime for Permissive:
+        leftTurns = [1,3,5,7]
+        for leftTurn in leftTurns:
+            if self.permissiveEnabled[str(leftTurn)] == True:
+                if ((self.vehCurrState[leftTurn-1] == PERMISSIVE) or 
+                    (self.vehCurrState[leftTurn-1] == YELLOW and 
+                     self.vehCurrState[self.splitPhases[str(leftTurn)]-1] == YELLOW)):
+                          
+                    self.vehMinEndTime[leftTurn-1] = self.vehMinEndTime[self.splitPhases[str(leftTurn)]-1]
+                    self.vehMaxEndTime[leftTurn-1] = self.vehMaxEndTime[self.splitPhases[str(leftTurn)]-1]
+
         # Time elapsed since Gmax counter had began:
         for i in range(0,self.numVehPhases):
-            if (self.vehCurrState[i] == "green"):
-                if (self.vehPrevState[i] != "green"):
+            if (self.vehCurrState[i] == GREEN):
+                if (self.vehPrevState[i] != GREEN):
                     self.vehElapsedTimeInGMaxFlag[i] = False
                 elif ((self.vehElapsedTimeInGMaxFlag[i] == False) and (self.vehMaxEndTime[i]!=self.vehPrevMaxEndTime[i]) and self.vehElapsedTime[i] > 0):                            
                     self.vehElapsedTimeInGMaxFlag[i] = True          
@@ -201,7 +212,7 @@ class Ntcip1202v2Blob:
         for i in range(0,self.numVehPhases):
             if (self.vehElapsedTimeInGMaxFlag[i] == True):
                 self.vehElapsedTimeInGMax[i] += 1
-            elif self.vehCurrState[i] != "green":
+            elif self.vehCurrState[i] != GREEN:
                 self.vehElapsedTimeInGMax[i] = None
             else:
                 self.vehElapsedTimeInGMax[i] = 0
