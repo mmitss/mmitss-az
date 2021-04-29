@@ -341,9 +341,9 @@ def populate_phase_tree(phaseTable):
 
 def build_ART_tree():
     gui.ART_tree = ttk.Treeview(gui.ART, selectmode='none', height=6)
-    gui.ART_tree["columns"]=("RequestID", "VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
+    gui.ART_tree["columns"]=("VehicleID", "BasicVehicleRole", "PriorityRequestStatus", "MessageCount", "InBoundLane", "VehicleETA", "VehicleDuration")
     gui.ART_tree.column("#0", width=1)
-    gui.ART_tree.column("RequestID", width=150, anchor='center', stretch=True)
+    #gui.ART_tree.column("RequestID", width=150, anchor='center', stretch=True)
     gui.ART_tree.column("VehicleID", width=150, anchor='center', stretch=True)
     gui.ART_tree.column("BasicVehicleRole", width=100, anchor='center', stretch=True) 
     gui.ART_tree.column("PriorityRequestStatus", width=150, anchor='center', stretch=True)
@@ -351,7 +351,7 @@ def build_ART_tree():
     gui.ART_tree.column("InBoundLane", width=150, anchor='center', stretch=True) 
     gui.ART_tree.column("VehicleETA", width=100, anchor='center', stretch=True)
     gui.ART_tree.column("VehicleDuration", width=150, anchor='center', stretch=True)
-    gui.ART_tree.heading('RequestID', text='Request', anchor='center') 
+    #gui.ART_tree.heading('RequestID', text='Request', anchor='center') 
     gui.ART_tree.heading("VehicleID", text="Vehicle", anchor='center') 
     gui.ART_tree.heading("BasicVehicleRole", text="Role", anchor='center') 
     gui.ART_tree.heading("PriorityRequestStatus", text="PR Status", anchor='center') 
@@ -369,7 +369,7 @@ def populate_ART_tree(activeRequestTable):
 
     for request in activeRequestTable:
         #print(request)
-        gui.ART_tree.insert('', 'end', iid=None, text="", values=(request['requestID'], request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
+        gui.ART_tree.insert('', 'end', iid=None, text="", values=(request['vehicleID'], request['basicVehicleRole'], request['priorityRequestStatus'], request['msgCount'], request['inBoundLane'], request['vehicleETA'], request['duration'] ), tag = 'data')
         
     gui.ART_tree.grid(row=0, column=0, sticky=E+W)
     
