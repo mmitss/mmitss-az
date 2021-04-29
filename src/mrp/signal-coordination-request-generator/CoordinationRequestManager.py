@@ -30,6 +30,7 @@ The methods available from this class are the following:
 - getCoordinationPriorityRequestDictionary(): Method to obtain json string for the coordination priority requests after deleting the old requests.
 - getCoordinationParametersDictionary(dictionary): Method to load the coordination prarameters dictionary
 - getCurrentTime(): Method to obtain the current time of today
+- getMsgCount(): Method to get the msgCount
 ***************************************************************************************
 """
 import datetime
@@ -43,6 +44,8 @@ MINUTESINAHOUR = 60.0
 MinuteToSecondCoversion = 60.0
 HourToSecondConversion =  3600.0
 SECONDTOMILISECOND = 1000.0
+MaxMsgCount = 127
+MinMsgCount = 1
 
 class CoordinationRequestManager:
     def __init__(self, config, logger:Logger):
@@ -63,6 +66,7 @@ class CoordinationRequestManager:
         self.Minimum_ETA = 0.0
         self.Request_Delete_Time = 0.0
         self.requestSentTime = time.time()
+        self.msgCount = 0
 
     def checkCoordinationRequestSendingRequirement(self):
         """
@@ -125,6 +129,7 @@ class CoordinationRequestManager:
             
         self.coordinationPriorityRequestDictionary = {
             "MsgType": "CoordinationRequest",
+            "msgCount": self.getMsgCount(),
             "noOfCoordinationRequest": len(coordinatedPhases),
             "minuteOfYear": self.getMinuteOfYear(),
             "msOfMinute": self.getMsOfMinute(),
@@ -158,6 +163,7 @@ class CoordinationRequestManager:
         """
         self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
         self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+        self.coordinationPriorityRequestDictionary['msgCount'] = self.getMsgCount()
         self.updateETAInCoordinationRequestTable()
         self.deleteTimeOutRequestFromCoordinationRequestTable        
         self.requestSentTime = time.time()
@@ -219,6 +225,7 @@ class CoordinationRequestManager:
         if noOfCoordinationRequest > 0:
             self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
             self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+            self.coordinationPriorityRequestDictionary['msgCount'] = self.getMsgCount()
             for i in range(noOfCoordinationRequest):
                 self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
                 self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
@@ -244,6 +251,7 @@ class CoordinationRequestManager:
         """
         self.coordinationClearRequestDictionary = {
             "MsgType": "CoordinationRequest",
+            "msgCount": self.getMsgCount(),
             "noOfCoordinationRequest": 0
             }
         coordinationClearRequestJsonString = json.dumps(self.coordinationClearRequestDictionary)
@@ -289,3 +297,14 @@ class CoordinationRequestManager:
         msOfMinute = currentSecond * float(SECONDTOMILISECOND)
 
         return msOfMinute
+    
+    def getMsgCount(self):
+        """
+        Method to get the msgCount
+        """
+        if self.msgCount <  MaxMsgCount:
+            self.msgCount += 1
+        
+        else: self.msgCount = MinMsgCount
+    
+        return self.msgCount
