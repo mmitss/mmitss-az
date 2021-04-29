@@ -64,6 +64,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 	vector<double> expectedTimeOfArrival_Duration{};
 	vector<int> priorityRequestStatus{};
 	ActiveRequest activeRequest;
+	activeRequest.reset();
 
 	displayConsoleData("Received SSM");
 	//creating the active request table based on the stored information
