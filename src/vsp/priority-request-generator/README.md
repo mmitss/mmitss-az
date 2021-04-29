@@ -160,8 +160,7 @@ The PRG accpts the SSM, if the intersectionID and regionalID of the vehicle and 
 ```
 
 ## Console output and logging
-The PRG can store important information like- SRMs, SSMs etc. in the time-stamped log files. The log file stored in nojournal/bin/log directory. It is expensive process to write in a file or displaying in the console. Therefore, logging and console output are turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as true, "ConsoleOutput" as true (instead of false) in the 'mmitss-phase3-master-config.json' configuration file.
-The console output also provides some information about the status of the component. The console output can be redirected to a file using supervisor if mmitss is running inside container. The following information is displayed in the console:
+The PRG can store important information like- SRMs, SSMs etc. in the time-stamped log files. The log file name is a function of the date and time. For example, if date is April 28,2021 and time is 01:14:27 pm the logfile name will be vehicle_prgLog_04292021_131427.log. The log file stored in nojournal/bin/log directory. It is expensive process to write in a file or displaying in the console. Therefore, logging and console output are turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as true, "ConsoleOutput" as true (instead of false) in the 'mmitss-phase3-master-config.json' configuration file. The console output can be redirected to a file using supervisor if mmitss is running inside container. The following information is displayed in the console:
 - The cause of sending SRM
 - SSM received status
 
