@@ -37,6 +37,7 @@ else:
 # Apply Bootstrap 
 bootstrap = Bootstrap(app)
 app.config['SECRET_KEY'] = '%sq72f#8c$seryfl#2h'
+app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 
 # Index (Homepage)
 @app.route('/')

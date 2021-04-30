@@ -53,7 +53,6 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 */
 vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(SignalStatus signalStatus)
 {
-	//storing the information of ssm
 	vector<int> vehicleID{};
 	vector<int> requestID{};
 	vector<int> msgCount_ssm{}; //insted of msgCount, msgCount_ssm is declared otherwise it shadowed the declaration
@@ -61,10 +60,11 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 	vector<int> basicVehicleRole_ssm{}; //insted of basicVehicleRole, basicVehicleRole_ssm is declared, otherwise it shadowed the declaration
 	vector<int> expectedTimeOfArrival_Minute{};
 	vector<double> expectedTimeOfArrival_Second{};
+	vector<double> expectedTimeOfArrival_Duration{};
 	vector<int> priorityRequestStatus{};
 	ActiveRequest activeRequest;
+	activeRequest.reset();
 
-	displayConsoleData("Received SSM");
 	//creating the active request table based on the stored information
 	if (addToActiveRequestTable(signalStatus) == true)
 	{
@@ -75,6 +75,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 		basicVehicleRole_ssm.clear();
 		expectedTimeOfArrival_Minute.clear();
 		expectedTimeOfArrival_Second.clear();
+		expectedTimeOfArrival_Duration.clear();
 		priorityRequestStatus.clear();
 		ActiveRequestTable.clear();
 
@@ -84,7 +85,8 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 		inBoundLaneID = signalStatus.getInBoundLaneID();
 		basicVehicleRole_ssm = signalStatus.getBasicVehicleRole();
 		expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-		expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+		expectedTimeOfArrival_Second = signalStatus.getETA_Second();;
+		expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
 		priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
 		for (int i = 0; i < signalStatus.getNoOfRequest(); i++)
@@ -95,6 +97,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.basicVehicleRole = basicVehicleRole_ssm[i];
 			activeRequest.vehicleLaneID = inBoundLaneID[i];
 			activeRequest.vehicleETA = expectedTimeOfArrival_Minute[i] * SECONDSINAMINUTE + expectedTimeOfArrival_Second[i];
+			activeRequest.vehicleETADuration = expectedTimeOfArrival_Duration[i];
 			activeRequest.prsStatus = priorityRequestStatus[i];
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			ActiveRequestTable.push_back(activeRequest);
@@ -691,6 +694,7 @@ int PriorityRequestGenerator::getMessageType(string jsonString)
 		else if ((jsonObject["MsgType"]).asString() == "SSM")
 		{
 			messageType = MsgEnum::DSRCmsgID_ssm;
+			displayConsoleData("Received SSM");
 			loggingData(jsonString);
 		}
 
