@@ -374,13 +374,16 @@ while True:
                 request["priorityRequestStatus"] = responseStatusEnum
 
             vehicleRoleEnum = request["basicVehicleRole"]
+
             #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
             vehicleRole = basicVehicleRoles.get(vehicleRoleEnum)
             if vehicleRole : 
                 request["basicVehicleRole"] = vehicleRole
             else :
                 request["basicVehicleRole"] = vehicleRoleEnum 
-            
+                
+            # make sure vehicle ID is displayed as a positive number 
+            request["vehicleID"] = abs(request["vehicleID"])
 
 
         # prepare the list of remote vehicles for display
