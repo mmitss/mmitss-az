@@ -49,4 +49,4 @@ wlp2s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
     - arm
     - x86
 
-Above requirements can be automatically satisfied by using the `lmmitss-initialize.sh` script located in the `mmitss/scripts` directory.
+Above requirements can be automatically satisfied by using the `setup-build-environment.sh` script located in the `mmitss/scripts` directory.
