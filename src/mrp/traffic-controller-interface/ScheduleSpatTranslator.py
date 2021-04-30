@@ -5,6 +5,10 @@ from MmitssPhase import MmitssPhase
 
 class ScheduleSpatTranslator:
     def __init__(self):
+        self.reset()
+
+
+    def reset(self):
         self.schedule = None
         self.clearanceTimes = None
         self.phaseRings = None
@@ -103,6 +107,7 @@ class ScheduleSpatTranslator:
 
     def construct_initial_spat_table(self, schedule:dict, clearanceTimes:list, phaseRings:list):
         # Parse arguments
+        self.reset()
         self.schedule = schedule["Schedule"]
         self.clearanceTimes = clearanceTimes
         self.phaseRings = phaseRings
@@ -200,12 +205,14 @@ if __name__=="__main__":
     import json
     import time
 
-    with open("test/schedule_nonev_yellow.json", 'r') as fp:
-        phaseRings = [1,1,1,1,2,2,2,2]
-        clearanceTimes = [10,9,8,7,6,5,4,3]
-        startTime = time.time()
-        sst = ScheduleSpatTranslator()
+    phaseRings = [1,1,1,1,2,2,2,2]
+    clearanceTimes = [5,5,0,5,5,5,0,5]
+    sst = ScheduleSpatTranslator()
+
+    with open("test/schedule1.json", 'r') as fp:
         scheduleSpatTranslationJson = sst.get_schedule_spat_translation_json(json.load(fp), clearanceTimes, phaseRings)
         print(scheduleSpatTranslationJson)
-        print(time.time()-startTime)
-    pass
+    
+    with open("test/schedule2.json", 'r') as fp:
+        scheduleSpatTranslationJson = sst.get_schedule_spat_translation_json(json.load(fp), clearanceTimes, phaseRings)
+        print(scheduleSpatTranslationJson)
