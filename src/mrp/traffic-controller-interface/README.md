@@ -91,7 +91,7 @@ The TCI processes following types of requests:
    }
    ```
 ## Console output and logging
-Traffic-Controller-Interface component does not generate any log files. The console output displays the execution of the scheduled events.
+If `["Logging"]` key is set to `true` in the `mmitss-phase3-master-config.json` configuration file, the TCI generates log file in that stores the information about received schedules, timely execution of events, and translation of schedule into an initial SPAT table. This information is also displayed on console if `["Console"]` key is set to `true` in the `mmitss-phase3-master-config.json` configuration file
 
 ## Requirements
 - The Snmp-Engine component of MMITSS forwards the `get` or `set` requests formulated by the Traffic-Controller-Interface to the signal controller. Therefore, for correct functioning of the Traffic-Controller-Interface, Snmp-Engine needs to be started before the Traffic-Controller-Interface.
