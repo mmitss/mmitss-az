@@ -105,8 +105,8 @@ vehicleTypes = {2: "emergencyVehicle",
 
 
 def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
-    # get the id of the new BSM data
-    vehicleID = remoteBSMjson["BasicVehicle"]["temporaryID"]
+    # get the id of the new BSM data and make it a positive numnber (is an unsigned int)
+    vehicleID = abs(remoteBSMjson["BasicVehicle"]["temporaryID"])
     vehicleInformation = remoteBSMjson["BasicVehicle"]
     # cpp message uses key "type" instead of "vehicleType"
     vehicleInformation['vehicleType'] = remoteBSMjson["BasicVehicle"]["type"]
@@ -114,18 +114,18 @@ def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     vehicleUpdateTime = time.time()
     # if there are no vehicles in the list, add the current vehicle 
     if len(remoteVehicleList) == 0 : 
-        remoteVehicleList.append({"vehicleID" : vehicleID, "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
+        remoteVehicleList.append({"vehicleID" : abs(vehicleID), "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
         return remoteVehicleList
     # update existing vehicles
     rv_updated = False
     for rv in remoteVehicleList :
-        if rv["vehicleID"] == vehicleID :
+        if rv["vehicleID"] == abs(vehicleID) :
             #print("rv data: ", rv["vehicleInformation"])
             rv["vehicleInformation"] = {"BasicVehicle" : vehicleInformation}
             rv["vehicleUpdateTime"] = vehicleUpdateTime
             rv_updated = True
     if not rv_updated : #vehicle wasn't in the list of active vehicles, add it to the list
-        remoteVehicleList.append({"vehicleID" : vehicleID, "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
+        remoteVehicleList.append({"vehicleID" : abs(vehicleID), "vehicleInformation" : {"BasicVehicle" : vehicleInformation}, "vehicleUpdateTime" : vehicleUpdateTime})
     return remoteVehicleList
 
 def removeOldRemoteVehicles(remoteVehicleList) :
@@ -319,7 +319,7 @@ while True:
         
 
         # process the host vehicle and infrastructure data
-        hv_tempID = int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"])
+        hv_tempID = abs(int(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"]))
         hv_vehicleTypeEnum = hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"]
         hv_latitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"], 8)
         hv_longitude_DecimalDegree= round(hostAndInfrastructureData["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["longitude_DecimalDegree"], 8)
@@ -374,13 +374,16 @@ while True:
                 request["priorityRequestStatus"] = responseStatusEnum
 
             vehicleRoleEnum = request["basicVehicleRole"]
+
             #use .get in clase vehicle class is not in dictionary mapping class to text name, else send class enum
             vehicleRole = basicVehicleRoles.get(vehicleRoleEnum)
             if vehicleRole : 
                 request["basicVehicleRole"] = vehicleRole
             else :
                 request["basicVehicleRole"] = vehicleRoleEnum 
-            
+                
+            # make sure vehicle ID is displayed as a positive number 
+            request["vehicleID"] = abs(request["vehicleID"])
 
 
         # prepare the list of remote vehicles for display

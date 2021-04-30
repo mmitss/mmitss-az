@@ -1121,8 +1121,9 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	{
 		for (int i = 0; i < noOfCoordinationRequest; i++)
 		{
-			activeRequest.minuteOfYear = getMinuteOfYear();
-			activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+			activeRequest.minuteOfYear = jsonObject["minuteOfYear"].asInt();
+			activeRequest.secondOfMinute = jsonObject["msOfMinute"].asInt() / SECOND_FROM_MILISECOND;
+			activeRequest.msgCount = jsonObject["msgCount"].asInt();
 			activeRequest.basicVehicleRole = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
 			activeRequest.signalGroup = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["requestedPhase"].asInt();
 			activeRequest.vehicleID = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["vehicleID"].asInt();
