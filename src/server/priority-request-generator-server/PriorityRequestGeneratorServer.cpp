@@ -126,11 +126,7 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
     - The method uses Signal status class to maintain Active Request Table
 */
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
-{
-    double timeStamp = getPosixTimestamp();
-    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Received SSM" << endl;
-    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "]" << jsonString << endl;
-    
+{  
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
         PRGServerList[i].signalStatus.json2SignalStatus(jsonString);

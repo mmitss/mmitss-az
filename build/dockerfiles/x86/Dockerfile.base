@@ -43,5 +43,3 @@ WORKDIR /mmitss
 # Environment variables
 ENV PATH $PATH:/mmitss
 ENV MIBS=ALL
-ENV BOOTSTRAP_SERVE_LOCAL=true
-
