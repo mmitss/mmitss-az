@@ -17,7 +17,7 @@
 #include <cmath>
 #include <algorithm>
 
-TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime,
+TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime, double elapsed_Time_In_Cycle,
                                                                int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                                                vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
 {
@@ -25,6 +25,7 @@ TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination
     cycleLength = cycle_Length;
     offset = offset_Value;
     coordinationStartTime = coordination_StartTime;
+    elapsedTimeInCycle = elapsed_Time_In_Cycle;
     coordinatedPhase1 = coordinated_Phase1;
     coordinatedPhase2 = coordinated_Phase2;
     logging = logging_Status;
@@ -219,29 +220,16 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
 */
 void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 {
-    double currentTimeOfToday{};
     double earlyReturnedValue{};
     double upperLimitOfGreenTimeForCoordinatedPhase{};
-    double elapsedTimeInCycle{};
     int temporaryPhase{};
 
     if (coordinationRequestStatus)
     {
-        currentTimeOfToday = getCurrentTime();
-        elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
-
-        //Temporary displaying output for debugging coordination
-        if (consoleOutput)
-        {
-            double timeStamp = getPosixTimestamp();
-
-            cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] The elapsed time in a cycle is " << elapsedTimeInCycle << endl;
-        }
-
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
             // For coordinated phase in ring 1
-            if (trafficControllerStatus[i].startingPhase1 == coordinatedPhase1)
+            if (trafficControllerStatus[i].startingPhase1 == coordinatedPhase1 && trafficControllerStatus[i].initPhase1 == 0)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
@@ -277,7 +265,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             }
 
             // For non-coordinated phases in ring 1
-            else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1)
+            else if (trafficControllerStatus[i].startingPhase1 != coordinatedPhase1 && trafficControllerStatus[i].initPhase1 == 0)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase1;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
@@ -289,7 +277,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             }
 
             // For coordinated phase in ring 2
-            if (trafficControllerStatus[i].startingPhase2 == coordinatedPhase2)
+            if (trafficControllerStatus[i].startingPhase2 == coordinatedPhase2 && trafficControllerStatus[i].initPhase2 == 0)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
@@ -324,7 +312,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             }
 
             // For non-coordinated phases in ring 2
-            else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2)
+            else if (trafficControllerStatus[i].startingPhase2 != coordinatedPhase2 && trafficControllerStatus[i].initPhase2 == 0)
             {
                 temporaryPhase = trafficControllerStatus[i].startingPhase2;
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
@@ -598,23 +586,6 @@ vector<int> TrafficConrtollerStatusManager::getConflictingPedCallList()
     }
 
     return conflictingPedCallList;
-}
-
-double TrafficConrtollerStatusManager::getCurrentTime()
-{
-    double currentTime{};
-    time_t s = 1;
-    struct tm *current_time;
-
-    // time in seconds
-    s = time(NULL);
-
-    // to get current time
-    current_time = localtime(&s);
-
-    currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
-
-    return currentTime;
 }
 
 TrafficConrtollerStatusManager::~TrafficConrtollerStatusManager()

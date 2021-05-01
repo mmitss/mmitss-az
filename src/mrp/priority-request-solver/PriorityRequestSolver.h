@@ -66,7 +66,7 @@ private:
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
   string scheduleJsonString{};
-  string fileName{};
+  string logFileName{};
   ofstream logFile;
 
   vector<RequestList> priorityRequestList{};
@@ -130,6 +130,7 @@ public:
   string getSignalCoordinationTimingPlanRequestString();
   int getMessageType(string jsonString);
   double getCoefficientOfFrictionValue(double vehicleSpeed);
+  double getCurrentTime();
   bool findEVInList();
   bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
