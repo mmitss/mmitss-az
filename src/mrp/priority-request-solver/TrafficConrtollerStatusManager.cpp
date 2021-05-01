@@ -223,6 +223,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
     double earlyReturnedValue{};
     double upperLimitOfGreenTimeForCoordinatedPhase{};
     int temporaryPhase{};
+    setConflictingPhaseCallStatus();
 
     if (coordinationRequestStatus)
     {
@@ -247,6 +248,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 //If elapsed green time is less than gmin, continue
                 if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
                     trafficControllerStatus[i].elapsedGreen1 =  trafficControllerStatus[i].elapsedGreen1;
+
+                //If there is conflicting phase call and elapsed time in gmax is greater than the minGreen, elapsed green time will be set as elapsed time in gmax
+                else if (conflictingPhaseCallStatus && trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen)
+                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreenInGmax1;
 
                 //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
                 // elapsed green time will be set as (gmax-tolerance)
@@ -298,6 +303,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 //If elapsed green time is less than gmin, continue
                 if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
                     trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
+                
+                //If there is conflicting phase call and elapsed time in gmax is greater than the minGreen, elapsed green time will be set as elapsed time in gmax
+                else if (conflictingPhaseCallStatus && trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen)
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreenInGmax2;
 
                 //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
                 // elapsed green time will be set as (gmax-tolerance)
@@ -347,8 +356,6 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
     */
     else
     {
-        setConflictingPhaseCallStatus();
-
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
             temporaryPhase = trafficControllerStatus[i].startingPhase1;
@@ -357,7 +364,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
             if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
-                continue;
+                trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1;
 
             else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen) &&
                      (trafficControllerStatus[i].elapsedGreenInGmax1 > 0))
@@ -378,7 +385,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
             if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
-                continue;
+                trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
 
             else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen) &&
                      (trafficControllerStatus[i].elapsedGreenInGmax2 > 0))
@@ -393,9 +400,8 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
                 trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
         }
-
-        validateElapsedGreenTime();
     }
+    validateElapsedGreenTime();
 }
 
 /*
