@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include "TrafficSignalPlan.h"
 #include "json/json.h"
 #include "Timestamp.h"
@@ -55,6 +56,7 @@ private:
   double cycleLength{};
   double offset{};
   double coordinationStartTime{};
+  double elapsedTimeInCycle{};
   int coordinatedPhase1{};
   int coordinatedPhase2{};
   vector<int> vehicleCallList{};
@@ -67,7 +69,7 @@ private:
 
 public:
   TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value,
-                                 double coordination_StartTime, int coordinated_Phase1, int coordinated_Phase2,
+                                 double coordination_StartTime, double elapsed_Time_In_Cycle, int coordinated_Phase1, int coordinated_Phase2,
                                  bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                  vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan,
                                  vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan);

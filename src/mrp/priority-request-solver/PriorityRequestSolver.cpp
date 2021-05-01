@@ -869,13 +869,20 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
     bool coordinationRequestStatus = findCoordinationRequestInList();
-
+    double elapsedTimeInCycle{};
     displayConsoleData("Received Current Signal Status from TCI");
     loggingData("Received Current Signal Status from TCI");
     loggingData(jsonString);
 
+    if (coordinationRequestStatus)
+    {
+        double currentTimeOfToday = getCurrentTime();
+        elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
+        loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
+    }
+
     TrafficConrtollerStatusManager trafficConrtollerStatusManager(coordinationRequestStatus, cycleLength, offset,
-                                                                  coordinationStartTime, coordinatedPhase1, coordinatedPhase2,
+                                                                  coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                   logging, consoleOutput, dummyPhasesList,
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
@@ -1348,6 +1355,23 @@ bool PriorityRequestSolver::checkSignalCoordinationTimingPlanStatus()
     return sendCoordinationPlanRequest;
 }
 
+double PriorityRequestSolver::getCurrentTime()
+{
+    double currentTime{};
+    time_t s = 1;
+    struct tm *current_time;
+
+    // time in seconds
+    s = time(NULL);
+
+    // to get current time
+    current_time = localtime(&s);
+
+    currentTime = current_time->tm_hour * 3600.00 + current_time->tm_min * 60.00 + current_time->tm_sec;
+
+    return currentTime;
+}
+
 /*
     -Check whether to log data or not
 */
@@ -1372,12 +1396,12 @@ void PriorityRequestSolver::readConfigFile()
     logging = jsonObject["Logging"].asBool();
     consoleOutput = jsonObject["ConsoleOutput"].asBool();
     intersectionName = jsonObject["IntersectionName"].asString();
-    fileName = "/nojournal/bin/log/" + intersectionName + "_prsolverLog_" + logFileOpenningTime + ".log";
+    logFileName = "/nojournal/bin/log/" + intersectionName + "_prsolverLog_" + logFileOpenningTime + ".log";
 
     if (logging)
     {
         double timeStamp = getPosixTimestamp();
-        logFile.open(fileName);
+        logFile.open(logFileName);
         logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
     }
 }

@@ -6,22 +6,22 @@
         "regionalID": 0,
         "requestorInfo": [
             {
-                "ETA": 12.9910299777984619,
-                "ETA_Duration": 4.0,
-                "basicVehicleRole": 9,
+                "ETA": 37.937018394470215,
+                "ETA_Duration": 20.0,
+                "basicVehicleRole": 11,
                 "requestedSignalGroup": 2,
                 "speed_MeterPerSecond": 0.0,
-                "vehicleID": 698,
-                "vehicleType": 2
+                "vehicleID": 3,
+                "vehicleType": 20
             },
             {
-                "ETA": 12.9910299777984619,
-                "ETA_Duration": 4.0,
-                "basicVehicleRole": 9,
-                "requestedSignalGroup": 5,
+                "ETA": 37.937332630157471,
+                "ETA_Duration": 20.0,
+                "basicVehicleRole": 11,
+                "requestedSignalGroup": 6,
                 "speed_MeterPerSecond": 0.0,
-                "vehicleID": 732,
-                "vehicleType": 2
+                "vehicleID": 4,
+                "vehicleType": 20
             }
         ]
     }
