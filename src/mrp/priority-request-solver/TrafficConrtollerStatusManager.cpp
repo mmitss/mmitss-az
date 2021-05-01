@@ -244,24 +244,28 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
 
-                //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
-                // elasped green time will be set as max green time - Tolerance
-                // if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase &&
-                //     (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
-                //     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
+                //If elapsed green time is less than gmin, continue
+                if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
+                    trafficControllerStatus[i].elapsedGreen1 =  trafficControllerStatus[i].elapsedGreen1;
 
-                if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
+                //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
+                // elapsed green time will be set as (gmax-tolerance)
+                else if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
-                //If elapsed green time is greater than the min green time  and early return value is positive,
-                //early return value will be deducted from elapsed green time.
-                else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen && earlyReturnedValue > 0)
+                //If elapsed green time is greater than gmin, the early return value is negative (phase was after the offset) and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase, then continue
+                else if (earlyReturnedValue < 0 && ((elapsedTimeInCycle - Tolerance) < upperLimitOfGreenTimeForCoordinatedPhase))
+                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1 ;
+                
+                // If elapsed green time is greater than the gmin  and early return value is positive, early return value will be deducted from elapsed green time.
+                //If early return value is greater than the gmin, elapsed green time value may become negative. The elapsed green time will be set as min green
+                else if (earlyReturnedValue > 0 && ((elapsedTimeInCycle - Tolerance) < upperLimitOfGreenTimeForCoordinatedPhase))
+                {
                     trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1 - earlyReturnedValue;
-
-                // If early return value is greater than the gmin, elapsed green time value may become negative.
-                // The elapsed green time will be set as min green
-                if (trafficControllerStatus[i].elapsedGreen1 < 0)
-                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+                    
+                    if (trafficControllerStatus[i].elapsedGreen1 < 0)
+                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+                }              
             }
 
             // For non-coordinated phases in ring 1
@@ -291,24 +295,28 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
 
-                //If (elapsedTimeInCycle -Tolerance) value is in the range of upperLimitOfGreenTimeForCoordinatedPhase and (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value),
-                // elasped green time will be set as max green time - Tolerance
-                // if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase &&
-                //     (elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value))
-                //     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
+                //If elapsed green time is less than gmin, continue
+                if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
 
-                if (elapsedTimeInCycle - Tolerance > upperLimitOfGreenTimeForCoordinatedPhase)
+                //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
+                // elapsed green time will be set as (gmax-tolerance)
+                else if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
-                //If elapsed green time is greater than the min green time  and early return value is positive,
-                //early return value will be deducted from elapsed green time.
-                else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen && earlyReturnedValue > 0)
+                //If elapsed green time is greater than gmin, the early return value is negative (phase was after the offset) and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase, then continue
+                else if (earlyReturnedValue < 0 && ((elapsedTimeInCycle - Tolerance) < upperLimitOfGreenTimeForCoordinatedPhase))
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
+                
+                // If elapsed green time is greater than the gmin  and early return value is positive, early return value will be deducted from elapsed green time.
+                //If early return value is greater than the gmin, elapsed green time value may become negative. The elapsed green time will be set as min green
+                else if (earlyReturnedValue > 0 && ((elapsedTimeInCycle - Tolerance) < upperLimitOfGreenTimeForCoordinatedPhase))
+                {
                     trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2 - earlyReturnedValue;
-
-                // If early return value is greater than the gmin, elapsed green time value may become negative.
-                // The elapsed green time will be set as min green
-                if (trafficControllerStatus[i].elapsedGreen2 < 0)
-                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+                    
+                    if (trafficControllerStatus[i].elapsedGreen2 < 0)
+                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+                } 
             }
 
             // For non-coordinated phases in ring 2

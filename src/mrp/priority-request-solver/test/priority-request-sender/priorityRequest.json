@@ -2,11 +2,20 @@
     "MsgType": "PriorityRequest",
     "PriorityRequestList": {
         "intersectionID": 44383,
-        "noOfRequest": 2,
+        "noOfRequest": 3,
         "regionalID": 0,
         "requestorInfo": [
             {
-                "ETA": 37.937018394470215,
+                "ETA": 19.024009108905734,
+                "ETA_Duration": 4.0,
+                "basicVehicleRole": 9,
+                "requestedSignalGroup": 2,
+                "speed_MeterPerSecond": 13.16,
+                "vehicleID": 12489,
+                "vehicleType": 9
+            },
+            {
+                "ETA": 53.955754041671753,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "requestedSignalGroup": 2,
@@ -15,7 +24,7 @@
                 "vehicleType": 20
             },
             {
-                "ETA": 37.937332630157471,
+                "ETA": 53.955917835235596,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "requestedSignalGroup": 6,
