@@ -262,7 +262,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 
                 //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
                 // elapsed green time will be set as (gmax-tolerance)
-                else if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
+                else if (((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase) && ((elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value)))
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - Tolerance;
 
                 //If elapsed green time is greater than gmin, the early return value is negative (phase was after the offset) and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase, then continue
@@ -324,7 +324,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
                 //If elapsed green time is greater than gmin, and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase,
                 // elapsed green time will be set as (gmax-tolerance)
-                else if ((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase)
+                else if (((elapsedTimeInCycle - Tolerance) >= upperLimitOfGreenTimeForCoordinatedPhase) && ((elapsedTimeInCycle - Tolerance) < (upperLimitOfGreenTimeForCoordinatedPhase + PRS_Timed_Out_Value)))
                     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - Tolerance;
 
                 //If elapsed green time is greater than gmin, the early return value is negative (phase was after the offset) and (elapsedTimeInCycle - Tolerance) value is greater than the upperLimitOfGreenTimeForCoordinatedPhase, then continue
