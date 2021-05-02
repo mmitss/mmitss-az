@@ -26,16 +26,17 @@ import pysftp
 
 # Import local modules
 from V2XDataTransfer import V2XDataTransfer
+from Logger import Logger
 
 class PullFromIntersection(V2XDataTransfer):
     """
     provides method to pull the dat a from multiple intersections and store it in local directories.
     This class is intended to be deployed on the server side.
     """
-    def __init__(self, serverDataDirectory:str, intersectionList:str):
+    def __init__(self, serverDataDirectory:str, intersectionList:str, logger:Logger):
         
         # Initialize the parent class
-        super().__init__(serverDataDirectory, intersectionList)
+        super().__init__(serverDataDirectory, intersectionList, logger)
         
         # Verify and create the expected directory structure on the local machine
         self.verify_or_create_local_directory_structure()
@@ -60,6 +61,7 @@ class PullFromIntersection(V2XDataTransfer):
                 dataElementDirectory = intersectionDirectory + "/" + dataElement 
                 if not os.path.isdir(dataElementDirectory):
                     os.makedirs(dataElementDirectory)
+                    self.logger.write("Created local path " + dataElementDirectory)
 
     def transfer_data(self):
         """
@@ -70,13 +72,14 @@ class PullFromIntersection(V2XDataTransfer):
             try:
                 # Establish an SFTP connection
                 with pysftp.Connection(intersection["ip_address"], username=intersection["username"], password=intersection["password"]) as sftp:
+                    self.logger.write("Logged in to " + intersection["name"])
                     try:
                         
                         # On remote machine, change the working directory to v2x-data/archive
                         with sftp.cd(intersection["v2x-data_location"] + "/archive/"):
-                            
                             # List archived directories
                             remoteArchivedDirectories = sftp.listdir()
+                            self.logger.write("On " + intersection["name"] + " found these directories: " + str(remoteArchivedDirectories))
                             
                             # For each archived directory:
                             for directory in remoteArchivedDirectories:
@@ -104,21 +107,23 @@ class PullFromIntersection(V2XDataTransfer):
                                             
                                             # Transfer the file from the remote machine to the local path defined in previous step
                                             sftp.get(self.dataElementFiles[dataElement], localpath=localpath)
+                                            self.logger.write("Received " + str(self.dataElementFiles[dataElement]))
                                 
                                 # Reset the "dataElementFiles" files dictionary 
                                 self.dataElementFiles = {"spat" : None, "srm": None, "remoteBsm": None, "ssm": None, "msgCount": None}
                                 
                                 # Remove the data directory from the remote machine
                                 sftp.rmdir(intersection["v2x-data_location"] + "/archive/" + directory)
+                                self.logger.write("Removed remote path content " + str (intersection["v2x-data_location"] + "/archive/" + directory))
                     
                     # If the v2x-data/archive directory can not be found on the remote machine, print the error message to the console
-                    except: print("Failed to locate v2x-data archive on " + intersection["name"] + " at:" + str(datetime.datetime.now()))
+                    except: self.logger.write("Failed to locate v2x-data archive on " + intersection["name"])
                 
                 # Else print on the console the success message
-                print("Data transfer from " + str(intersection["name"]) + " completed at: " + str(datetime.datetime.now()))
+                self.logger("Data transfer from " + intersection["name"] + " completed")
             
             # If SFTP connection can not be established with the remote machine, print the error message on the console
-            except: print("Failed to establish SFTP connection with " + intersection["name"] + " at: " + str(datetime.datetime.now()))
+            except: self.logger.write("Failed to establish SFTP connection with " + intersection["name"])
 
 if __name__=="__main__":
     pass

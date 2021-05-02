@@ -1,5 +1,8 @@
 {
 	"ApplicationPlatform": "server",
+	"IntersectionName": "server",
+	"Logging": true,
+	"Console": true,
 	"PullFromIntersections": true,
 	"PushToCyverse": true,
 	"DataTransfer":

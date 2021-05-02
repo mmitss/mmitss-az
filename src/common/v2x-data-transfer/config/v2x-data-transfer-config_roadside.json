@@ -1,5 +1,8 @@
 {
 	"ApplicationPlatform": "roadside",
+	"IntersectionName": "intersection-1",
+	"Logging": true,
+	"Console": true,
 	"DataTransfer":
 	{
 		"server":
