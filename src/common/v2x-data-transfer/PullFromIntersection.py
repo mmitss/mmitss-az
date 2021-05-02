@@ -120,7 +120,7 @@ class PullFromIntersection(V2XDataTransfer):
                     except: self.logger.write("Failed to locate v2x-data archive on " + intersection["name"])
                 
                 # Else print on the console the success message
-                self.logger("Data transfer from " + intersection["name"] + " completed")
+                self.logger("Data transfer from " + intersection["name"] + " completed. Logged out!")
             
             # If SFTP connection can not be established with the remote machine, print the error message on the console
             except: self.logger.write("Failed to establish SFTP connection with " + intersection["name"])

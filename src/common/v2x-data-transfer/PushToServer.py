@@ -75,6 +75,7 @@ class PushToServer(V2XDataTransfer):
         try:
             # Establish an SFTP connection
             with pysftp.Connection(self.serverIpAddress, username=self.serverUsername, password=self.serverPassword, cnopts=self.cnopts) as sftp:
+                self.logger.write("Logged in to server. IP address:" + self.serverIpAddress)
                 
                 # For each data element:
                 for dataElement in self.dataElements:
