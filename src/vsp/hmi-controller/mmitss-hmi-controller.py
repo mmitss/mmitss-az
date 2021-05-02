@@ -108,6 +108,7 @@ def manageRemoteVehicleList(remoteBSMjson, remoteVehicleList) :
     # get the id of the new BSM data and make it a positive numnber (is an unsigned int)
     vehicleID = abs(remoteBSMjson["BasicVehicle"]["temporaryID"])
     vehicleInformation = remoteBSMjson["BasicVehicle"]
+    vehicleInformation["temporaryID"] = abs(vehicleInformation["temporaryID"])
     # cpp message uses key "type" instead of "vehicleType"
     vehicleInformation['vehicleType'] = remoteBSMjson["BasicVehicle"]["type"]
     vehicleInformation.pop('type')
