@@ -27,6 +27,7 @@ from PullFromIntersection import PullFromIntersection
 from PushToCyverse import PushToCyverse
 from PushToServer import PushToServer
 from Scheduler import Scheduler
+from Logger import Logger
 
 # Define constants
 SLEEP_TIME_SEC = 3600
@@ -85,6 +86,12 @@ if __name__=="__main__":
     with open(configFilename, 'r') as configFile:
         config = json.load(configFile)
 
+    logging = config["Logging"]
+    console = config["Console"]
+    intersectionName = config["IntersectionName"]
+
+    logger = Logger(console, logging, intersectionName)
+
     # Start an instance of the Scheduler class
     scheduler = Scheduler()
 
@@ -100,7 +107,7 @@ if __name__=="__main__":
         if server != -1 or intersection != -1 or startHour != -1 or startMinute != -1: 
             
             # Create an instance of the PushToServer class with configuration parameters provided as arguments
-            pushToServer = PushToServer(server, intersection)
+            pushToServer = PushToServer(server, intersection, logger)
             
             # Schedule the daily execution of the transfer_data method of the pushToServer instance
             scheduler.schedule_daily_execution(pushToServer.transfer_data, startHour, startMinute)
@@ -109,7 +116,7 @@ if __name__=="__main__":
             while True: time.sleep(SLEEP_TIME_SEC)
 
         # If the configuration parsing is unsuccessful, print a message to the console
-        else: print("Could not schedule roadside data transfer!")
+        else: logger.write("Could not schedule roadside data transfer!")
     
     elif applicationPlatform == "server":
         
@@ -127,7 +134,7 @@ if __name__=="__main__":
             if server != -1 or intersection != -1 or startHour != -1 or startMinute != -1:
                 
                 # Create an instance of the PullFromIntersection class with configuration parameters provided in arguments
-                pullFromIntersection = PullFromIntersection(server, intersection)
+                pullFromIntersection = PullFromIntersection(server, intersection, logger)
 
                 # Schedule the daily execution of the transfer_data method of the instance of PullFromIntersection.
                 scheduler.schedule_daily_execution(pullFromIntersection.transfer_data, startHour, startMinute)
@@ -136,7 +143,7 @@ if __name__=="__main__":
                 serverScheduled = True
             
             # If parsing of configuration items is unsuccessful, print a message to the console:
-            else: print("Could not schedule pull from intersection data transfer!")
+            else: logger.write("Could not schedule pull from intersection data transfer!")
         
         # If it is required to push the data to CyVerse:
         if config["PushToCyverse"] == True:
@@ -148,7 +155,7 @@ if __name__=="__main__":
             if server != -1 or intersection != -1 or startHour != -1 or startMinute != -1:
                 
                 # Create an instance of PushToCyverse class wit configuration parameters provided in arguments:
-                pushToCyverse = PushToCyverse(server, intersection)
+                pushToCyverse = PushToCyverse(server, intersection, logger)
 
                 # Schedule the daily execution of the transfer_data method of the PushToCyverse class
                 scheduler.schedule_daily_execution(pushToCyverse.transfer_data, startHour, startMinute)
@@ -157,12 +164,12 @@ if __name__=="__main__":
                 serverScheduled = True
             
             # If parsing of configuration items is unsuccessful, print a message to the console:
-            else: print("Could not schedule push to CyVerse data transfer!")
+            else: logger.write("Could not schedule push to CyVerse data transfer!")
 
         # If activity variable is true, sleep, wakeup, and repeat - just to keep the background scheduler active
         if serverScheduled != False:
             while True: time.sleep(SLEEP_TIME_SEC)
-        else: print("Nothing to schedule!")
+        else: logger.write("Nothing to schedule!")
     else:
         print("Nothing to schedule!")
         exit()

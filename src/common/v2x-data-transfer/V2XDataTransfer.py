@@ -23,12 +23,16 @@ from abc import ABC, abstractmethod
 # Import third party libraries
 import sh
 
+# Import local classes
+from Logger import Logger
+
 class V2XDataTransfer(ABC):
     """
     an abstract class defining a structure for inherited classes, where each child class would be responsinble
     for performing certain kind of data transfer
     """
-    def __init__(self, server:dict, intersectionList:list):
+    def __init__(self, server:dict, intersectionList:list, logger:Logger):
+        self.logger = logger
         self.serverDataDirectory = server["data_directory"]
         self.intersectionList = intersectionList
         self.dataElements = ["spat", "srm", "remoteBsm", "ssm", "msgCount"]
