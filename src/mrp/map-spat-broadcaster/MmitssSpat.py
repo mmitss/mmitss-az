@@ -223,12 +223,6 @@ class MmitssSpat(Spat):
 
         return vehMaxEndTimeList
 
-    def getPedMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
-        return [UNKNOWN for phase in range(8)]
-
-    def getPedMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
-        return [UNKNOWN for phase in range(8)]
-
 if __name__=="__main__":
     import json
 
