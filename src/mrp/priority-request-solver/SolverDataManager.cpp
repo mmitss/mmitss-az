@@ -212,7 +212,7 @@ void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
 {
     int temporaryPhase{};
-    double remaningPedServiceTime{};
+    double pedistrianServiceTime{};
 
     if (trafficControllerStatus[0].currentPedCallStatus1)
     {
@@ -221,13 +221,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        remaningPedServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear - trafficControllerStatus[0].pedServiceElapsedTime1;
+        pedistrianServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear;
 
-        if (findSignalGroup1->minGreen < remaningPedServiceTime)
-            findSignalGroup1->minGreen = remaningPedServiceTime;
+        if (findSignalGroup1->minGreen < pedistrianServiceTime)
+            findSignalGroup1->minGreen = pedistrianServiceTime;
 
-        if (findSignalGroup1->maxGreen < remaningPedServiceTime)
-            findSignalGroup1->maxGreen = remaningPedServiceTime;
+        if (findSignalGroup1->maxGreen < pedistrianServiceTime)
+            findSignalGroup1->maxGreen = pedistrianServiceTime;
     }
 
     if (trafficControllerStatus[0].currentPedCallStatus2)
@@ -237,13 +237,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        remaningPedServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear - trafficControllerStatus[0].pedServiceElapsedTime2;
+        pedistrianServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear;
 
-        if (findSignalGroup2->minGreen < remaningPedServiceTime)
-            findSignalGroup2->minGreen = remaningPedServiceTime;
+        if (findSignalGroup2->minGreen < pedistrianServiceTime)
+            findSignalGroup2->minGreen = pedistrianServiceTime;
 
-        if (findSignalGroup2->maxGreen < remaningPedServiceTime)
-            findSignalGroup2->maxGreen = remaningPedServiceTime;
+        if (findSignalGroup2->maxGreen < pedistrianServiceTime)
+            findSignalGroup2->maxGreen = pedistrianServiceTime;
     }
 }
 
