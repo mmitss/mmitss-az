@@ -25,7 +25,7 @@ import argparse
 import csv
 
 # for performance time tracking
-import time;
+import time
 
 # capture time for performance testing
 class perfTest():
