@@ -882,7 +882,6 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
-        elapsedTimeInCycle = 51.0;
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
     }
 
