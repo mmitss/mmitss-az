@@ -636,7 +636,7 @@ void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, ve
 
 void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22)
 {
-    double lowestRemainingGreenTime{};
+    double largetRemainingGreenTime{};
     double startingPhase1RemainingGreenTime{};
     double startingPhase2RemainingGreenTime{};
     int temporaryPhase{};
@@ -650,7 +650,7 @@ void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P
     startingPhase1RemainingGreenTime = findSignalGroup1->maxGreen - trafficControllerStatus[0].elapsedGreen1;
     startingPhasesRemainingGreenTime.push_back(startingPhase1RemainingGreenTime);
 
-    temporaryPhase = trafficControllerStatus[0].startingPhase1;
+    temporaryPhase = trafficControllerStatus[0].startingPhase2;
     vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
         std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
@@ -663,19 +663,19 @@ void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P
 
     if (trafficControllerStatus[0].elapsedGreen2 > findSignalGroup2->maxGreen)
         trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2-> maxGreen;
-
+    
     if ((trafficControllerStatus[0].startingPhase1 == P11.back() || trafficControllerStatus[0].startingPhase1 == P12.back()) &&
         (trafficControllerStatus[0].startingPhase2 == P21.back() || trafficControllerStatus[0].startingPhase2 == P22.back()))
     {
 
-        lowestRemainingGreenTime = *min_element(startingPhasesRemainingGreenTime.begin(), startingPhasesRemainingGreenTime.end());
+        largetRemainingGreenTime = *max_element(startingPhasesRemainingGreenTime.begin(), startingPhasesRemainingGreenTime.end());
 
-        if (lowestRemainingGreenTime != startingPhase1RemainingGreenTime)
-            trafficControllerStatus[0].elapsedGreen1 = findSignalGroup1->maxGreen - lowestRemainingGreenTime;
+        if (largetRemainingGreenTime != startingPhase1RemainingGreenTime)
+            trafficControllerStatus[0].elapsedGreen1 = findSignalGroup1->maxGreen - largetRemainingGreenTime;
 
-        if (lowestRemainingGreenTime != startingPhase2RemainingGreenTime)
-            trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2->maxGreen - lowestRemainingGreenTime;
-    }
+        if (largetRemainingGreenTime != startingPhase2RemainingGreenTime)
+            trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2->maxGreen - largetRemainingGreenTime;
+    }    
 }
 
 SolverDataManager::~SolverDataManager()
