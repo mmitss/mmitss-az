@@ -248,47 +248,6 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
 }
 
 /*
-    -If signal phase is on rest or elapsed green time is more than gmax, then elapsed green time will be set as min green time.
-*/
-void SolverDataManager::modifyCurrentSignalStatus()
-{
-    int temporaryPhase{};
-    for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-    {
-        temporaryPhase = trafficControllerStatus[i].startingPhase1;
-
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-        if (findSignalGroupInList(temporaryPhase) == true)
-        {
-            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
-        }
-
-        else
-        {
-            if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->maxGreen - findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - findSignalGroup1->minGreen;
-        }
-
-        temporaryPhase = trafficControllerStatus[i].startingPhase2;
-
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                   [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-        if (findSignalGroupInList(temporaryPhase) == true)
-        {
-            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
-        }
-        else
-        {
-            if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->maxGreen - findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - findSignalGroup2->minGreen;
-        }
-    }
-}
-
-/*
     - If emergency vehicle sends priority request, this method checks whether signal group from signal plan is in the priority request list or not
 */
 bool SolverDataManager::findSignalGroupInList(int signalGroup)
@@ -672,6 +631,50 @@ void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, ve
             else if (std::find(phasesForRingBarrierGroup2.begin(), phasesForRingBarrierGroup2.end(), temporaryPhase) != phasesForRingBarrierGroup2.end())
                 trafficSignalPlan[i].maxGreen = largestGmaxForRingBarrierGroup2;
         }
+    }
+}
+
+void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22)
+{
+    double lowestRemainingGreenTime{};
+    double startingPhase1RemainingGreenTime{};
+    double startingPhase2RemainingGreenTime{};
+    int temporaryPhase{};
+    vector<double> startingPhasesRemainingGreenTime{};
+
+    temporaryPhase = trafficControllerStatus[0].startingPhase1;
+    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
+        std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+    startingPhase1RemainingGreenTime = findSignalGroup1->maxGreen - trafficControllerStatus[0].elapsedGreen1;
+    startingPhasesRemainingGreenTime.push_back(startingPhase1RemainingGreenTime);
+
+    temporaryPhase = trafficControllerStatus[0].startingPhase1;
+    vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
+        std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                     [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+    startingPhase2RemainingGreenTime = findSignalGroup2->maxGreen - trafficControllerStatus[0].elapsedGreen2;
+    startingPhasesRemainingGreenTime.push_back(startingPhase2RemainingGreenTime);
+
+    if (trafficControllerStatus[0].elapsedGreen1 > findSignalGroup1->maxGreen)
+        trafficControllerStatus[0].elapsedGreen1 = findSignalGroup1->maxGreen;
+
+    if (trafficControllerStatus[0].elapsedGreen2 > findSignalGroup2->maxGreen)
+        trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2-> maxGreen;
+
+    if ((trafficControllerStatus[0].startingPhase1 == P11.back() || trafficControllerStatus[0].startingPhase1 == P12.back()) &&
+        (trafficControllerStatus[0].startingPhase2 == P21.back() || trafficControllerStatus[0].startingPhase2 == P22.back()))
+    {
+
+        lowestRemainingGreenTime = *min_element(startingPhasesRemainingGreenTime.begin(), startingPhasesRemainingGreenTime.end());
+
+        if (lowestRemainingGreenTime != startingPhase1RemainingGreenTime)
+            trafficControllerStatus[0].elapsedGreen1 = findSignalGroup1->maxGreen - lowestRemainingGreenTime;
+
+        if (lowestRemainingGreenTime != startingPhase2RemainingGreenTime)
+            trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2->maxGreen - lowestRemainingGreenTime;
     }
 }
 
