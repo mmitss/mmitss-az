@@ -634,6 +634,10 @@ void SolverDataManager::validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, ve
     }
 }
 
+/*
+    - If starting phases (for example, phase 4 and 8) are the last phase of their respective ring barrier group and remaining green time are different, solver may get infeasible solution 
+    - The following method will find the maximum remaining green time and adjust the elapsed green time based on that.
+*/
 void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22)
 {
     double largetRemainingGreenTime{};
@@ -675,7 +679,14 @@ void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P
 
         if (largetRemainingGreenTime != startingPhase2RemainingGreenTime)
             trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2->maxGreen - largetRemainingGreenTime;
-    }    
+    }
+
+    if (trafficControllerStatus[0].elapsedGreen1 < 0.0 )
+        trafficControllerStatus[0].elapsedGreen1 = 0.0;
+
+    if (trafficControllerStatus[0].elapsedGreen2 < 0.0)
+        trafficControllerStatus[0].elapsedGreen2 = 0.0;
+        
 }
 
 SolverDataManager::~SolverDataManager()
