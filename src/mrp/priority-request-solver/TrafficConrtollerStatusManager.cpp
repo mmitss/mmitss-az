@@ -167,7 +167,6 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
                 {
                     if (consoleOutput)
                         cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current Phase and next phase is same" << endl;
-                    break;
                 }
 
                 vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
@@ -468,7 +467,7 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
     }
 
     if(trafficControllerStatus[0].initPhase1 < 0.0)
-        trafficControllerStatus[0].initPhase1 == 0.0;
+        trafficControllerStatus[0].initPhase1 = 0.0;
     
     if (trafficControllerStatus[0].initPhase2 < 0.0)
         trafficControllerStatus[0].initPhase2 = 0.0;
