@@ -686,7 +686,7 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
         findSignalGroup->maxGreen = findSignalGroup->maxGreen + P12_GreenTime - P22_GreenTime;
     }
 
-    else if(P22_GreenTime > P21_GreenTime)
+    else if(P22_GreenTime > P12_GreenTime)
     {
         temporaryPhase = P12.back();
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =

@@ -151,7 +151,7 @@ void TrafficConrtollerStatusManager::manageCurrentSignalStatus(string jsonString
             }
         }
 
-        else if (temporaryPhaseState == "red")
+        else if (temporaryPhaseState == "red" || temporaryPhaseState == "permissive_yellow")
         {
             for (int k = 0; k < NumberOfStartingPhase; k++)
             {
