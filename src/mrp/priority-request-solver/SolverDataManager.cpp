@@ -14,7 +14,7 @@
   2. This script writes the dat file required for solving the optimization model.
 */
 #include <algorithm>
-#include<numeric>
+#include <numeric>
 #include "SolverDataManager.h"
 #include "msgEnum.h"
 
@@ -656,7 +656,7 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
     P21_GreenTime = calulateGmax(P21);
     P22_GreenTime = calulateGmax(P22);
 
-    if(P11_GreenTime > P21_GreenTime)
+    if (P11_GreenTime > P21_GreenTime)
     {
         temporaryPhase = P21.back();
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
@@ -666,7 +666,7 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
         findSignalGroup->maxGreen = findSignalGroup->maxGreen + P11_GreenTime - P21_GreenTime;
     }
 
-    else if(P21_GreenTime > P11_GreenTime)
+    else if (P21_GreenTime > P11_GreenTime)
     {
         temporaryPhase = P11.back();
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
@@ -676,7 +676,7 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
         findSignalGroup->maxGreen = findSignalGroup->maxGreen + P21_GreenTime - P11_GreenTime;
     }
 
-    if(P12_GreenTime > P22_GreenTime)
+    if (P12_GreenTime > P22_GreenTime)
     {
         temporaryPhase = P22.back();
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
@@ -686,7 +686,7 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
         findSignalGroup->maxGreen = findSignalGroup->maxGreen + P12_GreenTime - P22_GreenTime;
     }
 
-    else if(P22_GreenTime > P12_GreenTime)
+    else if (P22_GreenTime > P12_GreenTime)
     {
         temporaryPhase = P12.back();
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
@@ -695,27 +695,70 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
 
         findSignalGroup->maxGreen = findSignalGroup->maxGreen + P22_GreenTime - P12_GreenTime;
     }
-    
 }
 
-double SolverDataManager::calulateGmax(vector<int> PhaseGroup1)
+double SolverDataManager::calulateGmax(vector<int> PhaseGroup)
 {
     int temporaryPhase{};
     double sumOfGmax{};
     vector<double> greenTime{};
 
-    for (size_t i = 0; i < PhaseGroup1.size(); i++)
+    for (size_t i = 0; i < PhaseGroup.size(); i++)
     {
-        temporaryPhase = PhaseGroup1.at(i);
+        temporaryPhase = PhaseGroup.at(i);
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
         greenTime.push_back(findSignalGroup->maxGreen);
     }
-    sumOfGmax = accumulate(greenTime.begin(),greenTime.end(),0.0);
+    sumOfGmax = accumulate(greenTime.begin(), greenTime.end(), 0);
 
     return sumOfGmax;
+}
+
+/*
+    - There may be infeasible solution if the coordination request is placed after the second cycle.
+    - The method will delete those infeasible coordination request
+*/
+void SolverDataManager::removedInfeasiblePriorityRequest()
+{
+    double remainingTimeInTwoCycleLength{}; //(cycleLength * 2) - trafficControllerStatus[0].elapsedGreen1;
+    double sumOfPhaseDuration{};
+    double sumOfElapsedPhaseDuration{};
+    int temporaryVehicleID{};
+    vector<double> phaseDuration{};
+    vector<double> elapsedPhaseDuration{};
+
+    for (int i = 0; i < 4; i++)
+    {
+        phaseDuration.push_back(trafficSignalPlan[i].maxGreen);
+        phaseDuration.push_back(trafficSignalPlan[i].yellowChange);
+        phaseDuration.push_back(trafficSignalPlan[i].redClear);
+
+        if (trafficSignalPlan[i].phaseNumber < trafficControllerStatus[0].startingPhase1)
+        {
+            elapsedPhaseDuration.push_back(trafficSignalPlan[i].maxGreen);
+            elapsedPhaseDuration.push_back(trafficSignalPlan[i].yellowChange);
+            elapsedPhaseDuration.push_back(trafficSignalPlan[i].redClear);
+        }
+    }
+    sumOfPhaseDuration = accumulate(phaseDuration.begin(), phaseDuration.end(), 0);
+    sumOfElapsedPhaseDuration = accumulate(elapsedPhaseDuration.begin(), elapsedPhaseDuration.end(), 0);
+    remainingTimeInTwoCycleLength = (sumOfPhaseDuration * 2) - sumOfElapsedPhaseDuration - trafficControllerStatus[0].elapsedGreen1;
+
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        if ((priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration) > remainingTimeInTwoCycleLength)
+        {
+            temporaryVehicleID = priorityRequestList[i].vehicleID;
+            vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                             [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
+
+            priorityRequestList.erase(findVehicleIDOnList);
+            i--;
+        }
+    }
 }
 
 /*
@@ -735,22 +778,22 @@ void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P
         std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-    startingPhase1RemainingGreenTime = findSignalGroup1->maxGreen - trafficControllerStatus[0].elapsedGreen1;
-    startingPhasesRemainingGreenTime.push_back(startingPhase1RemainingGreenTime);
-
     temporaryPhase = trafficControllerStatus[0].startingPhase2;
     vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
         std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-    startingPhase2RemainingGreenTime = findSignalGroup2->maxGreen - trafficControllerStatus[0].elapsedGreen2;
-    startingPhasesRemainingGreenTime.push_back(startingPhase2RemainingGreenTime);
 
     if (trafficControllerStatus[0].elapsedGreen1 > findSignalGroup1->maxGreen)
         trafficControllerStatus[0].elapsedGreen1 = findSignalGroup1->maxGreen;
 
     if (trafficControllerStatus[0].elapsedGreen2 > findSignalGroup2->maxGreen)
         trafficControllerStatus[0].elapsedGreen2 = findSignalGroup2->maxGreen;
+
+    startingPhase1RemainingGreenTime = findSignalGroup1->maxGreen - trafficControllerStatus[0].elapsedGreen1;
+    startingPhasesRemainingGreenTime.push_back(startingPhase1RemainingGreenTime);
+
+    startingPhase2RemainingGreenTime = findSignalGroup2->maxGreen - trafficControllerStatus[0].elapsedGreen2;
+    startingPhasesRemainingGreenTime.push_back(startingPhase2RemainingGreenTime);
 
     if ((trafficControllerStatus[0].startingPhase1 == P11.back() || trafficControllerStatus[0].startingPhase1 == P12.back()) &&
         (trafficControllerStatus[0].startingPhase2 == P21.back() || trafficControllerStatus[0].startingPhase2 == P22.back()))
@@ -770,6 +813,11 @@ void SolverDataManager::modifyCurrentSignalStatus(vector<int> P11, vector<int> P
 
     if (trafficControllerStatus[0].elapsedGreen2 < 0.0)
         trafficControllerStatus[0].elapsedGreen2 = 0.0;
+}
+
+vector<RequestList> SolverDataManager::getPriorityRequestList()
+{
+    return priorityRequestList;
 }
 
 SolverDataManager::~SolverDataManager()

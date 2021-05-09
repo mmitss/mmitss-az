@@ -73,9 +73,7 @@ public:
                     double Truck_Weight, double DZ_Request_Weight, double Coordination_Weight);
 
   ~SolverDataManager();
-
-  vector<int> getRequestedSignalGroupFromPriorityRequestList();
-  double calulateGmax(vector<int>PhaseGroup1);
+  
   void removeDuplicateSignalGroup();
   void addAssociatedSignalGroup();
   void modifyGreenMax(bool emergencyVehicleStatus);
@@ -84,6 +82,10 @@ public:
   void modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
   void adjustGreenTimeForPedCall(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
   void generateDatFile();
+  void removedInfeasiblePriorityRequest();
   void validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22);
+  double calulateGmax(vector<int>PhaseGroup);
   bool findSignalGroupInList(int signalGroup);
+  vector<int> getRequestedSignalGroupFromPriorityRequestList();
+  vector<RequestList>getPriorityRequestList();
 };

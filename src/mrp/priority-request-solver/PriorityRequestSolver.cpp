@@ -553,7 +553,9 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
+        solverDataManager.removedInfeasiblePriorityRequest();
         solverDataManager.generateDatFile();
+        priorityRequestList = solverDataManager.getPriorityRequestList();
     }
 
     else
@@ -885,6 +887,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
+        elapsedTimeInCycle = 15.0;
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
     }
 
@@ -901,36 +904,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         displayConsoleData("Conflicting Ped Call is available!");
         loggingData("Conflicting Ped Call is available!");
     }
-
-    removedInfeasiblePriorityRequest(elapsedTimeInCycle);
 }
 
-/*
-    - There may be infeasible solution if the coordination request is placed after the second cycle.
-    - The method will delete those infeasible coordination request when there are tansit or truck priority request
-    - The method will conside that Gmax for transit and truck request are increased by 15%.
-*/
-void PriorityRequestSolver::removedInfeasiblePriorityRequest(double elapsedTimeInCycle)
-{
-    double remainingTimeInTwoCycleLength = (cycleLength * 1.15 * 2) - elapsedTimeInCycle;
-    int temporaryVehicleID{};
-
-    if (priorityRequestList.size() > 4)
-    {
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
-        {
-            if ((priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration) > remainingTimeInTwoCycleLength)
-            {
-                temporaryVehicleID = priorityRequestList[i].vehicleID;
-                vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                 [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
-
-                priorityRequestList.erase(findVehicleIDOnList);
-                i--;
-            }
-        }
-    }
-}
 /*
     - Method for obtaining static traffic signal plan from TCI
 */
