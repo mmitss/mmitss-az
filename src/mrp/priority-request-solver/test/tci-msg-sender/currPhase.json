@@ -1,19 +1,19 @@
 {
     "currentPhases": [
         {
-            "Phase": 2,
+            "Phase": 4,
             "State": "green",
-            "ElapsedTime": 50,
-            "ElapsedTimeInGMax": 49,
-            "RemainingGMax": 391,
+            "ElapsedTime": 182,
+            "ElapsedTimeInGMax": 182,
+            "RemainingGMax": 0,
             "PedState": "do_not_walk"
         },
         {
-            "Phase": 6,
+            "Phase": 8,
             "State": "green",
-            "ElapsedTime": 207,
-            "ElapsedTimeInGMax": 168,
-            "RemainingGMax": 391,
+            "ElapsedTime": 79,
+            "ElapsedTimeInGMax": 79,
+            "RemainingGMax": 0,
             "PedState": "do_not_walk"
         }
     ],
@@ -23,10 +23,12 @@
     ],
     "vehicleCalls": [
         2,
+        4,
+        5,
         6,
         8
     ],
-    "totalVehicleCalls": 3,
+    "totalVehicleCalls": 5,
     "pedestrianCalls": [],
     "totalPedestrianCalls": 0
 }
