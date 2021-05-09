@@ -885,7 +885,6 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
-        elapsedTimeInCycle = 89.0;
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
     }
 
@@ -895,15 +894,22 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
+    
     if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
     {
         conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
         displayConsoleData("Conflicting Ped Call is available!");
         loggingData("Conflicting Ped Call is available!");
     }
+
     removedInfeasiblePriorityRequest(elapsedTimeInCycle);
 }
 
+/*
+    - There may be infeasible solution if the coordination request is placed after the second cycle.
+    - The method will delete those infeasible coordination request when there are tansit or truck priority request
+    - The method will conside that Gmax for transit and truck request are increased by 15%.
+*/
 void PriorityRequestSolver::removedInfeasiblePriorityRequest(double elapsedTimeInCycle)
 {
     double remainingTimeInTwoCycleLength = (cycleLength * 1.15 * 2) - elapsedTimeInCycle;
