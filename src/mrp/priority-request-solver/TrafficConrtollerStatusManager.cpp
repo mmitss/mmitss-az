@@ -466,6 +466,12 @@ void TrafficConrtollerStatusManager::validateTrafficControllerStatus()
         trafficControllerStatus[0].initPhase2 = trafficControllerStatus[0].initPhase1;
         trafficControllerStatus[0].remainingGMax2 = trafficControllerStatus[0].remainingGMax1;
     }
+
+    if(trafficControllerStatus[0].initPhase1 < 0.0)
+        trafficControllerStatus[0].initPhase1 == 0.0;
+    
+    if (trafficControllerStatus[0].initPhase2 < 0.0)
+        trafficControllerStatus[0].initPhase2 = 0.0;
 }
 
 void TrafficConrtollerStatusManager::setConflictingPhaseCallStatus()
