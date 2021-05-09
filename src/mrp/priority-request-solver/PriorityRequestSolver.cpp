@@ -534,6 +534,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.validateGmaxForEVSignalTimingPlan(EV_P11, EV_P12, EV_P21, EV_P22);
+        solverDataManager.adjustGreenTimeForPedCall(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.modifyCurrentSignalStatus(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.generateDatFile();
     }
@@ -550,6 +551,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
         solverDataManager.generateDatFile();
     }
@@ -566,6 +568,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
         solverDataManager.generateDatFile();
     }

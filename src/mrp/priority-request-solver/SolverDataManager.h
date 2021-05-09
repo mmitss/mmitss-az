@@ -55,6 +55,7 @@ private:
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus;
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan;
   vector<int> conflictingPedCallList{};
+  bool pedCallStatus{false};
 
 public:
   SolverDataManager();
@@ -74,12 +75,14 @@ public:
   ~SolverDataManager();
 
   vector<int> getRequestedSignalGroupFromPriorityRequestList();
+  double calulateGmax(vector<int>PhaseGroup1);
   void removeDuplicateSignalGroup();
   void addAssociatedSignalGroup();
   void modifyGreenMax(bool emergencyVehicleStatus);
   void modifyGreenTimeForConflictingPedCalls();
   void modifyGreenTimeForCurrentPedCalls();
   void modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
+  void adjustGreenTimeForPedCall(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
   void generateDatFile();
   void validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22);
   bool findSignalGroupInList(int signalGroup);
