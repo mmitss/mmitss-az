@@ -25,7 +25,7 @@ import argparse
 import csv
 
 # for performance time tracking
-import time;
+import time
 
 # capture time for performance testing
 class perfTest():
@@ -52,7 +52,7 @@ def get_data():
     # receive the JSON data from the controller
     # set local data to be refreshed
     # set dyanamic text variables for labels
-    receivedData, addr = s.recvfrom(4096)
+    receivedData, addr = s.recvfrom(20480)
     interfaceJson = json.loads(receivedData.decode())
     # print(interfaceJson)
     secMark = int(interfaceJson["mmitss_hmi_interface"]["hostVehicle"]["secMark_Second"])
