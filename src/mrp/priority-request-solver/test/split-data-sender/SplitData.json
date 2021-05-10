@@ -2,8 +2,8 @@
     "MsgType": "ActiveCoordinationPlan",
     "CycleLength": 90,
     "Offset": 0,
-    "CoordinationStartTime_Hour": 0,
-    "CoordinationStartTime_Minute": 1,
+    "CoordinationStartTime_Hour": 15,
+    "CoordinationStartTime_Minute": 0,
     "CoordinatedPhase1": 2,
     "CoordinatedPhase2": 6,
     "TimingPlan": {

@@ -534,6 +534,8 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.validateGmaxForEVSignalTimingPlan(EV_P11, EV_P12, EV_P21, EV_P22);
+        solverDataManager.adjustGreenTimeForPedCall(EV_P11, EV_P12, EV_P21, EV_P22);
+        solverDataManager.modifyCurrentSignalStatus(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.generateDatFile();
     }
 
@@ -549,7 +551,11 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
+        solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
+        solverDataManager.removedInfeasiblePriorityRequest();
         solverDataManager.generateDatFile();
+        priorityRequestList = solverDataManager.getPriorityRequestList();
     }
 
     else
@@ -564,6 +570,8 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenMax(emergencyVehicleStatus);
         solverDataManager.modifyGreenTimeForConflictingPedCalls();
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
+        solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
         solverDataManager.generateDatFile();
     }
 }
@@ -692,6 +700,7 @@ string PriorityRequestSolver::getScheduleforTCI()
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
     trafficControllerStatus.clear();
+    conflictingPedCallList.clear();
 
     return scheduleJsonString;
 }
@@ -887,6 +896,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
+    
     if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
     {
         conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
