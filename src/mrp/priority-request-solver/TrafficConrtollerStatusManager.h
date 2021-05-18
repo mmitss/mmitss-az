@@ -33,7 +33,6 @@ using std::string;
 using std::vector;
 
 #define Initialize 0.0
-#define Tolerance 1.0
 #define FirstPhaseOfRing1 1
 #define FirstPhaseOfRing2 5
 #define LastPhaseOfRing1 4
@@ -57,6 +56,7 @@ private:
   double offset{};
   double coordinationStartTime{};
   double elapsedTimeInCycle{};
+  double permissivePeriod{};
   int coordinatedPhase1{};
   int coordinatedPhase2{};
   vector<int> vehicleCallList{};
@@ -84,6 +84,7 @@ public:
   void setConflictingPedCallStatus();
   void setPhaseCallList();
   void setCurrentPedCallStatus();
+  void setCoordinationPermissivePeriod();
   bool getConflictingPedCallStatus();
   double getCurrentTime();
   vector<int> getConflictingPedCallList();

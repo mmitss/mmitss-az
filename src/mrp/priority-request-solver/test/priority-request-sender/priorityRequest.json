@@ -6,7 +6,7 @@
         "regionalID": 0,
         "requestorInfo": [
             {
-                "ETA": 37.913670778274536,
+                "ETA": 37.933492660522461,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "requestedSignalGroup": 2,
@@ -15,7 +15,7 @@
                 "vehicleType": 20
             },
             {
-                "ETA": 37.914607286453247,
+                "ETA": 37.933829545974731,
                 "ETA_Duration": 20.0,
                 "basicVehicleRole": 11,
                 "requestedSignalGroup": 6,
