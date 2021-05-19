@@ -341,7 +341,7 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
     FileMod << "s.t. initial2{e in E,p in P:p=SP2}: t[p,1,e]=init2;  \n";
     
-    // # constraints in the same cycle in same ring and barrier group
+    // # constraints in the same cycle in same ring and barrier group, for cycle,k=1
     if (EV_P11.size() > 1)
         FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     if (EV_P12.size() > 1)
@@ -378,7 +378,7 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
 
     // #================ END of cycle 1======================#
 
-    // # constraints in the same cycle in same ring and barrier group
+    // # constraints in the same cycle in same ring and barrier group, for cycle,k>1
     if (EV_P11.size() > 1)
         FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle2and3{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     if (EV_P12.size() > 1)
