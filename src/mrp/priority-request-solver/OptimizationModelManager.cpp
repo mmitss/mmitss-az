@@ -119,34 +119,34 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "s.t. initial1{e in E,p in P:p=SP1}: t[p,1,e]=init1;  \n";
     FileMod << "s.t. initial2{e in E,p in P:p=SP2}: t[p,1,e]=init2;  \n";
     // # constraints in the same cycle in same ring-barrier group for cycle,k=1
-    FileMod << "s.t. PrecedenceConstraint_11_11_c1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_12_12_c1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_21_c1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_22_22_c1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P12_To_P12_Cycle1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P21_Cycle1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P22_To_P22_Cycle1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     // # constraints in the same cycle in connecting
-    FileMod << "s.t. PrecedenceConstraint_11_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P12_Cycle1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P22_Cycle1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[2,1,e]+v[2,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P12_Cycle1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P22_Cycle1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[6,1,e]+v[6,1,e];\n";
     // #================ END of cycle 1======================#
 
     // # constraints in the same cycle in same ring-barrier group for cycle,k>1
-    FileMod << "s.t. PrecedenceConstraint_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_22_22_c23{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle2and3{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P12_To_P12_Cycle2and3{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P21_Cycle2and3{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P22_To_P22_Cycle2and3{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
 
     // # constraints in the same cycle in connecting
-    FileMod << "s.t. PrecedenceConstraint_11_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_11_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_21_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P12_Cycle2and3{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P11_To_P22_Cycle2and3{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[2,k,e]+v[2,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P12_Cycle2and3{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=5 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P21_To_P22_Cycle2and3{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=9 and k>1 }:  t[p,k,e]=t[6,k,e]+v[6,k,e];\n";
 
     // # constraints in connecting in different cycles
-    FileMod << "s.t. PrecedenceConstraint_12_11_c23{e in E,p in P11, k in K: (card(P11)+p+1)=4 and k>1 }:    t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=8 and k>1 }:  t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=4 and k>1 }:  t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
-    FileMod << "s.t. PrecedenceConstraint_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=8 and k>1 }:    t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P12_To_P11_Cycle2and3{e in E,p in P11, k in K: (card(P11)+p+1)=4 and k>1 }:    t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P22_To_P11_Cycle2and3{e in E,p in P11, k in K: (card(P11)+p+1+4)=8 and k>1 }:  t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P12_To_P21_Cycle2and3{e in E,p in P21, k in K: (card(P21)+p+1-4)=4 and k>1 }:  t[p,k,e]=t[4,k-1,e]+v[4,k-1,e];\n";
+    FileMod << "s.t. PrecedenceConstraint_From_P22_To_P21_Cycle2and3{e in E,p in P21, k in K: (card(P21)+p+1)=8 and k>1 }:    t[p,k,e]=t[8,k-1,e]+v[8,k-1,e];\n";
 
     FileMod << "s.t. PhaseDuration{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];\n";
     FileMod << "s.t. GrnMax{e in E,p in P ,k in K}:  g[p,k,e]<=(gmaxPerRng[p,k]-PassedGrn1[p,k]-PassedGrn2[p,k])*coef[p,k]; \n";
@@ -162,7 +162,7 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "s.t. PriorityConstraint8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
-    FileMod << "s.t. Flexib: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
+    FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
@@ -343,100 +343,100 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     
     // # constraints in the same cycle in same ring and barrier group
     if (EV_P11.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_11_11_c1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle1{e in E,p in P11: (p+1)in P11 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     if (EV_P12.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_12_12_c1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P12_To_P12_Cycle1{e in E,p in P12: (p+1)in P12 and p>=SP1  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     if (EV_P21.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_21_21_c1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P21_Cycle1{e in E,p in P21: (p+1)in P21 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     if (EV_P22.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_22_22_c1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P22_To_P22_Cycle1{e in E,p in P22: (p+1)in P22 and p>=SP2  }:  t[p+1,1,e]=t[p,1,e]+v[p,1,e];\n";
     
     // # constraints in the same cycle in connecting
     if (EV_P11.size() > 0 && EV_P12.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_11_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P12_Cycle1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
     }
 
     if (EV_P11.size() > 0 && EV_P22.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_11_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P22_Cycle1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P11[phasePosition] << ",1,e]+v[" << EV_P11[phasePosition] << ",1,e];\n";
     }
 
     if (EV_P21.size() > 0 && EV_P12.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_21_12_c1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P12_Cycle1{e in E,p in P12: (card(P12)+p)<=5 and p>SP1  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
     }
 
     if (EV_P21.size() > 0 && EV_P22.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_21_22_c1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P22_Cycle1{e in E,p in P22: (card(P22)+p)<=9 and p>SP2  }:  t[p,1,e]=t[" << EV_P21[phasePosition] << ",1,e]+v[" << EV_P21[phasePosition] << ",1,e];\n";
     }
 
     // #================ END of cycle 1======================#
 
     // # constraints in the same cycle in same ring and barrier group
     if (EV_P11.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_11_11_c23{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P11_Cycle2and3{e in E,p in P11, k in K: (p+1)in P11 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     if (EV_P12.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_12_12_c23{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P12_To_P12_Cycle2and3{e in E,p in P12, k in K: (p+1)in P12 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     if (EV_P21.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_21_21_c23{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P21_Cycle2and3{e in E,p in P21, k in K: (p+1)in P21 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
     if (EV_P22.size() > 1)
-        FileMod << "s.t. PrecedenceConstraint_22_22_c23{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P22_To_P22_Cycle2and3{e in E,p in P22, k in K: (p+1)in P22 and k>1  }:  t[p+1,k,e]=t[p,k,e]+v[p,k,e];\n";
 
     // # constraints in the same cycle in connecting
 
     if (EV_P11.size() > 0 && EV_P12.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_11_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P12_Cycle2and3{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
     }
 
     if (EV_P11.size() > 0 && EV_P22.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P11.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_11_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P11_To_P22_Cycle2and3{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P11[phasePosition] << ",k,e]+v[" << EV_P11[phasePosition] << ",k,e];\n";
     }
 
     if (EV_P21.size() > 0 && EV_P12.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_21_12_c23{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P12_Cycle2and3{e in E,p in P12, k in K: coef[p,k]=1 and (card(P12)+p)=" << static_cast<int>(EV_P12.size()) + EV_P12[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
     }
 
     if (EV_P21.size() > 0 && EV_P22.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P21.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_21_22_c23{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P21_To_P22_Cycle2and3{e in E,p in P22, k in K: coef[p,k]=1 and (card(P22)+p)=" << static_cast<int>(EV_P22.size()) + EV_P22[0] << " and k>1 }:  t[p,k,e]=t[" << EV_P21[phasePosition] << ",k,e]+v[" << EV_P21[phasePosition] << ",k,e];\n";
     }
 
     // # constraints in connecting in different cycles
     if (EV_P12.size() > 0 && EV_P11.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P12.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_12_11_c23{e in E,p in P11, k in K: (card(P11)+p+1)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P12_To_P11_Cycle2and3{e in E,p in P11, k in K: (card(P11)+p+1)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
     }
 
     if (EV_P22.size() > 0 && EV_P11.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P22.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_22_11_c23{e in E,p in P11, k in K: (card(P11)+p+1+4)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 + 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P22_To_P11_Cycle2and3{e in E,p in P11, k in K: (card(P11)+p+1+4)=" << static_cast<int>(EV_P11.size()) + EV_P11[0] + 1 + 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
     }
 
     if (EV_P12.size() > 0 && EV_P21.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P12.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_12_21_c23{e in E,p in P21, k in K: (card(P21)+p+1-4)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 - 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P12_To_P21_Cycle2and3{e in E,p in P21, k in K: (card(P21)+p+1-4)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 - 4 << " and k>1 }:  t[p,k,e]=t[" << EV_P12[phasePosition] << ",k-1,e]+v[" << EV_P12[phasePosition] << ",k-1,e];\n";
     }
 
     if (EV_P22.size() > 0 && EV_P21.size() > 0)
     {
         phasePosition = static_cast<int>(EV_P22.size()) - 1;
-        FileMod << "s.t. PrecedenceConstraint_22_21_c23{e in E,p in P21, k in K: (card(P21)+p+1)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
+        FileMod << "s.t. PrecedenceConstraint_From_P22_To_P21_Cycle2and3{e in E,p in P21, k in K: (card(P21)+p+1)=" << static_cast<int>(EV_P21.size()) + EV_P21[0] + 1 << " and k>1 }:    t[p,k,e]=t[" << EV_P22[phasePosition] << ",k-1,e]+v[" << EV_P22[phasePosition] << ",k-1,e];\n";
     }
 
     FileMod << "s.t. PhaseDuration{e in E,p in P, k in K}:  v[p,k,e]=(g[p,k,e]+y[p]+red[p])*coef[p,k];\n";
@@ -453,19 +453,19 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "s.t. PriorityConstraint8{e in E,p in P,j in J: active_pj[p,j]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Ru[p,j]-Rl[p,j])*theta[p,j]; \n";
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
-    FileMod << "s.t. Flexib: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
+    FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
     FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     /****************************************DilemmaZone Constraints ************************************/
-    FileMod << "s.t. DilemmaZoneDelay1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
-    FileMod << "s.t. DilemmaZoneDelay2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
-    FileMod << "s.t. DilemmaZoneDelay3{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>= dilemmazone_ttheta[p,dz]-Dl[p,dz]*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay4{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Du[p,dz]-Dl[p,dz])*(1-dilemmazone_theta[p,dz]);\n";
-    FileMod << "s.t. DilemmaZoneDelay5{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_ttheta[p,dz]<=M*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay6{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-dilemmazone_theta[p,dz])<=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay7{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-dilemmazone_theta[p,dz])>=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZoneDelay8{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Du[p,dz]-Dl[p,dz])*dilemmazone_theta[p,dz]; \n";
-    FileMod << "s.t. DilemmaZoneDelay9{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    Du[p,dz]*dilemmazone_theta[p,dz] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint3{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>= dilemmazone_ttheta[p,dz]-Dl[p,dz]*dilemmazone_theta[p,dz];\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint4{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Du[p,dz]-Dl[p,dz])*(1-dilemmazone_theta[p,dz]);\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint5{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_ttheta[p,dz]<=M*dilemmazone_theta[p,dz];\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint6{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-dilemmazone_theta[p,dz])<=dilemmazone_ttheta[p,dz];\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint7{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-dilemmazone_theta[p,dz])>=dilemmazone_ttheta[p,dz];\n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint8{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Du[p,dz]-Dl[p,dz])*dilemmazone_theta[p,dz]; \n";
+    FileMod << "s.t. DilemmaZonePriorityConstraint9{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    Du[p,dz]*dilemmazone_theta[p,dz] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. DD: DilemmaZoneDelay=( sum{p in P, dz in DZ} (DilemmaZoneWeight*active_dilemmazone_p[p,dz]*dilemmazone_d[p,dz] ) )  - 0.01*Flexibility; \n"; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
                                                                                                                                                            /***************************************************************************************************/
