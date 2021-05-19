@@ -900,16 +900,21 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
 
     trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
-    
+
     if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
     {
         conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
         displayConsoleData("Conflicting Ped Call is available!");
         loggingData("Conflicting Ped Call is available!");
     }
-    coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
-    earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0); 
-    earlyReturnedValue2 = coordinatedPhasesEarlyReturnValue.at(1);
+    
+    if (coordinationRequestStatus)
+    {
+        coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
+        earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0);
+        earlyReturnedValue2 = coordinatedPhasesEarlyReturnValue.at(1);
+        loggingData("Early return values are " + std::to_string(earlyReturnedValue1) + std::to_string(earlyReturnedValue2));
+    }
 }
 
 /*
