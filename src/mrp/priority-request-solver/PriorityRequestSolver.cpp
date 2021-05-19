@@ -536,7 +536,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.validateGmaxForEVSignalTimingPlan(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.adjustGreenTimeForPedCall(EV_P11, EV_P12, EV_P21, EV_P22);
         solverDataManager.modifyCurrentSignalStatus(EV_P11, EV_P12, EV_P21, EV_P22);
-        solverDataManager.generateDatFile();
+        solverDataManager.generateDatFile(0.0, 0.0, 2, 6); //As a defult early return values are passing as 0 and coordinated phases as 2 and 6
     }
 
     else if (signalCoordinationRequestStatus == true)
@@ -554,7 +554,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
         solverDataManager.removedInfeasiblePriorityRequest();
-        solverDataManager.generateDatFile();
+        solverDataManager.generateDatFile(earlyReturnedValue1, earlyReturnedValue2, coordinatedPhase1, coordinatedPhase2);
         priorityRequestList = solverDataManager.getPriorityRequestList();
     }
 
@@ -572,7 +572,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
-        solverDataManager.generateDatFile();
+        solverDataManager.generateDatFile(0.0, 0.0, 2, 6);
     }
 }
 
@@ -701,6 +701,8 @@ string PriorityRequestSolver::getScheduleforTCI()
     dilemmaZoneRequestList.clear();
     trafficControllerStatus.clear();
     conflictingPedCallList.clear();
+    earlyReturnedValue1 = 0.0;
+    earlyReturnedValue2 = 0.0;
 
     return scheduleJsonString;
 }
@@ -879,6 +881,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
     bool coordinationRequestStatus = findCoordinationRequestInList();
     double elapsedTimeInCycle{};
+    vector<double> coordinatedPhasesEarlyReturnValue{};
+
     displayConsoleData("Received Current Signal Status from TCI");
     loggingData("Received Current Signal Status from TCI");
     loggingData(jsonString);
@@ -903,6 +907,9 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         displayConsoleData("Conflicting Ped Call is available!");
         loggingData("Conflicting Ped Call is available!");
     }
+    coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
+    earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0); 
+    earlyReturnedValue2 = coordinatedPhasesEarlyReturnValue.at(1);
 }
 
 /*

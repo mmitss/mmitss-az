@@ -274,7 +274,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile()
+void SolverDataManager::generateDatFile(double earlyReturnedValue1, double earlyReturnedValue2, int coordinatedPhase1, int coordinatedPhase2)
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -298,6 +298,11 @@ void SolverDataManager::generateDatFile()
         fs << "param Grn1 :=" << trafficControllerStatus[i].elapsedGreen1 << ";" << endl;
         fs << "param Grn2 :=" << trafficControllerStatus[i].elapsedGreen2 << ";" << endl;
     }
+
+    fs << "param EarlyReturnValue1:=" << earlyReturnedValue1 << ";" << endl;
+    fs << "param EarlyReturnValue2:=" << earlyReturnedValue2 << ";" << endl;
+    fs << "param CoordinatedPhase1:=" << coordinatedPhase1 << ";" << endl;
+    fs << "param CoordinatedPhase2:=" << coordinatedPhase2 << ";" << endl;
 
     fs << "param y          \t:=";
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
