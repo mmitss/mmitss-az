@@ -67,6 +67,7 @@ class CoordinationRequestManager:
         self.Request_Delete_Time = 0.0
         self.requestSentTime = time.time()
         self.msgCount = 0
+        self.ETAOfFirstCycleCoordinatedPhase = 0.0
 
     def checkCoordinationRequestSendingRequirement(self):
         """
@@ -80,14 +81,17 @@ class CoordinationRequestManager:
             currentTime = self.getCurrentTime()
             coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
             cycleLength = self.coordinationParametersDictionary['CycleLength']
+            offset = self.coordinationParametersDictionary['Offset']
 
-            remainderTime = (currentTime - coordinationStartTime) % cycleLength
-
-            if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and (coordinationStartTime - currentTime <= cycleLength):
+            elapsedTimeInCycle = (currentTime - coordinationStartTime) % cycleLength
+            
+            if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and ((coordinationStartTime - currentTime) <= (cycleLength - offset)):
                 sendRequest = True
+                self.ETAOfFirstCycleCoordinatedPhase = offset - elapsedTimeInCycle
 
-            elif (currentTime > coordinationStartTime) and cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
+            elif (currentTime > coordinationStartTime) and (offset - elapsedTimeInCycle) >= 0 and (offset - elapsedTimeInCycle) <= 1.0:
                 sendRequest = True
+                self.ETAOfFirstCycleCoordinatedPhase = offset - elapsedTimeInCycle
 
             else:
                 sendRequest = False
@@ -103,11 +107,11 @@ class CoordinationRequestManager:
         coordinatedPhase1 = self.coordinationParametersDictionary['CoordinatedPhase1']
         coordinatedPhase2 = self.coordinationParametersDictionary['CoordinatedPhase2']
         coordinatedPhases = [coordinatedPhase1, coordinatedPhase2, coordinatedPhase1, coordinatedPhase2]
-        ETAOfFirstCycleCoordinatedPhase = self.coordinationParametersDictionary['Offset']
+        # ETAOfFirstCycleCoordinatedPhase = self.coordinationParametersDictionary['Offset']
         cycleLength = self.coordinationParametersDictionary['CycleLength']
-        ETAOfSecondCycleCoordinatedPhase = ETAOfFirstCycleCoordinatedPhase + cycleLength
-        coordinatedPhaseETA = [ETAOfFirstCycleCoordinatedPhase, ETAOfFirstCycleCoordinatedPhase,
-                               ETAOfSecondCycleCoordinatedPhase, ETAOfSecondCycleCoordinatedPhase]
+        self.ETAOfSecondCycleCoordinatedPhase = self.ETAOfFirstCycleCoordinatedPhase + cycleLength
+        coordinatedPhaseETA = [self.ETAOfFirstCycleCoordinatedPhase, self.ETAOfFirstCycleCoordinatedPhase,
+                               self.ETAOfSecondCycleCoordinatedPhase, self.ETAOfSecondCycleCoordinatedPhase]
         coordinationSplit = self.coordinationParametersDictionary['CoordinationSplit']
                 
         for i in range(len(coordinatedPhases)):
