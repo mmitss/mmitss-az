@@ -18,10 +18,11 @@
 #include <algorithm>
 #include <numeric>
 
-TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime, double elapsed_Time_In_Cycle,
+TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value, double coordination_StartTime, double elapsed_Time_In_Cycle,
                                                                int coordinated_Phase1, int coordinated_Phase2, bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                                                vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan, vector<TrafficControllerData::TrafficSignalPlan> trafficSignalCoordinationPlan)
 {
+    transitOrTruckRequestStatus = transitOrTruck_RequestStatus;
     coordinationRequestStatus = coordination_Request_Status;
     cycleLength = cycle_Length;
     offset = offset_Value;
@@ -229,7 +230,62 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
     setConflictingPhaseCallStatus();
 
-    if (coordinationRequestStatus)
+    /*
+        - If elapsed green time is less then gmin, elapsed green time will be as it is
+        - If elapsed time is greater than Gmin and there is conflicting phase call,
+            - if  and remaining Gmax is greater than zero (Gmax is timing) and elaspedGmax (Gmax - remainingGmax) less than  gmin, than elapsed green time will be Gmin
+            - if  and remaining Gmax is greater than zero (Gmax is timing) and elaspedGmax (Gmax - remainingGmax) greater than  gmin, than elapsed green time will be elaspedGmax
+            - if  and remaining Gmax is zero (Gmax is timed already) and elaspedGmax (Gmax - remainingGmax) greater than  zero (it will be more than Gmax), than elapsed green time will be elaspedGmax
+    */
+    if (transitOrTruckRequestStatus)
+    {
+        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
+        {
+            temporaryPhase = trafficControllerStatus[i].startingPhase1;
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+            if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1;
+
+            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen) &&
+                     (trafficControllerStatus[i].elapsedGreenInGmax1 > 0))
+            {
+                if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
+                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+                else
+                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreenInGmax1;
+            }
+
+            else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
+                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+
+            temporaryPhase = trafficControllerStatus[i].startingPhase2;
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+            if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
+
+            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen) &&
+                     (trafficControllerStatus[i].elapsedGreenInGmax2 > 0))
+            {
+                if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
+                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+
+                else
+                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreenInGmax2;
+            }
+
+            else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
+                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+        }
+    }
+
+    else if (!transitOrTruckRequestStatus && coordinationRequestStatus)
     {
         setCoordinationPermissivePeriod();
 
@@ -247,13 +303,12 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
                 //compute the early returned value and upper limit of green time
-                if (elapsedTimeInCycle > offset)
-                    earlyReturnedValue1 = trafficControllerStatus[i].elapsedGreen1 + offset - elapsedTimeInCycle;
+                earlyReturnedValue1 = trafficControllerStatus[i].elapsedGreen1 - elapsedTimeInCycle;
 
-                else
-                    earlyReturnedValue1 = 0.0;
+                if((cycleLength - elapsedTimeInCycle) <= permissivePeriod && trafficControllerStatus[i].elapsedGreen1 < elapsedTimeInCycle)
+                    earlyReturnedValue1 = cycleLength + trafficControllerStatus[i].elapsedGreen1 - elapsedTimeInCycle;           
 
-                upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup1->maxGreen;
+                upperLimitOfGreenTimeForCoordinatedPhase = findSignalGroup1->maxGreen;
 
                 //If elapsed green time is less than gmin, continue
                 if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
@@ -354,11 +409,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                                  [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
                 //compute the early returned value and upper limit of green time
-                if (elapsedTimeInCycle > offset)
-                    earlyReturnedValue2 = trafficControllerStatus[i].elapsedGreen2 + offset - elapsedTimeInCycle;
+                earlyReturnedValue2 = trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;
 
-                else
-                    earlyReturnedValue2 = 0.0;
+                if((cycleLength - elapsedTimeInCycle) <= permissivePeriod && trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle)
+                    earlyReturnedValue2 = cycleLength + trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;   
 
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
 
@@ -455,66 +509,11 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 coordinatedPhasesEarlyReturnValue.push_back(earlyReturnedValue1);
             else
                 coordinatedPhasesEarlyReturnValue.push_back(0.0);
-            
+
             if (earlyReturnedValue2 > 0)
                 coordinatedPhasesEarlyReturnValue.push_back(earlyReturnedValue2);
             else
                 coordinatedPhasesEarlyReturnValue.push_back(0.0);
-        }
-    }
-
-    /*
-        - If elapsed green time is less then gmin, elapsed green time will be as it is
-        - If elapsed time is greater than Gmin and there is conflicting phase call,
-            - if  and remaining Gmax is greater than zero (Gmax is timing) and elaspedGmax (Gmax - remainingGmax) less than  gmin, than elapsed green time will be Gmin
-            - if  and remaining Gmax is greater than zero (Gmax is timing) and elaspedGmax (Gmax - remainingGmax) greater than  gmin, than elapsed green time will be elaspedGmax
-            - if  and remaining Gmax is zero (Gmax is timed already) and elaspedGmax (Gmax - remainingGmax) greater than  zero (it will be more than Gmax), than elapsed green time will be elaspedGmax
-    */
-    else
-    {
-        for (size_t i = 0; i < trafficControllerStatus.size(); i++)
-        {
-            temporaryPhase = trafficControllerStatus[i].startingPhase1;
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
-                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-            if (trafficControllerStatus[i].elapsedGreen1 < findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreen1;
-
-            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen) &&
-                     (trafficControllerStatus[i].elapsedGreenInGmax1 > 0))
-            {
-                if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
-                    trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
-
-                else
-                    trafficControllerStatus[i].elapsedGreen1 = trafficControllerStatus[i].elapsedGreenInGmax1;
-            }
-
-            else if (trafficControllerStatus[i].elapsedGreen1 > findSignalGroup1->minGreen)
-                trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
-
-            temporaryPhase = trafficControllerStatus[i].startingPhase2;
-            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
-                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
-
-            if (trafficControllerStatus[i].elapsedGreen2 < findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreen2;
-
-            else if (conflictingPhaseCallStatus && (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen) &&
-                     (trafficControllerStatus[i].elapsedGreenInGmax2 > 0))
-            {
-                if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
-                    trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
-
-                else
-                    trafficControllerStatus[i].elapsedGreen2 = trafficControllerStatus[i].elapsedGreenInGmax2;
-            }
-
-            else if (trafficControllerStatus[i].elapsedGreen2 > findSignalGroup2->minGreen)
-                trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
         }
     }
     validateElapsedGreenTime();

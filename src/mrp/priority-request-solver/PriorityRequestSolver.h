@@ -51,6 +51,7 @@ private:
   int coordinatedPhase2{};
   bool emergencyVehicleStatus{};
   bool signalCoordinationRequestStatus{};
+  bool transitOrTruckRequestStatus{};
   bool optimalSolutionStatus{};
   bool logging{};
   bool consoleOutput{};
@@ -135,6 +136,7 @@ public:
   double getCurrentTime();
   bool findEVInList();
   bool findCoordinationRequestInList();
+  bool findTransitOrTruckRequestInList();
   bool getOptimalSolutionValidationStatus();
   bool checkTrafficSignalTimingPlanStatus();
   bool checkSignalCoordinationTimingPlanStatus();

@@ -509,11 +509,12 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
 
 /*
     - This method manage all the required input data for the GLPK solver.
+    - If there is EV priority request, the method creates an instance of OptimizationModelManager class to create dynamic mod file for EV.
     - This function also calls SolverDataManager class to write the dat dile
 */
 void PriorityRequestSolver::setOptimizationInput()
 {
-    if (emergencyVehicleStatus == true)
+    if (emergencyVehicleStatus)
     {
         OptimizationModelManager optimizationModelManager;
 
@@ -539,26 +540,7 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.generateDatFile(0.0, 0.0, 2, 6); //As a defult early return values are passing as 0 and coordinated phases as 2 and 6
     }
 
-    else if (signalCoordinationRequestStatus == true)
-    {
-        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
-                                            trafficSignalPlan_SignalCoordination, conflictingPedCallList, EmergencyVehicleWeight,
-                                            EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
-                                            DilemmaZoneRequestWeight, CoordinationWeight);
-
-        solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
-        solverDataManager.addAssociatedSignalGroup();
-        solverDataManager.modifyGreenMax(emergencyVehicleStatus);
-        solverDataManager.modifyGreenTimeForConflictingPedCalls();
-        solverDataManager.modifyGreenTimeForCurrentPedCalls();
-        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
-        solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
-        solverDataManager.removedInfeasiblePriorityRequest();
-        solverDataManager.generateDatFile(earlyReturnedValue1, earlyReturnedValue2, coordinatedPhase1, coordinatedPhase2);
-        priorityRequestList = solverDataManager.getPriorityRequestList();
-    }
-
-    else
+    else if (transitOrTruckRequestStatus)
     {
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
                                             trafficSignalPlan, conflictingPedCallList, EmergencyVehicleWeight,
@@ -573,6 +555,25 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
         solverDataManager.generateDatFile(0.0, 0.0, 2, 6);
+    }
+
+    else if (signalCoordinationRequestStatus)
+    {
+        SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
+                                            trafficSignalPlan_SignalCoordination, conflictingPedCallList, EmergencyVehicleWeight,
+                                            EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
+                                            DilemmaZoneRequestWeight, CoordinationWeight);
+
+        solverDataManager.getRequestedSignalGroupFromPriorityRequestList();
+        solverDataManager.addAssociatedSignalGroup();
+        solverDataManager.modifyGreenMax(emergencyVehicleStatus);
+        solverDataManager.modifyGreenTimeForConflictingPedCalls();
+        solverDataManager.modifyGreenTimeForCurrentPedCalls();
+        solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
+        solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
+        // solverDataManager.removedInfeasiblePriorityRequest();
+        solverDataManager.generateDatFile(earlyReturnedValue1, earlyReturnedValue2, coordinatedPhase1, coordinatedPhase2);
+        priorityRequestList = solverDataManager.getPriorityRequestList();
     }
 }
 
@@ -662,11 +663,10 @@ string PriorityRequestSolver::getScheduleforTCI()
 {
     scheduleJsonString.clear();
     findEVInList();
-    findCoordinationRequestInList();
     setOptimizationInput();
     GLPKSolver();
 
-    if (emergencyVehicleStatus == true)
+    if (emergencyVehicleStatus)
     {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, emergencyVehicleStatus);
 
@@ -677,7 +677,17 @@ string PriorityRequestSolver::getScheduleforTCI()
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
 
-    else if (signalCoordinationRequestStatus == true)
+    else if (transitOrTruckRequestStatus)
+    {
+        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
+        scheduleManager.obtainRequiredSignalGroup();
+        scheduleManager.readOptimalSignalPlan();
+        scheduleManager.createEventList();
+        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+        scheduleJsonString = scheduleManager.createScheduleJsonString();
+    }
+    
+    else if (signalCoordinationRequestStatus)
     {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
         scheduleManager.obtainRequiredSignalGroup();
@@ -687,15 +697,7 @@ string PriorityRequestSolver::getScheduleforTCI()
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
 
-    else
-    {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
-        scheduleManager.obtainRequiredSignalGroup();
-        scheduleManager.readOptimalSignalPlan();
-        scheduleManager.createEventList();
-        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
-        scheduleJsonString = scheduleManager.createScheduleJsonString();
-    }
+    
 
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
@@ -879,7 +881,6 @@ string PriorityRequestSolver::getCurrentSignalStatusRequestString()
 */
 void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 {
-    bool coordinationRequestStatus = findCoordinationRequestInList();
     double elapsedTimeInCycle{};
     vector<double> coordinatedPhasesEarlyReturnValue{};
 
@@ -887,14 +888,17 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     loggingData("Received Current Signal Status from TCI");
     loggingData(jsonString);
 
-    if (coordinationRequestStatus)
+    findCoordinationRequestInList();
+    findTransitOrTruckRequestInList();
+
+    if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
     }
 
-    TrafficConrtollerStatusManager trafficConrtollerStatusManager(coordinationRequestStatus, cycleLength, offset,
+    TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
                                                                   coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                   logging, consoleOutput, dummyPhasesList,
                                                                   trafficSignalPlan, trafficSignalPlan_SignalCoordination);
@@ -907,8 +911,8 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         displayConsoleData("Conflicting Ped Call is available!");
         loggingData("Conflicting Ped Call is available!");
     }
-    
-    if (coordinationRequestStatus)
+
+    if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
     {
         coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
         earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0);
@@ -1199,21 +1203,18 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
 */
 bool PriorityRequestSolver::findEVInList()
 {
-    if (priorityRequestList.empty())
-        emergencyVehicleStatus = false;
-    else
-    {
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
-        {
-            if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
-            {
-                emergencyVehicleStatus = true;
-                break;
-            }
+    emergencyVehicleStatus = false;
 
-            else
-                emergencyVehicleStatus = false;
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
+        {
+            emergencyVehicleStatus = true;
+            break;
         }
+
+        else
+            emergencyVehicleStatus = false;
     }
 
     return emergencyVehicleStatus;
@@ -1224,27 +1225,45 @@ bool PriorityRequestSolver::findEVInList()
 */
 bool PriorityRequestSolver::findCoordinationRequestInList()
 {
-    if (priorityRequestList.empty())
-        signalCoordinationRequestStatus = false;
+    signalCoordinationRequestStatus = false;
 
-    else
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
+        if (priorityRequestList[i].vehicleType == SignalCoordinationVehicleType)
         {
-            if (priorityRequestList[i].vehicleType == SignalCoordinationVehicleType)
-            {
-                signalCoordinationRequestStatus = true;
-                break;
-            }
-
-            else
-                signalCoordinationRequestStatus = false;
+            signalCoordinationRequestStatus = true;
+            break;
         }
+
+        else
+            signalCoordinationRequestStatus = false;
     }
 
     return signalCoordinationRequestStatus;
 }
 
+/*
+    - This method checks whether transit or truck priority request is in the list or not
+*/
+bool PriorityRequestSolver::findTransitOrTruckRequestInList()
+{
+    transitOrTruckRequestStatus = false;
+
+    for (size_t i = 0; i < priorityRequestList.size(); i++)
+    {
+        if ((priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus)) ||
+            (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4)))
+        {
+            transitOrTruckRequestStatus = true;
+            break;
+        }
+
+        else
+            transitOrTruckRequestStatus = false;
+    }
+
+    return transitOrTruckRequestStatus;
+}
 bool PriorityRequestSolver::getOptimalSolutionValidationStatus()
 {
     if (optimalSolutionStatus)

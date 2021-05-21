@@ -47,6 +47,7 @@ private:
   bool logging{};
   bool consoleOutput{};
   bool coordinationRequestStatus{};
+  bool transitOrTruckRequestStatus{};
   bool conflictingPhaseCallStatus{false};
   bool conflictingPedCallStatus{false};
   bool currentPedCallStatus{false};
@@ -63,13 +64,13 @@ private:
   vector<int> pedCallList{};
   vector<int> phaseCallList{};
   vector<int> dummyPhasesList{};
-  vector<double> coordinatedPhasesEarlyReturnValue{};
+  vector<double> coordinatedPhasesEarlyReturnValue{0.0, 0.0};
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};
 
 public:
-  TrafficConrtollerStatusManager(bool coordination_Request_Status, double cycle_Length, double offset_Value,
+  TrafficConrtollerStatusManager(bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value,
                                  double coordination_StartTime, double elapsed_Time_In_Cycle, int coordinated_Phase1, int coordinated_Phase2,
                                  bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                  vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan,
