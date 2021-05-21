@@ -64,7 +64,7 @@ private:
   vector<int> pedCallList{};
   vector<int> phaseCallList{};
   vector<int> dummyPhasesList{};
-  vector<double> coordinatedPhasesEarlyReturnValue{0.0, 0.0};
+  vector<double> coordinatedPhasesEarlyReturnValue{};
   vector<TrafficControllerData::TrafficConrtollerStatus> trafficControllerStatus{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan_SignalCoordination{};

@@ -917,7 +917,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
         earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0);
         earlyReturnedValue2 = coordinatedPhasesEarlyReturnValue.at(1);
-        loggingData("Early return values are " + std::to_string(earlyReturnedValue1) + std::to_string(earlyReturnedValue2));
+        loggingData("Early return values are " + std::to_string(earlyReturnedValue1) + " and " + std::to_string(earlyReturnedValue2));
     }
 }
 
