@@ -738,6 +738,7 @@ vector<int> TrafficConrtollerStatusManager::getConflictingPedCallList()
 */
 void TrafficConrtollerStatusManager::setCoordinationPermissivePeriod()
 {
+    int temporaryPhase{};
     double permissivePeriodRing1{};
     double permissivePeriodRing2{};
     vector<double> nonCoordinatedPhasesDataRing1{};
@@ -747,9 +748,11 @@ void TrafficConrtollerStatusManager::setCoordinationPermissivePeriod()
 
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
-        if (trafficSignalPlan[i].phaseNumber != coordinatedPhase1 && trafficSignalPlan[i].phaseNumber <= LastPhaseOfRing1)
+        temporaryPhase = trafficSignalPlan[i].phaseNumber;
+        
+        if (temporaryPhase != coordinatedPhase1 && temporaryPhase <= LastPhaseOfRing1)
         {
-            it = std::find(phaseCallList.begin(), phaseCallList.end(), trafficSignalPlan[i].phaseNumber);
+            it = std::find(phaseCallList.begin(), phaseCallList.end(), temporaryPhase);
             if (it != phaseCallList.end())
             {
                 nonCoordinatedPhasesDataRing1.push_back(trafficSignalPlan[i].minGreen);
@@ -758,9 +761,9 @@ void TrafficConrtollerStatusManager::setCoordinationPermissivePeriod()
             }
         }
 
-        else if (trafficSignalPlan[i].phaseNumber != coordinatedPhase2 && trafficSignalPlan[i].phaseNumber <= LastPhaseOfRing2)
+        else if (temporaryPhase != coordinatedPhase2 && temporaryPhase > LastPhaseOfRing1 && temporaryPhase <= LastPhaseOfRing2)
         {
-            it = std::find(phaseCallList.begin(), phaseCallList.end(), trafficSignalPlan[i].phaseNumber);
+            it = std::find(phaseCallList.begin(), phaseCallList.end(), temporaryPhase);
             if (it != phaseCallList.end())
             {
                 nonCoordinatedPhasesDataRing2.push_back(trafficSignalPlan[i].minGreen);
