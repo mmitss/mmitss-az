@@ -305,8 +305,9 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 //compute the early returned value and upper limit of green time
                 earlyReturnedValue1 = trafficControllerStatus[i].elapsedGreen1 - elapsedTimeInCycle;
 
-                if((cycleLength - elapsedTimeInCycle) <= permissivePeriod && trafficControllerStatus[i].elapsedGreen1 < elapsedTimeInCycle)
-                    earlyReturnedValue1 = cycleLength + trafficControllerStatus[i].elapsedGreen1 - elapsedTimeInCycle;           
+                if (((cycleLength - elapsedTimeInCycle) <= permissivePeriod || (cycleLength - elapsedTimeInCycle) <= PRS_Timed_Out_Value) &&
+                    trafficControllerStatus[i].elapsedGreen1 < elapsedTimeInCycle)
+                    earlyReturnedValue1 = cycleLength + trafficControllerStatus[i].elapsedGreen1 - elapsedTimeInCycle;
 
                 upperLimitOfGreenTimeForCoordinatedPhase = findSignalGroup1->maxGreen;
 
@@ -411,8 +412,9 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 //compute the early returned value and upper limit of green time
                 earlyReturnedValue2 = trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;
 
-                if((cycleLength - elapsedTimeInCycle) <= permissivePeriod && trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle)
-                    earlyReturnedValue2 = cycleLength + trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;   
+                if (((cycleLength - elapsedTimeInCycle) <= permissivePeriod || (cycleLength - elapsedTimeInCycle) <= PRS_Timed_Out_Value) &&
+                    trafficControllerStatus[i].elapsedGreen2 < elapsedTimeInCycle)
+                    earlyReturnedValue2 = cycleLength + trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;
 
                 upperLimitOfGreenTimeForCoordinatedPhase = offset + findSignalGroup2->maxGreen;
 
@@ -749,7 +751,7 @@ void TrafficConrtollerStatusManager::setCoordinationPermissivePeriod()
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
     {
         temporaryPhase = trafficSignalPlan[i].phaseNumber;
-        
+
         if (temporaryPhase != coordinatedPhase1 && temporaryPhase <= LastPhaseOfRing1)
         {
             it = std::find(phaseCallList.begin(), phaseCallList.end(), temporaryPhase);
