@@ -894,8 +894,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
     {
         double currentTimeOfToday = getCurrentTime();
-        elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime), cycleLength);
-        
+        elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime - offset), cycleLength);
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
     }
 
