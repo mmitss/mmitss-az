@@ -686,7 +686,7 @@ string PriorityRequestSolver::getScheduleforTCI()
         optimalSolutionStatus = scheduleManager.validateOptimalSolution();
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
-    
+
     else if (signalCoordinationRequestStatus)
     {
         ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
@@ -696,8 +696,6 @@ string PriorityRequestSolver::getScheduleforTCI()
         optimalSolutionStatus = scheduleManager.validateOptimalSolution();
         scheduleJsonString = scheduleManager.createScheduleJsonString();
     }
-
-    
 
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
@@ -891,33 +889,47 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     findCoordinationRequestInList();
     findTransitOrTruckRequestInList();
 
-    if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
+    if (transitOrTruckRequestStatus)
+    {
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+                                                                      coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
+                                                                      logging, consoleOutput, dummyPhasesList,
+                                                                      trafficSignalPlan);
+
+        trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
+
+        if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
+        {
+            conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
+            displayConsoleData("Conflicting Ped Call is available!");
+            loggingData("Conflicting Ped Call is available!");
+        }
+    }
+
+    else if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime - offset), cycleLength);
+
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
-    }
 
-    TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
-                                                                  coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
-                                                                  logging, consoleOutput, dummyPhasesList,
-                                                                  trafficSignalPlan, trafficSignalPlan_SignalCoordination);
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+                                                                      coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
+                                                                      logging, consoleOutput, dummyPhasesList,
+                                                                      trafficSignalPlan_SignalCoordination);
 
-    trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
+        trafficControllerStatus = trafficConrtollerStatusManager.getTrafficControllerStatus(jsonString);
 
-    if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
-    {
-        conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
-        displayConsoleData("Conflicting Ped Call is available!");
-        loggingData("Conflicting Ped Call is available!");
-    }
+        if (trafficConrtollerStatusManager.getConflictingPedCallStatus())
+        {
+            conflictingPedCallList = trafficConrtollerStatusManager.getConflictingPedCallList();
+            displayConsoleData("Conflicting Ped Call is available!");
+            loggingData("Conflicting Ped Call is available!");
+        }
 
-    if (!transitOrTruckRequestStatus && signalCoordinationRequestStatus)
-    {
         coordinatedPhasesEarlyReturnValue = trafficConrtollerStatusManager.getEarlyReturnValue();
         earlyReturnedValue1 = coordinatedPhasesEarlyReturnValue.at(0);
         earlyReturnedValue2 = coordinatedPhasesEarlyReturnValue.at(1);
-        loggingData("Early return values are " + std::to_string(earlyReturnedValue1) + " and " + std::to_string(earlyReturnedValue2));
     }
 }
 
