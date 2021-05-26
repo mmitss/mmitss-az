@@ -339,39 +339,25 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
                 /*
-                    - If there is conflicting phase call (maxttimer starts) and early return value is positive,
+                    - If there is conflicting phase call (maxttimer starts) and early return value is non negative,
                         - if elapsedTimeInCycle greater than or equal the upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmax 
                         - if elapsedGreenInGmax is less than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmin
                         - if elapsedGreenInGmax is greater than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as remaining time to reach the upperLimitOfGreenTimeForCoordinatedPhase based on the elapsedTimeInCycle
                 */
-                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue1 > 0 && trafficControllerStatus[i].elapsedGreenInGmax1 > 0)
+                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue1 >= 0 && trafficControllerStatus[i].elapsedGreenInGmax1 > 0)
                 {
+                    
                     if (elapsedTimeInCycle >= upperLimitOfGreenTimeForCoordinatedPhase)
                         trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+                    // else if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
+                    //     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
+                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen)
                         trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
-                }
 
-                /*
-                    - If there is conflicting phase call (maxttimer starts) and early return value is zero (cordinated phase start timing at the offset point),
-                        - if elapsedTimeInCycle greater than or equal the upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmax
-                        - if elapsedGreenInGmax is less than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmin
-                        - if elapsedGreenInGmax is greater than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as remaining time to reach the upperLimitOfGreenTimeForCoordinatedPhase based on the elapsedTimeInCycle
-                */
-                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue1 == 0 && trafficControllerStatus[i].elapsedGreenInGmax1 > 0)
-                {
-                    if (elapsedTimeInCycle >= upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen;
-
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
-                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
-
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
+                    if (elapsedTimeInCycle <= upperLimitOfGreenTimeForCoordinatedPhase)
+                        earlyReturnedValue1 = 0.0;
                 }
 
                 /*
@@ -383,10 +369,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 */
                 else if (conflictingPhaseCallStatus && earlyReturnedValue1 < 0 && trafficControllerStatus[i].elapsedGreenInGmax1 > 0)
                 {
-                    if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
-                        trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
+                    // if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->minGreen)
+                    //     trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->minGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
+                    if (trafficControllerStatus[i].elapsedGreenInGmax1 >= findSignalGroup1->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
                         trafficControllerStatus[i].elapsedGreen1 = findSignalGroup1->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
 
                     else if (trafficControllerStatus[i].elapsedGreenInGmax1 < findSignalGroup1->maxGreen &&
@@ -442,34 +428,19 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                         - if elapsedGreenInGmax is less than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmin
                         - if elapsedGreenInGmax is greater than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as remaining time to reach the upperLimitOfGreenTimeForCoordinatedPhase based on the elapsedTimeInCycle
                 */
-                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue2 > 0 && trafficControllerStatus[i].elapsedGreenInGmax2 > 0)
+                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue2 >= 0 && trafficControllerStatus[i].elapsedGreenInGmax2 > 0)
                 {
                     if (elapsedTimeInCycle >= upperLimitOfGreenTimeForCoordinatedPhase)
                         trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+                    // else if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
+                    //     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
+                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen)
                         trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
-                }
 
-                /*
-                    - If there is conflicting phase call (maxttimer starts) and early return value is zero (cordinated phase start timing at the offset point),
-                        - if elapsedTimeInCycle greater than or equal the upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmax
-                        - if elapsedGreenInGmax is less than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as gmin
-                        - if elapsedGreenInGmax is greater than gmin and elapsedTimeInCycle is less than upperLimitOfGreenTimeForCoordinatedPhase, set the elpased green as remaining time to reach the upperLimitOfGreenTimeForCoordinatedPhase based on the elapsedTimeInCycle
-                */
-                else if (coordinationConflictingPhaseCallStatus && earlyReturnedValue2 == 0 && trafficControllerStatus[i].elapsedGreenInGmax2 > 0)
-                {
-                    if (elapsedTimeInCycle >= upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen;
-
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
-                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
-
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
-                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
+                    if (elapsedTimeInCycle <= upperLimitOfGreenTimeForCoordinatedPhase)
+                        earlyReturnedValue2 = 0.0;
                 }
 
                 /*
@@ -481,10 +452,10 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                 */
                 else if (conflictingPhaseCallStatus && earlyReturnedValue2 < 0 && trafficControllerStatus[i].elapsedGreenInGmax2 > 0)
                 {
-                    if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
-                        trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
+                    // if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->minGreen)
+                    //     trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->minGreen;
 
-                    else if (trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
+                    if (trafficControllerStatus[i].elapsedGreenInGmax2 >= findSignalGroup2->minGreen && elapsedTimeInCycle < upperLimitOfGreenTimeForCoordinatedPhase)
                         trafficControllerStatus[i].elapsedGreen2 = findSignalGroup2->maxGreen - (upperLimitOfGreenTimeForCoordinatedPhase - elapsedTimeInCycle);
 
                     else if (trafficControllerStatus[i].elapsedGreenInGmax2 < findSignalGroup2->maxGreen &&
