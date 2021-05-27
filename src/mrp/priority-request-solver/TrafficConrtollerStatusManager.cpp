@@ -293,12 +293,12 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
 
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {
-            temporaryPhase = trafficControllerStatus[i].startingPhase1;
+            temporaryPhase = coordinatedPhase1;
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup1 =
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-            temporaryPhase = trafficControllerStatus[i].startingPhase2;
+            temporaryPhase = coordinatedPhase2;
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup2 =
                 std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                              [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
