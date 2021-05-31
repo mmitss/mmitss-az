@@ -400,8 +400,6 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
                     trafficControllerStatus[i].elapsedGreen2 < elapsedTimeInCycle)
                     earlyReturnedValue2 = cycleLength + trafficControllerStatus[i].elapsedGreen2 - elapsedTimeInCycle;
 
-                upperLimitOfGreenTimeForCoordinatedPhase = findSignalGroup2->maxGreen;
-
                 if (earlyReturnedValue2 >= cycleLength / 2) //Added as a safety
                     earlyReturnedValue2 = 0.0;
 

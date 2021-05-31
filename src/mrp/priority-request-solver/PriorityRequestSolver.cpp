@@ -910,7 +910,6 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     {
         double currentTimeOfToday = getCurrentTime();
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime - offset), cycleLength);
-
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
 
         TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
