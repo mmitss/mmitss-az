@@ -51,6 +51,7 @@ private:
   int coordinatedPhase2{};
   bool emergencyVehicleStatus{};
   bool signalCoordinationRequestStatus{};
+  bool transitOrTruckRequestStatus{};
   bool optimalSolutionStatus{};
   bool logging{};
   bool consoleOutput{};
@@ -65,6 +66,8 @@ private:
   double offset{};
   double coordinationStartTime{};
   double priorityWeightsCheckedTime{};
+  double earlyReturnedValue1{0.0};
+  double earlyReturnedValue2{0.0};
   string scheduleJsonString{};
   string logFileName{};
   ofstream logFile;
@@ -133,6 +136,7 @@ public:
   double getCurrentTime();
   bool findEVInList();
   bool findCoordinationRequestInList();
+  bool findTransitOrTruckRequestInList();
   bool getOptimalSolutionValidationStatus();
   bool checkTrafficSignalTimingPlanStatus();
   bool checkSignalCoordinationTimingPlanStatus();
