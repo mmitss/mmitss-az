@@ -43,7 +43,6 @@ using namespace MsgEnum;
 
 PriorityRequestGenerator::PriorityRequestGenerator()
 {
-	readConfigFile();
 	setVehicleType();
 }
 
