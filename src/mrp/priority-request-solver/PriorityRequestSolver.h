@@ -134,9 +134,9 @@ public:
   int getMessageType(string jsonString);
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   double getCurrentTime();
-  bool findEVInList();
-  bool findCoordinationRequestInList();
+  bool findEmergencyVehicleRequestInList();
   bool findTransitOrTruckRequestInList();
+  bool findCoordinationRequestInList();
   bool getOptimalSolutionValidationStatus();
   bool checkTrafficSignalTimingPlanStatus();
   bool checkSignalCoordinationTimingPlanStatus();
