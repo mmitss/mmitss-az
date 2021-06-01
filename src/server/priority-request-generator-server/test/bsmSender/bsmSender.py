@@ -15,7 +15,7 @@ port = config["PortNumber"]["HostBsmDecoder"]
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hostIp,port))
 
-priorityRequestGeneratorPort = config["PortNumber"]["PriorityRequestGenerator"]
+priorityRequestGeneratorPort = config["PortNumber"]["PriorityRequestGeneratorServer"]
 communicationInfo = (hostIp, priorityRequestGeneratorPort)
 
 
