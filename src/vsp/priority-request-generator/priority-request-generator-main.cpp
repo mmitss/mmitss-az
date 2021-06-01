@@ -48,8 +48,6 @@ int main()
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
-
-    PRG.readConfigFile();
     
     while (true)
     {
