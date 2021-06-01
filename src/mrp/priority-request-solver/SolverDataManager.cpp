@@ -274,7 +274,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile(double earlyReturnedValue1, double earlyReturnedValue2, int coordinatedPhase1, int coordinatedPhase2)
+void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earlyReturnedValue1, double earlyReturnedValue2, int coordinatedPhase1, int coordinatedPhase2)
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -299,11 +299,14 @@ void SolverDataManager::generateDatFile(double earlyReturnedValue1, double early
         fs << "param Grn2 :=" << trafficControllerStatus[i].elapsedGreen2 << ";" << endl;
     }
 
-    fs << "param EarlyReturnValue1:=" << earlyReturnedValue1 << ";" << endl;
-    fs << "param EarlyReturnValue2:=" << earlyReturnedValue2 << ";" << endl;
-    fs << "param CoordinatedPhase1:=" << coordinatedPhase1 << ";" << endl;
-    fs << "param CoordinatedPhase2:=" << coordinatedPhase2 << ";" << endl;
-
+    if (!emergencyVehicleStatus)
+    {
+        fs << "param EarlyReturnValue1:=" << earlyReturnedValue1 << ";" << endl;
+        fs << "param EarlyReturnValue2:=" << earlyReturnedValue2 << ";" << endl;
+        fs << "param CoordinatedPhase1:=" << coordinatedPhase1 << ";" << endl;
+        fs << "param CoordinatedPhase2:=" << coordinatedPhase2 << ";" << endl;
+    }
+    
     fs << "param y          \t:=";
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].yellowChange;
