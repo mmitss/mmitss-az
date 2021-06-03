@@ -28,16 +28,17 @@ import pysftp
 
 # Import local modules
 from V2XDataTransfer import V2XDataTransfer
+from Logger import Logger
 
 class PushToServer(V2XDataTransfer):
     """
     provides method for transfering the data from the intersection to the server.
     This class is intended to be deployed on intersections.
     """
-    def __init__(self, server:dict, intersectionList:str):
+    def __init__(self, server:dict, intersectionList:str, logger:Logger):
         
         # Initialize the parent class
-        super().__init__(server, intersectionList)
+        super().__init__(server, intersectionList, logger)
         
         # Store the configuration information
         self.name = self.intersectionList[0]["name"]
@@ -74,6 +75,7 @@ class PushToServer(V2XDataTransfer):
         try:
             # Establish an SFTP connection
             with pysftp.Connection(self.serverIpAddress, username=self.serverUsername, password=self.serverPassword, cnopts=self.cnopts) as sftp:
+                self.logger.write("Logged in to server. IP address:" + self.serverIpAddress)
                 
                 # For each data element:
                 for dataElement in self.dataElements:
@@ -86,6 +88,7 @@ class PushToServer(V2XDataTransfer):
                         
                         # Create the directory on the local machine (alllows recursion)
                         sftp.makedirs(dataElementDirectory)
+                        self.logger.write("Created remote path " + dataElementDirectory)
 
         except Exception as e:
             # If something is unsuccessful, print the message to the console

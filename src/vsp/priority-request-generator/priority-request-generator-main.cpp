@@ -15,11 +15,8 @@
 
 #include "PriorityRequestGenerator.h"
 #include "PriorityRequestGeneratorStatus.h"
-#include <iostream>
-#include <fstream>
 #include <UdpSocket.h>
-#include "msgEnum.h"
-#include "json/json.h"
+
 
 int main()
 {
@@ -47,15 +44,11 @@ int main()
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
         
-    
     char receiveBuffer[40960];
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
-    double currentTime{};
-    PRG.getLoggingStatus();
-    PRG.setVehicleType();
-
+    
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));
@@ -73,7 +66,7 @@ int main()
             // Formulate srm JSON string, if requires and send it over the socket.
             if (PRG.checkPriorityRequestSendingRequirementStatus())
             {
-                srmJsonString = PRG.createSRMJsonObject(basicVehicle, signalRequest, mapManager);
+                srmJsonString = PRG.createSRMJsonString(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
             }
@@ -84,6 +77,7 @@ int main()
             // Formulate PRGStatus JSON string and send it to HMI-Controller
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
+            PRG.loggingData(prgStatusJsonString);
         }
 
         //The received MAP will be either added or updated in the availableMapList.
@@ -98,8 +92,6 @@ int main()
         {
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
-            currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-            cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] SSM is received " << endl;
             signalStatus.reset();
         }
     }

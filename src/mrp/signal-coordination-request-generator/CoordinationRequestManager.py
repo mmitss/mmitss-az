@@ -26,24 +26,30 @@ The methods available from this class are the following:
 - updateETAInCoordinationRequestTable(): Method to update ETA and coordination split for each coordination priority request
 - deleteTimeOutRequestFromCoordinationRequestTable(): Method to delete the coordination priority requestfor whom coordination split value is zero
 - clearTimedOutCoordinationPlan(): Method to clear coordination parameters for old coordination plan
+- getCoordinationClearRequestDictionary(): Method to get the Coordination clear requests if coordination request is empty or active coordination plan gets timed-out 
 - getCoordinationPriorityRequestDictionary(): Method to obtain json string for the coordination priority requests after deleting the old requests.
 - getCoordinationParametersDictionary(dictionary): Method to load the coordination prarameters dictionary
 - getCurrentTime(): Method to obtain the current time of today
+- getMsgCount(): Method to get the msgCount
 ***************************************************************************************
 """
 import datetime
 import time
 import json
 from CoordinatedPhase import CoordinatedPhase
+from Logger import Logger
 
 HOURSINADAY = 24.0
 MINUTESINAHOUR = 60.0
 MinuteToSecondCoversion = 60.0
 HourToSecondConversion =  3600.0
 SECONDTOMILISECOND = 1000.0
+MaxMsgCount = 127
+MinMsgCount = 1
 
 class CoordinationRequestManager:
-    def __init__(self, config):
+    def __init__(self, config, logger:Logger):
+        self.logger = logger
         self.config = config
         self.SRM_GAPOUT_TIME = 2.0
         self.requestTimedOutValue = self.config['SRMTimedOutTime'] - self.SRM_GAPOUT_TIME
@@ -55,10 +61,14 @@ class CoordinationRequestManager:
         self.priorityRequest = 1
         self.requestUpdate = 2
         self.coordinationPriorityRequestDictionary = {}
+        self.coordinationClearRequestDictionary = {}
         self.ETA_Update_Time = 1.0
         self.Minimum_ETA = 0.0
         self.Request_Delete_Time = 0.0
         self.requestSentTime = time.time()
+        self.msgCount = 0
+        self.ETAOfFirstCycleCoordinatedPhase = 0.0
+        self.ETAOfSecondCycleCoordinatedPhase = 0.0
 
     def checkCoordinationRequestSendingRequirement(self):
         """
@@ -72,14 +82,16 @@ class CoordinationRequestManager:
             currentTime = self.getCurrentTime()
             coordinationStartTime = self.coordinationParametersDictionary['CoordinationStartTime_Hour'] * float(HourToSecondConversion) + self.coordinationParametersDictionary['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
             cycleLength = self.coordinationParametersDictionary['CycleLength']
+            offset = self.coordinationParametersDictionary['Offset']
 
-            remainderTime = (currentTime - coordinationStartTime) % cycleLength
-
-            if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and (coordinationStartTime - currentTime <= cycleLength):
+            elapsedTimeInCycle = (currentTime - coordinationStartTime) % cycleLength
+            if not bool(self.coordinationPriorityRequestDictionary) and (coordinationStartTime - currentTime >= 0) and ((coordinationStartTime - currentTime) <= (cycleLength - offset)):
                 sendRequest = True
+                self.ETAOfFirstCycleCoordinatedPhase = coordinationStartTime - currentTime
 
-            elif (currentTime > coordinationStartTime) and cycleLength - remainderTime >= 0 and cycleLength - remainderTime <= 1.0:
+            elif (currentTime > coordinationStartTime) and (offset - elapsedTimeInCycle) >= 0 and (offset - elapsedTimeInCycle) <= 1.0:
                 sendRequest = True
+                self.ETAOfFirstCycleCoordinatedPhase = offset - elapsedTimeInCycle
 
             else:
                 sendRequest = False
@@ -95,11 +107,10 @@ class CoordinationRequestManager:
         coordinatedPhase1 = self.coordinationParametersDictionary['CoordinatedPhase1']
         coordinatedPhase2 = self.coordinationParametersDictionary['CoordinatedPhase2']
         coordinatedPhases = [coordinatedPhase1, coordinatedPhase2, coordinatedPhase1, coordinatedPhase2]
-        ETAOfFirstCycleCoordinatedPhase = self.coordinationParametersDictionary['Offset']
         cycleLength = self.coordinationParametersDictionary['CycleLength']
-        ETAOfSecondCycleCoordinatedPhase = ETAOfFirstCycleCoordinatedPhase + cycleLength
-        coordinatedPhaseETA = [ETAOfFirstCycleCoordinatedPhase, ETAOfFirstCycleCoordinatedPhase,
-                               ETAOfSecondCycleCoordinatedPhase, ETAOfSecondCycleCoordinatedPhase]
+        self.ETAOfSecondCycleCoordinatedPhase = self.ETAOfFirstCycleCoordinatedPhase + cycleLength
+        coordinatedPhaseETA = [self.ETAOfFirstCycleCoordinatedPhase, self.ETAOfFirstCycleCoordinatedPhase,
+                               self.ETAOfSecondCycleCoordinatedPhase, self.ETAOfSecondCycleCoordinatedPhase]
         coordinationSplit = self.coordinationParametersDictionary['CoordinationSplit']
                 
         for i in range(len(coordinatedPhases)):
@@ -121,14 +132,16 @@ class CoordinationRequestManager:
             
         self.coordinationPriorityRequestDictionary = {
             "MsgType": "CoordinationRequest",
+            "msgCount": self.getMsgCount(),
             "noOfCoordinationRequest": len(coordinatedPhases),
             "minuteOfYear": self.getMinuteOfYear(),
             "msOfMinute": self.getMsOfMinute(),
             "CoordinationRequestList":{"requestorInfo": coordinationRequestDict}
         }
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Virtual Coordination Request at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
+
         self.requestSentTime = time.time()
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
+        self.logger.looging(coordinationPriorityRequestJsonString)
 
         return coordinationPriorityRequestJsonString
 
@@ -153,12 +166,13 @@ class CoordinationRequestManager:
         """
         self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
         self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+        self.coordinationPriorityRequestDictionary['msgCount'] = self.getMsgCount()
         self.updateETAInCoordinationRequestTable()
         self.deleteTimeOutRequestFromCoordinationRequestTable        
         self.requestSentTime = time.time()
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Updated Coordination Request to avoid PRS timed-out at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-
+        self.logger.looging(coordinationPriorityRequestJsonString)
+        
         return coordinationPriorityRequestJsonString
 
     def updateETAInCoordinationRequestTable(self):
@@ -185,7 +199,6 @@ class CoordinationRequestManager:
                         self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] = self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] - (currentTime_UTC - temporaryRequestUpdateTime)
                     
                     self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
-                    # print("\n[" + str(datetime.datetime.now()) + "] " + "Update ETA in the Coordination Request List at time " + str(time.time()))
 
     def deleteTimeOutRequestFromCoordinationRequestTable(self):
         """
@@ -215,6 +228,7 @@ class CoordinationRequestManager:
         if noOfCoordinationRequest > 0:
             self.coordinationPriorityRequestDictionary['minuteOfYear'] = self.getMinuteOfYear()
             self.coordinationPriorityRequestDictionary['msOfMinute'] = self.getMsOfMinute()
+            self.coordinationPriorityRequestDictionary['msgCount'] = self.getMsgCount()
             for i in range(noOfCoordinationRequest):
                 self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['priorityRequestType'] = self.requestUpdate
                 self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['requestUpdateTime'] = time.time()
@@ -224,8 +238,7 @@ class CoordinationRequestManager:
             self.coordinationPriorityRequestDictionary = {}
 
         coordinationPriorityRequestJsonString = json.dumps(self.coordinationPriorityRequestDictionary)
-        print("\n[" + str(datetime.datetime.now()) + "] " + "Coordination request List after deletion process at time " + str(time.time())+ " is following: \n", self.coordinationPriorityRequestDictionary)
-
+                
         return coordinationPriorityRequestJsonString
     
     def clearTimedOutCoordinationPlan(self):
@@ -234,7 +247,21 @@ class CoordinationRequestManager:
         """
         self.coordinationParametersDictionary.clear()
         self.coordinationPriorityRequestDictionary.clear()
-
+    
+    def getCoordinationClearRequestDictionary(self):
+        """
+        Method to get the Coordination clear requests if coordination request is empty or coordination plan gets timed-out 
+        """
+        self.coordinationClearRequestDictionary = {
+            "MsgType": "CoordinationRequest",
+            "msgCount": self.getMsgCount(),
+            "noOfCoordinationRequest": 0
+            }
+        coordinationClearRequestJsonString = json.dumps(self.coordinationClearRequestDictionary)
+        self.logger.looging(coordinationClearRequestJsonString)
+        
+        return coordinationClearRequestJsonString
+    
     def getCoordinationParametersDictionary(self, dictionary):
         """
         Method to load the coordination prarameters dictionary
@@ -273,3 +300,14 @@ class CoordinationRequestManager:
         msOfMinute = currentSecond * float(SECONDTOMILISECOND)
 
         return msOfMinute
+    
+    def getMsgCount(self):
+        """
+        Method to get the msgCount
+        """
+        if self.msgCount <  MaxMsgCount:
+            self.msgCount += 1
+        
+        else: self.msgCount = MinMsgCount
+    
+        return self.msgCount

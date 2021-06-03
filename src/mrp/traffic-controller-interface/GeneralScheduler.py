@@ -4,10 +4,11 @@ from Scheduler import Scheduler
 from apscheduler.triggers import interval
 from apscheduler.triggers import date
 from SignalController import SignalController
+from Logger import Logger
 
 class GeneralScheduler(Scheduler):
-    def __init__(self, signalController:SignalController):
-        super().__init__(signalController)
+    def __init__(self, signalController:SignalController, logger:Logger):
+        super().__init__(signalController, logger)
         
         self.scheduleTimingPlanUpdate(self.signalController.timingPlanUpdateInterval_sec)
 

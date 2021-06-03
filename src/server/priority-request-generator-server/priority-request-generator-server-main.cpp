@@ -12,7 +12,6 @@
   Revision History:
   1. This script is the demonstration of Prioririty Request Generator Server API.
 */
-#include <fstream>
 #include "PriorityRequestGeneratorServer.h"
 #include <UdpSocket.h>
 
@@ -43,7 +42,7 @@ int main()
 
     char receiveBuffer[40960];
     int msgType{};
-    double currentTime{};
+    double timeStamp{};
     string srmJsonString{};
     string prgStatusJsonString{};
     bool timedOutOccur{};
@@ -71,8 +70,9 @@ int main()
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
                     priorityRequestGeneratorServerSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), srmJsonString);
-                    currentTime = static_cast<double>(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
-                    cout << "[" << currentTime << "] PRGServer sent SRM to MsgDistributor" << endl;
+                    timeStamp = getPosixTimestamp();
+                    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] PRGServer sent SRM to MsgDistributor" << endl;
+                    cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "]" << srmJsonString << endl;
                 }
                 // Delete the timed-out vehicle information from the list, if requires
                 priorityRequestGeneratorServer.deleteTimedOutVehicleInformationFromPRGServerList();

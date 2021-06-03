@@ -35,7 +35,7 @@ class Snmp:
     
     def __init__(self):
         """
-        establishes a socket for interaction with map-engine.
+        establishes a socket for interaction with snmp-engine.
 
         The information required for establishing the socket is extracted from the 
         configuration file.

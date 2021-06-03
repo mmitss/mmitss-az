@@ -11,7 +11,7 @@ The PRG-Server can receive BSMs from connected vehicle. It can either create a n
 The PRG-Server manages (add, update, delete) the recived Map message for each available connected vehicles in the list. It also manages the active request table (ART) for all the connected vehicles.
 
 ## Console output and logging
-The PRG-Server does not generate any log files. The console output provides the following important information: 
+The PRG-Server does not generate any log files.  It is expensive process to  display output in the console. Therefore, displaying console output are turned off by default. It can be turned on for debugging or analyzing purpose. Displaying console output can be turned on by setting the variable "ConsoleOutput" as true (instead of false) in the 'mmitss-phase3-master-config.json' configuration file.The console output provides the following important information: 
 - The cause of sending SRM and SRM sending status
 - SSM received status
 

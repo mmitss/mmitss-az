@@ -14,10 +14,8 @@
 */
 
 #include <UdpSocket.h>
-#include <fstream>
 #include "PriorityRequestSolver.h"
 #include "SolverDataManager.h"
-#include <json/json.h>
 
 int main()
 {
@@ -46,8 +44,8 @@ int main()
     int msgType{};
     string tciJsonString{};
 
-    priorityRequestSolver.logging();
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
+    // priorityRequestSolver.terminateProgram();
 
     while (true)
     {
@@ -63,10 +61,10 @@ int main()
             - If clear request message is received from the PRS, a clear request schedule will be formulated and send to the TCI.
         */
         if (msgType == static_cast<int>(msgType::signalPlan))
-            priorityRequestSolver.getCurrentSignalTimingPlan(receivedJsonString);
+            priorityRequestSolver.setCurrentSignalTimingPlan(receivedJsonString);
 
         else if (msgType == static_cast<int>(msgType::splitData))
-            priorityRequestSolver.getSignalCoordinationTimingPlan(receivedJsonString);
+            priorityRequestSolver.setSignalCoordinationTimingPlan(receivedJsonString);
 
         else if (msgType == static_cast<int>(msgType::priorityRequest))
         {
@@ -84,7 +82,7 @@ int main()
                     std::string receivedCoordinationPlanString(receivedCoordinationPlanBuffer);
 
                     if (priorityRequestSolver.getMessageType(receivedCoordinationPlanString) == static_cast<int>(msgType::splitData))
-                        priorityRequestSolver.getSignalCoordinationTimingPlan(receivedCoordinationPlanString);
+                        priorityRequestSolver.setSignalCoordinationTimingPlan(receivedCoordinationPlanString);
                 }
 
                 /*
@@ -107,9 +105,6 @@ int main()
                 if (priorityRequestSolver.getOptimalSolutionValidationStatus())
                     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
 
-                // If requires (logging is "True" in the config file), received priority requests list, dat file, OptimizationResults.txt file, optimal schedule will be written in the log file.
-                priorityRequestSolver.loggingOptimizationData(receivedJsonString, receivedSignalStatusString, tciJsonString);
-
                 //If requires, check for the priority weights update from the config file
                 if (priorityRequestSolver.checkUpdatesForPriorityWeights())
                     priorityRequestSolver.getPriorityWeights();
@@ -123,9 +118,6 @@ int main()
         {
             tciJsonString = priorityRequestSolver.getClearCommandScheduleforTCI();
             priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
-
-            // If requires (logging is "True" in the config file), clear request message and schedule will be written in the log file.
-            priorityRequestSolver.loggingClearRequestData(tciJsonString);
         }
     }
 

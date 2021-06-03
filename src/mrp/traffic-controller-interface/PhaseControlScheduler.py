@@ -46,15 +46,17 @@ from apscheduler.triggers import date
 import Command
 from SignalController import SignalController
 from Scheduler import Scheduler
+from Logger import Logger
+from ScheduleSpatTranslator import ScheduleSpatTranslator
 
 class PhaseControlScheduler(Scheduler):
 
-    def __init__(self, signalController:SignalController):
+    def __init__(self, signalController:SignalController, logger:Logger):
         """
         extracts NTCIP_BackupTime, starts the background scheduler, and registers a call 
         to stopBackgroundScheduler() at exit.
         """
-        super().__init__(signalController)      
+        super().__init__(signalController, logger)      
         self.scheduleReceiptTime = 0
 
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
@@ -64,6 +66,7 @@ class PhaseControlScheduler(Scheduler):
         configFile.close()
 
         self.mapSpatBroadcasterAddress = ((config["HostIp"],config["PortNumber"]["MapSPaTBroadcaster"]))
+        self.scheduleSpatTranslator = ScheduleSpatTranslator()
       
 
     def processReceivedSchedule(self, scheduleJson:json):
@@ -186,6 +189,24 @@ class PhaseControlScheduler(Scheduler):
     
     ######################################### SUB-FUNCTIONS DEFINITION END ######################################### 
 
+        # Get the schedule-spat translation JSON string and send it to the map-spat-broadcaster
+        
+        currentTimingPlan = json.loads(self.signalController.currentTimingPlanJson)
+        yellowChange = currentTimingPlan["TimingPlan"]["YellowChange"]
+        redClear = currentTimingPlan["TimingPlan"]["RedClear"]
+
+        clearanceTimes = [(phase[0]+phase[1]) for phase in zip(yellowChange, redClear)]                
+        phaseRings = currentTimingPlan["TimingPlan"]["PhaseRing"]
+
+        try:
+            scheduleSpatTranslationJson = self.scheduleSpatTranslator.get_schedule_spat_translation_json(scheduleJson, clearanceTimes, phaseRings)
+        
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+                s.sendto(scheduleSpatTranslationJson.encode(), self.mapSpatBroadcasterAddress)
+                self.logger.write("Sent Schedule-Spat Translation to Map-Spat-Broadcaster: {}".format(scheduleSpatTranslationJson))
+        except Exception as e:
+            self.logger.write("*****ERROR IN TRANSLATING SCHEDULE TO SPAT*****:" + str(e))
+        
         self.signalController.resetAllPhaseControls()
         scheduleJson = scheduleJson["Schedule"]
         self.scheduleReceiptTime = time.time()
@@ -203,16 +224,13 @@ class PhaseControlScheduler(Scheduler):
                                                             (command["commandEndTime"] < 0)
                                                         )
                         ]
-
-        self.sendScheduledGreenPhaseControlsToMapSpatBroadcaster(scheduleJson) 
-        
         # Sort the schedule by three levels: 1. Command Start Time, 2. Command Type, and 3. Command End Time
         scheduleJson = sorted(scheduleJson, key = lambda i: (i["commandType"], i["commandStartTime"], i["commandEndTime"], i["commandPhase"]))
 
         # Read the json into a data structure
         scheduleDataStructure = createScheduleDataStructure(scheduleJson)
 
-        print("[" + str(datetime.datetime.now()) + "] " + "Clearing old schedule")
+        self.logger.write("Clearing old schedule - actions will be maintained if new schedule begins with them!")
         # Clear the old schedule from the Background Scheduler, and clear the require NTCIP commands.       
         clearOldSchedule(scheduleDataStructure, self.scheduleReceiptTime)
 
@@ -329,56 +347,22 @@ class PhaseControlScheduler(Scheduler):
         self.signalController.setPhaseControl(Command.OMIT_PED_PHASES,False, [],time.time())
 
 
-    def sendScheduledGreenPhaseControlsToMapSpatBroadcaster(self, schedule):
-        
-        scheduledPhaseControlsJson = {
-                                        "MsgType":"ActivePhaseControlSchedule",
-                                        "ScheduledActivePhaseControls":
-                                        {
-                                            "Holds": None,
-                                            "ForceOffs":None
-                                        }
-                                    }
-
-        holdCommands =  [command for command in schedule if (command["commandType"] == "hold")]
-        
-        if len(holdCommands) > 0:     
-            scheduledHolds = [-1,-1,-1,-1,-1,-1,-1,-1]
-            # Filter holds for current cycle
-            for phaseIndex in range(8):
-                holdEndTimes_phase = [command["commandEndTime"] for command in holdCommands if (command["commandPhase"] == phaseIndex+1)]
-                if len(holdEndTimes_phase) > 0:
-                    scheduledHolds[phaseIndex] = (min(holdEndTimes_phase))*10
-            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["Holds"] = scheduledHolds
-        
-        forceOffCommands =  [command for command in schedule if (command["commandType"] == "forceoff")]
-        if len(forceOffCommands) > 0:        
-            scheduledForceOffs = [-1,-1,-1,-1,-1,-1,-1,-1]
-            # Filter forceoffs for current cycle
-            for phaseIndex in range(8):
-                forceoffTimes_phase = [command["commandStartTime"] for command in forceOffCommands if (command["commandPhase"] == phaseIndex+1)]
-                if len(forceoffTimes_phase) > 0:
-                    scheduledForceOffs[phaseIndex] = (min(forceoffTimes_phase))*10            
-            scheduledPhaseControlsJson["ScheduledActivePhaseControls"]["ForceOffs"] = scheduledForceOffs
-
-        scheduledPhaseControlsJson = json.dumps(scheduledPhaseControlsJson)
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.sendto(scheduledPhaseControlsJson.encode(), self.mapSpatBroadcasterAddress)
-        s.close()
-
+    
 '''##############################################
                    Unit testing
 ##############################################'''
 if __name__ == "__main__":
     import time
 
-    asc = SignalController()
+    logger = Logger(True, False, "speedway-mountain")
 
+    asc = SignalController(logger)
+    
     # Create an object of Scheduler class
-    scheduler = PhaseControlScheduler(asc)
+    scheduler = PhaseControlScheduler(asc, logger)
 
     # Open a dummy schedule and load it into a json object
-    scheduleFile = open("test/schedule3.json", "r")
+    scheduleFile = open("test/schedule1.json", "r")
     scheduleJson = json.loads(scheduleFile.read())
     scheduleFile.close()
 

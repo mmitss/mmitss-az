@@ -26,6 +26,7 @@ import sh
 
 # Import local modules:
 from V2XDataTransfer import V2XDataTransfer
+from Logger import Logger
 
 class PushToCyverse(V2XDataTransfer):
     """
@@ -40,10 +41,10 @@ class PushToCyverse(V2XDataTransfer):
     More on `icommands`: https://learning.cyverse.org/projects/data_store_guide/en/latest/step2.html 
     """
 
-    def __init__(self, serverDataDirectory:str, intersectionList:str):
+    def __init__(self, serverDataDirectory:str, intersectionList:str, logger:Logger):
         
         # Initialize the parent class
-        super().__init__(serverDataDirectory, intersectionList)
+        super().__init__(serverDataDirectory, intersectionList, logger)
 
     def transfer_data(self):
         """
@@ -79,20 +80,25 @@ class PushToCyverse(V2XDataTransfer):
 
             # Upload the data to CyVerse
             sh.iput("-r","-f",".")
+            self.logger.write("Content of " + localDirectory + " is transfered to " + cyverseDirectory)
 
             # Change the local working directory to the original working directory
             sh.cd(self.workingDirectory)
 
             # Remove the local directory FROM where the data is already uploaded in earlier steps
             sh.rm("-r", localDirectory)
+            self.logger.write("Removed local content from " + localDirectory)
 
             # Reset the directory structure
             os.makedirs(localDirectory)
 
+            
+
         except Exception as e:
 
             # If something goes wrong, print the message on the console
-            print(e)
+            self.logger.write(str(e))
+            self.logger.write(self.logger.write("Data transfer unsuccessful from " + localDirectory + " to " + cyverseDirectory))
 
 if __name__ == "__main__":
     pass

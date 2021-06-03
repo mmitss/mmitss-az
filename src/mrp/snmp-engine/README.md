@@ -37,7 +37,7 @@ A particular SNMP object (again, having a defined OID) in the target SNMP device
 ```
 
 ## Console output and logging
-Snmp-Engine component does not generate any log files. The console output provides the following information:
+If `["Logging"]` key is set to `true` in the `mmitss-phase3-master-config.json` configuration file, the SnmpEngine generates log file in that stores the information detailed in following bullet points. This information is also displayed on the console if `["Console"]` key is set to `true` in the `mmitss-phase3-master-config.json` configuration file
 - Status of network connection with the target SNMP device. If the target SNMP device is not reachable in the network, the Snmp-Engine component gracefully exits.
 - SUCCESS or FAILURE of each SnmpSetRequest and SnmpGetRequest with a unix timestamp of execution.
 

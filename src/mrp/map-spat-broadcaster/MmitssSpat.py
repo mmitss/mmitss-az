@@ -1,105 +1,241 @@
-import json
-from Spat import Spat
+import time
 from Ntcip1202v2Blob import Ntcip1202v2Blob
+from Spat import Spat
+
+
+UNKNOWN = 36001
+RED = "red"
+GREEN = "green"
+YELLOW = "yellow"
+PERMISSIVE = "permissive_yellow"
+LEFT_TURNS = [1,3,5,7]
 
 class MmitssSpat(Spat):
-    def __init__(self):
+    def __init__(self, splitPhasesDict:dict):
         super().__init__()
+        self.reset()
+        self.splitPhasesDict = splitPhasesDict
+        self.splitPhasesList = self.get_left_turn_split_phases(splitPhasesDict)
+
+
+
+    def get_left_turn_split_phases(self, splitPhasesDict):
+        splitPhasesList = [0 for phase in range(8)]
+
+        for phaseIndex in range(8):
+            splitPhaseJsonKey = str(phaseIndex+1)
+            if splitPhaseJsonKey in splitPhasesDict:
+                splitPhasesList[phaseIndex] = splitPhasesDict[splitPhaseJsonKey]
+
+        return splitPhasesList
+
+
+    def reset(self):
         
-        self.UNKNOWN_MIN_END_TIME = 36001 # Refer SAEJ2735/2016 Page 202 of 267
-        self.UNKNOWN_MAX_END_TIME = 36001 # Refer SAEJ2735/2016 Page 202 of 267
+        # Reset all internal variable
+        self.isActive = False
+        
+        self.greenPhaseIndices = []
+        self.yellowPhaseIndices = []
+        self.redPhaseIndices = []
 
-        self.isScheduleActive = False
-        self.isScheduleJustReceived = False
+        self.omittedPhases = []
 
-        self.scheduledHolds = None
-        self.scheduledForceoffs = None
-        self.greenPhaseIndices = None
+        self.gMaxEndTimes_cycle1 = []
+        self.gMaxEndTimes_cycle2 = []
+        
+        self.gMinEndTimes_cycle1 = []
+        self.gMinEndTimes_cycle2 = []
+        
+        self.rMaxEndTimes_cycle1 = []
+        self.rMaxEndTimes_cycle2 = []
+        
+        self.rMinEndTimes_cycle1 = []
+        self.rMinEndTimes_cycle2 = []
 
-        self.vehMinEndTimeList = None
-        self.vehMaxEndTimeList = None
+        self.servedAtleastOnce = []
 
-    def extract_local_phase_control_schedule(self, phaseControlSchedule:json):
-        scheduledHolds = phaseControlSchedule["ScheduledActivePhaseControls"]["Holds"]
-        self.scheduledHolds = scheduledHolds
+        self.prevTimestamp = 0
+        self.timestep = 0
 
-        scheduledForceoffs = phaseControlSchedule["ScheduledActivePhaseControls"]["ForceOffs"]
-        self.scheduledForceoffs = scheduledForceoffs
+        self.yellowStartPhaseIndices = []
 
-        self.isScheduleActive = True
-        self.isScheduleJustReceived = True
+    def initialize(self, scheduleSpatTranslation:dict):
 
-    def update_current_phase_status(self, spatBlob:Ntcip1202v2Blob):
+        self.reset()
+        self.isActive = True
+
+        self.omittedPhases = scheduleSpatTranslation["OmittedPhases"]
+
+        self.gMaxEndTimes_cycle1 = scheduleSpatTranslation["GreenStates"]["Cycle1"]["MaxEndTime"]
+        self.gMaxEndTimes_cycle2 = scheduleSpatTranslation["GreenStates"]["Cycle2"]["MaxEndTime"]
+        
+        self.gMinEndTimes_cycle1 = scheduleSpatTranslation["GreenStates"]["Cycle1"]["MinEndTime"]
+        self.gMinEndTimes_cycle2 = scheduleSpatTranslation["GreenStates"]["Cycle2"]["MinEndTime"]
+        
+        self.rMaxEndTimes_cycle1 = scheduleSpatTranslation["RedStates"]["Cycle1"]["MaxEndTime"]
+        self.rMaxEndTimes_cycle2 = scheduleSpatTranslation["RedStates"]["Cycle2"]["MaxEndTime"]
+        
+        self.rMinEndTimes_cycle1 = scheduleSpatTranslation["RedStates"]["Cycle1"]["MinEndTime"]
+        self.rMinEndTimes_cycle2 = scheduleSpatTranslation["RedStates"]["Cycle2"]["MinEndTime"]
+
+        self.rMinMaxEndTimes_cycle0 = scheduleSpatTranslation["RedStates"]["Cycle0"]["MinMaxEndTime"]
+
+        self.prevTimestamp = int(time.time() * 10)
+
+        self.firstBlob = True
+        
+
+    def update(self, spatBlob:Ntcip1202v2Blob):
+        currentTime = int(time.time() * 10)
+        self.timestep = currentTime - self.prevTimestamp
+        self.prevTimestamp = currentTime
+        
+        def deduct_timestep(dSecond):
+            return max(dSecond-self.timestep, 0)
+
+        if self.firstBlob == True:
+            currentStates = spatBlob.getVehCurrState()
+            for phaseIndex in range(len(currentStates)):
+                if currentStates[phaseIndex]==YELLOW:
+                    self.yellowStartPhaseIndices += [phaseIndex]
+        
+            self.firstBlob = False
+
+        else:
+            if len(self.yellowStartPhaseIndices) != 0:
+                currentStates = spatBlob.getVehCurrState()
+                indicesToPop = []
+                for phaseIndex in self.yellowStartPhaseIndices:
+                    if currentStates[phaseIndex] != YELLOW:
+                        indicesToPop += [phaseIndex]
+
+                for index in indicesToPop:
+                    self.yellowStartPhaseIndices.remove(index)
+
+        # Update current states of vehicle phases
         vehCurrStateList = super().getVehCurrStateList(spatBlob)
-        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "green"]
-        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == "yellow"]
+        self.greenPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == GREEN]
+        self.redPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == RED]
+        self.yellowPhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == YELLOW]
+        self.permissivePhaseIndices =  [phaseIndex for phaseIndex, phaseStatus in enumerate(vehCurrStateList) if phaseStatus == PERMISSIVE]
+        for phaseIndex in self.yellowPhaseIndices:
+            if phaseIndex not in self.yellowStartPhaseIndices:
+                if phaseIndex+1 not in self.servedAtleastOnce:
+                    self.servedAtleastOnce += [phaseIndex+1]
 
-
-    def update_local_phase_control_schedule(self):
+        # Update internal variables
+        self.gMaxEndTimes_cycle1 = list(map(deduct_timestep, self.gMaxEndTimes_cycle1))
+        self.gMaxEndTimes_cycle2 = list(map(deduct_timestep, self.gMaxEndTimes_cycle2))
         
-        if self.isScheduleJustReceived == False:
-            # Update scheduled holds:
-            if self.scheduledHolds != None:
-                for index in range (len(self.scheduledHolds)):
-                    if (self.scheduledHolds[index] >= 0):
-                        self.scheduledHolds[index] = self.scheduledHolds[index] - 1
+        self.gMinEndTimes_cycle1 = list(map(deduct_timestep, self.gMinEndTimes_cycle1))
+        self.gMinEndTimes_cycle2 = list(map(deduct_timestep, self.gMinEndTimes_cycle2))
+        
+        self.rMaxEndTimes_cycle1 = list(map(deduct_timestep, self.rMaxEndTimes_cycle1))
+        self.rMaxEndTimes_cycle2 = list(map(deduct_timestep, self.rMaxEndTimes_cycle2))
+        
+        self.rMinEndTimes_cycle1 = list(map(deduct_timestep, self.rMinEndTimes_cycle1))
+        self.rMinEndTimes_cycle2 = list(map(deduct_timestep, self.rMinEndTimes_cycle2))
 
-                if all(x < 0 for x in self.scheduledHolds):
-                        self.scheduledHolds = None
+        self.rMinMaxEndTimes_cycle0 = list(map(deduct_timestep, self.rMinMaxEndTimes_cycle0))
 
-            # Update scheduled Forceoffs:
-            if self.scheduledForceoffs != None:
-                for index in range(len(self.scheduledForceoffs)):
-                    if (self.scheduledForceoffs[index] >= 0):
-                        self.scheduledForceoffs[index] = self.scheduledForceoffs[index] - 1
-                
-                if all(x < 0 for x in self.scheduledForceoffs):
-                    self.scheduledForceoffs = None
-
-            # Update status of local phase control schedule:
-            if ((self.scheduledHolds == None) and (self.scheduledForceoffs == None)):
-                self.isScheduleActive = False
-
-        else: self.isScheduleJustReceived = False
+        # If schedule is completed, mark it as inactive
+        if not(any(self.gMaxEndTimes_cycle1) or any(self.gMaxEndTimes_cycle2) or
+               any(self.gMinEndTimes_cycle1) or any(self.gMinEndTimes_cycle2) or
+               any(self.rMaxEndTimes_cycle1) or any(self.rMaxEndTimes_cycle2) or
+               any(self.rMinEndTimes_cycle1) or any(self.rMinEndTimes_cycle2)):
+               
+            self.isActive = False
 
 
-    def getVehMinEndTimeList(self, spatBlob):
-        controllerVehMinEndTimeList = super().getVehMinEndTimeList(spatBlob)
-        updatedVehMinEndTimeList =  [self.UNKNOWN_MIN_END_TIME for phase in range(8)]
 
-        # Consider effect of holds:
-        if self.scheduledHolds == None:
-            if self.scheduledForceoffs != None:
-                for greenPhaseIndex in self.greenPhaseIndices:
-                    updatedVehMinEndTimeList[greenPhaseIndex] = 0
+    def getVehMinEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehMinEndTimeList = super().getVehMinEndTimeList(spatBlob)
+        try:
+            for phaseIndex in range((8)):
+                if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
+                    if phaseIndex in self.greenPhaseIndices:
+                        # Substitute with the value from gMinEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from gMinEndTimes_cycle2 if it is already served
+                        else: vehMinEndTimeList[phaseIndex] = self.gMinEndTimes_cycle2[phaseIndex]
 
-        else:
-            for yellowPhaseIndex in self.yellowPhaseIndices:
-                updatedVehMinEndTimeList[yellowPhaseIndex] = controllerVehMinEndTimeList[yellowPhaseIndex]            
+                    elif phaseIndex in self.redPhaseIndices:
+                        # Substitute with the value from rMinEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
+                                vehMinEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]
+                            else:
+                                vehMinEndTimeList[phaseIndex] = self.rMinEndTimes_cycle1[phaseIndex]
+                else: vehMinEndTimeList[phaseIndex] = UNKNOWN
+
+            # Adjust permissive_left turn phases
+            for phase in LEFT_TURNS:
+                phaseIndex = phase - 1
+                splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+                if phaseIndex+1 not in self.omittedPhases:
+                    if (phaseIndex in self.permissivePhaseIndices):
+                        vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+                    elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                        vehMinEndTimeList[phaseIndex] = vehMinEndTimeList[splitPhaseIndex]
+        except:
+            pass
+        return vehMinEndTimeList
+
+    def getVehMaxEndTimeList(self, spatBlob:Ntcip1202v2Blob):
+        vehMaxEndTimeList = super().getVehMaxEndTimeList(spatBlob)
+        try:
+            for phaseIndex in range((8)):
+                if phaseIndex+1 not in self.omittedPhases: # Do the following only for non-omitted phases
+                    if phaseIndex in self.greenPhaseIndices:
+                        # Substitute with the value from gMaxEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from gMaxEndTimes_cycle2 if it is already served
+                        else: vehMaxEndTimeList[phaseIndex] = self.gMaxEndTimes_cycle2[phaseIndex]
+
+                    elif phaseIndex in self.redPhaseIndices:
+                        # Substitute with the value from rMaxEndTimes_cycle1 if it is not yet served
+                        if phaseIndex+1 not in self.servedAtleastOnce:
+                            if self.rMinMaxEndTimes_cycle0[phaseIndex] > 0:
+                                vehMaxEndTimeList[phaseIndex] = self.rMinMaxEndTimes_cycle0[phaseIndex]                        
+                            else:
+                                vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle1[phaseIndex]
+                        
+                        # Substitute with the value from rMaxEndTimes_cycle2 if it is already served
+                        else: vehMaxEndTimeList[phaseIndex] = self.rMaxEndTimes_cycle2[phaseIndex]
+                else: vehMaxEndTimeList[phaseIndex] = UNKNOWN
             
-            for greenPhaseIndex in self.greenPhaseIndices:
-                if (self.scheduledHolds[greenPhaseIndex] >= 0): # If the hold is active
-                    updatedVehMinEndTimeList[greenPhaseIndex] = self.scheduledHolds[greenPhaseIndex]
+            # Adjust permissive_left turn phases
+            for phase in LEFT_TURNS:
+                phaseIndex = phase - 1
+                splitPhaseIndex = self.splitPhasesList[phaseIndex]-1
+                if phaseIndex+1 not in self.omittedPhases:
+                    if (phaseIndex in self.permissivePhaseIndices):
+                        vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+                    elif ((phaseIndex in self.yellowPhaseIndices) and (splitPhaseIndex in self.yellowPhaseIndices)):
+                        vehMaxEndTimeList[phaseIndex] = vehMaxEndTimeList[splitPhaseIndex]
+        except:
+            pass
 
-        self.vehMinEndTimeList = updatedVehMinEndTimeList
-        return updatedVehMinEndTimeList
+        return vehMaxEndTimeList
 
-    def getVehMaxEndTimeList(self, spatBlob):        
-        controllerVehMaxEndTimeList = super().getVehMaxEndTimeList(spatBlob)
-        updatedVehMaxEndTimeList =  [self.UNKNOWN_MAX_END_TIME for phase in range(8)]
+if __name__=="__main__":
+    import json
 
-        # Consider effect of Forceoffs:
-        if self.scheduledForceoffs == None:
-            updatedVehMaxEndTimeList = controllerVehMaxEndTimeList
+    filename = "test/scheduleSpatTranslation_nonev.json"
 
-        else:
-            for yellowPhaseIndex in self.yellowPhaseIndices:
-                updatedVehMaxEndTimeList[yellowPhaseIndex] = controllerVehMaxEndTimeList[yellowPhaseIndex]
+    with open(filename, 'r') as fp:
+        scheduleSpatTranslation = json.load(fp)
 
-            for greenPhaseIndex in self.greenPhaseIndices:
-                if (self.scheduledForceoffs[greenPhaseIndex] >= 0):
-                    updatedVehMaxEndTimeList[greenPhaseIndex] = self.scheduledForceoffs[greenPhaseIndex]
+    mmitssSpat = MmitssSpat()
 
-        self.vehMaxEndTimeList = updatedVehMaxEndTimeList
-        return updatedVehMaxEndTimeList
+    mmitssSpat.initialize(scheduleSpatTranslation)
+    mmitssSpat.update()
+    mmitssSpat.deactivate()
+    pass
+
 

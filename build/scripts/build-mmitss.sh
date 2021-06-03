@@ -40,7 +40,7 @@ else
     read -p "Build all applications? (y or n): " all
     if [ "$all" = "n" ]; then
 
-    read -p "Build transceiver applications? (y or n): " common
+    read -p "Build common applications? (y or n): " common
     read -p "Build roadside applications? (y or n): " mrp
     read -p "Build vehicle applications? (y or n): " vsp
     read -p "Build simulation_server-tools applications? (y or n): " server
@@ -60,7 +60,7 @@ else
     if [ "$common" = "y" ]; then
 
 	    echo "------------------------"
-	    echo "TRANSCEIVER APPLICATIONS"
+	    echo "COMMON APPLICATIONS"
 	    echo "------------------------"
 	    ######################################################################################
 
@@ -552,8 +552,8 @@ else
 	    
 		if [ "$containerImages" = "y" ]; then
 			read -p "Provide version tag for container images: " versionTag
-			read -p "Build MRP image? Needs transceiver and roadside applications. (y or n): " mrpFieldImage
-			read -p "Build VSP image? Needs transceiver and vehicle applications. (y or n): " vspImage
+			read -p "Build MRP image? Needs common and roadside applications. (y or n): " mrpFieldImage
+			read -p "Build VSP image? Needs common and vehicle applications. (y or n): " vspImage
 			read -p "Build simulation_server-tools image? Needs simulation_server-tools applications. (y or n): " serverImage
 
 			if [ "$mrpFieldImage" = "y" ]; then

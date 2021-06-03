@@ -156,13 +156,12 @@ The ScheduleManager class can read the OptimizationResults.txt file and develop 
 ```
 
 ## Console output and logging
-The PRSolver can store important information like- priority request list, current signal status, input data for optimization model, optimal schedule etc. in the log files. The log file name depends on the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file). For example, if intersection name is daisy-gavilan, the logfile name will be PRSolver-daisy-davilan.txt. It is expensive process to write in a file. Therefore, logging is turned off by default. It can be turned on for debugging or analyzing purpose. Logging can be turned on by setting the variable "Logging" as "True" (instead of "False") in the 'mmitss-phase3-master-config.json' configuration file.
-The console output also provides some information about the status of the component. The console output can be redirected to a file using supervisor if mmitss is running inside container. The following information is displayed in the console:
+The PRSolver can store important information like- priority request list, current signal status, input data for optimization model, optimal schedule etc. in the time-stamped log files. The log file name is a function of the intersection name (specified in the 'mmitss-phase3-master-config.json' configuration file), date and time. For example, if intersection name is daisy-gavilan, date is April 28,2021 and time is 01:14:27 pm the logfile name will be daisy-davilan_prsolverLog_04292021_131427.log. The log file stored in nojournal/bin/log directory. It is expensive process to write in a file or display output in the console. Therefore, logging and displaying console output are turned off by default. It can be turned on for debugging or analyzing purpose. Logging and displaying console output can be turned on by setting the variable "Logging" as true, "ConsoleOutput" as true (instead of false) in the 'mmitss-phase3-master-config.json' configuration file. The console output console output can be redirected to a file using supervisor, if mmitss is running inside the container. The following information is displayed in the console:
 - Messages (signal timing plan, split data, current signal status, priority request, or clear request received status, optimal schedule sent status etc.) sent or received status
 - GLPK solver output
 
 ## Requirements
-- The TCI is required to run along with the PRSolver
+- The TCI and SNMP-Engine are required to run along with the PRSolver
 
 ## Configuration
 In the `mmitss-phase3-master-config.json` (config) file following keys need to be assigned with appropriate values:

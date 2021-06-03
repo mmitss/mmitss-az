@@ -1,8 +1,6 @@
-#pragma once
 #include "geoCoord.h" 
 
 using namespace std ;
-
 
 void geoCoord::init(double longitude, double latitude, double altitude) {
 	longitude_init = longitude ;
@@ -49,7 +47,7 @@ void geoCoord::lla2ecef(double longitude, double latitude, double altitude, doub
 	latitude_r = pi*latitude/180.0 ;
 
 	//compute constants
-	N = a/sqrt(1.0l-pow(e*sin(latitude_r), 2)) ;
+	N = a/static_cast<double>(sqrt(1.0l-pow(e*sin(latitude_r), 2)));
 		
 	//compute ECEF coordiates
 	*x = (N+altitude)*cos(latitude_r)*cos(longitude_r) ;
@@ -82,7 +80,7 @@ void geoCoord::ecef2lla(double x, double y, double z, double *longitude, double 
 	{
 		sin_lat = z/(Ni*(1-pow(e,2)) + hi) ;
 		latitudei_1 = atan((z+(pow(e,2)*Ni*sin_lat))/p) ;
-		Ni = a/sqrt(1.0l -(pow(e,2)*pow(sin(latitudei),2))) ;
+		Ni = a/static_cast<double>(sqrt(1.0l -(pow(e,2)*pow(sin(latitudei),2))));
 		hi = p/cos(latitudei) - Ni ;
 
 		error = abs(latitudei_1-latitudei) ;

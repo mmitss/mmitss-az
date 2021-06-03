@@ -39,15 +39,15 @@ import importlib.util
 import Command
 from Snmp import Snmp
 from bitstring import BitArray
+from Logger import Logger
 
 class SignalController:
     """
     provides methods to interact with the signal controller.
     """
 
-    def __init__(self): # Check if there exists an NTCIP object to read it through SNMP.
-        
-                
+    def __init__(self, logger:Logger): # Check if there exists an NTCIP object to read it through SNMP.
+        self.logger = logger
         # Read the config file and store the configuration in an JSON object:
         configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
         config = (json.load(configFile))
@@ -57,7 +57,11 @@ class SignalController:
 
         # Create a tuple to store the communication address of the traffic signal controller:
         signalControllerIp = config["SignalController"]["IpAddress"]
+        self.logger.write("Signal Controller IP Address: " + signalControllerIp)
+
         signalControllerNtcipPort = config["SignalController"]["NtcipPort"]
+        self.logger.write("Signal Controller NTCIP Port: {}".format(signalControllerNtcipPort))
+        
         self.signalController_commInfo = (signalControllerIp, signalControllerNtcipPort)
 
         self.vendor = config["SignalController"]["Vendor"].lower()
@@ -87,7 +91,11 @@ class SignalController:
         ntcipBackupTimeOid = StandardMib.NTCIP_UNIT_BACKUP_TIME
         if self.vendor == "maxtime":
             ntcipBackupTimeOid = ntcipBackupTimeOid[:-2]
+        
+        self.logger.write("Waiting for connection with the M_SnmpEngine...")
         self.ntcipBackupTime_sec = int(self.snmp.getValue(ntcipBackupTimeOid))
+        self.logger.write("Connection with M_SnmpEngine is verified")
+        self.logger.write("NTCIP Unit Backup Time: {} seconds".format(self.ntcipBackupTime_sec))
 
         # Create a tuple to store the communication address of the socket that listens for Current and Next Phases info sent by the MapSpatBroadcaster:
         mrpIp = config["HostIp"]
@@ -95,6 +103,9 @@ class SignalController:
         self.currPhaseListenerAddress = (mrpIp, currPhaseListenerPort)
 
         # Create a tuple to store the address of consumer of the timing plan.
+        mapSpatBroadcasterPort = config["PortNumber"]["PrioritySolver"]
+        self.mapSpatBroadcasterAddress = (mrpIp, mapSpatBroadcasterPort)
+        
         solverPort = config["PortNumber"]["PrioritySolver"]
         self.solverAddress = (mrpIp, solverPort)
 
@@ -172,8 +183,8 @@ class SignalController:
         status = self.specialFunctionLocalStatus[functionId]
         self.snmp.setValue(fullOid, int(status))
         if status == True:
-            print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is active!")
-        else: print("[" + str(datetime.datetime.now()) + "] " + "Special Function " + str(functionId) + " is deactivated!")
+            self.logger.write("Special Function " + str(functionId) + " is active")
+        else: self.logger.write("Special Function " + str(functionId) + " is deactivated")
 
     def resetAllPhaseControls(self):
         
@@ -229,18 +240,18 @@ class SignalController:
             phaseList = []
             groupInt = phaseControlDict["status"].uint
             self.snmp.setValue(phaseControlDict["oid"], groupInt)
-            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " " + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
+            self.logger.write(phaseControlDict["name"] + " " + str(phaseList) + "(Integer={})".format(groupInt) + ". Time elapsed since the receipt of the new schedule: " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
             
         
         else:
             currentStatus = phaseControlDict["status"]
             for phase in phases:
-                phaseControlDict["status"][-phase] = action # What does "-" sign do?
+                phaseControlDict["status"][-phase] = action # What does "-" sign do? It reverses the bitstring.
             
             groupInt = phaseControlDict["status"].uint
             self.snmp.setValue(phaseControlDict["oid"], groupInt)
             phaseList = self.snmp.getPhaseListFromBitArray(phaseControlDict["status"])
-            print("[" + str(datetime.datetime.now()) + "] " + phaseControlDict["name"] + " "  + str(phaseList) + " after " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds. Integer=" + str(groupInt))
+            self.logger.write(phaseControlDict["name"] + " " + str(phaseList) + " (Value={})".format(groupInt) + ". Time elapsed since the receipt of the new schedule: " + str(round((time.time() - scheduleReceiptTime),1)) + " seconds")
             
 
     ######################## Definition End: phaseControl(self, action, phases) ########################
@@ -274,7 +285,6 @@ class SignalController:
             """
 
             nextPhasesInt = int(self.snmp.getValue(StandardMib.PHASE_GROUP_STATUS_NEXT))
-            print("[" + str(datetime.datetime.now()) + "] " + "Current next phases are" + str(nextPhasesInt))
             nextPhasesStr = str(f'{(nextPhasesInt):08b}')[::-1]
             
             nextPhasesList = [0,0]
@@ -292,14 +302,41 @@ class SignalController:
                 nextPhasesDict= {"nextPhases":[nextPhasesList[0]]}
             else:
                 nextPhasesDict= {"nextPhases":[nextPhasesList[0], nextPhasesList[1]]}
-
+            self.logger.write("Current next phases are " + str(nextPhasesList))
             return nextPhasesDict
+        
+        def getPhasesCallsDict() -> dict:
+            """
+            requests the "veh and ped calls" in the controller through an Snmp::getValue method.
+                        
+            Returns:
+            --------
+                A dictionary containing the list of next phases.
+            """
+            vehCallsList = []
+            vehCallsInt = int(self.snmp.getValue(StandardMib.VEHICLE_CALLS))
+            vehCallsStr = str(f'{(vehCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if vehCallsStr[i]=="1":
+                    vehCallsList = vehCallsList + [i+1]
+            
+            pedCallsList = []
+            pedCallsInt = int(self.snmp.getValue(StandardMib.PEDESTRIAN_CALLS))
+            pedCallsStr = str(f'{(pedCallsInt):08b}')[::-1]
+            for i in range(0,8):
+                if pedCallsStr[i]=="1":
+                    pedCallsList = pedCallsList + [i+1]
+
+            phaseCallsDict = {"vehicleCalls": vehCallsList, "pedestrianCalls": pedCallsList}
+            
+            return phaseCallsDict
+
         ######################## Definition End: getNextPhasesDict() ########################
 
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.bind(self.currPhaseListenerAddress)
         data, addr = s.recvfrom(1024)
-        print("[" + str(datetime.datetime.now()) + "] " + "Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
+        self.logger.write("Received CurrPhaseStatus from MapSpatBroadcaster: " + str(data.decode()))
 
         currentPhasesDict = json.loads(data.decode())
 
@@ -308,19 +345,30 @@ class SignalController:
         else:
             nextPhasesDict = getNextPhasesDict()
 
+        if ((currentPhasesDict["currentPhases"][0]["State"]=="green") or (currentPhasesDict["currentPhases"][1]["State"]=="green")):
+            phaseCallsDict = getPhasesCallsDict()
+        else: 
+            phaseCallsDict = {"vehicleCalls":[], "pedestrianCalls":[]}
+
+
         currentAndNextPhasesDict = currentPhasesDict
         currentAndNextPhasesDict["MsgType"] = "CurrNextPhaseStatus"
         currentAndNextPhasesDict["nextPhases"] = nextPhasesDict["nextPhases"]
+        currentAndNextPhasesDict["vehicleCalls"] = phaseCallsDict["vehicleCalls"]
+        currentAndNextPhasesDict["totalVehicleCalls"] = len(phaseCallsDict["vehicleCalls"])
+        currentAndNextPhasesDict["pedestrianCalls"] = phaseCallsDict["pedestrianCalls"]
+        currentAndNextPhasesDict["totalPedestrianCalls"] = len(phaseCallsDict["pedestrianCalls"])
+
         currentAneNextPhasesJson = json.dumps(currentAndNextPhasesDict)
         
         s.sendto(currentAneNextPhasesJson.encode(), requesterAddress)
-        print("[" + str(datetime.datetime.now()) + "] " + "Sent curr and NextPhasestatus to solver at time " + str(time.time()) +str(currentAneNextPhasesJson))
+        self.logger.write("Sent curr and NextPhasestatus to priority-request-solver:" + str(currentAneNextPhasesJson))
         s.close()
     ######################## Definition End: sendCurrentAndNextPhasesDict(self, currPhaseListenerAddress:tuple, requesterAddress:tuple): ########################
 
     def updateAndSendActiveTimingPlan(self):
         """
-        updates the active timing plan and sends the active timing plan to PriorityRequestSolver.
+        updates the active timing plan and sends the active timing plan to PriorityRequestSolver and MapSpatBroadcaster.
 
         For Econolite signal controllers, this function first checks the ID of currently active timing plan, through Snmp::getValue function.
         If the ID does not match the ID of the timing plan currently stored in the class attribute, 
@@ -419,9 +467,10 @@ class SignalController:
                 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 s.bind(self.timingPlanSenderAddress)
                 s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+                s.sendto((self.currentTimingPlanJson).encode(), self.mapSpatBroadcasterAddress)
                 s.close()
-                print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
-                print(self.currentTimingPlanJson)
+                self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver and MapSpatBroadcaster")
+                self.logger.write(self.currentTimingPlanJson)
 
         else:
             def getPhaseParameterPhaseNumber():
@@ -505,9 +554,10 @@ class SignalController:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.bind(self.timingPlanSenderAddress)
             s.sendto((self.currentTimingPlanJson).encode(), self.solverAddress)
+            s.sendto((self.currentTimingPlanJson).encode(), self.mapSpatBroadcasterAddress)
             s.close()
-            print("[" + str(datetime.datetime.now()) + "] " + "Detected a new timing plan - updated and sent (to solver) the local timing plan at time:" + str(time.time()))
-            print(self.currentTimingPlanJson)
+            self.logger.write("Detected a new timing plan - updated the local timing plan and sent to PriorityRequestSolver and MapSpatBroadcaster")
+            self.logger.write(self.currentTimingPlanJson)
             
     ######################## Definition End: updateActiveTimingPlan(self) ########################
 
@@ -517,7 +567,9 @@ class SignalController:
 ##############################################'''
 if __name__ == "__main__":
 
+    logger = Logger(True, False, "speedway-mountain")
+
     # Create an object of SignalController class
-    controller = SignalController()
+    controller = SignalController(logger)
     
     print(controller.ntcipBackupTime_sec)

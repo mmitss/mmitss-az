@@ -47,12 +47,12 @@ MapManager::MapManager()
 /*
     -obtain uper hex string payload from the received json string
 */
-void MapManager::json2MapPayload(std::string jsonString)
+void MapManager::json2MapPayload(string jsonString)
 {
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     bool parsingSuccessful = reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
     
     if(parsingSuccessful)
@@ -68,7 +68,7 @@ void MapManager::json2MapPayload(std::string jsonString)
     - setters for Map which has to be deleted from available map list.
     - If time difference between last time mapPpayload has been received and elapsed time is atleast 5 minutes delete that map. 
 */
-void MapManager::setTimedOutMapPayLoad(std::string timedOutPayLoad)
+void MapManager::setTimedOutMapPayLoad(string timedOutPayLoad)
 {
     timedOutMapPayLoad = timedOutPayLoad;
 }
@@ -83,13 +83,13 @@ std::string MapManager::getTimedOutMapPayLoad()
         --If availableMapList is empty, mapPayload has to be added in the availableMapList
         --If avilableMapList is not empty but mapPayload is not in the availableMapList, mapPayload has to be added in the availableMapList
 */
-bool MapManager::addToMapInList() //check_Map.h
+bool MapManager::addToMapInList() 
 {
     bool addInList{false};
     std::vector<Map::AvailableMap>::iterator findVehicleMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                   [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
-    if (mapPayload.size() > 0)
+    if (mapPayload.size() > 0 && intersectinID > 0)
     {
         if (availableMapList.empty())
             addInList = true;
@@ -158,19 +158,15 @@ bool MapManager::deleteMapPayLoadFromList()
 */
 void MapManager::writeMAPPayloadInFile()
 {
-
     const char *path = "./map";
-    std::stringstream ss{};
+    stringstream ss{};
     ss << path;
-    std::string s{};
-    ss >> s;
-    std::ofstream outputfile;
+    string pathDirectory{};
+    ss >> pathDirectory;
+    ofstream outputfile;
 
-    outputfile.open(s + "/" + intersectionMapName + ".map.payload");
-
-    outputfile << "payload"
-               << " "
-               << intersectionMapName << " " << mapPayload << endl;
+    outputfile.open(pathDirectory + "/" + intersectionMapName + ".map.payload");
+    outputfile << "payload" << " " << intersectionMapName << " " << mapPayload << endl;
     outputfile.close();
 }
 
@@ -215,10 +211,10 @@ void MapManager::maintainAvailableMapList() //check Map.h
 {
     Map::AvailableMap availableMap;
 
-    if (addToMapInList() == true)
+    if (addToMapInList())
     {
-        std::string mapName = intersectionMapName;
-        std::string mapFileDirectory = "./map/" + mapName + ".map.payload";
+        string mapName = intersectionMapName;
+        string mapFileDirectory = "./map/" + mapName + ".map.payload";
 
         writeMAPPayloadInFile();
         availableMap.availableMapPayload = mapPayload;
@@ -232,9 +228,9 @@ void MapManager::maintainAvailableMapList() //check Map.h
         availableMapList.insert(availableMapList.begin(), availableMap);
     }
 
-    else if (updateMapPayLoadList() == true)
+    else if (updateMapPayLoadList())
     {
-        std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
+        vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                [&](Map::AvailableMap const &p) { return p.availableMapPayload == mapPayload; });
 
         findMapPayLoad->availableMapPayload = mapPayload;
@@ -251,10 +247,10 @@ void MapManager::deleteMap()
 {
     if (deleteMapPayLoadFromList() == true)
     {
-        std::vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
+       vector<Map::AvailableMap>::iterator findMapPayLoad = std::find_if(std::begin(availableMapList), std::end(availableMapList),
                                                                                [&](Map::AvailableMap const &p) { return p.availableMapPayload == getTimedOutMapPayLoad(); });
 
-        std::string deleteFileName = findMapPayLoad->availableMapFileDirectory;
+        string deleteFileName = findMapPayLoad->availableMapFileDirectory;
         remove(deleteFileName.c_str());
         availableMapList.erase(findMapPayLoad);
 
@@ -276,12 +272,11 @@ void MapManager::printAvailableMapList()
 void MapManager::createActiveMapList(BasicVehicle basicVehicle)
 {
     Map::ActiveMap activeMap;
-    std::string fmap{};
-    std::string intersectionName{};
+    string fmap{};
+    string intersectionName{};
 
     if (activeMapList.empty() && !availableMapList.empty())
     {
-
         for (size_t i = 0; i < availableMapList.size(); i++)
         {
             fmap = availableMapList[i].availableMapFileDirectory;
@@ -321,9 +316,6 @@ void MapManager::createActiveMapList(BasicVehicle basicVehicle)
             delete plocAwareLib;
         }
     }
-
-    else if (!activeMapList.empty())
-        cout << "There is a an active MAP in list" << endl;
 }
 
 /*
@@ -404,7 +396,7 @@ double MapManager::getMapReferenceElevation()
 /*
     - Getters for Active map List
 */
-    std::vector<Map::ActiveMap> MapManager::getActiveMapList()
+    vector<Map::ActiveMap> MapManager::getActiveMapList()
 {
     return activeMapList;
 }
@@ -412,7 +404,7 @@ double MapManager::getMapReferenceElevation()
 /*
 	- Getters for Available map List
 */
-std::vector<Map::AvailableMap> MapManager::getAvailableMapList()
+vector<Map::AvailableMap> MapManager::getAvailableMapList()
 {
     return availableMapList;
 }

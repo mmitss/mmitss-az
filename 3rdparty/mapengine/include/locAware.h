@@ -53,7 +53,7 @@ class LocAware
 		uint8_t getControlPhaseByLaneId(const uint16_t& regionalId, const uint16_t& intersectionId, const uint8_t& laneId) const;
 		uint8_t getControlPhaseByAprochId(const uint16_t& regionalId, const uint16_t& intersectionId, const uint8_t& approachId) const;
 		uint8_t getIndexByApproachId(const uint8_t& intersectionIndx, const uint8_t& approachId) const;
-		uint8_t getLaneIdByIndexes(const uint8_t& intersectionIndx, const uint8_t& approachIndx, const uint8_t& laneIndx) const;
+		//uint8_t getLaneIdByIndexes(const uint8_t& intersectionIndx, const uint8_t& approachIndx, const uint8_t& laneIndx) const;
 		// locating vehicle BSM on intersection Map
 		std::vector<uint8_t> nearedIntersections(const GeoUtils::geoPoint_t& geoPoint) const;
 		bool isOutboundConnect2Inbound(const NmapData::ConnectStruct& connObj, const GeoUtils::geoPoint_t& geoPoint,
@@ -63,6 +63,7 @@ class LocAware
 		LocAware(const std::string& fname, bool isSingleFrame=false);
 		~LocAware(void);
 
+        uint8_t getLaneIdByIndexes(const uint8_t& intersectionIndx, const uint8_t& approachIndx, const uint8_t& laneIndx) const;
 		// set option for saving new MAP into namp file
 		void setSaveNewMap2nmap(const bool& option);
 		// save intersection object into nmap file

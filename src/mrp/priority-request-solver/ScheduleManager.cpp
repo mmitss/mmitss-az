@@ -132,12 +132,12 @@ void ScheduleManager::readOptimalSignalPlan()
     vector<double> rightCriticalPoints{};
     vector<double> leftCriticalPoints_GreenTime{};
     vector<double> rightCriticalPoints_GreenTime{};
+    double currentTime = getPosixTimestamp();
 
     infile.open("/nojournal/bin/OptimizationResults.txt");
-    // getline(infile, lineread);
 
     if (infile.fail())
-        std::cout << "Fail to open file" << std::endl;
+        cout << "[" << fixed << showpoint << setprecision(4) << currentTime << "] Fail to open file" << endl;
 
     else
     {
@@ -504,7 +504,7 @@ void ScheduleManager::createEventList()
         else
             ring1Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring1[i - 1] + rightCriticalPoints_GreenTime_Ring1[i];
 
-        ring1Schedule.commandEndTime = ring1Schedule.commandStartTime + 1.0;
+        ring1Schedule.commandEndTime = ring1Schedule.commandStartTime + 3.0; //Econolite signal controller check for gateway every 2 second. It doesn't perform any operations that time. Force-OFF command may not execute if command end time is less than 2 seconds.
 
         ring1_TCISchedule.push_back(ring1Schedule);
     }
@@ -521,7 +521,7 @@ void ScheduleManager::createEventList()
         else
             ring2Schedule.commandStartTime = rightCriticalPoints_PhaseDuration_Ring2[i - 1] + rightCriticalPoints_GreenTime_Ring2[i];
 
-        ring2Schedule.commandEndTime = ring2Schedule.commandStartTime + 1.0;
+        ring2Schedule.commandEndTime = ring2Schedule.commandStartTime + 3.0;
 
         ring2_TCISchedule.push_back(ring2Schedule);
     }

@@ -1,33 +1,13 @@
 {
-    "NoOfBusStop": 5,
+    "NoOfBusStop": 3,
     "BusStopInformation": [
-        {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "NorthBound",
-            "ApproachNo": 3,
-            "Latitude_DecimalDegree":  32.234937,
-            "Longitude_DecimalDegree": -110.952312,
-            "Elevation_Meter": 744,
-            "Heading_Degree": 0.0
-        },
-        {
-            "IntersectionName": "Speedway-Mountain",
-            "IntersectionID": 26379,
-            "TravelDirection": "SouthBound",
-            "ApproachNo": 7,
-            "Latitude_DecimalDegree": 32.237225,
-            "Longitude_DecimalDegree": -110.952498,
-            "Elevation_Meter": 742,
-            "Heading_Degree": 180.0
-        },
         {
             "IntersectionName": "Speedway-Mountain",
             "IntersectionID": 26379,
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
-            "Latitude_DecimalDegree": 32.235876,
-            "Longitude_DecimalDegree": -110.954316,
+            "Latitude_DecimalDegree": 32.235896,
+            "Longitude_DecimalDegree": -110.954722,
             "Elevation_Meter": 742,
             "Heading_Degree": 90.0
         },
@@ -36,8 +16,8 @@
             "IntersectionID": 26379,
             "TravelDirection": "WestBound",
             "ApproachNo": 1,
-            "Latitude_DecimalDegree":  32.236097,
-            "Longitude_DecimalDegree": -110.951262,
+            "Latitude_DecimalDegree":  32.236093,
+            "Longitude_DecimalDegree": -110.951124,
             "Elevation_Meter": 740.158,
             "Heading_Degree": 269.45    
         },

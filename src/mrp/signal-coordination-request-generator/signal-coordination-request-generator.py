@@ -30,6 +30,8 @@ following functions:
 import time
 import json
 import socket
+import atexit
+from Logger import Logger
 from CoordinationPlanManager import CoordinationPlanManager
 from CoordinationRequestManager import CoordinationRequestManager
 
@@ -43,13 +45,17 @@ def readConfigfile():
 
     return coordinationConfigData
 
+def destruct_logger(logger:Logger):
+    logger.loggingAndConsoleDisplay("Signal Coordination Request Generator is shutting down now!")
+    del logger
+
 def main():
     # Read the config file into a json object:
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = (json.load(configFile))
-    
+   
     # Close the config file:
-    configFile.close()  
+    configFile.close()
     
     # Open a socket and bind it to the IP and port dedicated for this application:
     coordinationSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -63,12 +69,19 @@ def main():
     prioritySolverAddress = (mrpIp, config["PortNumber"]["PrioritySolver"])
     priorityRequestServerAddress = (mrpIp, config["PortNumber"]["PriorityRequestServer"])
     
+    # Get logging and console output variables
+    consoleStatus = config["ConsoleOutput"]
+    loggingStatus = config["Logging"]
+    intersectionName = config["IntersectionName"]
+    
     #Read Coordination config file
     coordinationConfigData = readConfigfile() 
     
     #Create instances for the class
-    coordinationPlanManager = CoordinationPlanManager(coordinationConfigData, config)
-    coordinationRequestManager = CoordinationRequestManager(config)
+    logger = Logger(consoleStatus, loggingStatus, intersectionName)
+    atexit.register(lambda: destruct_logger(logger))
+    coordinationPlanManager = CoordinationPlanManager(coordinationConfigData, config, logger)
+    coordinationRequestManager = CoordinationRequestManager(config, logger)
     
     while True:
         # Receive data on the socket
@@ -79,10 +92,12 @@ def main():
             data = data.decode()
             receivedMessage = json.loads(data)
             if receivedMessage["MsgType"]=="CoordinationPlanRequest":
+                logger.loggingAndConsoleDisplay("Received Coordination Plan Request from PRSolver")
                 splitData = coordinationPlanManager.getSplitData()
                 if bool(splitData):
                     coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
-                
+                    logger.loggingAndConsoleDisplay("Sent Split data to PRSolver")
+                    
         # Check if it is required to obtain active coordination plan or not
         # Send the split data to the PRSolver
         except:
@@ -93,19 +108,20 @@ def main():
                 splitData = coordinationPlanManager.getSplitData()
                 if bool(splitData):
                     coordinationSocket.sendto(splitData.encode(), prioritySolverAddress)
+                    logger.loggingAndConsoleDisplay("Sent Split data to PRSolver")             
                     
             # Check if it is required to generate virtual coordination requests at the beginning of each cycle
             #  Formulate a json string for coordination requests and sends it to the PRS
             if bool(coordinationRequestManager.checkCoordinationRequestSendingRequirement()):
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-                
+                logger.loggingAndConsoleDisplay("Virtual Coorination Request is Sent to PRS")
             # Check if it is required to generate coordination requests to avoid PRS timed-out
             # Formulate a json string for coordination requests and send it to the PRS 
             elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
-
+                logger.loggingAndConsoleDisplay("Sent updated Coordination Request to avoid PRS timed-out")
             # The method updates ETA for each coordination request
             # The method deletes the old coordination requests.
             # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests
@@ -114,10 +130,16 @@ def main():
                 coordinationRequestManager.updateETAInCoordinationRequestTable()
                 if bool(coordinationRequestManager.deleteTimeOutRequestFromCoordinationRequestTable()):
                     coordinationPriorityRequestJsonString = coordinationRequestManager.getCoordinationPriorityRequestDictionary()
-                    coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
+                    if bool(coordinationPriorityRequestJsonString):
+                        coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
+                        logger.looging(coordinationPriorityRequestJsonString)
+                        logger.loggingAndConsoleDisplay("Sent coordination request list to PRS after deletion process")
                 
                 if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
                     coordinationRequestManager.clearTimedOutCoordinationPlan()
+                    coordinationClearRequestJsonString = coordinationRequestManager.getCoordinationClearRequestDictionary()
+                    coordinationSocket.sendto(coordinationClearRequestJsonString.encode(), priorityRequestServerAddress)
+                    logger.loggingAndConsoleDisplay("Sent coordination clear request list to PRS since active coordination plan is timed-out")
                                     
             time.sleep(1)
     coordinationSocket.close()

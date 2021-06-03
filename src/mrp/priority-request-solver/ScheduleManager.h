@@ -13,11 +13,13 @@
 */
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <string>
 #include "Schedule.h"
 #include "TrafficSignalPlan.h"
 #include "RequestList.h"
+#include "Timestamp.h"
 
 using std::cout;
 using std::endl;
@@ -26,6 +28,9 @@ using std::stringstream;
 using std::string;
 using std::vector;
 using std::ofstream;
+using std::fixed;
+using std::showpoint;
+using std::setprecision;
 
 class ScheduleManager
 {
