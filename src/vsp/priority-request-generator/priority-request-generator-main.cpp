@@ -44,12 +44,11 @@ int main()
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
         
-    
     char receiveBuffer[40960];
     string srmJsonString{};
     string prgStatusJsonString{};
     int msgType{};
-
+    
     while (true)
     {
         priorityRequestGeneratorSocket.receiveData(receiveBuffer, sizeof(receiveBuffer));

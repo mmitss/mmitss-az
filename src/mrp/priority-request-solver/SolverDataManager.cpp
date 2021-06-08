@@ -274,7 +274,7 @@ bool SolverDataManager::findSignalGroupInList(int signalGroup)
 /*
     - This function is responsible for creating Data file for glpk Solver based on priority request list and TCI data.
 */
-void SolverDataManager::generateDatFile()
+void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earlyReturnedValue1, double earlyReturnedValue2, int coordinatedPhase1, int coordinatedPhase2)
 {
     vector<int>::iterator it;
     int vehicleClass{};
@@ -299,6 +299,14 @@ void SolverDataManager::generateDatFile()
         fs << "param Grn2 :=" << trafficControllerStatus[i].elapsedGreen2 << ";" << endl;
     }
 
+    if (!emergencyVehicleStatus)
+    {
+        fs << "param EarlyReturnValue1:=" << earlyReturnedValue1 << ";" << endl;
+        fs << "param EarlyReturnValue2:=" << earlyReturnedValue2 << ";" << endl;
+        fs << "param CoordinatedPhase1:=" << coordinatedPhase1 << ";" << endl;
+        fs << "param CoordinatedPhase2:=" << coordinatedPhase2 << ";" << endl;
+    }
+    
     fs << "param y          \t:=";
     for (size_t i = 0; i < trafficSignalPlan.size(); i++)
         fs << "\t" << trafficSignalPlan[i].phaseNumber << "\t" << trafficSignalPlan[i].yellowChange;
@@ -650,50 +658,52 @@ void SolverDataManager::adjustGreenTimeForPedCall(vector<int> P11, vector<int> P
     double P21_GreenTime{};
     double P22_GreenTime{};
     int temporaryPhase{};
-
-    P11_GreenTime = calulateGmax(P11);
-    P12_GreenTime = calulateGmax(P12);
-    P21_GreenTime = calulateGmax(P21);
-    P22_GreenTime = calulateGmax(P22);
-
-    if (P11_GreenTime > P21_GreenTime)
+    if (!conflictingPedCallList.empty() || trafficControllerStatus[0].currentPedCallStatus1 || trafficControllerStatus[0].currentPedCallStatus2)
     {
-        temporaryPhase = P21.back();
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
-            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+        P11_GreenTime = calulateGmax(P11);
+        P12_GreenTime = calulateGmax(P12);
+        P21_GreenTime = calulateGmax(P21);
+        P22_GreenTime = calulateGmax(P22);
 
-        findSignalGroup->maxGreen = findSignalGroup->maxGreen + P11_GreenTime - P21_GreenTime;
-    }
+        if (P11_GreenTime > P21_GreenTime)
+        {
+            temporaryPhase = P21.back();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-    else if (P21_GreenTime > P11_GreenTime)
-    {
-        temporaryPhase = P11.back();
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
-            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen + P11_GreenTime - P21_GreenTime;
+        }
 
-        findSignalGroup->maxGreen = findSignalGroup->maxGreen + P21_GreenTime - P11_GreenTime;
-    }
+        else if (P21_GreenTime > P11_GreenTime)
+        {
+            temporaryPhase = P11.back();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-    if (P12_GreenTime > P22_GreenTime)
-    {
-        temporaryPhase = P22.back();
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
-            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen + P21_GreenTime - P11_GreenTime;
+        }
 
-        findSignalGroup->maxGreen = findSignalGroup->maxGreen + P12_GreenTime - P22_GreenTime;
-    }
+        if (P12_GreenTime > P22_GreenTime)
+        {
+            temporaryPhase = P22.back();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-    else if (P22_GreenTime > P12_GreenTime)
-    {
-        temporaryPhase = P12.back();
-        vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
-            std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                         [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen + P12_GreenTime - P22_GreenTime;
+        }
 
-        findSignalGroup->maxGreen = findSignalGroup->maxGreen + P22_GreenTime - P12_GreenTime;
+        else if (P22_GreenTime > P12_GreenTime)
+        {
+            temporaryPhase = P12.back();
+            vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroup =
+                std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
+                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+
+            findSignalGroup->maxGreen = findSignalGroup->maxGreen + P22_GreenTime - P12_GreenTime;
+        }
     }
 }
 

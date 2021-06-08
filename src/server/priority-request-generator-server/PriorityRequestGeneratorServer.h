@@ -36,6 +36,7 @@ private:
     string srmSendingJsonString{};
     string prgStatusSendingJsonString{};
     bool sendSRM{false};
+    ServerList vehicleinfo;
 
 public:
     PriorityRequestGeneratorServer();

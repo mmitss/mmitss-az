@@ -39,10 +39,10 @@ PriorityRequestGeneratorServer::PriorityRequestGeneratorServer()
 void PriorityRequestGeneratorServer::managingPRGServerList(BasicVehicle basicVehicle)
 {
     int vehid{};
-    ServerList vehicleinfo;
+    // ServerList vehicleinfo;
     vehicleinfo.reset();
 
-    if (checkAddVehicleIDToPRGServerList(basicVehicle) == true)
+    if (checkAddVehicleIDToPRGServerList(basicVehicle))
     {
         vehicleinfo.vehicleID = basicVehicle.getTemporaryID();
         vehicleinfo.vehicleType = basicVehicle.getType();
@@ -53,7 +53,7 @@ void PriorityRequestGeneratorServer::managingPRGServerList(BasicVehicle basicVeh
         PRGServerList.push_back(vehicleinfo);
     }
 
-    else if (checkUpdateVehicleIDInPRGServerList(basicVehicle) == true)
+    else if (checkUpdateVehicleIDInPRGServerList(basicVehicle))
     {
         vehid = basicVehicle.getTemporaryID();
         vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
@@ -142,7 +142,7 @@ void PriorityRequestGeneratorServer::processSSM(string jsonString)
 void PriorityRequestGeneratorServer::deleteTimedOutVehicleInformationFromPRGServerList()
 {
     int veheicleID{};
-    if (checkDeleteTimedOutVehicleIDFromList() == true)
+    if (checkDeleteTimedOutVehicleIDFromList())
     {
         veheicleID = getTimedOutVehicleID();
         vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
