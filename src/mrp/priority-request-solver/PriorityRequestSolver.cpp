@@ -147,7 +147,7 @@ double PriorityRequestSolver::getCoefficientOfFrictionValue(double vehicleSpeed)
 /*
     - The following method responsible for checking whether any heavy vehicle is in the dilemma zoe or not.
 */
-void PriorityRequestSolver::createDilemmaZoneRequestList()
+void PriorityRequestSolver::setDilemmaZoneRequesStatus()
 {
     double initialVehicleSpeed{};
     double stoppingSightDistance{};
@@ -164,8 +164,8 @@ void PriorityRequestSolver::createDilemmaZoneRequestList()
             coefficientOfFriction = getCoefficientOfFrictionValue(initialVehicleSpeed);
             stoppingSightDistance = 1.47 * perceptionResponseTime * initialVehicleSpeed + std::pow(initialVehicleSpeed, 2) / (30 * coefficientOfFriction);
             if (priorityRequestList[i].vehicleDistanceFromStopBar <= stoppingSightDistance)
+                priorityRequestList[i].dilemmaZoneStatus = true;
 
-                dilemmaZoneRequestList.push_back(priorityRequestList[i]);
         }
     }
 }
@@ -182,7 +182,7 @@ void PriorityRequestSolver::modifyPriorityRequestList()
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
         temporaryVehicleID = priorityRequestList[i].vehicleID;
-        if (priorityRequestList[i].vehicleType != 2)
+        if (priorityRequestList[i].vehicleType != 2 && !priorityRequestList[i].dilemmaZoneStatus)
         {
             vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
                                                                              [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
@@ -518,7 +518,7 @@ void PriorityRequestSolver::setOptimizationInput()
     {
         OptimizationModelManager optimizationModelManager;
 
-        createDilemmaZoneRequestList();
+        setDilemmaZoneRequesStatus();
         modifyPriorityRequestList();
         getRequestedSignalGroup();
         managePriorityRequestListForEV();

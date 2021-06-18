@@ -77,22 +77,6 @@ int PriorityRequestServer::getMessageType(string jsonString)
 }
 
 /*
-	Get the Intersection ID from the configuration file.
-*/
-int PriorityRequestServer::getIntersectionID()
-{
-	return intersectionID;
-}
-
-/*
-	Get the Regional ID from the configuration file.
-*/
-int PriorityRequestServer::getRegionalID()
-{
-	return regionalID;
-}
-
-/*
 	If Intersection ID and Regional ID match then accept the srm
 */
 bool PriorityRequestServer::acceptSignalRequest(SignalRequest signalRequest)
