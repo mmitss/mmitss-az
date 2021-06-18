@@ -113,8 +113,6 @@ public:
     void loggingData(string logString);
     void displayConsoleData(string consoleString);
     int getMessageType(string jsonString);
-    int getIntersectionID();
-    int getRegionalID();
     int getRequestTimedOutVehicleID();
     int getMinuteOfYear();
     int getMsOfMinute();
