@@ -105,7 +105,7 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void createDilemmaZoneRequestList();
+  void setDilemmaZoneRequesStatus();
   void modifyPriorityRequestList();
   void modifySignalTimingPlan();
   void modifyCoordinationSignalTimingPlan();

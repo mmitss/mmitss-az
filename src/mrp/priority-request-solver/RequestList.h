@@ -9,6 +9,7 @@ struct RequestList
     double vehicleETA_Duration{};
     double vehicleSpeed{};
     double vehicleDistanceFromStopBar{};
+    bool dilemmaZoneStatus{};
 
     void reset()
     {
@@ -20,5 +21,6 @@ struct RequestList
         vehicleETA_Duration = 0.0;
         vehicleSpeed = 0.0;
         vehicleDistanceFromStopBar = 0.0;
+        dilemmaZoneStatus = false;
     }
 };

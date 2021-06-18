@@ -27,8 +27,9 @@ using std::vector;
 #define VehicleClass_EmergencyVehicle 1
 #define VehicleClass_Transit 2
 #define VehicleClass_Truck 3
-#define VehicleClass_EmergencyVehicleSplitRequest 4
+#define VehicleClass_DilemmaZone 4
 #define VehicleClass_Coordination 5
+#define VehicleClass_EmergencyVehicleSplitRequest 6
 #define SignalCoordinationVehicleType 20
 #define Maximum_Number_Of_Priority_Request 15
 
@@ -39,6 +40,7 @@ private:
   int numberOfTruckInList{};
   int numberOfEVInList{};
   int numberOfEVSplitRequestInList{};
+  int numberOfDilemmaZoneRequestInList{};
   int numberOfCoordinationRequestInCycle1{};
   int numberOfCoordinationRequestInCycle2{};
   double maxEV_ETA{};
