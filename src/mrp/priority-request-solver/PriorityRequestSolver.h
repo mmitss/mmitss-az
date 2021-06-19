@@ -131,6 +131,7 @@ public:
   string getSignalTimingPlanRequestString();
   string getCurrentSignalStatusRequestString();
   string getSignalCoordinationTimingPlanRequestString();
+  string getTimePhaseDiagramMessageString();
   int getMessageType(string jsonString);
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   double getCurrentTime();

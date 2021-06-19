@@ -1368,6 +1368,24 @@ string PriorityRequestSolver::getSignalCoordinationTimingPlanRequestString()
 }
 
 /*
+    - The following method creates Json string message which will send to Time-Phase-Diagram-Tool for generating diagrams if require.
+*/
+string PriorityRequestSolver::getTimePhaseDiagramMessageString()
+{
+    std::string jsonString{};
+    Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
+    jsonObject["MsgType"] = "TimePhaseDiagram";
+    jsonString = Json::writeString(builder, jsonObject);
+
+    return jsonString;
+
+}
+
+/*
     -Check whether static traffic signal timing plan is available or not
 */
 bool PriorityRequestSolver::checkTrafficSignalTimingPlanStatus()
