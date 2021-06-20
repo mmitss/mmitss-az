@@ -153,10 +153,10 @@ class TimePhaseDiagramManager:
                 h = requestedPhaseHeight[i]
                 if i == 0:
                     ax1.add_patch(matplotlib.patches.Rectangle(
-                        (x, y), z, h, angle=0.0, color='orange', linewidth=2, label='Coordination Priority Request'))
+                        (x, y), z, h, angle=0.0, color='darkcyan', linewidth=2, label='Coordination Priority Request'))
                 else:
                     ax1.add_patch(matplotlib.patches.Rectangle(
-                        (x, y), z, h, angle=0.0, color='orange', linewidth=2))
+                        (x, y), z, h, angle=0.0, color='darkcyan', linewidth=2))
 
         if(len(self.vehicleType_DilemmaZone) > 0):
             requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
