@@ -3,7 +3,6 @@ import socket
 import os
 from OptimizationResultsManager import OptimizationResultsManager
 
-
 def createDirectory():
     path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
 
@@ -44,18 +43,21 @@ def main():
     createDirectory()
     optimizationResultsManager = OptimizationResultsManager()
     
-    while True:
-        try:
-            data, address = timePhaseDiagramSocket.recvfrom(1024)
-            data = data.decode()
-            receivedMessage = json.loads(data)
-            if receivedMessage["MsgType"]=="TimePhaseDiagram" and bool(diagramGenerationStatus):
-                optimizationResultsManager.readOptimizationResultsFile()
-                
-        except:
-            if (time.time() - generateDiagramStatusCheckingTime) >= timeGapBetweenDiagramGenerationStatusChecking:
-                diagramGenerationStatus = checkTimePhaseDigramGeneratingStatus(configFile)
-                generateDiagramStatusCheckingTime = time.time() 
+    try:
+        while True:
+            try:
+                data, address = timePhaseDiagramSocket.recvfrom(1024)
+                data = data.decode()
+                receivedMessage = json.loads(data)
+                if receivedMessage["MsgType"]=="TimePhaseDiagram" and bool(diagramGenerationStatus):
+                    optimizationResultsManager.readOptimizationResultsFile()
+                    
+            except:
+                if (time.time() - generateDiagramStatusCheckingTime) >= timeGapBetweenDiagramGenerationStatusChecking:
+                    diagramGenerationStatus = checkTimePhaseDigramGeneratingStatus(configFile)
+                    generateDiagramStatusCheckingTime = time.time() 
+    except KeyboardInterrupt:
+        print("Finished with ctrl+c")
 
     timePhaseDiagramSocket.close()
 
