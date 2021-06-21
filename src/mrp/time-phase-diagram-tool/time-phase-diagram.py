@@ -1,7 +1,3 @@
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
 import json, time
 import socket
 import os
@@ -19,8 +15,6 @@ def checkTimePhaseDigramGeneratingStatus(configFile):
     
     configFile = open("/nojournal/bin/mmitss-phase3-master-config.json", 'r')
     config = json.load(configFile)
-
-    # Close the config file:
     configFile.close()
     
     diagramGenerationStatus = config["PerformanceMeasurementDiagram"]
@@ -50,7 +44,6 @@ def main():
     createDirectory()
     optimizationResultsManager = OptimizationResultsManager()
     
-
     while True:
         try:
             data, address = timePhaseDiagramSocket.recvfrom(1024)

@@ -1,8 +1,8 @@
 import time
 import datetime
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 import shutil
 import os
@@ -17,7 +17,6 @@ class TimePhaseDiagramManager:
             if file.endswith(".jpg"):
                 shutil.move("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" +
                             file, "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive")
-    
 
     def getParameters(self, cumulativeLeftCriticalPointsRing1, cumulativeRightCriticalPointsRing1, cumulativePhaseHeightInRing1, phaseSequenceInRing1,
                       cumulativeLeftCriticalPointsRing2, cumulativeRightCriticalPointsRing2, cumulativePhaseHeightInRing2, phaseSequenceInRing2,
@@ -27,26 +26,23 @@ class TimePhaseDiagramManager:
                       ETA_Coordination, ETA_Duration_Coordination, requestedPhase_Coordination, vehicleType_Coordination, delay_Coordination,
                       ETA_DilemmaZone, ETA_Duration_DilemmaZone, requestedPhase_DilemmaZone, vehicleType_DilemmaZone, delay_DilemmaZone):
 
-        self.cumulativeLeftCriticalPointsRing1,self.cumulativeRightCriticalPointsRing1,self.cumulativePhaseHeightInRing1, self.phaseSequenceInRing1 = cumulativeLeftCriticalPointsRing1, cumulativeRightCriticalPointsRing1, cumulativePhaseHeightInRing1, phaseSequenceInRing1
-        self.cumulativeLeftCriticalPointsRing2, self.cumulativeRightCriticalPointsRing2, self.cumulativePhaseHeightInRing2, self.phaseSequenceInRing2 = cumulativeLeftCriticalPointsRing2,cumulativeRightCriticalPointsRing2, cumulativePhaseHeightInRing2, phaseSequenceInRing2
+        self.cumulativeLeftCriticalPointsRing1, self.cumulativeRightCriticalPointsRing1, self.cumulativePhaseHeightInRing1, self.phaseSequenceInRing1 = cumulativeLeftCriticalPointsRing1, cumulativeRightCriticalPointsRing1, cumulativePhaseHeightInRing1, phaseSequenceInRing1
+        self.cumulativeLeftCriticalPointsRing2, self.cumulativeRightCriticalPointsRing2, self.cumulativePhaseHeightInRing2, self.phaseSequenceInRing2 = cumulativeLeftCriticalPointsRing2, cumulativeRightCriticalPointsRing2, cumulativePhaseHeightInRing2, phaseSequenceInRing2
         self.ETA_EV, self.ETA_Duration_EV, self.requestedPhase_EV, self.vehicleType_EV, self.delay_EV = ETA_EV, ETA_Duration_EV, requestedPhase_EV, vehicleType_EV, delay_EV
         self.ETA_Transit, self.ETA_Duration_Transit, self.requestedPhase_Transit, self.vehicleType_Transit, self.delay_Transit = ETA_Transit, ETA_Duration_Transit, requestedPhase_Transit, vehicleType_Transit, delay_Transit
         self.ETA_Truck, self.ETA_Duration_Truck, self.requestedPhase_Truck, self.vehicleType_Truck, self.delay_Truck = ETA_Truck, ETA_Duration_Truck, requestedPhase_Truck, vehicleType_Truck, delay_Truck
         self.ETA_Coordination, self.ETA_Duration_Coordination, self.requestedPhase_Coordination, self.vehicleType_Coordination, self.delay_Coordination = ETA_Coordination, ETA_Duration_Coordination, requestedPhase_Coordination, vehicleType_Coordination, delay_Coordination
         self.ETA_DilemmaZone, self.ETA_Duration_DilemmaZone, self.requestedPhase_DilemmaZone, self.vehicleType_DilemmaZone, self.delay_DilemmaZone = ETA_DilemmaZone, ETA_Duration_DilemmaZone, requestedPhase_DilemmaZone, vehicleType_DilemmaZone, delay_DilemmaZone
 
-
-
-
     def timePhaseDiagramMethod(self, ringNo):
         self.archiveOldDiagrams()
-        fig, ax1=plt.subplots(figsize = (18, 12))
+        fig, ax1 = plt.subplots(figsize=(18, 12))
 
         if ringNo == 'Ring1&2':
-            color='tab:red'
-            ax1.set_xlabel('Time (s)', fontsize = 24, fontweight = 'bold')
-            ax1.set_ylabel('Ring 1', color = color,
-                           fontsize = 28, fontweight = 'bold')
+            color = 'tab:red'
+            ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
+            ax1.set_ylabel('Ring 1', color=color,
+                           fontsize=28, fontweight='bold')
             ax1.plot(self.cumulativeLeftCriticalPointsRing1,
                      self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
             ax1.plot(self.cumulativeRightCriticalPointsRing1,
@@ -100,10 +96,10 @@ class TimePhaseDiagramManager:
                 z = self.ETA_Duration_EV[i]
                 h = requestedPhaseHeight[i]
                 if i == 0:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='red', linewidth=2, label='EV Priority Request'))
                 else:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='red', linewidth=2))
 
         if(len(self.vehicleType_Transit) > 0):
@@ -117,12 +113,12 @@ class TimePhaseDiagramManager:
                 h = requestedPhaseHeight[i]
                 if i == 0:
                     # if(len(self.delay_Transit) > 0):
-                    #     ax1.add_patch(matplotlib.patches.Rectangle(
+                    #     ax1.add_patch(Rectangle(
                     #         (x, y), self.delay_Transit[i], 1, angle=0.0, color='red', linewidth=1))
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='green', linewidth=2, label='Transit Priority Request'))
                 else:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='green', linewidth=2))
 
         if(len(self.vehicleType_Truck) > 0):
@@ -135,12 +131,12 @@ class TimePhaseDiagramManager:
                 z = self.ETA_Duration_Truck[i]
                 h = requestedPhaseHeight[i]
                 if i == 0:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2, label='Truck Priority Request'))
 
                 else:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
-                        (x, y), z, h, angle=0.0, color='navy', linewidth=2))
+                    ax1.add_patch(
+                        Rectangle((x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
         if(len(self.vehicleType_Coordination) > 0):
             requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
@@ -152,10 +148,10 @@ class TimePhaseDiagramManager:
                 z = self.ETA_Duration_Coordination[i]
                 h = requestedPhaseHeight[i]
                 if i == 0:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='darkcyan', linewidth=2, label='Coordination Priority Request'))
                 else:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='darkcyan', linewidth=2))
 
         if(len(self.vehicleType_DilemmaZone) > 0):
@@ -168,10 +164,10 @@ class TimePhaseDiagramManager:
                 z = self.ETA_Duration_DilemmaZone[i]
                 h = requestedPhaseHeight[i]
                 if i == 0:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2, label='DilemmaZone Request'))
                 else:
-                    ax1.add_patch(matplotlib.patches.Rectangle(
+                    ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
         ax1.legend(loc='upper right', bbox_to_anchor=(
@@ -184,9 +180,10 @@ class TimePhaseDiagramManager:
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
 
         # plt.show()
-        
-        print("[{}]".format(str(round(time.time(), 4))) + " " + "Generate Time-Phase Diagram")
-        
+
+        print("[{}]".format(str(round(time.time(), 4))) +
+              " " + "Generate Time-Phase Diagram")
+
     def getRequestedPhasePositionAndHeight(self, requestedPhaseList):
         requestedPhasePosition = []
         requestedPhaseHeight = []
@@ -209,5 +206,5 @@ class TimePhaseDiagramManager:
                     self.cumulativePhaseHeightInRing2[index]) for index in indexPosList]
                 [requestedPhaseHeight.append(
                     self.cumulativePhaseHeightInRing2[index+1] - self.cumulativePhaseHeightInRing2[index]) for index in indexPosList]
-    
+
         return requestedPhasePosition, requestedPhaseHeight
