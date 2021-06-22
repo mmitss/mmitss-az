@@ -12,6 +12,7 @@
 	"VehicleType": "Transit",
 	"Logging": true,
 	"ConsoleOutput": true,
+	"PerformanceMeasurementDiagram": true,
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
@@ -51,7 +52,8 @@
 		"TrajectoryAware_MapEngineInterface": 20023,
 		"MapEngine": 20024,
 		"LightSirenStatusManager": 20025,
-		"PeerToPeerPriority": 20026
+		"PeerToPeerPriority": 20026,
+		"TimePhaseDiagramTool": 20027
 	},
 	"psid": {
 		"map": "8002",
@@ -114,28 +116,23 @@
 		"Longitude_DecimalDegree": -110.95241440609077,
 		"Elevation_Meter": 716
 	},
-	"DataTransfer":
-	{
-		"server":
-		{
+	"DataTransfer": {
+		"server": {
 			"data_directory": "/home/ubuntu/mmitss",
 			"ip_address": "127.0.0.1",
 			"username": "username",
 			"password": "password"
 		},
-		"intersection": 
-		[
+		"intersection": [
 			{
 				"name": "intersection-1",
 				"v2x-data_location": "/home/ubuntu/mmitss"
 			}
 		],
-		"StartTime_PushToServer": 
-		{
-				"hour": 0,
-				"minute": 0			
+		"StartTime_PushToServer": {
+			"hour": 0,
+			"minute": 0
 		}
-		
 	},
 	"PriorityParameter": {
 		"EmergencyVehicleWeight": 1.0,
@@ -143,6 +140,7 @@
 		"TransitWeight": 1.0,
 		"TruckWeight": 1.0,
 		"DilemmaZoneRequestWeight": 20.0,
-		"CoordinationWeight": 1.0
+		"CoordinationWeight": 1.0,
+		"FlexibilityWeight": 0.01
 	}
 }
