@@ -445,21 +445,31 @@ def configuration():
     return render_template('configuration.html', pageTitle=pageTitle, form=form)
 
 
-@@app.route('/performance_data/',methods=['GET','POST'])
+@app.route('/performance_data/',methods=['GET','POST'])
 def performance_data():
     import json
-    import re
+    import os
     import glob
     
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+        data = json.load(json_file)
+        #sysConfig = SysConfig(data)    
+        thisPlatform = data['ApplicationPlatform']
+        intName = data['IntersectionName']
+        #file_a = '/nojournal/bin/v2x-data/'
+        #fname = file_a+csvFile+'/*.csv'
     
-    for fname in glob.glob('*_msgCountsLog_*.csv'):
+    for fname in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
         print(fname)
 
+    #fname = '/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'
+    #print(fname)
+        
     file = fname
 
     #file = re.findall("/nojournal/bin/v2x-data/w*_/d*_/d*.csv",fh)
     #file = re.search("csv$")
-
+    
     col_list = ["log_timestamp_verbose","msg_type","msg_count"]
     df = pd.read_csv(file ,usecols=col_list)
     rt = pd.read_csv(file , usecols= ["interval_sec"])
@@ -472,10 +482,6 @@ def performance_data():
     new_df = df.drop_duplicates(subset=['Message'])
     #print(new_df)
 
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
-        data = json.load(json_file)
-        #sysConfig = SysConfig(data)    
-        thisPlatform = data['ApplicationPlatform']
     if thisPlatform == "roadside":
         df1 = new_df
         df2 = new_df
