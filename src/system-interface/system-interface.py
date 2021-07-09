@@ -27,6 +27,8 @@ import os
 import sys
 import pandas as pd
 import csv
+import json
+import glob
 
 # Initialize application for either PyInstaller or Development
 if getattr(sys, 'frozen', False):
@@ -447,88 +449,61 @@ def configuration():
 
 @app.route('/performance_data/',methods=['GET','POST'])
 def performance_data():
-    import json
-    import os
-    import glob
     
+    #read the cofig file to extract the intersection name and platform
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
-        #sysConfig = SysConfig(data)    
+        
         thisPlatform = data['ApplicationPlatform']
         intName = data['IntersectionName']
-        #file_a = '/nojournal/bin/v2x-data/'
-        #fname = file_a+csvFile+'/*.csv'
-    
-    for fname in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
-        print(fname)
-
-    #fname = '/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'
-    #print(fname)
         
-    file = fname
-
-    #file = re.findall("/nojournal/bin/v2x-data/w*_/d*_/d*.csv",fh)
-    #file = re.search("csv$")
-    
+    #ran a loop to search for the file matching the below mentioned pattern
+    for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
+        i = 0
+        
+    #read the csv file and extracted the required columns and stored in a dataframe   
     col_list = ["log_timestamp_verbose","msg_type","msg_count"]
     df = pd.read_csv(file ,usecols=col_list)
-    rt = pd.read_csv(file , usecols= ["interval_sec"])
-    t1= rt["interval_sec"].tolist()
-    t2 = min(t1)
-    #print(t2)
-    #print(rt)
+    #read the csv file again but just the timestamp column and determined the latest refreshed rate
+    rt = pd.read_csv(file , usecols= ["log_timestamp_verbose"])
+    t1= rt["log_timestamp_verbose"].tolist()
+    t2 = max(t1)
+   
+   #assigned names to the respective columns
     df.columns = ["Time","Message","Count"]
-    df['Cumulative'] = df.groupby(['Message'])['Count'].transform('sum')
-    new_df = df.drop_duplicates(subset=['Message'])
-    #print(new_df)
+    #generated additional column to contain the cumulative count grouped by each message type
+    df['Cumulative'] = df.groupby(['Message'])['Count'].cumsum(axis=0)
+    #sorted the dataframe in descending order to obtain the latest entries on top
+    new_df = df.sort_values(['Time'], ascending=False)
+    #dropped the rows with duplicate values and kept the latest entry i.e. the first entry of each mssg type
+    new_df = new_df.drop_duplicates(subset='Message', keep="first")
 
+    #checking whether to display the MRP or VSP 
     if thisPlatform == "roadside":
         df1 = new_df
         df2 = new_df
-        platform = "On the Infrastructure Side(MRP)"
-        #print(df1.drop([0, 1, 2]))
-        df1=df1.drop([0,4],axis=0)
-        df2=df2.drop([1,2,3],axis=0)
+        platform = "Infrastructure Side (MRP)"
+        df1 = df1[df1.Message != 'SRM']
+        df1 = df1[df1.Message != 'RemoteBSM']
+        df2 = df2[df2.Message != 'MAP']
+        df2 = df2[df2.Message != 'SPaT']
+        df2 = df2[df2.Message != 'SSM']
+        
+                
+
     elif thisPlatform == "vehicle":
         df1 = new_df
         df2 = new_df
-        platform = "On the Vehicle Side(VSP)"
-        df1=df1.drop([1,2,3],axis=0)
-        df2=df2.drop([0,4],axis=0)
+        platform = "Vehicle Side (VSP)"
+        df2 = df2[df2.Message != 'SRM']
+        df2 = df2[df2.Message != 'RemoteBSM']
+        df1 = df1[df1.Message != 'MAP']
+        df1 = df1[df1.Message != 'SPaT']
+        df1 = df1[df1.Message != 'SSM']
 
-    
-    #df['Cumulative'] = df.groupby(['Message'])['Count'].transform('sum')
-    #new_df = df.drop_duplicates(subset=['Message'])
+    #sending the dataframes to HTML template
     return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False))
-    #return render_template("performance_data.html", data=df, headings=headings)
     
-    #with open("daisy-anthem_msgCountsLog_01012021_000000.csv") as csv_file:
-        #reader = csv.reader(csv_file, delimiter=",")
-        #headings = ("Time","Message","Count","Cumulative")
-        
-       # data =[]
-       # for row in reader:
-        #    data.append({"Day": row[1]
-        #    ,"Message":row[6]
-        #    ,"Count": row[7],
-        #    "Cummulative":row[7]})
-            
-    #return render_template("performance_data.html", data=data)
-    #import json
-    #data1 = []
-    #data2 = []
-    #with open('MRP.json') as MRP_file:
-    #    data_1 = json.load(MRP_file)
-    #    for row in data_1:
-    #        data1.append(row)
-    #    data1 = pd.DataFrame(data1)
-
-    #with open('VSP.json') as VSP_file:
-    #    data_2 = json.load(VSP_file)
-    #    for row in data_2:
-    #        data2.append(row)
-    #    data2 = pd.DataFrame(data2)
-    #return render_template('performance_data.html', data1 = data1.to_html(header=False, index=False),data2 = data2.to_html(header=False, index=False))
 
 
  # page not found 
