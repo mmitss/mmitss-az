@@ -41,7 +41,7 @@ class TimePhaseDiagramManager:
         if ringNo == 'Ring1&2':
             color = 'tab:red'
             ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
-            ax1.set_ylabel('Ring 1', color=color,
+            ax1.set_ylabel('Ring 1 Phases', color=color,
                            fontsize=28, fontweight='bold')
             ax1.plot(self.cumulativeLeftCriticalPointsRing1,
                      self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
@@ -65,7 +65,7 @@ class TimePhaseDiagramManager:
             # Ring2
             ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
-            ax2.set_ylabel('Ring 2', color=color,
+            ax2.set_ylabel('Ring 2 Phases', color=color,
                            fontsize=28, fontweight='bold')
             ax2.plot(self.cumulativeLeftCriticalPointsRing2,
                      self.cumulativePhaseHeightInRing2, color=color, linewidth=4)
