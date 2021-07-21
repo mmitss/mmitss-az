@@ -42,6 +42,15 @@
 <div><b>Messages Received</b>
     {{tables2 | safe}}</div>
 
+
+<script>
+    function autoRefresh() {
+        window.location = window.location.href;
+    }
+    setInterval('autoRefresh()',30000);
+
+</script>
+
 <!--
 <br>
 <br>
