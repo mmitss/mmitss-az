@@ -32,6 +32,7 @@ import psutil
 import Ntcip1202v2Blob
 import Spat
 import MmitssSpat
+from UtcHelper import UtcHelper
 
 def main():
 
@@ -102,6 +103,9 @@ def main():
 
     spatBroadcastSuccessFlag = False
 
+    # Create an object of UtcHelper class
+    utcHelper = UtcHelper()
+
     while True:
         data, addr = s.recvfrom(1024)
         # If the data is received from the signal controller:
@@ -151,11 +155,15 @@ def main():
                 "States": currentBlob.getVehCurrState()
             })
                 
+            
             s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
-            s.sendto(spatJsonString.encode(), msgEncoderAddress)
-            s.sendto(spatJsonString.encode(), localDataCollectorAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
-                        
+            s.sendto(spatJsonString.encode(), localDataCollectorAddress)
+            
+            # Modify SPaT Json string to reflect UTC times:
+            modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
+            s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
+
             # Send spat json to external clients:
             for client in clients_spatJson:
                 address = (client["IP"], client["Port"])
