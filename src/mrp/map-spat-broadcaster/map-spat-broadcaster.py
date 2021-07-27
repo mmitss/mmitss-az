@@ -32,7 +32,7 @@ import psutil
 import Ntcip1202v2Blob
 import Spat
 import MmitssSpat
-from UtcHelper import UtcHelper
+import UtcHelper
 
 def main():
 
@@ -104,7 +104,7 @@ def main():
     spatBroadcastSuccessFlag = False
 
     # Create an object of UtcHelper class
-    utcHelper = UtcHelper()
+    utcHelper = UtcHelper.UtcHelper()
 
     while True:
         data, addr = s.recvfrom(1024)

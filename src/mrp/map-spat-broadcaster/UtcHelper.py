@@ -2,15 +2,17 @@ import math
 import json
 from datetime import datetime
 
+MILLISEC_IN_HOUR = 36000
+SEC_IN_MINUTE = 60
+MILLISEC_IN_SECOND = 10
+MICROSEC_IN_MILLISEC = 100000
+
 class UtcHelper:
     def __init__(self):
         pass
 
     def get_utcTimemark_from_milliSecFromNow(self, milliSecFromNow:int):
-        MILLISEC_IN_HOUR = 36000
-        SEC_IN_MINUTE = 60
-        MILLISEC_IN_SECOND = 10
-        MICROSEC_IN_MILLISEC = 100000
+
 
         currentUtcTime = datetime.utcnow()
         currentUtcMillisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*MILLISEC_IN_SECOND + 
@@ -23,11 +25,6 @@ class UtcHelper:
         else: return utcTimemark
 
     def get_milliSecFromNow_from_utcTimemark(self, utcTimemark:int):
-        MILLISEC_IN_HOUR = 36000
-        SEC_IN_MINUTE = 60
-        MILLISEC_IN_SECOND = 10
-        MICROSEC_IN_MILLISEC = 100000
-
         currentUtcTime = datetime.utcnow()
         currentUtcMillisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*MILLISEC_IN_SECOND + 
                                     math.floor(currentUtcTime.microsecond/MICROSEC_IN_MILLISEC))
