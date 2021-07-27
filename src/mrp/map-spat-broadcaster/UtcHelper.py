@@ -24,69 +24,69 @@ import math
 import json
 from datetime import datetime
 
-MILLISEC_IN_HOUR = 36000
+DECISEC_IN_HOUR = 36000
 SEC_IN_MINUTE = 60
-MILLISEC_IN_SECOND = 10
-MICROSEC_IN_MILLISEC = 100000
+DECISEC_IN_SECOND = 10
+MICROSEC_IN_DECISEC = 100000
 
 class UtcHelper:
     def __init__(self):
         pass
 
-    def get_utcTimemark_from_milliSecFromNow(self, milliSecFromNow:int):
+    def get_utcTimemark_from_deciSecFromNow(self, deciSecFromNow:int):
         """
-        takes millisecond from now as an input and returns a corresponding
+        takes decisecond from now as an input and returns a corresponding
         UTC timemark
         """
 
         # Get current UTC time
         currentUtcTime = datetime.utcnow()
 
-        # Extract current millisecond in the current UTC hour
-        currentUtcMillisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*MILLISEC_IN_SECOND + 
-                                    math.floor(currentUtcTime.microsecond/MICROSEC_IN_MILLISEC))
+        # Extract current decisecond in the current UTC hour
+        currentUtcDecisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*DECISEC_IN_SECOND + 
+                                    math.floor(currentUtcTime.microsecond/MICROSEC_IN_DECISEC))
         
         # Compute the initial UTC timemark
-        utcTimemark = milliSecFromNow + currentUtcMillisecond
+        utcTimemark = deciSecFromNow + currentUtcDecisecond
 
         # If the utcTimemark is in the next UTC hour
-        if (utcTimemark) >= MILLISEC_IN_HOUR: 
-            # Return return the UTC timemark in the next hour by 
-            # subtracting total milliseconds in an hour (36000)
-            return (utcTimemark-MILLISEC_IN_HOUR)
+        if (utcTimemark) >= DECISEC_IN_HOUR: 
+            # Return  the UTC timemark in the next hour by 
+            # subtracting total deciseconds in an hour (36000)
+            return (utcTimemark-DECISEC_IN_HOUR)
 
         else: 
             # Return the computed UTC timemark
             return utcTimemark
 
-    def get_milliSecFromNow_from_utcTimemark(self, utcTimemark:int):
+    def get_deciSecFromNow_from_utcTimemark(self, utcTimemark:int):
         """
-        takes a UTC timemark as an input and returns milliseconds from now
+        takes a UTC timemark as an input and returns deciseconds from now
         """
         # Get current UTC time
         currentUtcTime = datetime.utcnow()
         
-        # Extract the current millisecond in the current UTC hour
-        currentUtcMillisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*MILLISEC_IN_SECOND + 
-                                    math.floor(currentUtcTime.microsecond/MICROSEC_IN_MILLISEC))
+        # Extract the current decisecond in the current UTC hour
+        currentUtcDecisecond = ((currentUtcTime.minute*SEC_IN_MINUTE + currentUtcTime.second)*DECISEC_IN_SECOND + 
+                                    math.floor(currentUtcTime.microsecond/MICROSEC_IN_DECISEC))
         
-        # If current millisecond in the UTC hour is less than the input utcTimemark
-        if currentUtcMillisecond <= utcTimemark:
+        # If current decisecond in the UTC hour is less than the input utcTimemark
+        if currentUtcDecisecond <= utcTimemark:
             # Then the input UTC timemark is in the current UTC hour
-            # Therefore, millisecond from now is just the difference between
-            # current UTC millisecond and the input UTC timemark
-            milliSecFromNow = utcTimemark - currentUtcMillisecond
+            # Therefore, decisecond from now is just the difference between
+            # current UTC decisecond and the input UTC timemark
+            deciSecFromNow = utcTimemark - currentUtcDecisecond
         else:
             # Then the input UTC timemark is in the next UTC hour
 
-            # Compute milliseconds left till the beginning of the next UTC hour
-            milliSecUntilNextHour = MILLISEC_IN_HOUR - currentUtcMillisecond
-            # milliseconds from now is the addition of the milliseconds 
+            # Compute deciseconds left till the beginning of the next UTC hour
+            deciSecUntilNextHour = DECISEC_IN_HOUR - currentUtcDecisecond
+            # deciseconds from now is the addition of the deciseconds 
             # left until the beginning of the next UTC hour and 
-            # milliseconds in the next time hour (that is input utcTimemark)
-            milliSecFromNow = milliSecUntilNextHour + utcTimemark
+            # deciseconds in the next time hour (that is input utcTimemark)
+            deciSecFromNow = deciSecUntilNextHour + utcTimemark
 
-        return milliSecFromNow
+        return deciSecFromNow
 
     def modify_spat_json_to_utc_timemark(self, spatJsonString:str):
         """
@@ -106,14 +106,14 @@ class UtcHelper:
         # For each vehicle state, modify the min and max end times to timemarks in current 
         # or the next UTC hour
         for phaseState in phaseStates:
-            phaseState["minEndTime"] = self.get_utcTimemark_from_milliSecFromNow(phaseState["minEndTime"])
-            phaseState["maxEndTime"] = self.get_utcTimemark_from_milliSecFromNow(phaseState["maxEndTime"])
+            phaseState["minEndTime"] = self.get_utcTimemark_from_deciSecFromNow(phaseState["minEndTime"])
+            phaseState["maxEndTime"] = self.get_utcTimemark_from_deciSecFromNow(phaseState["maxEndTime"])
         
         # For each pedestrian state, modify the min and max end times to timemarks in current 
         # or the next UTC hour
         for pedPhaseState in pedPhaseStates:
-            pedPhaseState["minEndTime"] = self.get_utcTimemark_from_milliSecFromNow(pedPhaseState["minEndTime"])
-            pedPhaseState["maxEndTime"] = self.get_utcTimemark_from_milliSecFromNow(pedPhaseState["maxEndTime"])
+            pedPhaseState["minEndTime"] = self.get_utcTimemark_from_deciSecFromNow(pedPhaseState["minEndTime"])
+            pedPhaseState["maxEndTime"] = self.get_utcTimemark_from_deciSecFromNow(pedPhaseState["maxEndTime"])
 
         # Plug in the modified parameters in the corresponding parameters of modified SPaT JSON object
         modifiedSpatJson["Spat"]["phaseState"] = phaseStates
@@ -123,10 +123,10 @@ class UtcHelper:
         return json.dumps(modifiedSpatJson)
 
 
-    def modify_spat_json_to_milliSecFromNow(self, spatJsonString:str):
+    def modify_spat_json_to_deciSecFromNow(self, spatJsonString:str):
         """
         takes a SPaT JSON string as in input, modifies all min and max end times 
-        to milliseconds from now, and returns the modified SPaT JSON string
+        to deciseconds from now, and returns the modified SPaT JSON string
         """
         # Create a JSON object from the input string
         spatJson = json.loads(spatJsonString)
@@ -138,15 +138,15 @@ class UtcHelper:
         # Create a copy of the SPaT JSON object to store the modified parameters
         modifiedSpatJson = spatJson
 
-        # For each vehicle phase, modify the min and max end times to milliseconds from now
+        # For each vehicle phase, modify the min and max end times to deciseconds from now
         for phaseState in phaseStates:
-            phaseState["minEndTime"] = self.get_milliSecFromNow_from_utcTimemark(phaseState["minEndTime"])
-            phaseState["maxEndTime"] = self.get_milliSecFromNow_from_utcTimemark(phaseState["maxEndTime"])
+            phaseState["minEndTime"] = self.get_deciSecFromNow_from_utcTimemark(phaseState["minEndTime"])
+            phaseState["maxEndTime"] = self.get_deciSecFromNow_from_utcTimemark(phaseState["maxEndTime"])
         
-        # For each vehicle phase, modify the min and max end times to milliseconds from now
+        # For each vehicle phase, modify the min and max end times to deciseconds from now
         for pedPhaseState in pedPhaseStates:
-            pedPhaseState["minEndTime"] = self.get_milliSecFromNow_from_utcTimemark(pedPhaseState["minEndTime"])
-            pedPhaseState["maxEndTime"] = self.get_milliSecFromNow_from_utcTimemark(pedPhaseState["maxEndTime"])
+            pedPhaseState["minEndTime"] = self.get_deciSecFromNow_from_utcTimemark(pedPhaseState["minEndTime"])
+            pedPhaseState["maxEndTime"] = self.get_deciSecFromNow_from_utcTimemark(pedPhaseState["maxEndTime"])
         
         # Plug in the modified parameters in the corresponding parameters of modified SPaT JSON object
         modifiedSpatJson["Spat"]["phaseState"] = phaseStates
@@ -167,10 +167,10 @@ if __name__=="__main__":
     
     if TEST_CONVERTER_FUNCTIONS:
         while True:
-            milliSecFromNow = 35000            
-            utcTimemark = utcHelper.get_utcTimemark_from_milliSecFromNow(milliSecFromNow)
-            computedMilliSecFromNow = utcHelper.get_milliSecFromNow_from_utcTimemark(utcTimemark)
-            print("UTC Time:", utcTimemark, "Millisec From Now:",computedMilliSecFromNow)
+            deciSecFromNow = 35000            
+            utcTimemark = utcHelper.get_utcTimemark_from_deciSecFromNow(deciSecFromNow)
+            computedDeciSecFromNow = utcHelper.get_deciSecFromNow_from_utcTimemark(utcTimemark)
+            print("UTC Time:", utcTimemark, "Decisec From Now:",computedDeciSecFromNow)
             time.sleep(0.1)
     
     if TEST_SPAT_CONVERSION:
@@ -178,16 +178,79 @@ if __name__=="__main__":
             spatJson = json.load(spatFile)
             spatJsonString = json.dumps(spatJson)
             
-            startTime = time.time()
-            modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
-            endTime = time.time()
+        startTime = time.time()
+        modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
+        endTime = time.time()
+        
+        print(modifiedSpatJsonString)
+        print("\nTime taken to modify SPaT from deciseconds from now to UTC timemark = {} seconds\n".format(endTime-startTime))
+
+        startTime = time.time()
+        remodifiedSpatJsonString = utcHelper.modify_spat_json_to_deciSecFromNow(modifiedSpatJsonString)
+        endTime = time.time()
+
+        print(remodifiedSpatJsonString)
+        print("\nTime taken to modify SPaT from UTC timemark to deciseconds from now = {} seconds\n".format(endTime-startTime))
+
+        # A test to verify if we are back to the original string after modifying and then remodifying
+        remodifiedSpatJson = json.loads(remodifiedSpatJsonString)
+
+        # Verify vehicle phases
+        originalVehPhases = spatJson["Spat"]["phaseState"]
+        remodifiedVehPhases = remodifiedSpatJson["Spat"]["phaseState"]
+
+        vehMinEndTimeResults = []
+        vehMaxEndTimeResults = []
+
+        for vehPhase in originalVehPhases:
+            phaseId = vehPhase["phaseNo"]
+            originalMinEndTime = vehPhase["minEndTime"]
+            originalMaxEndTime = vehPhase["maxEndTime"]
+
+            remodifiedPhase = remodifiedVehPhases[phaseId-1]
+            remodifiedMinEndTime = remodifiedPhase["minEndTime"]
+            remodifiedMaxEndTime = remodifiedPhase["maxEndTime"]
+
+            if originalMinEndTime!=remodifiedMinEndTime:
+                vehMinEndTimeResults += ["FAIL"]
+            else:
+                vehMinEndTimeResults += ["PASS"]
             
-            print(modifiedSpatJsonString)
-            print("\nTime taken to modify SPaT from milliseconds from now to UTC timemark = {} seconds\n".format(endTime-startTime))
+            if originalMaxEndTime!=remodifiedMaxEndTime:
+                vehMaxEndTimeResults += ["FAIL"]
+            else:
+                vehMaxEndTimeResults += ["PASS"]
 
-            startTime = time.time()
-            remodifiedSpatJsonString = utcHelper.modify_spat_json_to_milliSecFromNow(modifiedSpatJsonString)
-            endTime = time.time()
+        print("VehMinEndTime Test Results:{}".format(str(vehMinEndTimeResults)))
+        print("VehMaxEndTime Test Results:{}".format(str(vehMaxEndTimeResults)))
 
-            print(remodifiedSpatJsonString)
-            print("\nTime taken to modify SPaT from UTC timemark to milliseconds from now = {} seconds\n".format(endTime-startTime))
+        # Verify pedestrian phases
+        originalPedPhases = spatJson["Spat"]["pedPhaseState"]
+        remodifiedPedPhases = remodifiedSpatJson["Spat"]["pedPhaseState"]
+
+        pedMinEndTimeResults = []
+        pedMaxEndTimeResults = []
+
+        for pedPhase in originalPedPhases:
+            phaseId = pedPhase["phaseNo"]
+            originalMinEndTime = pedPhase["minEndTime"]
+            originalMaxEndTime = pedPhase["maxEndTime"]
+
+            remodifiedPhase = remodifiedPedPhases[phaseId-1]
+            remodifiedMinEndTime = remodifiedPhase["minEndTime"]
+            remodifiedMaxEndTime = remodifiedPhase["maxEndTime"]
+
+            if originalMinEndTime!=remodifiedMinEndTime:
+                pedMinEndTimeResults += ["FAIL"]
+            else:
+                pedMinEndTimeResults += ["PASS"]
+            
+            if originalMaxEndTime!=remodifiedMaxEndTime:
+                pedMaxEndTimeResults += ["FAIL"]
+            else:
+                pedMaxEndTimeResults += ["PASS"]
+
+        print("PedMinEndTime Test Results:{}".format(str(vehMinEndTimeResults)))
+        print("PedMaxEndTime Test Results:{}".format(str(vehMaxEndTimeResults)))
+            
+                

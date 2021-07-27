@@ -147,6 +147,18 @@ def main():
             currentSpatObject.setmsgCnt(msgCnt)
             currentSpatObject.fillSpatInformation(currentBlob)
             spatJsonString = currentSpatObject.Spat2Json()
+
+            # Now first send the SPaT for broadcast then do other stuff later!
+            # Modify SPaT Json string to reflect UTC times:
+            # In the first version of MAP-SPAT-Broadcaster, Min and Max end times were broadcasted 
+            # in the form of DeciSeconds from NOW, which was incompliant with the J2735(2016) standard.
+            # In the standard it is required to broadcast these times as TIMEMARKS in current or the next UTC hour
+            # So, do the conversion before sending the SPaT data to broadcast.
+            # Note that the modified SPaT is broadcasted however, MMITSS V2X data collector logs the data
+            # where Min and Max end times are DeciSeconds from NOW.
+            modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
+            s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
+
             currentPhasesDict = currentBlob.getCurrentPhasesDict()
             currentPhasesJson = json.dumps(currentPhasesDict)
             vehCurrStateJson = json.dumps({
@@ -155,15 +167,10 @@ def main():
                 "States": currentBlob.getVehCurrState()
             })
                 
-            
             s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
             s.sendto(spatJsonString.encode(), localDataCollectorAddress)
             
-            # Modify SPaT Json string to reflect UTC times:
-            modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
-            s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
-
             # Send spat json to external clients:
             for client in clients_spatJson:
                 address = (client["IP"], client["Port"])
