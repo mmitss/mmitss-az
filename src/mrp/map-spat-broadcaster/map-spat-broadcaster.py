@@ -159,6 +159,7 @@ def main():
             modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
             s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
 
+            # Now that the broadcast is complete, do rest of the stuff required for other MMITSS applications
             currentPhasesDict = currentBlob.getCurrentPhasesDict()
             currentPhasesJson = json.dumps(currentPhasesDict)
             vehCurrStateJson = json.dumps({
@@ -169,6 +170,9 @@ def main():
                 
             s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
+
+            # Note that we are storing the SPaT data from the Original spatJsonString. 
+            # NOT the modifiedSpatJsonString!
             s.sendto(spatJsonString.encode(), localDataCollectorAddress)
             
             # Send spat json to external clients:
