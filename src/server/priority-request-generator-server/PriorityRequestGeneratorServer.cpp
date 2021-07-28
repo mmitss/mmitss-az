@@ -57,7 +57,8 @@ void PriorityRequestGeneratorServer::managingPRGServerList(BasicVehicle basicVeh
     {
         vehid = basicVehicle.getTemporaryID();
         vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                        [&](ServerList const &p) { return p.vehicleID == vehid; });
+                                                                        [&](ServerList const &p)
+                                                                        { return p.vehicleID == vehid; });
 
         findVehicleIDInList->updateTime = getCurrentTimeInSeconds();
         findVehicleIDInList->vehicleLatitude = basicVehicle.getLatitude_DecimalDegree();
@@ -77,23 +78,32 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
     int veheicleID{};
     sendSRM = false;
 
-    veheicleID = basicVehicle.getTemporaryID();
-    managingPRGServerList(basicVehicle);
-    vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == veheicleID; });
-
-    findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
-    findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);
-
-    if (findVehicleIDInList->PRG.checkPriorityRequestSendingRequirementStatus())
+    if (basicVehicle.getType() != "car")
     {
-        srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonString(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
-        sendSRM = true;
-    }
+        veheicleID = basicVehicle.getTemporaryID();
 
-    findVehicleIDInList->mapManager.updateMapAge();
-    findVehicleIDInList->mapManager.deleteMap();
-    findVehicleIDInList->PRG.manageMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
+        managingPRGServerList(basicVehicle);
+        vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
+                                                                        [&](ServerList const &p)
+                                                                        { return p.vehicleID == veheicleID; });
+
+        findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
+       
+        if (findVehicleIDInList->PRG.getVehicleType() != static_cast<int>(MsgEnum::vehicleType::car))
+        {
+            findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);
+
+            if (findVehicleIDInList->PRG.checkPriorityRequestSendingRequirementStatus())
+            {
+                srmSendingJsonString = findVehicleIDInList->PRG.createSRMJsonString(basicVehicle, findVehicleIDInList->signalRequest, findVehicleIDInList->mapManager);
+                sendSRM = true;
+            }
+
+            findVehicleIDInList->mapManager.updateMapAge();
+            findVehicleIDInList->mapManager.deleteMap();
+            findVehicleIDInList->PRG.manageMapStatusInAvailableMapList(findVehicleIDInList->mapManager);
+        }
+    }
 }
 
 /*
@@ -126,7 +136,7 @@ void PriorityRequestGeneratorServer::processMap(string jsonString, MapManager ma
     - The method uses Signal status class to maintain Active Request Table
 */
 void PriorityRequestGeneratorServer::processSSM(string jsonString)
-{  
+{
     for (size_t i = 0; i < PRGServerList.size(); i++)
     {
         PRGServerList[i].signalStatus.json2SignalStatus(jsonString);
@@ -146,7 +156,8 @@ void PriorityRequestGeneratorServer::deleteTimedOutVehicleInformationFromPRGServ
     {
         veheicleID = getTimedOutVehicleID();
         vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                        [&](ServerList const &p) { return p.vehicleID == veheicleID; });
+                                                                        [&](ServerList const &p)
+                                                                        { return p.vehicleID == veheicleID; });
 
         if (findVehicleIDInList != PRGServerList.end())
             PRGServerList.erase(findVehicleIDInList);
@@ -189,7 +200,8 @@ bool PriorityRequestGeneratorServer::checkAddVehicleIDToPRGServerList(BasicVehic
     int vehicleID = basicVehicle.getTemporaryID();
 
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == vehicleID; });
+                                                                    [&](ServerList const &p)
+                                                                    { return p.vehicleID == vehicleID; });
 
     if (PRGServerList.empty())
         addVehicleID = true;
@@ -210,7 +222,8 @@ bool PriorityRequestGeneratorServer::checkUpdateVehicleIDInPRGServerList(BasicVe
     int veheicleID = basicVehicle.getTemporaryID();
 
     vector<ServerList>::iterator findVehicleIDInList = std::find_if(std::begin(PRGServerList), std::end(PRGServerList),
-                                                                    [&](ServerList const &p) { return p.vehicleID == veheicleID; });
+                                                                    [&](ServerList const &p)
+                                                                    { return p.vehicleID == veheicleID; });
 
     if (PRGServerList.empty())
         updateVehicleID = false;

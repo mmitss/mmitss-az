@@ -46,6 +46,7 @@ class TrafficConrtollerStatusManager
 private:
   bool logging{};
   bool consoleOutput{};
+  bool emergencyVehicleStatus{};
   bool coordinationRequestStatus{};
   bool transitOrTruckRequestStatus{};
   bool conflictingPhaseCallStatus{false};
@@ -69,7 +70,7 @@ private:
   vector<TrafficControllerData::TrafficSignalPlan> trafficSignalPlan{};
 
 public:
-  TrafficConrtollerStatusManager(bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value,
+  TrafficConrtollerStatusManager(bool emergencyVehicle_Status, bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value,
                                  double coordination_StartTime, double elapsed_Time_In_Cycle, int coordinated_Phase1, int coordinated_Phase2,
                                  bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                  vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan);
