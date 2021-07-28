@@ -1,5 +1,5 @@
 {
-    "FileDirectory": "/home/debashis/Desktop/mmitss/src/tools/radar-diagram/multiple-ev-interaction-data/EV2-travel-time-data.csv",
+    "FileDirectory": "/home/debashis/Desktop/mmitss/src/tools/radar-diagram/data1.csv",
     "NoOfCircle": 4,
     "ytick":[10,20,30,40],
     "ytickString": ["10","20","30","40"],
