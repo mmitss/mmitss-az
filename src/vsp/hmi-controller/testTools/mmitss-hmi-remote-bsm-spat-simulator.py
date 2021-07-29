@@ -21,9 +21,13 @@ import socket
 import json
 import time
 import os
+import UtcHelper
 
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
+
+# Create an object of UtcHelper class
+utcHelper = UtcHelper.UtcHelper()
 
 hmi_controllerIP = '127.0.0.1'
 hmi_controllerPort = 20009
@@ -165,6 +169,8 @@ for line in f :
 
             }
     })
+    #convert SPaT time to utc for maxEnd and minEnd times
+    interfaceJsonString = utcHelper.modify_spat_json_to_utc_timemark(interfaceJsonString)
     s.sendto(interfaceJsonString.encode(),hmi_controller)
     print("sent spat at time: ", time.time() - ticks_init)
     time.sleep(0.1/(numRemoteVehicles + 1))

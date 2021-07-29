@@ -19,6 +19,7 @@ import socket
 import json
 import time
 import os
+import UtcHelper
 
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
@@ -41,6 +42,9 @@ controller = (controllerIP, controllerPort)
 hmiIP = '127.0.0.1' #hmi runs on the same computer/laptop
 hmiPort = 20010
 hmi = (hmiIP, hmiPort)
+
+# Create an object of UtcHelper class (this converts timeMark (SAE J2735 object) to deciseconds for display
+utcHelper = UtcHelper.UtcHelper()
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
 spat_map_active = False
@@ -235,7 +239,7 @@ while True:
 
     try:
 
-        if sourcePort == 10002 :
+        if sourcePort == 10004 :
             # process the remote vehicle and SPaT data
             # print('remote bsm and spat data', line)
 
@@ -267,7 +271,7 @@ while True:
                     tick_SPaT = newSPaT
                 if spat_map_active :
                     markSPaTtime = time.time()
-                    SPaT_data = remoteInterfacejson
+                    SPaT_data = json.loads(utcHelper.modify_spat_json_to_deciSecFromNow(json.dumps(remoteInterfacejson)))
                     SPaT = []
                     pedSPaT = []
                     if SPaT_data["Spat"]["IntersectionState"]["intersectionID"] == spat_map_ID :
