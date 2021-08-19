@@ -78,7 +78,7 @@ class ConfigurationForm(FlaskForm):
     vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
     logging                         = BooleanField('Logging')
     consoleOutput                   = BooleanField('Console Output')
-    performanceMeasurementDiagram   = BooleanField('Performance Measurement Diagram')
+    performanceMeasurementDiagram   = BooleanField('Time Phase Diagram')
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
