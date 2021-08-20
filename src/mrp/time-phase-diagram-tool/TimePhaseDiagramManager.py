@@ -200,7 +200,8 @@ class TimePhaseDiagramManager:
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
         ax1.legend(loc='upper right', bbox_to_anchor=(0.9, 1), prop={"size": 18})
-        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
+        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
+        
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
@@ -209,8 +210,7 @@ class TimePhaseDiagramManager:
 
         # plt.show()
 
-        print("[{}]".format(str(round(time.time(), 4))) +
-              " " + "Generate Time-Phase Diagram")
+        print("[{}]".format(str(round(time.time(), 4))) + " " + "Generate Time-Phase Diagram")
 
     def getRequestedPhasePositionAndHeight(self, requestedPhaseList):
         requestedPhasePosition = []
@@ -258,16 +258,17 @@ class TimePhaseDiagramManager:
         ax1.set_yticklabels([])
         ax2.set_yticklabels([])
         ax1.set_xticklabels([])
-        ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(time.time()) + ' / ' + str(datetime.datetime.now()) + ']', fontsize=18, style='italic', 
+        ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(datetime.datetime.now()) + ' / ' + str(time.time()) + ']', fontsize=18, style='italic', 
         bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
 
-        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
+        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
 
-        # plt.show()
-        
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        # plt.show()
+        
+        print("[{}]".format(str(round(time.time(), 4))) + " " + "Generate Time-Phase Diagram")
         
     def removeOldestDiagram(self):
         """
