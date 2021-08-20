@@ -10,7 +10,7 @@ import os
 
 class TimePhaseDiagramManager:
     def __init__(self):
-        pass
+        self.initializationTimestamp = ""
 
     def archiveOldDiagrams(self):
         for file in os.listdir(r'/nojournal/bin/performance-measurement-diagrams/time-phase-diagram'):
@@ -34,7 +34,7 @@ class TimePhaseDiagramManager:
         self.ETA_Coordination, self.ETA_Duration_Coordination, self.requestedPhase_Coordination, self.vehicleType_Coordination, self.delay_Coordination = ETA_Coordination, ETA_Duration_Coordination, requestedPhase_Coordination, vehicleType_Coordination, delay_Coordination
         self.ETA_DilemmaZone, self.ETA_Duration_DilemmaZone, self.requestedPhase_DilemmaZone, self.vehicleType_DilemmaZone, self.delay_DilemmaZone = ETA_DilemmaZone, ETA_Duration_DilemmaZone, requestedPhase_DilemmaZone, vehicleType_DilemmaZone, delay_DilemmaZone
 
-    def timePhaseDiagramMethod(self, ringNo):
+    def timePhaseDiagramMethodForOptimalSolution(self, ringNo):
         self.archiveOldDiagrams()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
@@ -175,8 +175,9 @@ class TimePhaseDiagramManager:
         ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(
             datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
-        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram" + \
-            str(time.time())
+        
+        self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
 
         # plt.show()
@@ -208,3 +209,34 @@ class TimePhaseDiagramManager:
                     self.cumulativePhaseHeightInRing2[index+1] - self.cumulativePhaseHeightInRing2[index]) for index in indexPosList]
 
         return requestedPhasePosition, requestedPhaseHeight
+    
+    def timePhaseDiagramMethodForNonOptimalSolution(self):
+        self.archiveOldDiagrams()
+        fig, ax1 = plt.subplots(figsize=(18, 12))
+
+        ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
+        color = 'tab:red'
+        ax1.set_ylabel('Ring 1 Phases', color=color,
+                                fontsize=28, fontweight='bold')
+        ax2 = ax1.twinx()
+        color = 'tab:blue'
+        ax2.set_ylabel('Ring 2 Phases', color=color,
+                                fontsize=28, fontweight='bold')
+
+        ax1.axis()
+        # Turn off tick labels
+        ax1.set_yticklabels([])
+        ax2.set_yticklabels([])
+        ax1.set_xticklabels([])
+        ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(time.time()) + ' / ' + str(datetime.datetime.now()) + ']', fontsize=18, style='italic', 
+        bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
+
+        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(
+                    datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
+
+
+        # plt.show()
+        
+        self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
+        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)

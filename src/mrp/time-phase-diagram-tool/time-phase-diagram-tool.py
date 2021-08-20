@@ -49,8 +49,11 @@ def main():
                 data, address = timePhaseDiagramSocket.recvfrom(1024)
                 data = data.decode()
                 receivedMessage = json.loads(data)
-                if receivedMessage["MsgType"]=="TimePhaseDiagram" and bool(diagramGenerationStatus):
+                if receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== True and bool(diagramGenerationStatus):
                     optimizationResultsManager.readOptimizationResultsFile()
+                    
+                elif receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== False and bool(diagramGenerationStatus):
+                    optimizationResultsManager.generateTimePhaseDiagramForNonOptimalSolution()
                     
             except:
                 if (time.time() - generateDiagramStatusCheckingTime) >= timeGapBetweenDiagramGenerationStatusChecking:

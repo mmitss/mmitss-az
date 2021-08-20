@@ -30,6 +30,7 @@ class OptimizationResultsManager:
         self.ETA_DilemmaZone, self.ETA_Duration_DilemmaZone, self.requestedPhase_DilemmaZone, self.vehicleType_DilemmaZone, self.delay_DilemmaZone = ([
         ] for i in range(5))
         self.phaseDurationList = []
+        
     def readOptimizationResultsFile(self):
         """
         Method to read the OptimizationResults.txt file line by line.
@@ -86,7 +87,7 @@ class OptimizationResultsManager:
         #       self.leftCriticalPointsRing2, self.rightCriticalPointsRing2)
 
         self.getCummulativeValues()
-        self.createTimePhaseDiagram()
+        self.generateTimePhaseDiagramForOptimalSolution()
 
     def processPhaseDuration(self, line, criticalPointList1, criticalPointList2):
         list1, list2 = ([] for i in range(2))
@@ -301,7 +302,7 @@ class OptimizationResultsManager:
 
         self.optimizationResultsFile.close()
 
-    def createTimePhaseDiagram(self):
+    def generateTimePhaseDiagramForOptimalSolution(self):
         self.timePhaseDiagramManager.getParameters(self.cumulativeLeftCriticalPointsRing1, self.cumulativeRightCriticalPointsRing1, self.cumulativePhaseHeightInRing1, self.phaseSequenceInRing1,
                                                    self.cumulativeLeftCriticalPointsRing2, self.cumulativeRightCriticalPointsRing2, self.cumulativePhaseHeightInRing2, self.phaseSequenceInRing2,
                                                    self.ETA_EV, self.ETA_Duration_EV, self.requestedPhase_EV, self.vehicleType_EV, self.delay_EV,
@@ -309,7 +310,10 @@ class OptimizationResultsManager:
                                                    self.ETA_Truck, self.ETA_Duration_Truck, self.requestedPhase_Truck, self.vehicleType_Truck, self.delay_Truck,
                                                    self.ETA_Coordination, self.ETA_Duration_Coordination, self.requestedPhase_Coordination, self.vehicleType_Coordination, self.delay_Coordination,
                                                    self.ETA_DilemmaZone, self.ETA_Duration_DilemmaZone, self.requestedPhase_DilemmaZone, self.vehicleType_DilemmaZone, self.delay_DilemmaZone)
-        self.timePhaseDiagramManager.timePhaseDiagramMethod("Ring1&2")
+        self.timePhaseDiagramManager.timePhaseDiagramMethodForOptimalSolution("Ring1&2")
+        
+    def generateTimePhaseDiagramForNonOptimalSolution(self):
+        self.timePhaseDiagramManager.timePhaseDiagramMethodForNonOptimalSolution()
 
 
 '''##############################################

@@ -1379,6 +1379,8 @@ string PriorityRequestSolver::getTimePhaseDiagramMessageString()
     builder["indentation"] = "";
 
     jsonObject["MsgType"] = "TimePhaseDiagram";
+    jsonObject["OptimalSolutionStatus"] = optimalSolutionStatus;        
+
     jsonString = Json::writeString(builder, jsonObject);
 
     return jsonString;
