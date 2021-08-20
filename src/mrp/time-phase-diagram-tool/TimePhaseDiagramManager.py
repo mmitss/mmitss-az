@@ -1,12 +1,38 @@
-import time
-import datetime
+"""
+***************************************************************************************
+
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+
+***************************************************************************************
+
+TimePhaseDiagramManager.py
+Created by: Debashis Das
+University of Arizona   
+College of Engineering
+
+This code was developed under the supervision of Professor Larry Head
+in the Systems and Industrial Engineering Department.
+
+***************************************************************************************
+
+Description:
+------------
+The methods available from this class are the following:
+- archiveOldDiagrams(): Method to move the old diagrams in a specified directory, e.g. archive
+- getParameters(): Method to set the parameters to draw time-phase diagram for a valid schedule
+- timePhaseDiagramMethodForOptimalSolution(): Method to generate time-phase diagram for a valid schedule
+- timePhaseDiagramMethodForNonOptimalSolution(): Method to generate a plot to indicate the timestamp when optimal solution is not achieved
+- removeOldestDiagram(): Method to remove the oldest diagram
+***************************************************************************************
+"""
+
+import time, datetime
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
-from matplotlib.collections import PatchCollection
 import shutil
 import os
-
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 class TimePhaseDiagramManager:
     def __init__(self):
@@ -35,7 +61,16 @@ class TimePhaseDiagramManager:
         self.ETA_DilemmaZone, self.ETA_Duration_DilemmaZone, self.requestedPhase_DilemmaZone, self.vehicleType_DilemmaZone, self.delay_DilemmaZone = ETA_DilemmaZone, ETA_Duration_DilemmaZone, requestedPhase_DilemmaZone, vehicleType_DilemmaZone, delay_DilemmaZone
 
     def timePhaseDiagramMethodForOptimalSolution(self, ringNo):
-        self.archiveOldDiagrams()
+        """
+        Active Phases in ring1 and ring2 are plotted in the left and right vertical axes repectively
+        Rectangles denote ETA of the priority requests. Different colors are used for different modes or coordination requests.
+        Left and Right critical points are plotted to indicate hold and force-off/termination points of each phase
+        The diagrams are stored in the "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram" directory.
+        The diagrams follow specific pattern name: "time-phase-diagram_" + "current data & time" + "_" + "the time as a floating point number expressed in seconds since the epoch, in UTC"
+        """
+        #If requires old file can be stored in different directory
+        # self.archiveOldDiagrams() 
+        self.removeOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         if ringNo == 'Ring1&2':
@@ -43,20 +78,19 @@ class TimePhaseDiagramManager:
             ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
             ax1.set_ylabel('Ring 1 Phases', color=color,
                            fontsize=28, fontweight='bold')
-            ax1.plot(self.cumulativeLeftCriticalPointsRing1,
-                     self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
-            ax1.plot(self.cumulativeRightCriticalPointsRing1,
-                     self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
-            plt.xticks(np.arange(
-                self.cumulativeRightCriticalPointsRing1[0], self.cumulativeRightCriticalPointsRing1[-1], 20), fontsize=24)
-            # ax1.set_yticks(ticks=np.arange(
-            #     self.cumulativePhaseHeightInRing1[0], self.cumulativePhaseHeightInRing1[-1], 10))
+            
+            # Plot phase duration for each phase in ring 1
+            ax1.plot(self.cumulativeLeftCriticalPointsRing1, self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
+            ax1.plot(self.cumulativeRightCriticalPointsRing1, self.cumulativePhaseHeightInRing1, color=color, linewidth=4)
+            plt.xticks(np.arange(self.cumulativeRightCriticalPointsRing1[0], self.cumulativeRightCriticalPointsRing1[-1], 20), fontsize=24)
+
             ax1.set_yticks(self.cumulativePhaseHeightInRing1[0:-1])
             ax1.set_yticklabels(self.phaseSequenceInRing1)
             ax1.tick_params(axis='y', labelcolor=color, labelsize=18)
             for axis in ['top', 'bottom', 'left', 'right']:
                 ax1.spines[axis].set_linewidth(4)
 
+            # Draw critical points for phases in ring 1
             ax1.scatter(self.cumulativeLeftCriticalPointsRing1, self.cumulativePhaseHeightInRing1,
                         marker='o', c="orange", linewidths=6, alpha=1.0, label='Left & Right Critical Points')
             ax1.scatter(self.cumulativeRightCriticalPointsRing1, self.cumulativePhaseHeightInRing1,
@@ -65,8 +99,8 @@ class TimePhaseDiagramManager:
             # Ring2
             ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
-            ax2.set_ylabel('Ring 2 Phases', color=color,
-                           fontsize=28, fontweight='bold')
+            ax2.set_ylabel('Ring 2 Phases', color=color, fontsize=28, fontweight='bold')
+            # Plot phase duration for each phase in ring 2
             ax2.plot(self.cumulativeLeftCriticalPointsRing2,
                      self.cumulativePhaseHeightInRing2, color=color, linewidth=4)
             ax2.plot(self.cumulativeRightCriticalPointsRing2,
@@ -75,6 +109,7 @@ class TimePhaseDiagramManager:
             ax2.set_yticklabels(self.phaseSequenceInRing2)
             ax2.tick_params(axis='y', labelcolor=color, labelsize=24)
 
+            # Draw critical points for phases in ring 2
             ax2.scatter(self.cumulativeLeftCriticalPointsRing2, self.cumulativePhaseHeightInRing2,
                         marker='o', c="orange", linewidths=6, alpha=1.0, label='Left & Right Critical Points')
             ax2.scatter(self.cumulativeRightCriticalPointsRing2, self.cumulativePhaseHeightInRing2,
@@ -86,9 +121,9 @@ class TimePhaseDiagramManager:
             else:
                 ax2.grid(color='black', linestyle='-', linewidth=2, axis='y')
 
+        # Draw rectangles to denote ETA of the priority requests
         if(len(self.vehicleType_EV) > 0):
-            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
-                self.requestedPhase_EV)
+            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(self.requestedPhase_EV)
 
             for i in range(0, len(requestedPhasePosition)):
                 x = self.ETA_EV[i]
@@ -96,15 +131,12 @@ class TimePhaseDiagramManager:
                 z = self.ETA_Duration_EV[i]
                 h = requestedPhaseHeight[i]
                 if i == 0:
-                    ax1.add_patch(Rectangle(
-                        (x, y), z, h, angle=0.0, color='red', linewidth=2, label='EV Priority Request'))
+                    ax1.add_patch(Rectangle((x, y), z, h, angle=0.0, color='red', linewidth=2, label='EV Priority Request')) # The logic will set the legend while plotting the first EV priority requests
                 else:
-                    ax1.add_patch(Rectangle(
-                        (x, y), z, h, angle=0.0, color='red', linewidth=2))
+                    ax1.add_patch(Rectangle((x, y), z, h, angle=0.0, color='red', linewidth=2))
 
         if(len(self.vehicleType_Transit) > 0):
-            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
-                self.requestedPhase_Transit)
+            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(self.requestedPhase_Transit)
 
             for i in range(0, len(requestedPhasePosition)):
                 x = self.ETA_Transit[i]
@@ -122,8 +154,7 @@ class TimePhaseDiagramManager:
                         (x, y), z, h, angle=0.0, color='green', linewidth=2))
 
         if(len(self.vehicleType_Truck) > 0):
-            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
-                self.requestedPhase_Truck)
+            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(self.requestedPhase_Truck)
 
             for i in range(0, len(requestedPhasePosition)):
                 x = self.ETA_Truck[i]
@@ -139,8 +170,7 @@ class TimePhaseDiagramManager:
                         Rectangle((x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
         if(len(self.vehicleType_Coordination) > 0):
-            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
-                self.requestedPhase_Coordination)
+            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(self.requestedPhase_Coordination)
 
             for i in range(0, len(requestedPhasePosition)):
                 x = self.ETA_Coordination[i]
@@ -155,8 +185,7 @@ class TimePhaseDiagramManager:
                         (x, y), z, h, angle=0.0, color='darkcyan', linewidth=2))
 
         if(len(self.vehicleType_DilemmaZone) > 0):
-            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(
-                self.requestedPhase_DilemmaZone)
+            requestedPhasePosition, requestedPhaseHeight = self.getRequestedPhasePositionAndHeight(self.requestedPhase_DilemmaZone)
 
             for i in range(0, len(requestedPhasePosition)):
                 x = self.ETA_DilemmaZone[i]
@@ -170,10 +199,8 @@ class TimePhaseDiagramManager:
                     ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
-        ax1.legend(loc='upper right', bbox_to_anchor=(
-            0.9, 1), prop={"size": 18})
-        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(
-            datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
+        ax1.legend(loc='upper right', bbox_to_anchor=(0.9, 1), prop={"size": 18})
+        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
@@ -211,17 +238,20 @@ class TimePhaseDiagramManager:
         return requestedPhasePosition, requestedPhaseHeight
     
     def timePhaseDiagramMethodForNonOptimalSolution(self):
-        self.archiveOldDiagrams()
+        """
+        If there is no optimal solution, a text message will be written in the plot.
+        The diagram indicates the timestamp when optimization model failed to generate optimal solution.
+        """        
+        # self.archiveOldDiagrams()
+        self.removeOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
         color = 'tab:red'
-        ax1.set_ylabel('Ring 1 Phases', color=color,
-                                fontsize=28, fontweight='bold')
+        ax1.set_ylabel('Ring 1 Phases', color=color, fontsize=28, fontweight='bold')
         ax2 = ax1.twinx()
         color = 'tab:blue'
-        ax2.set_ylabel('Ring 2 Phases', color=color,
-                                fontsize=28, fontweight='bold')
+        ax2.set_ylabel('Ring 2 Phases', color=color, fontsize=28, fontweight='bold')
 
         ax1.axis()
         # Turn off tick labels
@@ -231,12 +261,25 @@ class TimePhaseDiagramManager:
         ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(time.time()) + ' / ' + str(datetime.datetime.now()) + ']', fontsize=18, style='italic', 
         bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
 
-        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(
-                    datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
-
+        ax1.set_title("Time-Phase Diagram [" + str(time.time()) + " / " + str(datetime.datetime.now()) + "]", fontsize=20, fontweight='bold')
 
         # plt.show()
         
         self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        
+    def removeOldestDiagram(self):
+        """
+        If there is more than specified number (e.g. 30) of time-phase diagrams in the directory, the oldest diagram will be removed.
+        The method checks the diagram generation to identify the oldest diagram.
+        """ 
+        path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
+
+        list_of_files = os.listdir(path)
+        full_path = [path + "/{0}".format(x) for x in list_of_files]
+ 
+        if len(full_path) > 30:
+            oldest_file = min(full_path, key=os.path.getctime)
+            print(oldest_file)
+            os.remove(oldest_file)
