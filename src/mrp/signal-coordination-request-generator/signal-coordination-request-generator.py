@@ -6,7 +6,7 @@
 
 ***************************************************************************************
 
-SignalCoordinationRequestGenerator.py
+signal-coordination-request-generator.py
 Created by: Debashis Das
 University of Arizona   
 College of Engineering
@@ -18,7 +18,7 @@ in the Systems and Industrial Engineering Department.
 
 Description:
 ------------
-This is a wrapper module for generating signal coordination request software. It performs
+This is a wrapper module for generating signal coordination requests. It performs
 following functions:
 (1) Check whether there is active coordination plan or not
 (2) Generate Virtual coordination plan for active coordination plan
