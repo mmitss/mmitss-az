@@ -158,7 +158,7 @@ def main():
             # where Min and Max end times are DeciSeconds from NOW.
             modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
             s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
-
+            
             # Now that the broadcast is complete, do rest of the stuff required for other MMITSS applications
             currentPhasesDict = currentBlob.getCurrentPhasesDict()
             currentPhasesJson = json.dumps(currentPhasesDict)
