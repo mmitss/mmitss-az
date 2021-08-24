@@ -77,6 +77,7 @@ int main()
                 encoderSocket.sendData(sourceDsrcDeviceIp, static_cast<short unsigned int>(sourceDsrcDevicePort), msgToRsu);
                 encoderSocket.sendData(LOCALHOST,static_cast<short unsigned int>(sourceDsrcDevicePort), messagePayload);
                 cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Encoded SPAT and sent to RSU" << endl;
+                cout << msgToRsu << endl;
             }
 
             else if (msgType == MsgEnum::DSRCmsgID_ssm)
