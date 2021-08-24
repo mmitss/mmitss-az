@@ -173,7 +173,8 @@ def main():
 
             # Note that we are storing the SPaT data from the Original spatJsonString. 
             # NOT the modifiedSpatJsonString!
-            s.sendto(spatJsonString.encode(), localDataCollectorAddress)
+            dataCollectionString = j2735Helper.drop_inactive_phases(spatJsonString, inactiveVehPhases, inactivePedPhases)
+            s.sendto(dataCollectionString.encode(), localDataCollectorAddress)
             
             # Send spat json to external clients:
             for client in clients_spatJson:
