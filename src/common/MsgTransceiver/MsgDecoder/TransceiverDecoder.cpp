@@ -389,7 +389,32 @@ string TransceiverDecoder::spatDecoder(string spatPayload)
             if (spatOut.permittedPedPhases.test(i))
             {
                 const auto &phaseState = spatOut.pedPhaseState[i];
-                jsonObject["Spat"]["pedPhaseState"][i]["phaseNo"] = (i + 1);
+                int phaseNo = 0;
+
+                if (i == 4)
+                {
+                    phaseNo = 2;
+                }
+                else if (i == 5)
+                {
+                    phaseNo = 4;
+                }
+                else if (i == 6)
+                {
+                    phaseNo = 6;
+                }
+                else if (i == 7)
+                {
+                    phaseNo = 8;
+                }
+                else
+                {
+                    std::cout << "Invalid pedestrian phase" << std::endl;
+                    phaseNo = i+1;
+                }
+
+
+                jsonObject["Spat"]["pedPhaseState"][i]["phaseNo"] = phaseNo;
                 jsonObject["Spat"]["pedPhaseState"][i]["startTime"] = phaseState.startTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"] = phaseState.minEndTime;
                 jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
