@@ -19,6 +19,7 @@ import json
 import time, datetime
 import os
 import shutil
+from J2735Helper import J2735Helper
 
 class V2XDataCollector:
     def __init__(self, environment:str):
@@ -53,6 +54,8 @@ class V2XDataCollector:
 
         self.archive_leftover_directories()
         self.initialize_logfiles()
+
+        self.j2735Helper = J2735Helper()
 
         
     
@@ -450,7 +453,8 @@ class V2XDataCollector:
             if receivedMsg["MsgType"] == "BSM":
                 self.write_bsm(receivedMsg,senderPort)
             elif receivedMsg["MsgType"] == "SPaT":
-                self.write_spat(receivedMsg)
+                spatString = self.j2735Helper.modify_spat_json_to_deciSecFromNow(json.dumps(receivedMsg))
+                self.write_spat(json.loads(spatString))
             elif receivedMsg["MsgType"] == "SRM":
                 self.write_srm(receivedMsg)
             elif receivedMsg["MsgType"] == "SSM":
