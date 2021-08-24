@@ -154,11 +154,11 @@ def main():
             # in the form of DeciSeconds from NOW, which was incompliant with the J2735(2016) standard.
             # In the standard it is required to broadcast these times as TIMEMARKS in current or the next UTC hour
             # So, do the conversion before sending the SPaT data to broadcast.
-            # Note that the modified SPaT is broadcasted however, MMITSS V2X data collector logs the data
-            # where Min and Max end times are DeciSeconds from NOW.
+
             modifiedSpatJsonString = j2735Helper.get_standard_string_for_broadcast(spatJsonString, inactiveVehPhases, inactivePedPhases)
             s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
-            
+            s.sendto(modifiedSpatJsonString.encode(), localDataCollectorAddress)
+
             # Now that the broadcast is complete, do rest of the stuff required for other MMITSS applications
             currentPhasesDict = currentBlob.getCurrentPhasesDict()
             currentPhasesJson = json.dumps(currentPhasesDict)
@@ -170,11 +170,7 @@ def main():
                 
             s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
-
-            # Note that we are storing the SPaT data from the Original spatJsonString. 
-            # NOT the modifiedSpatJsonString!
-            dataCollectionString = j2735Helper.drop_inactive_phases(spatJsonString, inactiveVehPhases, inactivePedPhases)
-            s.sendto(dataCollectionString.encode(), localDataCollectorAddress)
+            
             
             # Send spat json to external clients:
             for client in clients_spatJson:
