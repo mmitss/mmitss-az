@@ -21,13 +21,13 @@ import socket
 import json
 import time
 import os
-import UtcHelper
+import J2735Helper
 
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
 
 # Create an object of UtcHelper class
-utcHelper = UtcHelper.UtcHelper()
+utcHelper = J2735Helper.J2735Helper()
 
 hmi_controllerIP = '127.0.0.1'
 hmi_controllerPort = 20009

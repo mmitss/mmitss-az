@@ -19,7 +19,7 @@ import socket
 import json
 import time
 import os
-import UtcHelper
+import J2735Helper
 
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
@@ -44,7 +44,7 @@ hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
 # Create an object of UtcHelper class (this converts timeMark (SAE J2735 object) to deciseconds for display
-utcHelper = UtcHelper.UtcHelper()
+utcHelper = J2735Helper.J2735Helper()
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
 spat_map_active = False
