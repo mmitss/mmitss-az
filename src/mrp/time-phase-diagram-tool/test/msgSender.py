@@ -17,7 +17,7 @@ timePhaseDiagramToolPort = config["PortNumber"]["TimePhaseDiagramTool"]
 communicationInfo = (hostIp, timePhaseDiagramToolPort)
 
 
-data = json.dumps({"MsgType": "TimePhaseDiagram"})
+data = json.dumps({"MsgType": "TimePhaseDiagram", "OptimalSolutionStatus": True})
 s.sendto(data.encode(),communicationInfo)
 print (time.time())
 print(data)
