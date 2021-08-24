@@ -29,7 +29,7 @@ SEC_IN_MINUTE = 60
 DECISEC_IN_SECOND = 10
 MICROSEC_IN_DECISEC = 100000
 
-class UtcHelper:
+class J2735Helper:
     def __init__(self):
         pass
 
@@ -85,6 +85,9 @@ class UtcHelper:
             # left until the beginning of the next UTC hour and 
             # deciseconds in the next time hour (that is input utcTimemark)
             deciSecFromNow = deciSecUntilNextHour + utcTimemark
+
+        if deciSecFromNow >= DECISEC_IN_HOUR-1:
+            deciSecFromNow = 0
 
         return deciSecFromNow
 
@@ -154,6 +157,18 @@ class UtcHelper:
 
         # Create a modified JSON string from the modified JSON object and return it
         return json.dumps(modifiedSpatJson)
+
+    def drop_inactive_phases(self, spatJson:str, inactiveVehPhases:list, inactivePedPhases:list):
+        modifiedSpat = json.loads(spatJson)
+        modifiedSpat["Spat"]["phaseState"] = [phase for phase in modifiedSpat["Spat"]["phaseState"] if phase["phaseNo"] not in inactiveVehPhases]
+        modifiedSpat["Spat"]["pedPhaseState"] = [phase for phase in modifiedSpat["Spat"]["pedPhaseState"] if phase["phaseNo"] not in inactivePedPhases]
+        
+        return json.dumps(modifiedSpat)
+
+    def get_standard_string_for_broadcast(self, spatJson:str, inactiveVehPhases:list, inactivePedPhases:list):
+        spatJson = self.drop_inactive_phases(spatJson, inactiveVehPhases, inactivePedPhases)
+        spatJson = self.modify_spat_json_to_utc_timemark(spatJson)
+        return spatJson
 
 
 if __name__=="__main__":

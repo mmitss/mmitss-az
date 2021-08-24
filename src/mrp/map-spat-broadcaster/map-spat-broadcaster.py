@@ -32,7 +32,7 @@ import psutil
 import Ntcip1202v2Blob
 import Spat
 import MmitssSpat
-import UtcHelper
+import J2735Helper
 
 def main():
 
@@ -104,7 +104,7 @@ def main():
     spatBroadcastSuccessFlag = False
 
     # Create an object of UtcHelper class
-    utcHelper = UtcHelper.UtcHelper()
+    j2735Helper = J2735Helper.J2735Helper()
 
     while True:
         data, addr = s.recvfrom(1024)
@@ -156,7 +156,7 @@ def main():
             # So, do the conversion before sending the SPaT data to broadcast.
             # Note that the modified SPaT is broadcasted however, MMITSS V2X data collector logs the data
             # where Min and Max end times are DeciSeconds from NOW.
-            modifiedSpatJsonString = utcHelper.modify_spat_json_to_utc_timemark(spatJsonString)
+            modifiedSpatJsonString = j2735Helper.get_standard_string_for_broadcast(spatJsonString, inactiveVehPhases, inactivePedPhases)
             s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
             
             # Now that the broadcast is complete, do rest of the stuff required for other MMITSS applications
