@@ -12,7 +12,7 @@
     "VehicleType": "Transit",
 	"Logging": true,
 	"ConsoleOutput": true,
-	"PerformanceMeasurementDiagram": true,
+	"TimePhaseDiagram": true,
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
