@@ -167,7 +167,6 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
 
 std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 {
-    std::cout << jsonString << std::endl;
     Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
@@ -193,9 +192,6 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     spatIn.timeStampSec = static_cast<uint16_t>(jsonObject["Spat"]["msOfMinute"].asInt());
     std::bitset<16> intersectionStatus(jsonObject["Spat"]["status"].asString());
     spatIn.status = intersectionStatus;
-
-    //spatIn.permittedPhases.set(); // all 8 phases permitted
-    //spatIn.permittedPedPhases.set();
 
     // Develop vehicle phases
     for(unsigned int i=0; i<jsonObject["Spat"]["phaseState"].size(); i++)
