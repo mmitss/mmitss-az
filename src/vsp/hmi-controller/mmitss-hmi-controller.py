@@ -244,7 +244,7 @@ while True:
 
     try:
 
-        if sourcePort == 10004 :
+        if sourcePort == 10002:
             # process the remote vehicle and SPaT data
             # print('remote bsm and spat data', line)
 
