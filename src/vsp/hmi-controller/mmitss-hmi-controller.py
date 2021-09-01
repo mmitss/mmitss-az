@@ -62,7 +62,12 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               "do_not_walk": "stop-And-Remain",
               "ped_clear": "protected-clearance",
-              "walk": "protected-Movement-Allowed"
+              "walk": "protected-Movement-Allowed",
+              3 : "stop-And-Remain", # red light (Red ball) [Don't walk]
+              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
+              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
+              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
+              
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
     "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",

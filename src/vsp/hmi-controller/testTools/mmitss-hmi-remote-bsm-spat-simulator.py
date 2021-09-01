@@ -36,6 +36,8 @@ hmi_controller = (hmi_controllerIP, hmi_controllerPort)
 bsm_spat_simIP = '127.0.0.1'
 bsm_spat_simPort = 10004
 bsm_spat_sim = (bsm_spat_simIP, bsm_spat_simPort)
+inactiveVehPhases = [1,3,5,7]
+inactivePedPhases = [1,3,5,7]
 
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
 spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J2735 2016 standard - not comment in MovementPhaseState is that these are not used with UPER encoding (???)
@@ -169,6 +171,13 @@ for line in f :
 
             }
     })
+
+    # Drop inactiveVehPhases
+    interfaceJsonString = utcHelper.drop_inactive_phases(interfaceJsonString, inactiveVehPhases, inactivePedPhases)
+
+
+    # Drop inactivePedPhases
+
     #convert SPaT time to utc for maxEnd and minEnd times
     interfaceJsonString = utcHelper.modify_spat_json_to_utc_timemark(interfaceJsonString)
     s.sendto(interfaceJsonString.encode(),hmi_controller)
