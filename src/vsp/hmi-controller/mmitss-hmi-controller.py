@@ -277,6 +277,43 @@ while True:
                 if spat_map_active :
                     markSPaTtime = time.time()
                     SPaT_data = json.loads(utcHelper.modify_spat_json_to_deciSecFromNow(json.dumps(remoteInterfacejson)))
+                    # Fill inactive phases with "0"
+                    vehPhasesLength = len(SPaT_data["Spat"]["phaseState"])
+                    activeVehPhases = [phase["phaseNo"] for phase in SPaT_data["Spat"]["phaseState"]]
+                    
+                    pedPhasesLength = len(SPaT_data["Spat"]["pedPhaseState"])
+                    activePedPhases = [phase["phaseNo"] for phase in SPaT_data["Spat"]["pedPhaseState"]]
+                    
+                    vehPhaseIndexer = 0
+                    for vehPhase in range(8):
+                        phaseNo = vehPhase + 1
+                        if phaseNo not in activeVehPhases:
+                            phaseDict = [dict({
+                                                "phaseNo": phaseNo,
+                                                "currState": 0,
+                                                "startTime": -1,
+                                                "minEndTime": -1,
+                                                "maxEndTime": -1,
+                                                "elapsedTime": -1
+                                            })]
+                            SPaT_data["Spat"]["phaseState"] += phaseDict
+                    SPaT_data["Spat"]["phaseState"] = sorted(SPaT_data["Spat"]["phaseState"], key=lambda k: k['phaseNo']) 
+
+                    
+                    for pedPhase in range(8):
+                        phaseNo = pedPhase + 1
+                        if phaseNo not in activePedPhases:
+                            phaseDict = [dict({
+                                                "phaseNo": phaseNo,
+                                                "currState": 0,
+                                                "startTime": -1,
+                                                "minEndTime": -1,
+                                                "maxEndTime": -1,
+                                                "elapsedTime": -1
+                                            })]
+                            SPaT_data["Spat"]["pedPhaseState"] += phaseDict
+                    SPaT_data["Spat"]["pedPhaseState"] = sorted(SPaT_data["Spat"]["pedPhaseState"], key=lambda k: k['phaseNo']) 
+
                     SPaT = []
                     pedSPaT = []
                     if SPaT_data["Spat"]["IntersectionState"]["intersectionID"] == spat_map_ID :
