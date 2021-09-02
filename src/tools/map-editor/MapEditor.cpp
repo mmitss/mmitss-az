@@ -29,8 +29,8 @@ void MapEditor::readConfigFile()
     intersectionId = jsonObject["IntersectionID"].asInt();
 	regionalId = jsonObject["RegionalID"].asInt();
     intersectionName = jsonObject["IntersectionName"].asString();
-    mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".map.payload";
-    // mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".nmap";
+    // mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".map.payload";
+    mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".nmap";
 }
 
 void MapEditor::processMapPayLoad()
