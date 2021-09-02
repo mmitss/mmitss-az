@@ -1,4 +1,4 @@
-# Software Component Description: Priority-Request-Generator 
+# Software Component Description: Light-Siren-Status-Manager
 The light-siren-status-manager component is responsible for managing the light-siren status information of emergency vehicle. The display of the automation-hat mini shows the status of light-siren interface.
 
 ## Work-flow

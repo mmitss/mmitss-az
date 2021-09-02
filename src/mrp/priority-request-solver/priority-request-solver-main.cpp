@@ -36,6 +36,8 @@ int main()
     UdpSocket priorityRequestSolver_To_TCI_Interface_Socket(static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolverToTCIInterface"].asInt()));
     const int trafficControllerPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["TrafficControllerInterface"].asInt());
     const int signalCoordinationRequestGeneratorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["SignalCoordination"].asInt());
+    const int timePhaseDiagramToolPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["TimePhaseDiagramTool"].asInt());
+
     const string LOCALHOST = jsonObject["HostIp"].asString();
 
     char receiveBuffer[40960];
@@ -43,6 +45,7 @@ int main()
     char receivedCoordinationPlanBuffer[40960];
     int msgType{};
     string tciJsonString{};
+    string timePhaseDiagramJsonString{};
 
     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), priorityRequestSolver.getSignalTimingPlanRequestString());
     // priorityRequestSolver.terminateProgram();
@@ -104,6 +107,10 @@ int main()
                 tciJsonString = priorityRequestSolver.getScheduleforTCI();
                 if (priorityRequestSolver.getOptimalSolutionValidationStatus())
                     priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(trafficControllerPortNo), tciJsonString);
+                    
+                timePhaseDiagramJsonString = priorityRequestSolver.getTimePhaseDiagramMessageString();
+                priorityRequestSolverSocket.sendData(LOCALHOST, static_cast<short unsigned int>(timePhaseDiagramToolPortNo), timePhaseDiagramJsonString);
+                
 
                 //If requires, check for the priority weights update from the config file
                 if (priorityRequestSolver.checkUpdatesForPriorityWeights())

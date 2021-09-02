@@ -891,7 +891,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     
     if (transitOrTruckRequestStatus || emergencyVehicleStatus)
     {
-        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(emergencyVehicleStatus, transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
                                                                       coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                       logging, consoleOutput, dummyPhasesList,
                                                                       trafficSignalPlan);
@@ -912,7 +912,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime - offset), cycleLength);
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
 
-        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(emergencyVehicleStatus, transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
                                                                       coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                       logging, consoleOutput, dummyPhasesList,
                                                                       trafficSignalPlan_SignalCoordination);
@@ -1368,6 +1368,26 @@ string PriorityRequestSolver::getSignalCoordinationTimingPlanRequestString()
 }
 
 /*
+    - The following method creates Json string message which will send to Time-Phase-Diagram-Tool for generating diagrams if require.
+*/
+string PriorityRequestSolver::getTimePhaseDiagramMessageString()
+{
+    std::string jsonString{};
+    Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
+    jsonObject["MsgType"] = "TimePhaseDiagram";
+    jsonObject["OptimalSolutionStatus"] = optimalSolutionStatus;     
+
+    jsonString = Json::writeString(builder, jsonObject);
+
+    return jsonString;
+
+}
+
+/*
     -Check whether static traffic signal timing plan is available or not
 */
 bool PriorityRequestSolver::checkTrafficSignalTimingPlanStatus()
@@ -1455,7 +1475,7 @@ void PriorityRequestSolver::readConfigFile()
     {
         double timeStamp = getPosixTimestamp();
         logFile.open(logFileName);
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
+        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
     }
 }
 
@@ -1468,7 +1488,7 @@ void PriorityRequestSolver::loggingData(string logString)
 
     if (logging)
     {
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] [" << getVerboseTimestamp() << "] ";
         logFile << logString << endl;
     }
 }
@@ -1482,7 +1502,7 @@ void PriorityRequestSolver::displayConsoleData(string consoleString)
 
     if (consoleOutput)
     {
-        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] [" << getVerboseTimestamp() << "] ";
         cout << consoleString << endl;
     }
 }
@@ -1498,13 +1518,13 @@ void PriorityRequestSolver::loggingOptimizationData()
     {
         double timeStamp = getPosixTimestamp();
 
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization data file is following:\n\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Current optimization data file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationModelData.dat");
         for (string line; getline(infile, line);)
             logFile << line << endl;
         infile.close();
 
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization results file is following:\n\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Current optimization results file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationResults.txt");
         for (std::string line; getline(infile, line);)
             logFile << line << endl;
