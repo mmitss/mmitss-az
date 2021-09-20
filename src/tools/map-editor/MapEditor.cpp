@@ -17,25 +17,33 @@ MapEditor::MapEditor()
 void MapEditor::readConfigFile()
 {
     Json::Value jsonObject;
+	Json::Value jsonFileObject;
 	Json::CharReaderBuilder builder;
 	Json::CharReader *reader = builder.newCharReader();
+	Json::CharReader *fileReader = builder.newCharReader();
 	string errors{};
-	ifstream jsonconfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+	string jsonFileErrors{};
+	ifstream jsonConfigfile("/nojournal/bin/mmitss-phase3-master-config.json");
+	ifstream configfile("configfile.json");
 
-	string configJsonString((std::istreambuf_iterator<char>(jsonconfigfile)), std::istreambuf_iterator<char>());
+	string configJsonString((std::istreambuf_iterator<char>(jsonConfigfile)), std::istreambuf_iterator<char>());
 	reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);
 	delete reader;
+
+	string configFileJsonString((std::istreambuf_iterator<char>(configfile)), std::istreambuf_iterator<char>());
+	fileReader->parse(configFileJsonString.c_str(), configFileJsonString.c_str() + configFileJsonString.size(), &jsonFileObject, &jsonFileErrors);
+    delete fileReader;
 
     intersectionId = jsonObject["IntersectionID"].asInt();
 	regionalId = jsonObject["RegionalID"].asInt();
     intersectionName = jsonObject["IntersectionName"].asString();
-    // mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".map.payload";
-    mapPayloadFileName = "/home/debashis/Desktop/mmitss/src/tools/map-editor/map/" + intersectionName + ".nmap";
+	mapPayloadFileName = jsonFileObject["FileName"].asString();
+
 }
 
 void MapEditor::processMapPayLoad()
 {
-    std::vector<uint8_t> mapPayload = plocAwareLib->getMapdataPayload(regionalId, intersectionId);
+    std::vector<uint8_t> mapPayload = plocAwareLib->getMapdataPayload(static_cast<uint16_t>(regionalId), static_cast<uint16_t>(intersectionId));
 	if (mapPayloadFileName.find(std::string(".nmap")) != std::string::npos)
 	{ /// log hex payload
 		std::cout << "Log encoded MAP payload." << std::endl;
@@ -48,12 +56,13 @@ void MapEditor::processMapPayLoad()
 	{
 		MapData_element_t& mapData = dsrcFrameOut.mapData;
 		std::cout << "IntersectionId = " << mapData.id << ", version = " << static_cast<unsigned int>(mapData.mapVersion) << std::endl;
+		
+		// If the function decodes mappayload file and logs the decoded MAP into nmap file
 		if (mapPayloadFileName.find(std::string(".payload")) != std::string::npos)
-		{ /// log decoded MAP into nmap file
-			std::cout << "Log namp file." << std::endl;
-			plocAwareLib->saveNmap(regionalId, intersectionId);
-            plocAwareLib->getMapdataPayload(regionalId, intersectionId);
-            std::cout << "Got the file." << std::endl;
+		{ 
+			plocAwareLib->saveNmap(static_cast<uint16_t>(regionalId), static_cast<uint16_t>(intersectionId));
+            plocAwareLib->getMapdataPayload(static_cast<uint16_t>(regionalId), static_cast<uint16_t>(intersectionId));
+
 		}
 	}
 	else
