@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    table, td {
+      border: 1px solid gray;
+      width: 800px;
+      background-color: #afc5c3;
+      padding: 15px;
+      margin-left:auto; 
+      margin-right:auto;
+     
+    }
+    th {
+        color:azure;
+        background-color: rgba(70, 192, 155, 0.884);
+        padding: 15px;
+        
+    }
+    td:nth-child(even) {
+        background-color: #fffdfd;
+        
+        }
+    .header{
+        text-align: center;
+
+    }
+    b {
+        margin-left: 24%;
+        font-size: 25px;
+    }
+    
+</style>
+<div class="header">
+        <h1>Performance Data: {{platform}}</h1><br>
+        Last refreshed : {{time}}  <hr>
+</div>
+<div><b>Messages Transmitted</b>
+    {{tables1 | safe}}</div>
+<br>
+<br>
+<div><b>Messages Received</b>
+    {{tables2 | safe}}</div>
+
+
+<script>
+    function autoRefresh() {
+        window.location = window.location.href;
+    }
+    setInterval('autoRefresh()',30000);
+
+</script>
+
+<!--
+<br>
+<br>
+<b style="margin-left: 12%;">On the vehicle side(VSP)</b>
+{{data2 | safe}}
+<body>
+    <table>
+        <tr>
+            {% for header in headings %}
+            <th>{{ header }}</th>
+            {% endfor %}
+        </tr>
+        {% for row in data %}
+        <tr>
+            {% for cell in row %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+<body>
+    {% for table in tables %}
+                {{titles|safe}}
+                {{ table|safe }}
+    {% endfor %}
+    </body>
+-->
+
+
+{% endblock %}

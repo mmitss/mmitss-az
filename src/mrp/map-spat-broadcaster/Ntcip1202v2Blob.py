@@ -246,7 +246,7 @@ class Ntcip1202v2Blob:
         
         # Time since change to current state - check inactive phases first!:
         for i in range(0,self.numPedPhases):
-            if i in self.inactivePedPhases:
+            if i+1 in self.inactivePedPhases:
                 self.pedElapsedTime[i] = 0.0
             else:
                 if self.pedCurrState[i] == self.pedPrevState[i]:

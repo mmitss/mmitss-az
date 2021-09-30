@@ -19,6 +19,7 @@ import json
 import time, datetime
 import os
 import shutil
+from J2735Helper import J2735Helper
 
 class V2XDataCollector:
     def __init__(self, environment:str):
@@ -53,6 +54,8 @@ class V2XDataCollector:
 
         self.archive_leftover_directories()
         self.initialize_logfiles()
+
+        self.j2735Helper = J2735Helper()
 
         
     
@@ -296,106 +299,52 @@ class V2XDataCollector:
         moy = str(jsonData["Spat"]["minuteOfYear"])
         msom = str(jsonData["Spat"]["msOfMinute"])
 
-        v1_currState = str(jsonData["Spat"]["phaseState"][0]["currState"])
-        v1_minEndTime = str(jsonData["Spat"]["phaseState"][0]["minEndTime"])
-        v1_maxEndTime = str(jsonData["Spat"]["phaseState"][0]["maxEndTime"])
-        v1_elapsedTime = str(jsonData["Spat"]["phaseState"][0]["elapsedTime"])
+        vCurrStates = ["inactive" for i in range (8)]
+        vMinEndTimes = ["-1" for i in range (8)]
+        vMaxEndTimes = ["-1" for i in range (8)]
+        vElapsedTimes = ["-1" for i in range (8)]
 
-        v2_currState = str(jsonData["Spat"]["phaseState"][1]["currState"])
-        v2_minEndTime = str(jsonData["Spat"]["phaseState"][1]["minEndTime"])
-        v2_maxEndTime = str(jsonData["Spat"]["phaseState"][1]["maxEndTime"])
-        v2_elapsedTime = str(jsonData["Spat"]["phaseState"][1]["elapsedTime"])
+        pCurrStates = ["inactive" for i in range (8)]
+        pMinEndTimes = ["-1" for i in range (8)]
+        pMaxEndTimes = ["-1" for i in range (8)]
+        pElapsedTimes = ["-1" for i in range (8)]
 
-        v3_currState = str(jsonData["Spat"]["phaseState"][2]["currState"])
-        v3_minEndTime = str(jsonData["Spat"]["phaseState"][2]["minEndTime"])
-        v3_maxEndTime = str(jsonData["Spat"]["phaseState"][2]["maxEndTime"])
-        v3_elapsedTime = str(jsonData["Spat"]["phaseState"][2]["elapsedTime"])
+        for vehPhase in jsonData["Spat"]["phaseState"]:
+            phaseNo = vehPhase["phaseNo"]
+            phaseIndex = phaseNo-1
+            vCurrStates[phaseIndex] = vehPhase["currState"]
+            vMinEndTimes[phaseIndex] = str(vehPhase["minEndTime"])
+            vMaxEndTimes[phaseIndex] = str(vehPhase["minEndTime"])
+            vElapsedTimes[phaseIndex] = str(vehPhase["elapsedTime"])
 
-        v4_currState = str(jsonData["Spat"]["phaseState"][3]["currState"])
-        v4_minEndTime = str(jsonData["Spat"]["phaseState"][3]["minEndTime"])
-        v4_maxEndTime = str(jsonData["Spat"]["phaseState"][3]["maxEndTime"])
-        v4_elapsedTime = str(jsonData["Spat"]["phaseState"][3]["elapsedTime"])
-
-        v5_currState = str(jsonData["Spat"]["phaseState"][4]["currState"])
-        v5_minEndTime = str(jsonData["Spat"]["phaseState"][4]["minEndTime"])
-        v5_maxEndTime = str(jsonData["Spat"]["phaseState"][4]["maxEndTime"])
-        v5_elapsedTime = str(jsonData["Spat"]["phaseState"][4]["elapsedTime"])
-
-        v6_currState = str(jsonData["Spat"]["phaseState"][5]["currState"])
-        v6_minEndTime = str(jsonData["Spat"]["phaseState"][5]["minEndTime"])
-        v6_maxEndTime = str(jsonData["Spat"]["phaseState"][5]["maxEndTime"])
-        v6_elapsedTime = str(jsonData["Spat"]["phaseState"][5]["elapsedTime"])
-
-        v7_currState = str(jsonData["Spat"]["phaseState"][6]["currState"])
-        v7_minEndTime = str(jsonData["Spat"]["phaseState"][6]["minEndTime"])
-        v7_maxEndTime = str(jsonData["Spat"]["phaseState"][6]["maxEndTime"])
-        v7_elapsedTime = str(jsonData["Spat"]["phaseState"][6]["elapsedTime"])
-
-        v8_currState = str(jsonData["Spat"]["phaseState"][7]["currState"])
-        v8_minEndTime = str(jsonData["Spat"]["phaseState"][7]["minEndTime"])
-        v8_maxEndTime = str(jsonData["Spat"]["phaseState"][7]["maxEndTime"])
-        v8_elapsedTime = str(jsonData["Spat"]["phaseState"][7]["elapsedTime"])
-
-        p1_currState = str(jsonData["Spat"]["pedPhaseState"][0]["currState"])
-        p1_minEndTime = str(jsonData["Spat"]["pedPhaseState"][0]["minEndTime"])
-        p1_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][0]["maxEndTime"])
-        p1_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][0]["elapsedTime"])
-
-        p2_currState = str(jsonData["Spat"]["pedPhaseState"][1]["currState"])
-        p2_minEndTime = str(jsonData["Spat"]["pedPhaseState"][1]["minEndTime"])
-        p2_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][1]["maxEndTime"])
-        p2_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][1]["elapsedTime"])
-
-        p3_currState = str(jsonData["Spat"]["pedPhaseState"][2]["currState"])
-        p3_minEndTime = str(jsonData["Spat"]["pedPhaseState"][2]["minEndTime"])
-        p3_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][2]["maxEndTime"])
-        p3_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][2]["elapsedTime"])
-
-        p4_currState = str(jsonData["Spat"]["pedPhaseState"][3]["currState"])
-        p4_minEndTime = str(jsonData["Spat"]["pedPhaseState"][3]["minEndTime"])
-        p4_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][3]["maxEndTime"])
-        p4_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][3]["elapsedTime"])
-
-        p5_currState = str(jsonData["Spat"]["pedPhaseState"][4]["currState"])
-        p5_minEndTime = str(jsonData["Spat"]["pedPhaseState"][4]["minEndTime"])
-        p5_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][4]["maxEndTime"])
-        p5_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][4]["elapsedTime"])
-
-        p6_currState = str(jsonData["Spat"]["pedPhaseState"][5]["currState"])
-        p6_minEndTime = str(jsonData["Spat"]["pedPhaseState"][5]["minEndTime"])
-        p6_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][5]["maxEndTime"])
-        p6_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][5]["elapsedTime"])
-
-        p7_currState = str(jsonData["Spat"]["pedPhaseState"][6]["currState"])
-        p7_minEndTime = str(jsonData["Spat"]["pedPhaseState"][6]["minEndTime"])
-        p7_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][6]["maxEndTime"])
-        p7_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][6]["elapsedTime"])
-
-        p8_currState = str(jsonData["Spat"]["pedPhaseState"][7]["currState"])
-        p8_minEndTime = str(jsonData["Spat"]["pedPhaseState"][7]["minEndTime"])
-        p8_maxEndTime = str(jsonData["Spat"]["pedPhaseState"][7]["maxEndTime"])
-        p8_elapsedTime = str(jsonData["Spat"]["pedPhaseState"][7]["elapsedTime"])
+        for pedPhase in jsonData["Spat"]["pedPhaseState"]:
+            phaseNo = pedPhase["phaseNo"]
+            phaseIndex = phaseNo-1
+            pCurrStates[phaseIndex] = pedPhase["currState"]
+            pMinEndTimes[phaseIndex] = str(pedPhase["minEndTime"])
+            pMaxEndTimes[phaseIndex] = str(pedPhase["minEndTime"])
+            pElapsedTimes[phaseIndex] = str(pedPhase["elapsedTime"])
 
         csv = (log_timestamp_verbose + "," + log_timestamp_posix + "," + timestamp_verbose + "," + timestamp_posix + "," + 
                 regionalId + "," + intersectionId + "," + msgCnt + "," + moy + "," + msom + "," +
 
-                v1_currState + "," + v1_minEndTime + "," + v1_maxEndTime + "," + v1_elapsedTime + "," +
-                v2_currState + "," + v2_minEndTime + "," + v2_maxEndTime + "," + v2_elapsedTime + "," +
-                v3_currState + "," + v3_minEndTime + "," + v3_maxEndTime + "," + v3_elapsedTime + "," +
-                v4_currState + "," + v4_minEndTime + "," + v4_maxEndTime + "," + v4_elapsedTime + "," +
-                v5_currState + "," + v5_minEndTime + "," + v5_maxEndTime + "," + v5_elapsedTime + "," +
-                v6_currState + "," + v6_minEndTime + "," + v6_maxEndTime + "," + v6_elapsedTime + "," +
-                v7_currState + "," + v7_minEndTime + "," + v7_maxEndTime + "," + v7_elapsedTime + "," +
-                v8_currState + "," + v8_minEndTime + "," + v8_maxEndTime + "," + v8_elapsedTime + "," +
+                vCurrStates[0] + "," + vMinEndTimes[0] + "," + vMaxEndTimes[0] + "," + vElapsedTimes[0] + "," +
+                vCurrStates[1] + "," + vMinEndTimes[1] + "," + vMaxEndTimes[1] + "," + vElapsedTimes[1] + "," +
+                vCurrStates[2] + "," + vMinEndTimes[2] + "," + vMaxEndTimes[2] + "," + vElapsedTimes[2] + "," +
+                vCurrStates[3] + "," + vMinEndTimes[3] + "," + vMaxEndTimes[3] + "," + vElapsedTimes[3] + "," +
+                vCurrStates[4] + "," + vMinEndTimes[4] + "," + vMaxEndTimes[4] + "," + vElapsedTimes[4] + "," +
+                vCurrStates[5] + "," + vMinEndTimes[5] + "," + vMaxEndTimes[5] + "," + vElapsedTimes[5] + "," +
+                vCurrStates[6] + "," + vMinEndTimes[6] + "," + vMaxEndTimes[6] + "," + vElapsedTimes[6] + "," +
+                vCurrStates[7] + "," + vMinEndTimes[7] + "," + vMaxEndTimes[7] + "," + vElapsedTimes[7] + "," +
 
-                p1_currState + "," + p1_minEndTime + "," + p1_maxEndTime + "," + p1_elapsedTime + "," +
-                p2_currState + "," + p2_minEndTime + "," + p2_maxEndTime + "," + p2_elapsedTime + "," +
-                p3_currState + "," + p3_minEndTime + "," + p3_maxEndTime + "," + p3_elapsedTime + "," +
-                p4_currState + "," + p4_minEndTime + "," + p4_maxEndTime + "," + p4_elapsedTime + "," +
-                p5_currState + "," + p5_minEndTime + "," + p5_maxEndTime + "," + p5_elapsedTime + "," +
-                p6_currState + "," + p6_minEndTime + "," + p6_maxEndTime + "," + p6_elapsedTime + "," +
-                p7_currState + "," + p7_minEndTime + "," + p7_maxEndTime + "," + p7_elapsedTime + "," +
-                p8_currState + "," + p8_minEndTime + "," + p8_maxEndTime + "," + p8_elapsedTime + "\n")
+                pCurrStates[0] + "," + pMinEndTimes[0] + "," + pMaxEndTimes[0] + "," + pElapsedTimes[0] + "," +
+                pCurrStates[1] + "," + pMinEndTimes[1] + "," + pMaxEndTimes[1] + "," + pElapsedTimes[1] + "," +
+                pCurrStates[2] + "," + pMinEndTimes[2] + "," + pMaxEndTimes[2] + "," + pElapsedTimes[2] + "," +
+                pCurrStates[3] + "," + pMinEndTimes[3] + "," + pMaxEndTimes[3] + "," + pElapsedTimes[3] + "," +
+                pCurrStates[4] + "," + pMinEndTimes[4] + "," + pMaxEndTimes[4] + "," + pElapsedTimes[4] + "," +
+                pCurrStates[5] + "," + pMinEndTimes[5] + "," + pMaxEndTimes[5] + "," + pElapsedTimes[5] + "," +
+                pCurrStates[6] + "," + pMinEndTimes[6] + "," + pMaxEndTimes[6] + "," + pElapsedTimes[6] + "," +
+                pCurrStates[7] + "," + pMinEndTimes[7] + "," + pMaxEndTimes[7] + "," + pElapsedTimes[7] + "," + "\n")
         
         return csv
 
@@ -504,7 +453,8 @@ class V2XDataCollector:
             if receivedMsg["MsgType"] == "BSM":
                 self.write_bsm(receivedMsg,senderPort)
             elif receivedMsg["MsgType"] == "SPaT":
-                self.write_spat(receivedMsg)
+                spatString = self.j2735Helper.modify_spat_json_to_deciSecFromNow(json.dumps(receivedMsg))
+                self.write_spat(json.loads(spatString))
             elif receivedMsg["MsgType"] == "SRM":
                 self.write_srm(receivedMsg)
             elif receivedMsg["MsgType"] == "SSM":
