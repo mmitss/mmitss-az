@@ -105,7 +105,7 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void createDilemmaZoneRequestList();
+  void setDilemmaZoneRequesStatus();
   void modifyPriorityRequestList();
   void modifySignalTimingPlan();
   void modifyCoordinationSignalTimingPlan();
@@ -131,6 +131,7 @@ public:
   string getSignalTimingPlanRequestString();
   string getCurrentSignalStatusRequestString();
   string getSignalCoordinationTimingPlanRequestString();
+  string getTimePhaseDiagramMessageString();
   int getMessageType(string jsonString);
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   double getCurrentTime();

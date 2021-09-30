@@ -891,16 +891,16 @@ void PriorityRequestGenerator::setVehicleType()
 	{
 		if (jsonObject["VehicleType"].asString() == "Transit")
 		{
-			vehicleType = Transit;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::bus);
 			getBusStopInformation();
 		}
 
 		else if (jsonObject["VehicleType"].asString() == "Truck")
-			vehicleType = Truck;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::axleCnt4);
 
 		else if (jsonObject["VehicleType"].asString() == "EmergencyVehicle")
 		{
-			vehicleType = EmergencyVehicle;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::special);
 			lightSirenStatus = false;
 		}
 	}
@@ -912,18 +912,20 @@ void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 
 	if (vehType == "Transit")
 	{
-		vehicleType = Transit;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::bus);
 		getBusStopInformation();
 	}
 
 	else if (vehType == "Truck")
-		vehicleType = Truck;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::axleCnt4);
 
 	else if (vehType == "EmergencyVehicle")
 	{
-		vehicleType = EmergencyVehicle;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::special);
 		lightSirenStatus = true;
 	}
+	else 
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::car);
 }
 
 /*
@@ -1205,10 +1207,10 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 	if (parsingSuccessful)
 	{
 
-		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
+		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
 			lightSirenStatus = true;
 
-		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
+		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
 			lightSirenStatus = false;
 	}
 }

@@ -94,6 +94,7 @@ int main()
                     decoderSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(vehicleHmiPortNo), spatJsonString);
                     decoderSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), spatJsonString);
                     cout << "[" << fixed << showpoint << setprecision(2) << currentTime << "] Decoded SPAT" << endl;
+                    cout << spatJsonString << endl;
                 }
             }
 

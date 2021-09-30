@@ -13,31 +13,139 @@ The TCI processes following types of requests:
     "MsgType": "Schedule",
     "Schedule": [
         {
-            "commandEndTime": 8,
+            "commandEndTime": 0.0,
+            "commandPhase": 2,
+            "commandStartTime": 0.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 24.0,
             "commandPhase": 4,
+            "commandStartTime": 5.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 44.0,
+            "commandPhase": 2,
+            "commandStartTime": 29.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 64.0,
+            "commandPhase": 4,
+            "commandStartTime": 49.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 12.0,
+            "commandPhase": 2,
+            "commandStartTime": 11.0,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 69.5,
+            "commandPhase": 4,
+            "commandStartTime": 68.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 109.5,
+            "commandPhase": 2,
+            "commandStartTime": 108.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 129.5,
+            "commandPhase": 4,
+            "commandStartTime": 128.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 23.999767065048218,
+            "commandPhase": 4,
+            "commandStartTime": 0.0,
+            "commandType": "call_veh"
+        },
+        {
+            "commandEndTime": 133.5,
+            "commandPhase": 1,
             "commandStartTime": 0.0,
             "commandType": "omit_veh"
         },
         {
-            "commandEndTime": 19.65,
-            "commandPhase": 1,
-            "commandStartTime": 9.1,
-            "commandType": "omit_veh"
-        },
-        {
-            "commandEndTime": 80.0,
-            "commandPhase": 2,
-            "commandStartTime": 23.65,
-            "commandType": "omit_veh"
-        },
-        {
-            "commandEndTime": 101.35,
+            "commandEndTime": 133.5,
             "commandPhase": 3,
-            "commandStartTime": 86.69999999999999,
+            "commandStartTime": 0.0,
+            "commandType": "omit_veh"
+        },
+        {
+            "commandEndTime": 0.0,
+            "commandPhase": 6,
+            "commandStartTime": 0.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 24.0,
+            "commandPhase": 7,
+            "commandStartTime": 5.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 44.0,
+            "commandPhase": 6,
+            "commandStartTime": 29.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 64.0,
+            "commandPhase": 7,
+            "commandStartTime": 49.0,
+            "commandType": "hold"
+        },
+        {
+            "commandEndTime": 12.0,
+            "commandPhase": 6,
+            "commandStartTime": 11.0,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 69.5,
+            "commandPhase": 7,
+            "commandStartTime": 68.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 109.5,
+            "commandPhase": 6,
+            "commandStartTime": 108.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 129.5,
+            "commandPhase": 7,
+            "commandStartTime": 128.5,
+            "commandType": "forceoff"
+        },
+        {
+            "commandEndTime": 23.999767065048218,
+            "commandPhase": 7,
+            "commandStartTime": 0.0,
+            "commandType": "call_veh"
+        },
+        {
+            "commandEndTime": 133.5,
+            "commandPhase": 5,
+            "commandStartTime": 0.0,
+            "commandType": "omit_veh"
+        },
+        {
+            "commandEndTime": 133.5,
+            "commandPhase": 8,
+            "commandStartTime": 0.0,
             "commandType": "omit_veh"
         }
-      ]
-    }
+    ]
+}
   ```
   - Number and type of commands in the `["Schedule"]` key may vary based on the requirement. Supported values in the `["commandType"]` key are the following:
     - `"omit_veh"`: omit a vehicle phase

@@ -192,35 +192,64 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     spatIn.timeStampSec = static_cast<uint16_t>(jsonObject["Spat"]["msOfMinute"].asInt());
     std::bitset<16> intersectionStatus(jsonObject["Spat"]["status"].asString());
     spatIn.status = intersectionStatus;
-    spatIn.permittedPhases.set(); // all 8 phases permitted
-    spatIn.permittedPedPhases.set();
 
-    for (int i = 0; i < 8; i++)
+    // Develop vehicle phases
+    for(unsigned int i=0; i<jsonObject["Spat"]["phaseState"].size(); i++)
     {
-        spatIn.phaseState[i].startTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["startTime"].asInt());
-        spatIn.phaseState[i].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt());
-        spatIn.phaseState[i].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["maxEndTime"].asInt());
+        int phaseNo = jsonObject["Spat"]["phaseState"][i]["phaseNo"].asInt();
+        int phaseIndex = phaseNo-1;
+        spatIn.permittedPhases.set(phaseIndex); // enable the current phase
+        
+        spatIn.phaseState[phaseIndex].startTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["startTime"].asInt());
+        spatIn.phaseState[phaseIndex].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["minEndTime"].asInt());
+        spatIn.phaseState[phaseIndex].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["phaseState"][i]["maxEndTime"].asInt());
         phaseState = jsonObject["Spat"]["phaseState"][i]["currState"].asString();
         if (phaseState == "red")
-            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(RED);
+            spatIn.phaseState[phaseIndex].currState = static_cast<MsgEnum::phaseState>(RED);
         else if (phaseState == "yellow")
-            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(YELLOW);
+            spatIn.phaseState[phaseIndex].currState = static_cast<MsgEnum::phaseState>(YELLOW);
         else if (phaseState == "green")
-            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(GREEN);
+            spatIn.phaseState[phaseIndex].currState = static_cast<MsgEnum::phaseState>(GREEN);
         else if (phaseState == "permissive_yellow")
-            spatIn.phaseState[i].currState = static_cast<MsgEnum::phaseState>(PERMISSIVE);
-
-        spatIn.pedPhaseState[i].startTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["startTime"].asInt());
-        spatIn.pedPhaseState[i].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"].asInt());
-        spatIn.pedPhaseState[i].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"].asInt());
+            spatIn.phaseState[phaseIndex].currState = static_cast<MsgEnum::phaseState>(PERMISSIVE);
+        
+    }
+    // Develop pedestrian phases
+    for(unsigned int i=0; i<jsonObject["Spat"]["pedPhaseState"].size(); i++)
+    {
+        int pedPhaseNo = jsonObject["Spat"]["pedPhaseState"][i]["phaseNo"].asInt();
+        int pedPhaseIndex = 0;
+        if (pedPhaseNo == 2)
+        {
+            pedPhaseIndex = 4;
+        }
+        else if (pedPhaseNo == 4)
+        {
+            pedPhaseIndex = 5;
+        }
+        else if (pedPhaseNo == 6)
+        {
+            pedPhaseIndex = 6;
+        }
+        else if (pedPhaseNo == 8)
+        {
+            pedPhaseIndex = 7;
+        }
+        spatIn.permittedPedPhases.set(pedPhaseIndex); // enable the current phase
+        
+        spatIn.pedPhaseState[pedPhaseIndex].startTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["startTime"].asInt());
+        spatIn.pedPhaseState[pedPhaseIndex].minEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"].asInt());
+        spatIn.pedPhaseState[pedPhaseIndex].maxEndTime = static_cast<uint16_t>(jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"].asInt());
         pedPhaseState = jsonObject["Spat"]["pedPhaseState"][i]["currState"].asString();
         if (pedPhaseState == "do_not_walk")
-            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(DONOTWALK);
+            spatIn.pedPhaseState[pedPhaseIndex].currState = static_cast<MsgEnum::phaseState>(DONOTWALK);
         else if (pedPhaseState == "ped_clear")
-            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(PEDCLEAR);
+            spatIn.pedPhaseState[pedPhaseIndex].currState = static_cast<MsgEnum::phaseState>(PEDCLEAR);
         else if (pedPhaseState == "walk")
-            spatIn.pedPhaseState[i].currState = static_cast<MsgEnum::phaseState>(WALK);
+            spatIn.pedPhaseState[pedPhaseIndex].currState = static_cast<MsgEnum::phaseState>(WALK);        
     }
+
+
     size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
 
     if (payload_size > 0)
