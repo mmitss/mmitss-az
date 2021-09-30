@@ -82,6 +82,7 @@ class ConfigurationForm(FlaskForm):
     vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
     logging                         = BooleanField('Logging')
     consoleOutput                   = BooleanField('Console Output')
+    performanceMeasurementDiagram   = BooleanField('Time Phase Diagram')
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
@@ -119,6 +120,7 @@ class ConfigurationForm(FlaskForm):
     portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
     portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
     portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
+    portNumberTimePhaseDiagramTool                  = IntegerField('Port Number: Time Phase Diagram Tool')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -177,7 +179,8 @@ class ConfigurationForm(FlaskForm):
     priorityTransitWeight                = StringField('Transit Weight')    
     priorityTruckWeight                 = StringField('Truck Weight')    
     priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight (Truck Only)')    
-    priorityCoordinationWeight            = StringField('Coordination Weight')    
+    priorityCoordinationWeight            = StringField('Coordination Weight')
+    priorityFlexibilityWeight             = StringField('Flexibility Weight')    
     coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Update Interval (seconds)')    
 
 # System Configuration data object
@@ -196,6 +199,7 @@ class SysConfig:
         self.vehicleType = data['VehicleType']
         self.logging = data['Logging']
         self.consoleOutput = data['ConsoleOutput']
+        self.performanceMeasurementDiagram = data['PerformanceMeasurementDiagram']
         self.srmTimedOutTime = data['SRMTimedOutTime']
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
@@ -233,6 +237,7 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
+        self.portNumberTimePhaseDiagramTool = data['PortNumber']['TimePhaseDiagramTool']
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -292,6 +297,7 @@ class SysConfig:
         self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
         self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
         self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
+        self.priorityFlexibilityWeight          = data['PriorityParameter']['FlexibilityWeight']
         self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
 
 def convertToList(formString):
@@ -322,6 +328,7 @@ def prepareJSONData(data, form):
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
     data['ConsoleOutput']=form.consoleOutput.data
+    data['PerformanceMeasurementDiagram']=form.performanceMeasurementDiagram.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= 'Deprecated'
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
@@ -358,6 +365,7 @@ def prepareJSONData(data, form):
     data['PortNumber']['MapEngine']    = 'Component is Yet to Come'
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
+    data['PortNumber']['TimePhaseDiagramTool']   = form.portNumberTimePhaseDiagramTool.data
     data['psid']['map']    = form.psidMap.data    
     data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
@@ -417,6 +425,7 @@ def prepareJSONData(data, form):
     data['PriorityParameter']['TruckWeight']                        = float(form.priorityTruckWeight.data)
     data['PriorityParameter']['DilemmaZoneRequestWeight']           = float(form.priorityDilemmaZoneRequestWeight.data)
     data['PriorityParameter']['CoordinationWeight']                 = float(form.priorityCoordinationWeight.data)
+    data['PriorityParameter']['FlexibilityWeight']                  = float(form.priorityFlexibilityWeight.data)
     data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
