@@ -7,39 +7,48 @@
 <style>
     .diagram_list{
 
-        height:70px;
-        width:500px;
-        overflow-y:auto;
+        height:100px;
+        width: auto;
+        overflow-y: scroll;
         float:right;
         position:relative;
         margin-top:-30%;
-        border-style: ridge;
-        border: #04AA6D;
+        background-color: #E0FFFF;
+        border: 2px solid black;
     }
 
 
-    ul li:hover {
+    ul.a {
+        list-style-type: none;
+        margin: 0;
+        padding: 5px;
+    }
+
+
+    ul.a li:hover {
         display: block;
         color: black;
-        background-color: #e4e6e8;
+        background-color: #ADD8E6;
     }
 
 .previous {
-  background-color: #f1f1f1;
-  color: black;
-  margin-left: 230px;
+  background-color: #56dfd8;
+  color: white;
 }
 
 .next {
-  background-color: #04AA6D;
+  background-color: #56dfd8;
   color: white;
 }
 
 .round {
   border-radius: 50%;
+  margin: 20px;
   
 }
 a {
+    position:relative ;
+    left: 170px;
   text-decoration: none;
   display: inline-block;
   padding: 8px 16px;
@@ -51,6 +60,7 @@ a:hover {
 }
 img {
     width: 550px;
+    padding: 20px;
 }
 </style>
 
@@ -71,18 +81,18 @@ img {
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
-                        <img src="../static/images/diagrams/{{image}}" alt="not showing currently" width="600" height="500" id="picture"/>
+                        <img src="../nojournal/bin/performance-measurement-diagrams/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture"/>
                         <br>
                         
-                        <a href="#" onclick="cursorPrev('{{diagrams}}')" class="previous round">&#8249;</a>
-                        <a href="#" onclick="cursorNext('{{diagrams}}')" class="next round">&#8250;</a>
+                        <a href="#" onclick="cursorPrev()" class="previous round">&#8249;</a>
+                        <a href="#" onclick="cursorNext()" class="next round">&#8250;</a>
                 
-
+                
                     <div class="diagram_list" id="list">
-                        <ul>
+                        <ul class = "a">
 
                             {% for diagram in diagrams %}
-                            <li onclick="changeDiagram('{{ diagram }}')">{{diagram}}</li>
+                            <li id="imgList" onclick="changeDiagram('{{ loop.index }}')">{{diagram}}</li>
                             {% endfor %}
 
                         </ul>
@@ -97,51 +107,53 @@ img {
     </form>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
-<script>
+<script type="text/javascript">
 
-function changeDiagram(diagram){
-    
+var diagrams = JSON.parse('{{ diagrams | tojson }}') ;
 
-    var image2 = diagram;
-    var image3 = '../static/images/diagrams/' + image2 ;
-    document.getElementById("picture").src = image3;
+$(document).ready(function(){
+setInterval(function(){
+    $("#list").load(" #list > *");
+    /*$("#list").load(window.location.href + " #list" );*/
+      console.log("reloaded");
 
+}, 5000);
+});
 
-}
-
-function cursorNext(diagrams){
-
-    var n = diagrams.length;
-    var image = document.getElementById("picture").src
-    console.log(image);
-    for(let i=0;i<n;i++){
-
-        if('../static/images/diagrams/' + diagrams[i] == image){
-            
-            document.getElementById("picture").src = '../static/images/diagrams/'+diagrams[i+1];
-
-        }
-
-    }
-
-
-}
-function cursorPrev(diagrams){
-
-var n = diagrams.length;
-var image = document.getElementById("picture").src
-for(let i=0;i<n;i++){
-
-    if('../static/images/diagrams/' + diagrams[i] == image){
         
-        document.getElementById("picture").src = '../static/images/diagrams/'+diagrams[i-1];
 
-    }
+
+
+function changeDiagram(ind){
+    
+    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams[ind-1] ;
+    document.getElementById("picture").src = newImg;
+
 
 }
 
+function cursorNext(){
 
+    var imgPath = document.getElementById("picture").getAttribute("src") ;
+    var img = imgPath.split("/") ;
+    var ind = diagrams.indexOf(img.at(-1)) ;
+    if(ind != diagrams.length -1){
+    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams.at(ind+1) ;
+    document.getElementById("picture").src = newImg ;
+    }
+}
+
+function cursorPrev(){
+    var imgPath = document.getElementById("picture").getAttribute("src") ;
+    var img = imgPath.split("/") ;
+    var ind = diagrams.indexOf(img.at(-1)) ;
+    if(ind != 0){
+    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams.at(ind-1) ;
+    document.getElementById("picture").src = newImg;
+    }
 }
 
 
