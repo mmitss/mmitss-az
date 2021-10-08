@@ -199,7 +199,12 @@ class SysConfig:
         self.vehicleType = data['VehicleType']
         self.logging = data['Logging']
         self.consoleOutput = data['ConsoleOutput']
-        self.performanceMeasurementDiagram = data['PerformanceMeasurementDiagram']
+        # check for past versions that may not have element
+        try:
+            self.performanceMeasurementDiagram = data['PerformanceMeasurementDiagram']
+        except (KeyError):
+            flash("Time Phase Diagram field has not been saved.")
+            self.performanceMeasurementDiagram = False
         self.srmTimedOutTime = data['SRMTimedOutTime']
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
@@ -237,7 +242,11 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
-        self.portNumberTimePhaseDiagramTool = data['PortNumber']['TimePhaseDiagramTool']
+        try:
+            self.portNumberTimePhaseDiagramTool = data['PortNumber']['TimePhaseDiagramTool']
+        except (KeyError):
+            flash("Time Phase Diagram Tool field has not been saved.")
+            self.portNumberTimePhaseDiagramTool = " "
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -297,8 +306,21 @@ class SysConfig:
         self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
         self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
         self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
-        self.priorityFlexibilityWeight          = data['PriorityParameter']['FlexibilityWeight']
+        try:
+            self.priorityFlexibilityWeight          = data['PriorityParameter']['FlexibilityWeight']
+        except (KeyError):
+            flash("Flexibility Weight field has not been saved.")
+            self.priorityFlexibilityWeight          = " "
         self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
+
+'''
+def buildMissingFieldsList(missingFields):
+    if missing_fields_message.Empty()
+        # add preamble
+    else
+        # append missing fields
+    return intList
+'''
 
 def convertToList(formString):
     # remove any brackets
@@ -434,9 +456,9 @@ def configuration():
     import json
     
     #field location
-    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    #with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
-    #with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         sysConfig = SysConfig(data)    
         pageTitle = data['IntersectionName']
@@ -446,9 +468,9 @@ def configuration():
     if request.method == 'POST':
         # Serialize the edited data
         #field location
-        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
-        #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
             dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  
