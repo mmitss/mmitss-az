@@ -7,12 +7,13 @@
 <style>
     .diagram_list{
 
-        height:100px;
+        height:200px;
         width: auto;
         overflow-y: scroll;
         float:right;
-        position:relative;
-        margin-top:-30%;
+        position:fixed;
+        margin-left: 35%;
+        margin-top:-20%;
         background-color: #E0FFFF;
         border: 2px solid black;
     }
@@ -31,21 +32,6 @@
         background-color: #ADD8E6;
     }
 
-.previous {
-  background-color: #56dfd8;
-  color: white;
-}
-
-.next {
-  background-color: #56dfd8;
-  color: white;
-}
-
-.round {
-  border-radius: 50%;
-  margin: 20px;
-  
-}
 a {
     position:relative ;
     left: 170px;
@@ -81,23 +67,22 @@ img {
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
-                        <img src="../nojournal/bin/performance-measurement-diagrams/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture"/>
+                        <img src="../static/images/diagrams/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture">
                         <br>
                         
-                        <a href="#" onclick="cursorPrev()" class="previous round">&#8249;</a>
-                        <a href="#" onclick="cursorNext()" class="next round">&#8250;</a>
+                        
                 
                 
                     <div class="diagram_list" id="list">
                         <ul class = "a">
 
                             {% for diagram in diagrams %}
-                            <li id="imgList" onclick="changeDiagram('{{ loop.index }}')">{{diagram}}</li>
+                            <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}','{{loop.index}}')">{{diagram}}</li>
                             {% endfor %}
 
                         </ul>
-                           
-                    </div>
+                        
+                    </div><br>
 
                 </div>
             </div>
@@ -112,49 +97,22 @@ img {
 
 <script type="text/javascript">
 
-var diagrams = JSON.parse('{{ diagrams | tojson }}') ;
 
 $(document).ready(function(){
 setInterval(function(){
-    $("#list").load(" #list > *");
-    /*$("#list").load(window.location.href + " #list" );*/
-      console.log("reloaded");
-
-}, 5000);
+    $("#diagrams").load(" #diagrams > *");
+}, 30000);
 });
 
-        
-
-
-
-function changeDiagram(ind){
+function changeDiagram(Img, Ind){
     
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams[ind-1] ;
+    console.log(Img);
+    var newImg = '../static/images/diagrams/' + Img ;
     document.getElementById("picture").src = newImg;
 
-
 }
 
-function cursorNext(){
 
-    var imgPath = document.getElementById("picture").getAttribute("src") ;
-    var img = imgPath.split("/") ;
-    var ind = diagrams.indexOf(img.at(-1)) ;
-    if(ind != diagrams.length -1){
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams.at(ind+1) ;
-    document.getElementById("picture").src = newImg ;
-    }
-}
-
-function cursorPrev(){
-    var imgPath = document.getElementById("picture").getAttribute("src") ;
-    var img = imgPath.split("/") ;
-    var ind = diagrams.indexOf(img.at(-1)) ;
-    if(ind != 0){
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/' + diagrams.at(ind-1) ;
-    document.getElementById("picture").src = newImg;
-    }
-}
 
 
 
