@@ -446,7 +446,7 @@ def configuration():
 @app.route('/performance_data/',methods=['GET','POST'])
 def performance_data():
     
-    diagrams = os.listdir("static/images/diagrams/")
+    diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram")
     diagrams.sort()
     return render_template('performance_data.html', diagrams= diagrams)
 

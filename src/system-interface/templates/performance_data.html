@@ -67,7 +67,7 @@ img {
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
-                        <img src="../static/images/diagrams/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture">
+                        <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture">
                         <br>
                         
                         
@@ -107,7 +107,7 @@ setInterval(function(){
 function changeDiagram(Img, Ind){
     
     console.log(Img);
-    var newImg = '../static/images/diagrams/' + Img ;
+    var newImg = '../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/' + Img ;
     document.getElementById("picture").src = newImg;
 
 }
