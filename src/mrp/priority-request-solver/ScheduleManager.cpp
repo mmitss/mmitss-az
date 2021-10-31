@@ -606,11 +606,12 @@ bool ScheduleManager::validateOptimalSolution()
 
     for (unsigned int i = 0; i < rightCriticalPoints_GreenTime_Ring1.size(); i++)
     {
-        if (rightCriticalPoints_GreenTime_Ring1.at(i) > 2.0) //For Force-off point commandEndTime is greater than zero. Thus we chose the checking value as 2.0
+        if (rightCriticalPoints_GreenTime_Ring1.at(i) > 2.0) //For Force-off point commandEndTime is required to be greater than zero. Thus we chose the checking value as 2.0 (safety factor).
         {
             solutionValidity = true;
             break;
         }
+        
         else
             continue;
     }

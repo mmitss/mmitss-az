@@ -32,6 +32,7 @@ import psutil
 import Ntcip1202v2Blob
 import Spat
 import MmitssSpat
+import J2735Helper
 
 def main():
 
@@ -102,6 +103,9 @@ def main():
 
     spatBroadcastSuccessFlag = False
 
+    # Create an object of UtcHelper class
+    j2735Helper = J2735Helper.J2735Helper()
+
     while True:
         data, addr = s.recvfrom(1024)
         # If the data is received from the signal controller:
@@ -143,6 +147,19 @@ def main():
             currentSpatObject.setmsgCnt(msgCnt)
             currentSpatObject.fillSpatInformation(currentBlob)
             spatJsonString = currentSpatObject.Spat2Json()
+
+            # Now first send the SPaT for broadcast then do other stuff later!
+            # Modify SPaT Json string to reflect UTC times:
+            # In the first version of MAP-SPAT-Broadcaster, Min and Max end times were broadcasted 
+            # in the form of DeciSeconds from NOW, which was incompliant with the J2735(2016) standard.
+            # In the standard it is required to broadcast these times as TIMEMARKS in current or the next UTC hour
+            # So, do the conversion before sending the SPaT data to broadcast.
+
+            modifiedSpatJsonString = j2735Helper.get_standard_string_for_broadcast(spatJsonString, inactiveVehPhases, inactivePedPhases)
+            s.sendto(modifiedSpatJsonString.encode(), msgEncoderAddress)
+            s.sendto(modifiedSpatJsonString.encode(), localDataCollectorAddress)
+
+            # Now that the broadcast is complete, do rest of the stuff required for other MMITSS applications
             currentPhasesDict = currentBlob.getCurrentPhasesDict()
             currentPhasesJson = json.dumps(currentPhasesDict)
             vehCurrStateJson = json.dumps({
@@ -152,10 +169,9 @@ def main():
             })
                 
             s.sendto(vehCurrStateJson.encode(), dataCollectorServerAddress)
-            s.sendto(spatJsonString.encode(), msgEncoderAddress)
-            s.sendto(spatJsonString.encode(), localDataCollectorAddress)
             s.sendto(currentPhasesJson.encode(), tci_currPhaseAddress)
-                        
+            
+            
             # Send spat json to external clients:
             for client in clients_spatJson:
                 address = (client["IP"], client["Port"])
