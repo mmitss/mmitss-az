@@ -541,8 +541,12 @@ def performance_data():
         df1 = df1[df1.Message != 'SPaT']
         df1 = df1[df1.Message != 'SSM']
 
+    #time phase diagrams
+    diagrams = os.listdir("nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
+    diagrams.sort()
+
     #sending the dataframes to HTML template
-    return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False))
+    return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False), diagrams= diagrams)
     
 
 
