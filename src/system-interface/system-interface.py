@@ -456,9 +456,9 @@ def configuration():
     import json
     
     #field location
-    #with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
     #test location
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    #with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         sysConfig = SysConfig(data)    
         pageTitle = data['IntersectionName']
@@ -468,9 +468,9 @@ def configuration():
     if request.method == 'POST':
         # Serialize the edited data
         #field location
-        #with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
+        with open('/nojournal/bin/mmitss-phase3-master-config.json', 'w') as json_file:
         #test location
-        with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
+        #with open('static/json/mmitss-phase3-master-config.json', 'w') as json_file:
             prepareJSONData(data, form)
             dataResult = json.dump(data, json_file, indent="\t") 
             flash('Configuration Updated')  
@@ -491,6 +491,7 @@ def performance_data():
     #ran a loop to search for the file matching the below mentioned pattern
     for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
         i = 0
+    #file = "static/images/daisy-anthem_msgCountsLog_01012021_000000.csv"
         
     #read the csv file and extracted the required columns and stored in the dataframe "df"   
     col_list = ["log_timestamp_verbose","msg_type","msg_count"]
@@ -542,8 +543,13 @@ def performance_data():
         df1 = df1[df1.Message != 'SSM']
 
     #time phase diagrams
-    diagrams = os.listdir("nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
-    diagrams.sort()
+    #checking if directory exists
+    try:
+        #extracting all the filenames from the directory
+        diagrams = os.listdir("nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
+        diagrams.sort()
+    except:
+        diagrams = ["Na"]*10
 
     #sending the dataframes to HTML template
     return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False), diagrams= diagrams)

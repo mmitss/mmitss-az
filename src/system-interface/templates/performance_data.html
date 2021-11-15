@@ -12,9 +12,10 @@
         height:200px;
         width: auto;
         overflow-y: scroll;
-        float:right; 
-        background-color: #E0FFFF;
+        float:right;
         border: 2px solid black;
+        background-color: white;
+        
     }
 
 
@@ -25,30 +26,32 @@
     }
 
 
-    ul.a li:hover {
+    ul.a li:hover{
         display: block;
-        color: black;
-        background-color: #ADD8E6;
+        color: white;
+        background-color: #507a77;
+    }
+    h4{
+        color: seashell;
+        font-weight: bold;
+    }
+    table.imgTd td {
+      border: 2px solid gray;
+      background-color: #afc5c3;
+      width: auto;
+      padding: 10px;
+      margin-left:auto; 
+      margin-right:auto;
+     
     }
 
-a {
-    position:relative ;
-    left: 170px;
-  text-decoration: none;
-  display: inline-block;
-  padding: 8px 16px;
-}
 
-a:hover {
-  background-color: #ddd;
-  color: black;
-}
-img {
+    img {
     width: 550px;
     padding: 20px;
-}
-</style>
-<style>
+
+    }
+
     table, td {
       border: 1px solid gray;
       width: 800px;
@@ -87,12 +90,12 @@ img {
         <div role="tabpanel">
             <ul class="nav nav-tabs" role="tablist">
                 <li role="presentation" class="active"><a href="#tables" aria-controls="tables" role="tab" data-toggle="tab">Tables</a></li>
-                <li><a href="#diagrams" aria-controls="diagram" role="tab" data-toggle="tab">Time Phase Diagrams</a></li>
+                <li role="presentation"><a href="#diagrams" aria-controls="diagram" role="tab" data-toggle="tab">Time Phase Diagrams</a></li>
             </ul>
-            <div class="tab-content">
-                <div role="tabpanel" class="tab-pane fade in active">
 
-                <div id=tables>
+            <div class="tab-content">
+
+                <div id="tables" role="tabpanel" class="tab-pane fade in active">
                 <div class="header">
                         <h1>Performance Data: {{platform}}</h1><br>
                         Last refreshed : {{time}}  <hr>
@@ -122,13 +125,13 @@ img {
 
 
 
-                </div>
+        
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
-
-                    <table><tr><td>
-                        <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="not showing currently" width="600" height="500" id="picture">
+                    <table class="imgTd"><tr><td>
+                        <h4 id='highlight'>{{diagrams[0]}}</h4>
+                        <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
                     </td>
                     <td>                  
                         
@@ -139,7 +142,7 @@ img {
                         <ul class = "a">
 
                             {% for diagram in diagrams %}
-                            <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}' )">{{diagram}}</li>
+                            <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}','{{loop.index -1}}' )">{{diagram}}</li>
                             {% endfor %}
 
                         </ul>
@@ -165,16 +168,18 @@ img {
 
 $(document).ready(function(){
 setInterval(function(){
-    $("#diagrams").load(" #diagrams > *");
+    $("#list").load(" #list > *");
     console.log("reloading...") ;
 }, 30000);
 });
 
-function changeDiagram(Img){
+function changeDiagram(Img,Int){
     
     console.log(Img);
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/time-phase-diagram' + Img ;
+    var newImg = '../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/' + Img ;
     document.getElementById("picture").src = newImg;
+
+    document.getElementById("highlight").innerText = Img ;
 
 }
 
