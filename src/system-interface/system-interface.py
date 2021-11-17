@@ -82,7 +82,7 @@ class ConfigurationForm(FlaskForm):
     vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
     logging                         = BooleanField('Logging')
     consoleOutput                   = BooleanField('Console Output')
-    performanceMeasurementDiagram   = BooleanField('Time Phase Diagram')
+    timePhaseDiagram   = BooleanField('Time Phase Diagram')
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
@@ -201,10 +201,10 @@ class SysConfig:
         self.consoleOutput = data['ConsoleOutput']
         # check for past versions that may not have element
         try:
-            self.performanceMeasurementDiagram = data['PerformanceMeasurementDiagram']
+            self.timePhaseDiagram = data['TimePhaseDiagram']
         except (KeyError):
             flash("Time Phase Diagram field has not been saved.")
-            self.performanceMeasurementDiagram = False
+            self.timePhaseDiagram = False
         self.srmTimedOutTime = data['SRMTimedOutTime']
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
@@ -350,7 +350,7 @@ def prepareJSONData(data, form):
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
     data['ConsoleOutput']=form.consoleOutput.data
-    data['PerformanceMeasurementDiagram']=form.performanceMeasurementDiagram.data
+    data['TimePhaseDiagram']=form.timePhaseDiagram.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= 'Deprecated'
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
@@ -546,7 +546,7 @@ def performance_data():
     #checking if directory exists
     try:
         #extracting all the filenames from the directory
-        diagrams = os.listdir("nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
+        diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
         diagrams.sort()
     except:
         diagrams = ["Na"]*10
