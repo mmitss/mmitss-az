@@ -34,3 +34,4 @@ config/*/*/*/nojournal/bin/log/*.txt
 config/*/*/*/nojournal/bin/*.txt
 config/*/*/*/nojournal/bin/*.dat
 config/*/*/*/nojournal/bin/*.mod
+src/system-interface/static/json/mmitss-phase3-master-config_NEW.json
