@@ -31,6 +31,8 @@
         color: white;
         background-color: #507a77;
     }
+    
+    
     h4{
         color: seashell;
         font-weight: bold;
@@ -98,7 +100,11 @@
                 <div id="tables" role="tabpanel" class="tab-pane fade in active">
                 <div class="header">
                         <h1>Performance Data: {{platform}}</h1><br>
-                        Last refreshed : {{time}}  <hr>
+                        {% if time != 0 %}
+                        Last refreshed : {{time}}
+                        {% else %}
+                        <h1>The CSV file is empty</h1>
+                        {% endif %}  <hr>
                 </div>
                 <div><b>Messages Transmitted</b>
                     {{tables1 | safe}}</div>
@@ -129,6 +135,7 @@
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
+                    {% if diagrams %}
                     <table class="imgTd"><tr><td>
                         <h4 id='highlight'>{{diagrams[0]}}</h4>
                         <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
@@ -149,7 +156,9 @@
                         
                     </div>
                     </td></tr></table>
-                
+                    {% else %}
+                    <h1> No Time Phase Diagrams were found</h1>
+                    {% endif %}
 
 
                 </div>
