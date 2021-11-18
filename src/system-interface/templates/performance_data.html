@@ -18,6 +18,16 @@
         
     }
 
+    a.redirect{
+
+        color:black ;
+        font-size: 25px;
+        background-color: rgb(219, 217, 217);
+        position:relative; left:50px; top:100px;
+        padding: 10px;
+        border-radius: 25px;
+    }
+
 
     ul.a {
         list-style-type: none;
@@ -32,6 +42,9 @@
         background-color: #507a77;
     }
     
+    h1.noData{
+        position:relative; left:250px; top:100px;
+    }
     
     h4{
         color: seashell;
@@ -98,13 +111,11 @@
             <div class="tab-content">
 
                 <div id="tables" role="tabpanel" class="tab-pane fade in active">
+                {% if time != 0 %}
                 <div class="header">
                         <h1>Performance Data: {{platform}}</h1><br>
-                        {% if time != 0 %}
                         Last refreshed : {{time}}
-                        {% else %}
-                        <h1>The CSV file is empty</h1>
-                        {% endif %}  <hr>
+                        <hr>
                 </div>
                 <div><b>Messages Transmitted</b>
                     {{tables1 | safe}}</div>
@@ -114,6 +125,9 @@
                     {{tables2 | safe}}
                     <br><br>
                 </div>
+                {% else %}
+                <h1 class="noData">No Performance Data Available</h1>
+                {% endif %}
                 </div>
 
                 
@@ -157,7 +171,7 @@
                     </div>
                     </td></tr></table>
                     {% else %}
-                    <h1> No Time Phase Diagrams were found</h1>
+                    <a class="redirect" href="../configuration">No Time Phase Diagrams Available – Enable Generation in the System Configuration tab</a>
                     {% endif %}
 
 
@@ -185,7 +199,7 @@ setInterval(function(){
 function changeDiagram(Img,Int){
     
     console.log(Img);
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/' + Img ;
+    var newImg = "../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + Img ;
     document.getElementById("picture").src = newImg;
 
     document.getElementById("highlight").innerText = Img ;
