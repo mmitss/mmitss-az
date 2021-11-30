@@ -152,7 +152,7 @@
                     {% if diagrams %}
                     <table class="imgTd"><tr><td>
                         <h4 id='highlight'>{{diagrams[0]}}</h4>
-                        <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
+                        <img src="/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
                     </td>
                     <td>                  
                         
@@ -199,7 +199,7 @@ setInterval(function(){
 function changeDiagram(Img,Int){
     
     console.log(Img);
-    var newImg = "../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + Img ;
+    var newImg = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + Img ;
     document.getElementById("picture").src = newImg;
 
     document.getElementById("highlight").innerText = Img ;
