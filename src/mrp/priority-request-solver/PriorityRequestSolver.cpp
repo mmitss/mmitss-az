@@ -170,9 +170,10 @@ void PriorityRequestSolver::setDilemmaZoneRequesStatus()
 }
 
 /*
-    - If there is EV priority request in the list, following method will delete all the priority request from the list apart from EV request.
-    - Check vehicle type for all the received request.
-    - If vehicle type is not EV(For EV vehicleType is 2) remove that request from the list.
+    - If priority weight is zero for a particular type of request, following method removes those requests which matches the corresponding vehicle type.
+    - If there is EV priority request in the list, following method deletes all the priority requests from the list apart from EV request.
+        - Checks vehicle type for all the received request.
+        - If vehicle type is not EV(For EV vehicleType is 2) remove that request from the list.
 */
 void PriorityRequestSolver::modifyPriorityRequestList()
 {
@@ -682,6 +683,7 @@ skip:
     - This method calls finEVInList() function to check whether emergency vehicle is in the list or not
     - This method also calls setOptimizationInput() to process all the input data for the GLPK solver and GLPKSolver() method to solve the optimization problem.
     - This function finally calls ScheduleManage class to process the schedule for the TCI in JSON string format.
+    - This function doesn't solve the optimization problem and send the schedule when priority request list is empty (priority request list is empty when priority weight is zero). 
 */
 string PriorityRequestSolver::getScheduleforTCI()
 {
@@ -723,6 +725,7 @@ string PriorityRequestSolver::getScheduleforTCI()
             scheduleJsonString = scheduleManager.createScheduleJsonString();
         }
     }
+
     else 
         optimalSolutionStatus = false;
 
