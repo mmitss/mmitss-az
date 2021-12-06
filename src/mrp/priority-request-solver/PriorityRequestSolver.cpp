@@ -516,7 +516,7 @@ void PriorityRequestSolver::setOptimizationInput()
 {
     if (emergencyVehicleStatus)
     {
-        OptimizationModelManager optimizationModelManager;
+        OptimizationModelManager optimizationModelManager(FlexibilityWeight);
 
         setDilemmaZoneRequesStatus();
         modifyPriorityRequestList();
@@ -937,7 +937,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 */
 void PriorityRequestSolver::setCurrentSignalTimingPlan(string jsonString)
 {
-    OptimizationModelManager optimizationModelManager;
+    OptimizationModelManager optimizationModelManager(FlexibilityWeight);
     TrafficControllerData::TrafficSignalPlan signalPlan;
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
@@ -1326,6 +1326,7 @@ void PriorityRequestSolver::getPriorityWeights()
     TruckWeight = jsonObject["PriorityParameter"]["TruckWeight"].asDouble();
     DilemmaZoneRequestWeight = jsonObject["PriorityParameter"]["DilemmaZoneRequestWeight"].asDouble();
     CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
+    FlexibilityWeight =  jsonObject["PriorityParameter"]["FlexibilityWeight"].asDouble();
 
     priorityWeightsCheckedTime = currentTime;
     displayConsoleData("priority requests weights are updated");

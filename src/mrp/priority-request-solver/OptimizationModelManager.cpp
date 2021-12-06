@@ -15,8 +15,9 @@
 
 #include "OptimizationModelManager.h"
 
-OptimizationModelManager::OptimizationModelManager()
+OptimizationModelManager::OptimizationModelManager(double Flexibility_Weight)
 {
+    FlexibilityWeight = Flexibility_Weight;
 }
 
 /*
@@ -162,7 +163,7 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - " << FlexibilityWeight << "*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
     //=============================Writing the Optimal Output into the /nojournal/bin/OptimizationResults.txt file ==================================
@@ -440,7 +441,7 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - " << FlexibilityWeight << "*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
 
