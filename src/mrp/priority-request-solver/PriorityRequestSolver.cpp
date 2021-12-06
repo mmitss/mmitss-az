@@ -194,7 +194,7 @@ void PriorityRequestSolver::modifyPriorityRequestList()
             i--;
         }
 
-        else if (priorityRequestList[i].vehicleType != EmergencyVehicle && !priorityRequestList[i].dilemmaZoneStatus)
+        else if (emergencyVehicleStatus && priorityRequestList[i].vehicleType != EmergencyVehicle && !priorityRequestList[i].dilemmaZoneStatus)
         {
             vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
                                                                              [&](RequestList const &p)
