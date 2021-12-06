@@ -32,6 +32,10 @@ using std::vector;
 #define SignalCoordinationVehicleType 20
 #define MinuteToSecondCoversion 60.0
 #define HourToSecondConversion 3600.0
+#define EmergencyVehicle 2
+#define Transit 6
+#define Truck 9
+#define CoordinationVehicleType 20
 
 enum msgType
 {
