@@ -18,7 +18,7 @@ This is a web-based Python Flask application that has the following functionalit
 ***************************************************************************************
 """
 
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, send_from_directory
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators, SelectField
 from wtforms.validators import *
@@ -29,6 +29,9 @@ import pandas as pd
 import csv
 import json
 import glob
+from PIL import Image
+import base64
+import io
 
 # Initialize application for either PyInstaller or Development
 if getattr(sys, 'frozen', False):
@@ -482,16 +485,16 @@ def configuration():
 def performance_data():
     
     #read the cofig file to extract the intersection name and platform
-    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+    with open('static/json/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         
         thisPlatform = data['ApplicationPlatform']
         intName = data['IntersectionName']
         
     #ran a loop to search for the file matching the below mentioned pattern
-    for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
-        i = 0
-    #file = "static/images/daisy-anthem_msgCountsLog_01012021_000001.csv"
+    #for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
+    #    i = 0
+    file = "static/images/daisy-anthem_msgCountsLog_01012021_000000.csv"
         
     #read the csv file and extracted the required columns and stored in the dataframe "df"   
     col_list = ["log_timestamp_verbose","msg_type","msg_count"]
@@ -556,14 +559,26 @@ def performance_data():
     #checking if directory exists
     try:
         #extracting all the filenames from the directory
-        diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/")
+        diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram")
         diagrams.sort()
+        t_diagrams = []
+        diagrams_path = ["/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/"+ diagram for diagram in diagrams]
+        for diag_path in diagrams_path:
+            im = Image.open(diag_path)
+            data = io.BytesIO()
+            im.save(data, "JPEG")
+            encoded_img_data = base64.b64encode(data.getvalue()).decode('utf-8')
+            t_diagrams.append(encoded_img_data) 
+
+       
+       
     except:
         diagrams = []
 
+
     #sending the dataframes to HTML template
-    return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False), diagrams= diagrams)
-    
+    return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False), diagrams = diagrams, t_diagrams = t_diagrams)
+
 
 
  # page not found 

@@ -17,7 +17,7 @@
         background-color: white;
         
     }
-
+    
     a.redirect{
 
         color:black ;
@@ -152,21 +152,34 @@
                     {% if diagrams %}
                     <table class="imgTd"><tr><td>
                         <h4 id='highlight'>{{diagrams[0]}}</h4>
-                        <img src="/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
-                    </td>
+                        <img id="picture" src="data:image/jpeg;base64, {{ t_diagrams[0] }}">
+
+                       
                     <td>                  
                         
                         
                 
                 
                     <div class="diagram_list" id="list">
-                        <ul class = "a">
+                        <!--<form action="/time_phase_diagram/" method="POST">-->
+                            <ul class = "a">
+                            {% for diagram in diagrams %}
+                            <li id="imgList" onclick="changeDiagram( '{{diagrams[loop.index -1]}}','{{t_diagrams[loop.index -1]}}' )">{{diagram}}</li>
+                            {% endfor %}
+                            </ul>
+
+                        <!--</form>-->
+
+
+
+
+                        <!--<ul class = "a">
 
                             {% for diagram in diagrams %}
                             <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}','{{loop.index -1}}' )">{{diagram}}</li>
                             {% endfor %}
 
-                        </ul>
+                        </ul>-->
                         
                     </div>
                     </td></tr></table>
@@ -196,10 +209,11 @@ setInterval(function(){
 }, 30000);
 });
 
-function changeDiagram(Img,Int){
+function changeDiagram(Img,enImg){
     
-    console.log(Img);
-    var newImg = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + Img ;
+    console.log(enImg);
+    var newImg = "data:image/jpeg;base64, "+ enImg  ;
+    console.log(newImg);
     document.getElementById("picture").src = newImg;
 
     document.getElementById("highlight").innerText = Img ;
