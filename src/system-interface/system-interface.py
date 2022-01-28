@@ -246,7 +246,7 @@ class SysConfig:
             self.portNumberTimePhaseDiagramTool = data['PortNumber']['TimePhaseDiagramTool']
         except (KeyError):
             flash("Time Phase Diagram Tool field has not been saved.")
-            self.portNumberTimePhaseDiagramTool = " "
+            self.portNumberTimePhaseDiagramTool = "0"
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -310,7 +310,7 @@ class SysConfig:
             self.priorityFlexibilityWeight          = data['PriorityParameter']['FlexibilityWeight']
         except (KeyError):
             flash("Flexibility Weight field has not been saved.")
-            self.priorityFlexibilityWeight          = " "
+            self.priorityFlexibilityWeight          = "0.00"
         self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
 
 '''
