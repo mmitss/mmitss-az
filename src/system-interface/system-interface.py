@@ -485,16 +485,16 @@ def configuration():
 def performance_data():
     
     #read the cofig file to extract the intersection name and platform
-    with open('static/json/mmitss-phase3-master-config.json') as json_file:
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
         data = json.load(json_file)
         
         thisPlatform = data['ApplicationPlatform']
         intName = data['IntersectionName']
         
     #ran a loop to search for the file matching the below mentioned pattern
-    #for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
-    #    i = 0
-    file = "static/images/daisy-anthem_msgCountsLog_01012021_000000.csv"
+    for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
+        i = 0
+    #file = "static/images/daisy-anthem_msgCountsLog_01012021_000000.csv"
         
     #read the csv file and extracted the required columns and stored in the dataframe "df"   
     col_list = ["log_timestamp_verbose","msg_type","msg_count"]
