@@ -3,13 +3,12 @@
 
 {% block content %}
 
-<script src="https://unpkg.com/htmx.org@1.6.0" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <style>
     .diagram_list{
 
-        height:200px;
+        height:300px;
         width: auto;
         overflow-y: scroll;
         float:right;
@@ -18,6 +17,13 @@
         
     }
 
+    .highlight {
+        color: white;
+        background-color: #507a77;
+    }
+    .imgList{
+        width: auto;
+    }
     a.redirect{
 
         color:black ;
@@ -32,6 +38,7 @@
     ul.a {
         list-style-type: none;
         margin: 0;
+        width:fit-content;
         padding: 5px;
     }
 
@@ -69,7 +76,7 @@
 
     table, td {
       border: 1px solid gray;
-      width: 800px;
+      width: auto;
       background-color: #afc5c3;
       padding: 15px;
       margin-left:auto; 
@@ -149,24 +156,26 @@
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
+                    {% set index=0 %}
                     {% if diagrams %}
                     <table class="imgTd"><tr><td>
                         <h4 id='highlight'>{{diagrams[0]}}</h4>
-                        <img src="/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
-                    </td>
+                        <img id="picture" src="data:image/jpeg;base64, {{ t_diagrams[0] }}">
+
+                       
                     <td>                  
                         
                         
                 
                 
                     <div class="diagram_list" id="list">
-                        <ul class = "a">
-
+                       
+                            <ul class = "a">
                             {% for diagram in diagrams %}
-                            <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}','{{loop.index -1}}' )">{{diagram}}</li>
+                            <li class ="imgList" id="imgList" onclick="changeDiagram( '{{diagrams[loop.index -1]}}','{{t_diagrams[loop.index -1]}}')">{{diagram}}</li>
                             {% endfor %}
+                            </ul>
 
-                        </ul>
                         
                     </div>
                     </td></tr></table>
@@ -191,15 +200,22 @@
 
 $(document).ready(function(){
 setInterval(function(){
-    $("#list").load(" #list > *");
+    $("#imglist").load(" #imglist > *");
     console.log("reloading...") ;
 }, 30000);
 });
 
-function changeDiagram(Img,Int){
+$('.a li').click(function(){
+    $('.highlight').removeClass('highlight');
+$(this).addClass('highlight');
+
+})
+
+function changeDiagram(Img,enImg){
     
-    console.log(Img);
-    var newImg = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + Img ;
+
+    var newImg = "data:image/jpeg;base64, "+ enImg  ;
+    console.log(newImg);
     document.getElementById("picture").src = newImg;
 
     document.getElementById("highlight").innerText = Img ;
