@@ -1,15 +1,24 @@
-#include <iostream>
-#include <string>
-#include <iomanip>
-#include <sstream>
-#include <chrono>
+/*
+**********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  TransceiverEncoder.cpp
+  Created by: Debashis Das & Niraj Altekar
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. 
+*/
+#include "TransceiverEncoder.h"
 #include "AsnJ2735Lib.h"
 #include "dsrcConsts.h"
 #include "json/json.h"
 #include "BasicVehicle.h"
 #include "SignalRequest.h"
 #include "SignalStatus.h"
-#include "TransceiverEncoder.h"
 #include "Timestamp.h"
 
 const double MPS_TO_KPH_CONVERSION = 3.6;
@@ -24,13 +33,13 @@ const int WALK = 6;
 
 TransceiverEncoder::TransceiverEncoder()
 {
-    std::ofstream outputfile;
+    ofstream outputfile;
     Json::Value jsonObject;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();
-    std::string errors{};
+    string errors{};
     reader->parse(configJsonString.c_str(), configJsonString.c_str() + configJsonString.size(), &jsonObject, &errors);        
     delete reader;
 
@@ -43,7 +52,7 @@ TransceiverEncoder::TransceiverEncoder()
     msgSentTime = static_cast<int>(currentTime);
 }
 
-int TransceiverEncoder::getMessageType(std::string jsonString)
+int TransceiverEncoder::getMessageType(string jsonString)
 {
     Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
@@ -73,14 +82,14 @@ int TransceiverEncoder::getMessageType(std::string jsonString)
     return messageType;
 }
 
-std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonString)
+string TransceiverEncoder::TransceiverEncoder::BSMEncoder(string jsonString)
 {
     BasicVehicle basicVehicle;
-    std::stringstream payloadstream;
-    std::string bsmMessagePayload;
+    stringstream payloadstream{};
+    string bsmMessagePayload;
     /// buffer to hold message payload
     size_t bufSize = DsrcConstants::maxMsgSize;
-    std::vector<uint8_t> buf(bufSize, 0);
+    vector<uint8_t> buf(bufSize, 0);
     basicVehicle.json2BasicVehicle(jsonString);
     /// dsrcFrameIn to store input to UPER encoding function
     Frame_element_t dsrcFrameIn;
@@ -115,13 +124,13 @@ std::string TransceiverEncoder::TransceiverEncoder::BSMEncoder(std::string jsonS
     return bsmMessagePayload;
 }
 
-std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonString)
+string TransceiverEncoder::TransceiverEncoder::SRMEncoder(string jsonString)
 {
     SignalRequest signalRequest;
-    std::stringstream payloadstream;
-    std::string srmMessagePayload;
+    stringstream payloadstream{};
+    string srmMessagePayload{};
     size_t bufSize = DsrcConstants::maxMsgSize;
-    std::vector<uint8_t> buf(bufSize, 0);
+    vector<uint8_t> buf(bufSize, 0);
     signalRequest.json2SignalRequest(jsonString);
 
     /// dsrcFrameIn to store input to UPER encoding function
@@ -165,7 +174,7 @@ std::string TransceiverEncoder::TransceiverEncoder::SRMEncoder(std::string jsonS
     return srmMessagePayload;
 }
 
-std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
+string TransceiverEncoder::SPaTEncoder(string jsonString)
 {
     Json::Value jsonObject;
 	Json::CharReaderBuilder builder;
@@ -175,15 +184,15 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
 	delete reader;
 
     size_t bufSize = DsrcConstants::maxMsgSize;
-    std::vector<uint8_t> buf(bufSize, 0);
+    vector<uint8_t> buf(bufSize, 0);
     Frame_element_t dsrcFrameIn;
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_spat;
     SPAT_element_t &spatIn = dsrcFrameIn.spat;
-    std::stringstream payloadstream;
-    std::string spatMessagePayload;
+    stringstream payloadstream{};
+    string spatMessagePayload{};
 
-    std::string phaseState{};
-    std::string pedPhaseState{};
+    string phaseState{};
+    string pedPhaseState{};
 
     spatIn.regionalId = static_cast<uint16_t>(jsonObject["Spat"]["IntersectionState"]["regionalID"].asInt());
     spatIn.id = static_cast<uint16_t>(jsonObject["Spat"]["IntersectionState"]["intersectionID"].asInt());
@@ -264,25 +273,25 @@ std::string TransceiverEncoder::SPaTEncoder(std::string jsonString)
     return spatMessagePayload;
 }
 
-std::string TransceiverEncoder::SSMEncoder(std::string jsonString)
+string TransceiverEncoder::SSMEncoder(string jsonString)
 {
     SignalStatus signalStatus;
-    std::stringstream payloadstream;
-    std::string ssmMessagePayload;
+    stringstream payloadstream{};
+    string ssmMessagePayload{};
     size_t bufSize = DsrcConstants::maxMsgSize;
-    std::vector<uint8_t> buf(bufSize, 0);
+    vector<uint8_t> buf(bufSize, 0);
     signalStatus.json2SignalStatus(jsonString);
 
-    std::vector<int> vehicleID = signalStatus.getTemporaryVehicleID();
-    std::vector<int> requestID = signalStatus.getRequestID();
-    std::vector<int> msgCount = signalStatus.getMsgCount();
-    std::vector<int> inBoundLaneID = signalStatus.getInBoundLaneID();
-    std::vector<int> inBoundApproachID = signalStatus.getInBoundApproachID();
-    std::vector<int> basicVehicleRole = signalStatus.getBasicVehicleRole();
-    std::vector<int> expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-    std::vector<double> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
-    std::vector<double> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
-    std::vector<int> priorityRequestStatus = signalStatus.getPriorityRequestStatus();
+    vector<int> vehicleID = signalStatus.getTemporaryVehicleID();
+    vector<int> requestID = signalStatus.getRequestID();
+    vector<int> msgCount = signalStatus.getMsgCount();
+    vector<int> inBoundLaneID = signalStatus.getInBoundLaneID();
+    vector<int> inBoundApproachID = signalStatus.getInBoundApproachID();
+    vector<int> basicVehicleRole = signalStatus.getBasicVehicleRole();
+    vector<int> expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
+    vector<double> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+    vector<double> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
+    vector<int> priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
     /// dsrcFrameIn to store input to UPER encoding function
     Frame_element_t dsrcFrameIn;
@@ -341,9 +350,9 @@ bool TransceiverEncoder::sendSystemPerformanceDataLog()
     return sendData;
 }
 
-std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std::string msgCountType)
+string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(string msgCountType)
 {
-    std::string systemPerformanceDataLogJsonString{};
+    string systemPerformanceDataLogJsonString{};
     Json::Value jsonObject;
 	Json::StreamWriterBuilder builder;
 	builder["commentStyle"] = "None";
@@ -406,7 +415,7 @@ std::string TransceiverEncoder::createJsonStringForSystemPerformanceDataLog(std:
     return systemPerformanceDataLogJsonString;
 }
 
-std::string TransceiverEncoder::getApplicationPlatform()
+string TransceiverEncoder::getApplicationPlatform()
 {
     return applicationPlatform;
 }
