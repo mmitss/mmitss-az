@@ -2,7 +2,7 @@
 #    Dockerfile to build an arm platform image for the vsp                    #
 #    Image name: mmitssuarizona/mmitss-vsp-arm                                #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-arm-base:2.1
+FROM mmitssuarizona/mmitss-arm-base:2.2
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY build/bin/WirelessMsgDecoder/arm/M_WirelessMsgDecoder /mmitss
