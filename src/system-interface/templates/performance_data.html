@@ -33,6 +33,22 @@
         padding: 10px;
         border-radius: 25px;
     }
+    a {
+        text-decoration: none;
+        display:inline-block;
+        padding: 8px 16px;
+    }
+
+    a:hover {
+        background-color: #ddd;
+    }   
+
+    .preNext {
+        background-color: #f1f1f1;
+        color: black;
+        border-radius: 20%;
+        font-size: 25px;
+    }
 
 
     ul.a {
@@ -172,18 +188,24 @@
                        
                             <ul class = "a">
                             {% for diagram in diagrams %}
-                            <li class ="imgList" id="imgList" onclick="changeDiagram( '{{diagrams[loop.index -1]}}','{{t_diagrams[loop.index -1]}}')">{{diagram}}</li>
+                            <li class ="imgList" id="imgList" onclick="changeDiagram( '{{loop.index}}')">{{diagram}}</li>
                             {% endfor %}
                             </ul>
 
                         
                     </div>
                     </td></tr></table>
+                    <br>
+
+                    <div style="text-align:center">
+                        <a  id ='prev' class="preNext" onclick="prevDiagram()" >Prev</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id ='next' class="preNext" onclick="nextDiagram()">Next</a>
+                    </div>
                     {% else %}
                     <a class="redirect" href="../configuration">No Time Phase Diagrams Available – Enable Generation in the System Configuration tab</a>
                     {% endif %}
-
-
+                    
+                   
                 </div>
             </div>
 
@@ -196,6 +218,7 @@
 
 
 <script type="text/javascript">
+
 
 
 $(document).ready(function(){
@@ -211,14 +234,54 @@ $(this).addClass('highlight');
 
 })
 
-function changeDiagram(Img,enImg){
-    
+$('#prev').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
+$('#next').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
 
-    var newImg = "data:image/jpeg;base64, "+ enImg  ;
+
+var Ind = 0
+let t_diagrams = JSON.parse('{{ t_diagrams| tojson }}');
+let diagrams = JSON.parse('{{ diagrams| tojson }}');
+
+
+
+function prevDiagram(){
+
+    if(Ind > 0){
+        Ind-=1;
+        var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+        document.getElementById("picture").src = newDig;
+        document.getElementById("highlight").innerText = diagrams[Ind];
+        console.log(diagrams[Ind]);
+
+    }
+}
+
+function nextDiagram(){
+
+    if (Ind < t_diagrams.length-1){
+    Ind +=1 ;
+    var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+    document.getElementById("picture").src = newDig;
+    document.getElementById("highlight").innerText = diagrams[Ind];
+    console.log(diagrams[Ind]);
+    }
+
+}
+
+function changeDiagram(In){
+    
+    Ind = In -1 ;
+    var newImg = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
     console.log(newImg);
     document.getElementById("picture").src = newImg;
 
-    document.getElementById("highlight").innerText = Img ;
+    document.getElementById("highlight").innerText = diagrams[Ind] ;
 
 }
 

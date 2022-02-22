@@ -574,6 +574,7 @@ def performance_data():
        
     except:
         diagrams = []
+        t_diagrams = []
 
 
     #sending the dataframes to HTML template
