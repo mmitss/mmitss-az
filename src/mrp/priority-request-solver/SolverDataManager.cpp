@@ -98,7 +98,7 @@ vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
-        if (priorityRequestList[i].vehicleType != SignalCoordinationVehicleType)
+        if (priorityRequestList[i].vehicleType != CoordinationVehicleType)
             requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
     }
     removeDuplicateSignalGroup();
@@ -644,50 +644,6 @@ double SolverDataManager::calulateGmax(vector<int> PhaseGroup)
     sumOfGmax = accumulate(greenTime.begin(), greenTime.end(), 0);
 
     return sumOfGmax;
-}
-
-/*
-    - There may be infeasible solution if the coordination request is placed after the second cycle.
-    - The method will delete those infeasible coordination request
-*/
-void SolverDataManager::removedInfeasiblePriorityRequest()
-{
-    double remainingTimeInTwoCycleLength{}; //(cycleLength * 2) - trafficControllerStatus[0].elapsedGreen1;
-    double sumOfPhaseDuration{};
-    double sumOfElapsedPhaseDuration{};
-    int temporaryVehicleID{};
-    vector<double> phaseDuration{};
-    vector<double> elapsedPhaseDuration{};
-
-    for (int i = 0; i < 4; i++)
-    {
-        phaseDuration.push_back(trafficSignalPlan[i].maxGreen);
-        phaseDuration.push_back(trafficSignalPlan[i].yellowChange);
-        phaseDuration.push_back(trafficSignalPlan[i].redClear);
-
-        if (trafficSignalPlan[i].phaseNumber < trafficControllerStatus[0].startingPhase1)
-        {
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].maxGreen);
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].yellowChange);
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].redClear);
-        }
-    }
-    sumOfPhaseDuration = accumulate(phaseDuration.begin(), phaseDuration.end(), 0);
-    sumOfElapsedPhaseDuration = accumulate(elapsedPhaseDuration.begin(), elapsedPhaseDuration.end(), 0);
-    remainingTimeInTwoCycleLength = (sumOfPhaseDuration * 2) - sumOfElapsedPhaseDuration - trafficControllerStatus[0].elapsedGreen1;
-
-    for (size_t i = 0; i < priorityRequestList.size(); i++)
-    {
-        if ((priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration) > remainingTimeInTwoCycleLength)
-        {
-            temporaryVehicleID = priorityRequestList[i].vehicleID;
-            vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                             [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
-
-            priorityRequestList.erase(findVehicleIDOnList);
-            i--;
-        }
-    }
 }
 
 /*

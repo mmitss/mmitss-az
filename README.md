@@ -6,7 +6,7 @@ The USDOT identified six mobility application bundles under the Dynamic Mobility
 The current implementation of MMITSS, based on the CV PFS Phase 3 – Deployment Readiness project, has been developed to be deployed on a variety of hardware platforms for both vehicles and at intersections. The Figure below shows the current MMITSS architecture. One of the objectives of the Phase 3 project was for the software to be hardware agnostic so that any vendor’s roadside units (RSU) and onboard units (OBU) could be interfaced to the processors.
 
 
-![MMITSS Arch](docs/image/mmitssArchitecture2020.png)
+![MMITSS Arch](docs/image/mmitssArchitecture2021.png)
 
 The MMITSS Architecture includes OBUs and RSUs that provide wireless communications. The current communications is based on DSRC, but the FHWA RSU 4.1 Interface can support other communication technologies when they are available. Testing has occurred with RSUs and OBUs from Savari and Cohda however, the Savari OBU doesn’t support the RSU 4.1 Interface so these OBUs are only used for passenger vehicles that broadcast Basic Safety Messages (BSM). 
 
@@ -14,6 +14,7 @@ Associated with each RSU and OBU are the MMITSS Roadside Processor (MRP) and the
 
 The MRP components include:
 * *Priority Request Server* and *Solver* that implement the MMITSS Priority Control logic and determines a traffic signal schedule that accommodates a set of active priority requests (Zamanipour, M., Head, K.L., Feng, Y. and Khoshmagham, S. Efficient Priority Control Model for Multimodal Traffic Signals. Transportation Research Record: Journal of the Transportation Research Board, 2016. 2557(1): 86-99)
+* *Coordination Request Generator* generates coordination priority requests based on a time of day pattern that provides cycle length, coordinated phase(s), offset, and phase splits
 * *Trajectory Aware* that processes data from the BSM for performance measures and the adaptive traffic control component (I-SIG)
 * *Traffic Control* (I-SIG) adaptive traffic signal control (not included in this release)
 * *Traffic Control Interface* (TCI) that is responsible for taking the priority schedule and applying commands to make the traffic signal controller execute the desired schedule (uses NTCIP HOLD, FORCE-OFF, CALL, and OMIT commands)

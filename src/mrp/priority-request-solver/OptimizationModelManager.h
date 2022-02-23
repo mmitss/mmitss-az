@@ -26,9 +26,9 @@ using std::ofstream;
 class OptimizationModelManager
 {
 private:
-    /* data */
+    double FlexibilityWeight{0.01};
 public:
-    OptimizationModelManager();
+    OptimizationModelManager(double Flexibility_Weight);
     ~OptimizationModelManager();
 
     void generateModFile(int noOfPhase, vector<int> PhaseNumber, vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
