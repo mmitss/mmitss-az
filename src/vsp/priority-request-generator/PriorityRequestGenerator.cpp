@@ -45,6 +45,7 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 {
 	readConfigFile();
 	setVehicleType();
+	setBasicVehicleRole(vehicleType);
 }
 
 /*
@@ -59,8 +60,8 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 	vector<int> inBoundLaneID{};
 	vector<int> basicVehicleRole_ssm{}; //insted of basicVehicleRole, basicVehicleRole_ssm is declared, otherwise it shadowed the declaration
 	vector<int> expectedTimeOfArrival_Minute{};
-	vector<double> expectedTimeOfArrival_Second{};
-	vector<double> expectedTimeOfArrival_Duration{};
+	vector<int> expectedTimeOfArrival_Second{};
+	vector<int> expectedTimeOfArrival_Duration{};
 	vector<int> priorityRequestStatus{};
 	ActiveRequest activeRequest;
 	activeRequest.reset();
@@ -96,8 +97,16 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.msgCount = msgCount_ssm[i];
 			activeRequest.basicVehicleRole = basicVehicleRole_ssm[i];
 			activeRequest.vehicleLaneID = inBoundLaneID[i];
-			activeRequest.vehicleETA = expectedTimeOfArrival_Minute[i] * SECONDSINAMINUTE + expectedTimeOfArrival_Second[i];
+			activeRequest.vehicleETAMinute = expectedTimeOfArrival_Minute[i];
+			activeRequest.vehicleETASecond = expectedTimeOfArrival_Second[i];
 			activeRequest.vehicleETADuration = expectedTimeOfArrival_Duration[i];
+
+			if (getMsOfMinute() >= expectedTimeOfArrival_Second[i])
+				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECONDSINAMINUTE + (getMsOfMinute() - expectedTimeOfArrival_Second[i]) / MILISECONDTOSECOND;
+			
+			else if (getMsOfMinute() < expectedTimeOfArrival_Second[i])
+				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECONDSINAMINUTE + (getMsOfMinute() + SECONDSINAMINUTE - expectedTimeOfArrival_Second[i])/MILISECONDTOSECOND;
+			
 			activeRequest.prsStatus = priorityRequestStatus[i];
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			ActiveRequestTable.push_back(activeRequest);
@@ -114,9 +123,10 @@ string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, 
 {
 	string srmJsonString{};
 	int vehExpectedTimeOfArrival_Minute{};
-	double vehExpectedTimeOfArrival_Second{};
+	int vehExpectedTimeOfArrival_Second{};
 	
-	vehExpectedTimeOfArrival_Second = remquo((getETA() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
+	vehExpectedTimeOfArrival_Second = static_cast<int>(remquo((getETA() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute) * SECONDSINAMINUTE * SECONDTOMILISECOND);
+	vehExpectedTimeOfArrival_Minute = getMinuteOfYear() + vehExpectedTimeOfArrival_Minute;
 	vehicleETA_Duration = minimumETA_Duration;
 	setMsgCount(msgCount);
 	tempVehicleSpeed = getVehicleSpeed(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
@@ -127,10 +137,10 @@ string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, 
 	signalRequest.setMsgCount(getMsgCount());
 	signalRequest.setRegionalID(getRegionalID());
 	signalRequest.setIntersectionID(getIntersectionID());
-	signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
+	// signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
 	signalRequest.setPriorityRequestType(getPriorityRequestType());
 	signalRequest.setInBoundLaneIntersectionAccessPoint(getLaneID(), getApproachID());
-	signalRequest.setETA(vehExpectedTimeOfArrival_Minute, vehExpectedTimeOfArrival_Second * SECONDSINAMINUTE, vehicleETA_Duration);
+	signalRequest.setETA(vehExpectedTimeOfArrival_Minute, vehExpectedTimeOfArrival_Second, vehicleETA_Duration);
 	signalRequest.setTemporaryVechileID(getVehicleID());
 	signalRequest.setBasicVehicleRole(getBasicVehicleRole());
 	signalRequest.setPosition(basicVehicle.getLatitude_DecimalDegree(), basicVehicle.getLongitude_DecimalDegree(), basicVehicle.getElevation_Meter());
@@ -929,6 +939,23 @@ void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 }
 
 /*
+	- Define vehile role based on vehicle type
+*/
+void PriorityRequestGenerator::setBasicVehicleRole(int vehicle_Type)
+{
+	if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::bus))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::transit);
+
+	else if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::truck);
+
+	else if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::special))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::fire);
+
+	else if (vehicle_Type == static_cast<int>(vehicleType::unavailable))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::unavailable);
+}
+/*
 	- Define priority status based on vehicle status
 		--If vehicle is at inBoundLane, the priority request type will be priorityRequest
 		--If vehicle is at insideIntersectionBox or atIntersectionbox or outboundlane  or out of the map, the priority request type will be priorityCancellation
@@ -957,22 +984,10 @@ int PriorityRequestGenerator::getVehicleType()
 }
 
 /*
-	- Define vehile role based on vehicle type
+	- getter for vehile role 
 */
 int PriorityRequestGenerator::getBasicVehicleRole()
 {
-	if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::bus))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::transit);
-
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::truck);
-
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::special))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::fire);
-
-	else if (getVehicleType() == static_cast<int>(vehicleType::unavailable))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::unavailable);
-
 	return basicVehicleRole;
 }
 

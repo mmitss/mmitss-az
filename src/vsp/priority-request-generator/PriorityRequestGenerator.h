@@ -43,15 +43,16 @@ using std::ifstream;
 #define Truck 9
 #define SrmTimeGapValue 2.0
 #define DISTANCEUNITCONVERSION 100
-#define SECONDSINAMINUTE 60.0
+#define SECONDSINAMINUTE 60
 #define HOURSINADAY 24
 #define MINUTESINAHOUR 60
 #define SECONDTOMILISECOND 1000
+#define MILISECONDTOSECOND 1000
 #define Degree_Conversion 10000000.0
 #define maxMsgCount 127
 #define minMsgCount 1
 #define minimumETA 2.0
-#define minimumETA_Duration 4.0
+#define minimumETA_Duration 4
 #define vehicleStartUpLossTime 2.0
 #define minimumVehicleSpeed 4.0
 #define vehicleSpeedDeviationLimit 4.0
@@ -92,10 +93,10 @@ private:
     int priorityRequestType{};
     int counter_VehicleInMap{};
     int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
+    int vehicleETA_Duration{};
     double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
     double vehicleDistanceFromStopBar{};
     double vehicleETA{};
-    double vehicleETA_Duration{};
     double vehicleSpeed{};
     double srmSendingTime{}; //temporary store the time when last SRM has been sent
     double requestTimedOutValue{};
@@ -133,6 +134,7 @@ public:
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
     void setVehicleType();
     void setSimulationVehicleType(string vehType); //For PRGServer
+    void setBasicVehicleRole(int vehicle_Type);
     void setPriorityRequestType(int priority_Request_Type);
     void setLightSirenStatus(string jsonString);
     void setMsgCount(int msg_count);
