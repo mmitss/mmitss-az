@@ -51,7 +51,7 @@ public:
 	void setRequestID(int vehRequestID);
 	void setPriorityRequestType(int vehPriorityRequestType);
 	void setInBoundLaneIntersectionAccessPoint(int vehLaneID, int vehApproachID);
-	void setETA(int vehExpectedTimeOfArrival_Minute, double vehExpectedTimeOfArrival_Second, double vehDuration);
+	void setETA(int vehExpectedTimeOfArrival_Minute, int vehExpectedTimeOfArrival_Second, int vehDuration);
 	void setTemporaryVechileID(int temporaryVehicleID);
 	void setBasicVehicleRole(int vehBasicVehicleRole);
 	void setPosition(double vehLatitude_DecimalDegree, double vehLongitude_DecimalDegree, double vehElevation_Meter);
@@ -72,8 +72,8 @@ public:
 	int getInBoundApproachID();
 	ETA getETA();
 	int getETA_Minute();
-	double getETA_Second();
-	double getETA_Duration();
+	int getETA_Second();
+	int getETA_Duration();
 	int getTemporaryVehicleID();
 	int getBasicVehicleRole();
 	Position3D getPosition();

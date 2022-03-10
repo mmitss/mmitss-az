@@ -29,8 +29,10 @@ struct ActiveRequest
     int minuteOfYear;
     int secondOfMinute;
     int signalGroup;
+    int vehicleETAMinute;
+    int vehicleETASecond;
+    int vehicleETADuration;
     double vehicleETA;
-    double vehicleETADuration;
     double vehicleLatitude;
     double vehicleLongitude;
     double vehicleElevation;
@@ -51,8 +53,10 @@ struct ActiveRequest
         minuteOfYear = 0;
         secondOfMinute = 0;
         signalGroup = 0;
+        vehicleETAMinute = 0;
+        vehicleETASecond = 0;
+        vehicleETADuration = 0;
         vehicleETA = 0.0;
-        vehicleETADuration = 0.0;
         vehicleLatitude = 0.0;
         vehicleLongitude = 0.0;
         vehicleElevation = 0.0;
