@@ -12,7 +12,7 @@
   Revision History:
   1. This is the initial revision developed for receiving srm data from the vehicle (transceiver) and mainitaining the priority requests. 
   2. This application matches the intersection ID of the receive SRM to determine whether to accept the SRM or not
-  3. The scripts either add, update or delete the request from the ART based on the vehicle type
+  3. The scripts either add, update or delete the request from the ART based on the vehicle role
   4. If the request comes from an emergency vehicle, the application will create split phase request and append it into the ART.
   5. This script use mapengine library to obtain the requested signal group.
   6. This application sends the requests list to the solver in a JSON formatted message.
@@ -519,13 +519,14 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 						ActiveRequestTable.erase(findVehicleIDOnTable);
 				}
 
+
 				if (!ActiveRequestTable.empty())
 				{
-					std::vector<ActiveRequest>::iterator findVehicleTypeOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+					std::vector<ActiveRequest>::iterator findVehicleRoleOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																							   [&](ActiveRequest const &p)
-																							   { return p.vehicleType == emergencyVehicleType; });
-					if (findVehicleTypeOnTable == ActiveRequestTable.end())
-						sentClearRequestForEV = true;
+																							   { return p.basicVehicleRole == static_cast<int>(MsgEnum::basicRole::fire); });
+					if (findVehicleRoleOnTable == ActiveRequestTable.end())
+						sentClearRequestForEV = true; //It will allow to cancel the omit command.
 				}
 			}
 
@@ -566,7 +567,7 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 																		{ return p.vehicleID == vehicleID; });
 
 	//For EV we have to delete two request
-	if ((findVehicleIDOnTable->vehicleType == static_cast<int>(MsgEnum::vehicleType::special)) &&
+	if ((findVehicleIDOnTable->basicVehicleRole == static_cast<int>(MsgEnum::basicRole::fire)) &&
 		(findVehicleIDOnTable != ActiveRequestTable.end()))
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
@@ -579,15 +580,15 @@ void PriorityRequestServer::deleteTimedOutRequestfromActiveRequestTable()
 
 		if (!ActiveRequestTable.empty())
 		{
-			std::vector<ActiveRequest>::iterator findVehicleTypeOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+			std::vector<ActiveRequest>::iterator findVehicleRoleOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																					   [&](ActiveRequest const &p)
-																					   { return p.vehicleType == emergencyVehicleType; });
-			if (findVehicleTypeOnTable == ActiveRequestTable.end())
+																					   { return p.basicVehicleRole == static_cast<int>(MsgEnum::basicRole::fire); });
+			if (findVehicleRoleOnTable == ActiveRequestTable.end())
 				sentClearRequestForEV = true;
 		}
 	}
 	//For Coordination Request
-	else if ((findVehicleIDOnTable->vehicleType == coordinationVehicleType) && (findVehicleIDOnTable != ActiveRequestTable.end()))
+	else if ((findVehicleIDOnTable->basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource)) && (findVehicleIDOnTable != ActiveRequestTable.end()))
 	{
 		ActiveRequestTable.erase(findVehicleIDOnTable);
 
@@ -1129,13 +1130,13 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 	{
-		if (ActiveRequestTable[i].vehicleType == coordinationVehicleType)
+		if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource))
 		{
-			vector<ActiveRequest>::iterator findCoordinationVehicleTypeOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
+			vector<ActiveRequest>::iterator findCoordinationVehicleRoleOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
 																							  [&](ActiveRequest const &p)
-																							  { return p.vehicleType == coordinationVehicleType; });
+																							  { return p.basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource); });
 
-			ActiveRequestTable.erase(findCoordinationVehicleTypeOnTable);
+			ActiveRequestTable.erase(findCoordinationVehicleRoleOnTable);
 			i--;
 		}
 	}
