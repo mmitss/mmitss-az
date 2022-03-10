@@ -288,8 +288,10 @@ string TransceiverDecoder::ssmDecoder(string ssmPayload)
             activeRequest.msgCount = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].sequenceNumber);
             activeRequest.basicVehicleRole = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].vehRole);
             activeRequest.vehicleLaneID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].inLaneId);
-            activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
+            activeRequest.vehicleETAMinute = ssmOut.mpSignalRequetStatus[i].ETAminute;
+			activeRequest.vehicleETASecond = ssmOut.mpSignalRequetStatus[i].ETAsec;
             activeRequest.vehicleETADuration = ssmOut.mpSignalRequetStatus[i].duration;
+            // activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
             activeRequest.prsStatus = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].status);
             ActiveRequestTable.push_back(activeRequest);
         }
