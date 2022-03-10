@@ -48,14 +48,14 @@ void SignalRequest::setMsOfMinute(int vehMsOfMinute)
 bool SignalRequest::setMsgCount(int sequenceNumber)
 {
 
-    bool bSequenceNumber = true;
+    bool sequenceNumberStatus{true};
 
     if (sequenceNumber >= SEQUENCE_NUMBER_MINLIMIT && sequenceNumber <= SEQUENCE_NUMBER_MAXLIMIT)
         msgCount = sequenceNumber;
     else
-        bSequenceNumber = false;
+        sequenceNumberStatus = false;
 
-    return bSequenceNumber;
+    return sequenceNumberStatus;
 }
 
 void SignalRequest::setRegionalID(int vehRegionalID)
@@ -84,7 +84,7 @@ void SignalRequest::setInBoundLaneIntersectionAccessPoint(int vehLaneID, int veh
     inBoundLane.setApproachID(vehApproachID);
 }
 
-void SignalRequest::setETA(int vehExpectedTimeOfArrival_Minute, double vehExpectedTimeOfArrival_Second, double vehDuration)
+void SignalRequest::setETA(int vehExpectedTimeOfArrival_Minute, int vehExpectedTimeOfArrival_Second, int vehDuration)
 {
     expectedTimeOfArrival.setETA_Minute(vehExpectedTimeOfArrival_Minute);
     expectedTimeOfArrival.setETA_Second(vehExpectedTimeOfArrival_Second);
@@ -111,26 +111,26 @@ void SignalRequest::setPosition(double vehLatitude_DecimalDegree, double vehLong
 
 bool SignalRequest::setHeading_Degree(double vehHeading)
 {
-    bool bvehHeading = true;
+    bool vehicleHeadingStatus{true};
 
     if (vehHeading >= VEHICLE_HEADING_MINLIMIT && vehHeading <= VEHICLE_HEADING_MAXLIMIT)
         heading_Degree = vehHeading;
     else
-        bvehHeading = false;
+        vehicleHeadingStatus = false;
 
-    return bvehHeading;
+    return vehicleHeadingStatus;
 }
 
 bool SignalRequest::setSpeed_MeterPerSecond(double vehSpeed_MeterPerSecond)
 {
-    bool bvehSpeed_MeterPerSecond = true;
+    bool vehicleSpeedStatus{true};
 
     if (vehSpeed_MeterPerSecond >= VEHICLE_SPEED_METERPERSECOND_MINLIMIT && vehSpeed_MeterPerSecond < VEHICLE_SPEED_METERPERSECOND_MAXLIMIT)
         speed_MeterPerSecond = vehSpeed_MeterPerSecond;
     else
-        vehSpeed_MeterPerSecond = false;
+        vehicleSpeedStatus = false;
 
-    return bvehSpeed_MeterPerSecond;
+    return vehicleSpeedStatus;
 }
 
 void SignalRequest::setVehicleType(int vehType)
@@ -198,12 +198,12 @@ int SignalRequest::getETA_Minute()
     return expectedTimeOfArrival.getETA_Minute();
 }
 
-double SignalRequest::getETA_Second()
+int SignalRequest::getETA_Second()
 {
     return expectedTimeOfArrival.getETA_Second();
 }
 
-double SignalRequest::getETA_Duration()
+int SignalRequest::getETA_Duration()
 {
     return expectedTimeOfArrival.getETA_Duration();
 }
@@ -312,8 +312,8 @@ void SignalRequest::json2SignalRequest(std::string jsonString)
     inBoundLane.setLaneID((jsonObject["SignalRequest"]["inBoundLane"]["LaneID"]).asInt());
     inBoundLane.setApproachID((jsonObject["SignalRequest"]["inBoundLane"]["ApproachID"]).asInt());
     expectedTimeOfArrival.setETA_Minute((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Minute"]).asInt());
-    expectedTimeOfArrival.setETA_Second((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asDouble());
-    expectedTimeOfArrival.setETA_Duration((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"]).asDouble());
+    expectedTimeOfArrival.setETA_Second((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Second"]).asInt());
+    expectedTimeOfArrival.setETA_Duration((jsonObject["SignalRequest"]["expectedTimeOfArrival"]["ETA_Duration"]).asInt());
     vehicleID = (jsonObject["SignalRequest"]["vehicleID"]).asInt();
     position.setLatitude_decimalDegree((jsonObject["SignalRequest"]["position"]["latitude_DecimalDegree"]).asDouble());
     position.setLongitude_decimalDegree((jsonObject["SignalRequest"]["position"]["longitude_DecimalDegree"]).asDouble());

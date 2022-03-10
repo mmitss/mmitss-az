@@ -14,10 +14,17 @@
 */
 
 #include <iostream>
+#include <time.h>
 #include "ExpectedTimeOfArrival.h"
 
-const double second_MinLimit = 0.0;
-const double second_MaxLimit = 59.99; //This value comes frrom J2735 standard
+const int ETA_Minute_MinLimit = 0;
+const int ETA_Minute_MaxLimit = 527040;
+const int ETA_Second_MinLimit = 0;
+const int ETA_Second_MaxLimit = 60999; 
+const int ETA_Second_Unavailable = 65595; //These values come from J2735 2016 standard
+#define HOURSINADAY 24
+#define MINUTESINAHOUR 60
+#define SECONDTOMILISECOND 1000
 
 ETA::ETA()
 {
@@ -25,31 +32,26 @@ ETA::ETA()
 
 void ETA::setETA_Minute(int vehExpectedTimeOfArrival_Minute)
 {
-    expectedTimeOfArrival_Minute = vehExpectedTimeOfArrival_Minute;
+    
+    if (vehExpectedTimeOfArrival_Minute >= ETA_Minute_MinLimit && vehExpectedTimeOfArrival_Minute <= ETA_Minute_MaxLimit)    
+        expectedTimeOfArrival_Minute = vehExpectedTimeOfArrival_Minute; 
+
+    else
+        expectedTimeOfArrival_Minute = 1;
 }
 
-bool ETA::setETA_Second(double vehExpectedTimeOfArrival_Second)
+void ETA::setETA_Second(int vehExpectedTimeOfArrival_Second)
 {
-    bool bvehExpectedTimeOfArrival_Second = true;
-
-    if (vehExpectedTimeOfArrival_Second >= second_MinLimit && vehExpectedTimeOfArrival_Second <= second_MaxLimit)
-        expectedTimeOfArrival_Second = vehExpectedTimeOfArrival_Second;
+    if (vehExpectedTimeOfArrival_Second >= ETA_Second_MinLimit && vehExpectedTimeOfArrival_Second <= ETA_Second_MaxLimit)
+        expectedTimeOfArrival_Second = static_cast<int>(vehExpectedTimeOfArrival_Second);
+    
     else
-        bvehExpectedTimeOfArrival_Second = false;
-
-    return bvehExpectedTimeOfArrival_Second;
+        expectedTimeOfArrival_Second = ETA_Second_Unavailable;
 }
 
-bool ETA::setETA_Duration(double vehDuration)
+void ETA::setETA_Duration(int vehDuration)
 {
-    bool bvehDuration = true;
-
-    if (vehDuration >= second_MinLimit && vehDuration <= second_MaxLimit)
-        expectedTimeOfArrival_Duration = vehDuration;
-    else
-        bvehDuration = false;
-
-    return bvehDuration;
+    expectedTimeOfArrival_Duration = static_cast<int>(vehDuration);
 }
 
 int ETA::getETA_Minute()
@@ -57,12 +59,12 @@ int ETA::getETA_Minute()
     return expectedTimeOfArrival_Minute;
 }
 
-double ETA::getETA_Second()
+int ETA::getETA_Second()
 {
     return expectedTimeOfArrival_Second;
 }
 
-double ETA::getETA_Duration()
+int ETA::getETA_Duration()
 {
     return expectedTimeOfArrival_Duration;
 }
