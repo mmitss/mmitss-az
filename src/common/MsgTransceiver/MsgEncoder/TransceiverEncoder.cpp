@@ -289,8 +289,8 @@ string TransceiverEncoder::SSMEncoder(string jsonString)
     vector<int> inBoundApproachID = signalStatus.getInBoundApproachID();
     vector<int> basicVehicleRole = signalStatus.getBasicVehicleRole();
     vector<int> expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-    vector<double> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
-    vector<double> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
+    vector<int> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+    vector<int> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
     vector<int> priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
     /// dsrcFrameIn to store input to UPER encoding function
