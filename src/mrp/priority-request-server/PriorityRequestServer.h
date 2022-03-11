@@ -47,10 +47,12 @@ using std::vector;
 #define SEQUENCE_NUMBER_MAXLIMIT 127
 #define HOURS_IN_A_DAY 24
 #define MINUTES_IN_A_HOUR 60
-#define SECONDS_IN_A_MINUTE 60
-#define MINUTE_TO_SECOND 60
+#define SECOND_MINTUTE_CONVERSION 60.0
 #define SECOND_MILISECOND_CONVERSION 1000.0
 #define Maximum_Number_Of_Priority_Request 15
+#define ALLOWED_SPEED_DEVIATION 4.0
+#define ALLOWED_ETA_DIFFERENCE 6.0
+#define SRM_TIME_GAP_VALUE 6.0
 
 enum msgType
 {
@@ -68,6 +70,7 @@ private:
     int sequenceNumber{};
     int updateCount{};
     int vehicleType{};
+    int vehicleRequestedSignalGroup{};
     int priorityRequestStatus{};
     int requestTimedOutVehicleID{};
     int tempLastTimeETAUpdated{};
@@ -109,20 +112,20 @@ public:
     void setPriorityRequestStatus();
     void setPRSUpdateCount();
     void setVehicleType(SignalRequest signalRequest);
+    void setRequestedSignalGroup(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
     void setETAUpdateTime();
     void readconfigFile();
     void loggingData(string logString);
     void displayConsoleData(string consoleString);
+    void calculateETA(int ETA_Minute, int ETA_Second);
     int getMessageType(string jsonString);
     int getRequestTimedOutVehicleID();
     int getMinuteOfYear();
     int getMsOfMinute();
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
-    int getSignalGroup(SignalRequest signalRequest);
     int getSplitPhase(int signalGroup);
-    double calculateETA(int ETA_Minute, int ETA_Second);
     bool acceptSignalRequest(SignalRequest signalRequest);
     bool addToActiveRequestTable(SignalRequest signalRequest);
     bool updateActiveRequestTable(SignalRequest signalRequest);

@@ -36,7 +36,6 @@ int main()
     const int solverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["PrioritySolver"].asInt());
     const int messageDistributorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageDistributor"].asInt());
     const int dataCollectorPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
-    const int prgPortNo =  static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestGenerator"].asInt());
 
     const string LOCALHOST = jsonObject["HostIp"].asString();
     const string messageDistributorIP = jsonObject["MessageDistributorIP"].asString();
@@ -55,7 +54,7 @@ int main()
         {
             string receivedJsonString(receiveBuffer);
             msgType = PRS.getMessageType(receivedJsonString);
-            cout << "Received SRM: \n" << receivedJsonString << endl;
+
             if (msgType == MsgEnum::DSRCmsgID_srm)
             {
                 signalRequest.json2SignalRequest(receivedJsonString);
@@ -72,11 +71,9 @@ int main()
             if (PRS.checkSsmSendingRequirement())
             {
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                cout << "SSM json string:\n" << ssmJsonString << endl;
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(prgPortNo), ssmJsonString);
             }
             //Creating JSON string for solver
             if (PRS.getPriorityRequestListSendingRequirement())
@@ -120,12 +117,10 @@ int main()
             if (PRS.updateETA())
             {
                 ssmJsonString = PRS.createSSMJsonString(signalStatus);
-                cout << "SSM json string:\n" << ssmJsonString << endl;
                 PRS.printActiveRequestTable();
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(ssmReceiverPortNo), ssmJsonString);
                 PRSSocket.sendData(messageDistributorIP, static_cast<short unsigned int>(messageDistributorPortNo), ssmJsonString);
                 PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(dataCollectorPortNo), ssmJsonString);
-                PRSSocket.sendData(LOCALHOST, static_cast<short unsigned int>(prgPortNo), ssmJsonString);
             }
         }
     }
