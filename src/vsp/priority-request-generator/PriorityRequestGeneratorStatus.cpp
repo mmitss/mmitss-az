@@ -46,6 +46,7 @@ string PriorityRequestGeneratorStatus::priorityRequestGeneratorStatus2Json(Prior
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["secMark_Second"] = basicVehicle.getSecMark_Second();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleID"] = basicVehicle.getTemporaryID();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["vehicleType"] = priorityRequestGenerator.getVehicleType();
+    jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["basicVehicleRole"] = priorityRequestGenerator.getBasicVehicleRole();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["latitude_DecimalDegree"] = basicVehicle.getLatitude_DecimalDegree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["longitude_DecimalDegree"] = basicVehicle.getLongitude_DecimalDegree();
     jsonObject["PriorityRequestGeneratorStatus"]["hostVehicle"]["position"]["elevation_Meter"] = basicVehicle.getElevation_Meter();

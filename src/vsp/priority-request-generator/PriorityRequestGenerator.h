@@ -41,13 +41,12 @@ using std::ifstream;
 #define EmergencyVehicle 2
 #define Transit 6
 #define Truck 9
-#define SrmTimeGapValue 2.0
+#define SRM_TIME_GAP_VALUE 2.0
 #define DISTANCEUNITCONVERSION 100
-#define SECONDS_IN_A_MINUTE 60
-#define HOURSINADAY 24
-#define MINUTESINAHOUR 60
-#define SECOND_MILISECOND_CONVERSION 1000
-#define MILISECONDTOSECOND 1000
+#define SECOND_MINTUTE_CONVERSION 60.0
+#define HOUR_DAY_CONVERSION 24
+#define MINTUTE_HOUR_CONVERSION 60
+#define SECOND_MILISECOND_CONVERSION 1000.0
 #define Degree_Conversion 10000000.0
 #define maxMsgCount 127
 #define minMsgCount 1
@@ -55,9 +54,9 @@ using std::ifstream;
 #define minimumETA_Duration 4
 #define vehicleStartUpLossTime 2.0
 #define minimumVehicleSpeed 4.0
-#define vehicleSpeedDeviationLimit 4.0
-#define allowed_ETA_Difference 6.0
-#define kmToMeter 1000
+#define ALLOWED_SPEED_DEVIATION 4.0
+#define ALLOWED_ETA_DIFFERENCE 6.0
+
 
 enum msgType
 {

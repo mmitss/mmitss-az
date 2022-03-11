@@ -43,8 +43,7 @@ int main()
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
-    const int prsPortNo =  static_cast<short unsigned int>(jsonObject["PortNumber"]["PriorityRequestServer"].asInt());
-        
+    
     char receiveBuffer[40960];
     string srmJsonString{};
     string prgStatusJsonString{};
@@ -70,7 +69,6 @@ int main()
                 srmJsonString = PRG.createSRMJsonString(basicVehicle, signalRequest, mapManager);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(srmReceiverPortNo), srmJsonString);
                 priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(dataCollectorPort), srmJsonString);
-                priorityRequestGeneratorSocket.sendData(HostIP, static_cast<short unsigned int>(prsPortNo), srmJsonString);
             }
             
             // Update the Map status (MapAge, or delete old Map)
@@ -80,7 +78,6 @@ int main()
             prgStatusJsonString = prgStatus.priorityRequestGeneratorStatus2Json(PRG, basicVehicle);
             priorityRequestGeneratorSocket.sendData(HMIControllerIP, static_cast<short unsigned int>(prgStatusReceiverPortNo), prgStatusJsonString);
             PRG.loggingData(prgStatusJsonString);
-            cout << "PRG status is \n" << prgStatusJsonString << endl;
         }
 
         //The received MAP will be either added or updated in the availableMapList.
@@ -93,7 +90,7 @@ int main()
         // The active request table (ART) will be managed for the connected vehicle.
         else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
-            cout << "Received SSM \n" << receivedJsonString << endl;
+
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
             signalStatus.reset();
