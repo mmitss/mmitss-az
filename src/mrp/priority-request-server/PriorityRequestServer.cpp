@@ -318,10 +318,13 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 double PriorityRequestServer::calculateETA(int ETA_Minute, int ETA_Second)
 {
 	if (getMsOfMinute() >= ETA_Second)
-		vehicleETA = static_cast<int>((getMinuteOfYear() - ETA_Minute) * SECONDS_IN_A_MINUTE + (getMsOfMinute() - ETA_Second) / SECOND_FROM_MILISECOND);
+		vehicleETA = (getMinuteOfYear() - ETA_Minute) * SECONDS_IN_A_MINUTE + (getMsOfMinute() - ETA_Second) / SECOND_MILISECOND_CONVERSION + SECONDS_IN_A_MINUTE;
 
 	else if (getMsOfMinute() < ETA_Second)
-		vehicleETA = static_cast<int>((getMinuteOfYear() - ETA_Minute) * SECONDS_IN_A_MINUTE + (getMsOfMinute() + SECONDS_IN_A_MINUTE - ETA_Second) / SECOND_FROM_MILISECOND);
+		vehicleETA = (getMinuteOfYear() - ETA_Minute) * SECONDS_IN_A_MINUTE + (ETA_Second - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION;
+
+	if (vehicleETA < Minimum_ETA)
+		vehicleETA = Minimum_ETA;
 
 	return vehicleETA;
 }
@@ -364,7 +367,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			activeRequest.vehicleType = vehicleType;
 			activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 			activeRequest.minuteOfYear = getMinuteOfYear();
-			activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+			activeRequest.secondOfMinute = static_cast<int>(getMsOfMinute() / SECOND_MILISECOND_CONVERSION);
 			activeRequest.signalGroup = temporarySignalGroup;
 			activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 			activeRequest.vehicleETASecond = signalRequest.getETA_Second();
@@ -389,7 +392,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleType = vehicleType;
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 				activeRequest.minuteOfYear = getMinuteOfYear();
-				activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+				activeRequest.secondOfMinute = static_cast<int>(getMsOfMinute() / SECOND_MILISECOND_CONVERSION);
 				activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
@@ -432,7 +435,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.vehicleType = vehicleType;
 				activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 				activeRequest.minuteOfYear = getMinuteOfYear();
-				activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+				activeRequest.secondOfMinute = static_cast<int>(getMsOfMinute() / SECOND_MILISECOND_CONVERSION);
 				activeRequest.signalGroup = temporarySignalGroup;
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
@@ -456,7 +459,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 					activeRequest.vehicleType = vehicleType;
 					activeRequest.vehicleLaneID = signalRequest.getInBoundLaneID();
 					activeRequest.minuteOfYear = getMinuteOfYear();
-					activeRequest.secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+					activeRequest.secondOfMinute = static_cast<int>(getMsOfMinute() / SECOND_MILISECOND_CONVERSION);
 					activeRequest.signalGroup = getSplitPhase(temporarySignalGroup);
 					activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 					activeRequest.vehicleETASecond = signalRequest.getETA_Second();
@@ -485,7 +488,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				findVehicleIDOnTable->basicVehicleRole = signalRequest.getBasicVehicleRole();
 				findVehicleIDOnTable->vehicleLaneID = signalRequest.getInBoundLaneID();
 				findVehicleIDOnTable->minuteOfYear = getMinuteOfYear();
-				findVehicleIDOnTable->secondOfMinute = getMsOfMinute() / SECOND_FROM_MILISECOND;
+				findVehicleIDOnTable->secondOfMinute = static_cast<int>(getMsOfMinute() / SECOND_MILISECOND_CONVERSION);
 				findVehicleIDOnTable->signalGroup = getSignalGroup(signalRequest);
 				findVehicleIDOnTable->vehicleETAMinute = signalRequest.getETA_Minute();
 				findVehicleIDOnTable->vehicleETASecond = signalRequest.getETA_Second();
@@ -756,6 +759,7 @@ bool PriorityRequestServer::sendClearRequest()
 void PriorityRequestServer::updateETAInActiveRequestTable()
 {
 	double currentTime = getPosixTimestamp();
+	int relativeETAInMiliSecond{};
 
 	if (!ActiveRequestTable.empty())
 	{
@@ -767,8 +771,10 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				ActiveRequestTable[i].vehicleETA = 0.0;
 
-			ActiveRequestTable[i].vehicleETAMinute = getMinuteOfYear() + static_cast<int>(ActiveRequestTable[i].vehicleETA / MINUTE_TO_SECOND);
-			ActiveRequestTable[i].vehicleETASecond = static_cast<int>((fmod(ActiveRequestTable[i].vehicleETA, SECONDS_IN_A_MINUTE)) * getMsOfMinute());
+			relativeETAInMiliSecond = static_cast <int>(ActiveRequestTable[i].vehicleETA * SECOND_MILISECOND_CONVERSION + getMsOfMinute());
+			
+			ActiveRequestTable[i].vehicleETAMinute = getMinuteOfYear() + (relativeETAInMiliSecond / (SECONDS_IN_A_MINUTE * static_cast<int>(SECOND_MILISECOND_CONVERSION)));
+			ActiveRequestTable[i].vehicleETASecond = relativeETAInMiliSecond % (SECONDS_IN_A_MINUTE * static_cast<int>(SECOND_MILISECOND_CONVERSION));
 		}
 
 		etaUpdateTime = currentTime;
@@ -916,7 +922,7 @@ int PriorityRequestServer::getMinuteOfYear()
 	int currentMinute = timePtr->tm_min;
 
 	minuteOfYear = (dayOfYear - 1) * HOURS_IN_A_DAY * MINUTES_IN_A_HOUR + currentHour * MINUTES_IN_A_HOUR + currentMinute;
-
+	minuteOfYear = 97875;
 	return minuteOfYear;
 }
 
@@ -929,8 +935,8 @@ int PriorityRequestServer::getMsOfMinute()
 	tm *timePtr = gmtime(&t);
 
 	int currentSecond = timePtr->tm_sec;
-	msOfMinute = currentSecond * SECOND_FROM_MILISECOND;
-
+	msOfMinute = currentSecond * SECOND_MILISECOND_CONVERSION;
+	msOfMinute = 40000;
 	return msOfMinute;
 }
 
@@ -1146,7 +1152,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 		for (int i = 0; i < noOfCoordinationRequest; i++)
 		{
 			activeRequest.minuteOfYear = jsonObject["minuteOfYear"].asInt();
-			activeRequest.secondOfMinute = jsonObject["msOfMinute"].asInt() / SECOND_FROM_MILISECOND;
+			activeRequest.secondOfMinute = static_cast<int>(jsonObject["msOfMinute"].asInt() / SECOND_MILISECOND_CONVERSION);
 			activeRequest.msgCount = jsonObject["msgCount"].asInt();
 			activeRequest.basicVehicleRole = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["basicVehicleRole"].asInt();
 			activeRequest.signalGroup = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["requestedPhase"].asInt();

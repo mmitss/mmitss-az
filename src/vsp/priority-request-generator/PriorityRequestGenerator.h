@@ -43,10 +43,10 @@ using std::ifstream;
 #define Truck 9
 #define SrmTimeGapValue 2.0
 #define DISTANCEUNITCONVERSION 100
-#define SECONDSINAMINUTE 60
+#define SECONDS_IN_A_MINUTE 60
 #define HOURSINADAY 24
 #define MINUTESINAHOUR 60
-#define SECONDTOMILISECOND 1000
+#define SECOND_MILISECOND_CONVERSION 1000
 #define MILISECONDTOSECOND 1000
 #define Degree_Conversion 10000000.0
 #define maxMsgCount 127
