@@ -116,12 +116,14 @@ def main():
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
                 logger.loggingAndConsoleDisplay("Virtual Coorination Request is Sent to PRS")
+
             # Check if it is required to generate coordination requests to avoid PRS timed-out
             # Formulate a json string for coordination requests and send it to the PRS 
             elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
                 logger.loggingAndConsoleDisplay("Sent updated Coordination Request to avoid PRS timed-out")
+
             # The method updates ETA for each coordination request
             # The method deletes the old coordination requests.
             # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests

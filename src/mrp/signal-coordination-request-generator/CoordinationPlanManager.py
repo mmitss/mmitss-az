@@ -39,8 +39,8 @@ import calendar
 from datetime import date
 from Logger import Logger
 
-MinuteToSecondCoversion = 60.0
-HourToSecondConversion = 3600.0
+SECOND_MINUTE_CONVERSION = 60.0
+HOUR_SECOND_CONVERSION = 3600.0
 
 
 class CoordinationPlanManager:
@@ -96,10 +96,10 @@ class CoordinationPlanManager:
             if dayOfWeek in coordinationDayPlanDictionary['Days']:
                 for parameters in coordinationDayPlanDictionary['ActionPlan']:
                     coordinationStartTime = parameters['CoordinationStartTime_Hour'] * float(
-                        HourToSecondConversion) + parameters['CoordinationStartTime_Minute'] * float(MinuteToSecondCoversion)
+                        HOUR_SECOND_CONVERSION) + parameters['CoordinationStartTime_Minute'] * float(SECOND_MINUTE_CONVERSION)
 
                     coordinationEndTime = parameters['CoordinationEndTime_Hour'] * float(
-                        HourToSecondConversion) + parameters['CoordinationEndTime_Minute'] * float(MinuteToSecondCoversion)
+                        HOUR_SECOND_CONVERSION) + parameters['CoordinationEndTime_Minute'] * float(SECOND_MINUTE_CONVERSION)
 
                     cycleLength = self.getOffset(
                         parameters['CoordinationPatternNo'])
@@ -169,7 +169,7 @@ class CoordinationPlanManager:
         else:
             for parameters in self.coordinationConfigData['CoordinationPattern']:
                 coordinationEndTime = self.coordinationEndTime_Hour * float(
-                    HourToSecondConversion) + self.coordinationEndTime_Minute * float(MinuteToSecondCoversion)
+                    HOUR_SECOND_CONVERSION) + self.coordinationEndTime_Minute * float(SECOND_MINUTE_CONVERSION)
 
                 if currentTime > coordinationEndTime and parameters['CoordinationPlanName'] == self.coordinationPlanName:
                     self.logger.loggingAndConsoleDisplay("Cleared timed-out coordination plan")
