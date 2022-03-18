@@ -283,7 +283,7 @@ std::string SignalRequest::signalRequest2Json()
     jsonObject["SignalRequest"]["position"]["elevation_Meter"] = position.getElevation_Meter();
     jsonObject["SignalRequest"]["heading_Degree"] = heading_Degree;
     jsonObject["SignalRequest"]["speed_MeterPerSecond"] = speed_MeterPerSecond;
-    jsonObject["SignalRequest"]["vehicleType"] = vehicleType;
+    // jsonObject["SignalRequest"]["vehicleType"] = vehicleType;
 
     jsonString = Json::writeString(builder, jsonObject);
 
@@ -320,7 +320,7 @@ void SignalRequest::json2SignalRequest(std::string jsonString)
     position.setElevation_meter((jsonObject["SignalRequest"]["position"]["elevation_Meter"]).asDouble());
     heading_Degree = (jsonObject["SignalRequest"]["heading_Degree"]).asDouble();
     speed_MeterPerSecond = (jsonObject["SignalRequest"]["speed_MeterPerSecond"]).asDouble();
-    vehicleType = (jsonObject["SignalRequest"]["vehicleType"]).asInt();
+    // vehicleType = (jsonObject["SignalRequest"]["vehicleType"]).asInt();
 }
 
 //Destructor:
