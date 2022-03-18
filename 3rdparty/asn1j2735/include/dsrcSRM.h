@@ -36,7 +36,7 @@ struct SRM_element_t
 	// enum
 	MsgEnum::requestType  reqType;
 	MsgEnum::basicRole    vehRole;
-	MsgEnum::vehicleType  vehType;
+	//MsgEnum::vehicleType  vehType;
 	MsgEnum::transGear    transState;
 	void reset(void)
 	{
@@ -55,7 +55,7 @@ struct SRM_element_t
 		transState      = MsgEnum::transGear::unavailable;
 		reqType         = MsgEnum::requestType::reserved;
 		vehRole         = MsgEnum::basicRole::unavailable;
-		vehType         = MsgEnum::vehicleType::unavailable;
+		//vehType         = MsgEnum::vehicleType::unavailable;
 	};
 };
 

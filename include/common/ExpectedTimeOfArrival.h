@@ -27,9 +27,9 @@ public:
     ETA();
 
     //Setters:
-    void setETA_Minute(int vehExpectedTimeOfArrival_Minute);
-    void setETA_Second(int vehExpectedTimeOfArrival_Second);
-    void setETA_Duration(int vehDuration);
+    void setETA_Minute(int ehicleExpectedTimeOfArrival_Minute);
+    void setETA_Second(int vehicleExpectedTimeOfArrival_Second);
+    void setETA_Duration(int vehicleExpectedTimeOfArrival_Duration);
 
     //Getters:
     int getETA_Minute();
