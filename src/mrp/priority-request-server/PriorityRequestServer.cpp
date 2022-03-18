@@ -120,6 +120,9 @@ bool PriorityRequestServer::addToActiveRequestTable(SignalRequest signalRequest)
 			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
 		addRequest = true;
 
+	// else if (!ActiveRequestTable.empty() && (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
+	// 	addRequest = true;
+
 	return addRequest;
 }
 
@@ -143,18 +146,23 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 
 	else if (!ActiveRequestTable.empty() && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
 			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::requestUpdate)))
+		updateRequest = true;
+
+	// Following Logic is for the SRM received from DanLaw unit since they doesn't send update request.
+	else if (!ActiveRequestTable.empty() && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
+			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))) 
 	{
 		if (findVehicleIDOnTable->signalGroup != vehicleRequestedSignalGroup)
 			updateRequest = true;
-		
-		else if(fabs(findVehicleIDOnTable->vehicleSpeed - signalRequest.getSpeed_MeterPerSecond()) >= ALLOWED_SPEED_DEVIATION)
+
+		else if (fabs(findVehicleIDOnTable->vehicleSpeed - signalRequest.getSpeed_MeterPerSecond()) >= ALLOWED_SPEED_DEVIATION)
 			updateRequest = true;
 
-		else if(fabs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE)
-			updateRequest = true; 
+		else if (fabs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE)
+			updateRequest = true;
 
 		else if (getPosixTimestamp() - findVehicleIDOnTable->etaUpdateTime >= SRM_TIME_GAP_VALUE)
-			updateRequest = true;			
+			updateRequest = true;
 	}
 
 	return updateRequest;
@@ -384,7 +392,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			activeRequest.signalGroup = vehicleRequestedSignalGroup;
 			activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 			activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+			activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
 			activeRequest.vehicleETA = vehicleETA;
 			activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 			activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -409,7 +417,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.signalGroup = getSplitPhase(vehicleRequestedSignalGroup);
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+				activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
 				activeRequest.vehicleETA = vehicleETA;
 				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -451,7 +459,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.signalGroup = vehicleRequestedSignalGroup;
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+				activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
 				activeRequest.vehicleETA = vehicleETA;
 				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -475,7 +483,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 					activeRequest.signalGroup = getSplitPhase(vehicleRequestedSignalGroup);
 					activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 					activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-					activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
+					activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
 					activeRequest.vehicleETA = vehicleETA;
 					activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 					activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -832,8 +840,7 @@ void PriorityRequestServer::setRequestedSignalGroup(SignalRequest signalRequest)
 
 	approachID = plocAwareLib->getApproachIdByLaneId(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(signalRequest.getInBoundLaneID()));
 	vehicleRequestedSignalGroup = unsigned(plocAwareLib->getControlPhaseByIds(static_cast<uint16_t>(regionalID), static_cast<uint16_t>(intersectionID), static_cast<uint8_t>(approachID),
-														  static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
-
+																			  static_cast<uint8_t>(signalRequest.getInBoundLaneID())));
 }
 
 /*
@@ -1171,7 +1178,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 			activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
 			activeRequest.vehicleETAMinute = getMinuteOfYear() + static_cast<int>(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble() / SECOND_MINTUTE_CONVERSION);
 			activeRequest.vehicleETASecond = static_cast<int>((fmod(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble(), SECOND_MINTUTE_CONVERSION)) * getMsOfMinute());
-			activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asInt();
+			activeRequest.vehicleETADuration = static_cast<int>(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asInt() / SECOND_MILISECOND_CONVERSION);
 			activeRequest.vehicleLaneID = coordinationLaneID;
 			activeRequest.msgReceivedTime = currentTime;
 			activeRequest.etaUpdateTime = currentTime;

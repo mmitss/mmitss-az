@@ -17,11 +17,15 @@
 #include <time.h>
 #include "ExpectedTimeOfArrival.h"
 
+//These values come from J2735 2016 standard
 const int ETA_Minute_MinLimit = 0;
 const int ETA_Minute_MaxLimit = 527040;
 const int ETA_Second_MinLimit = 0;
 const int ETA_Second_MaxLimit = 60999; 
-const int ETA_Second_Unavailable = 65595; //These values come from J2735 2016 standard
+const int ETA_Second_Unavailable = 65595; 
+const int ETA_Duration_MinLimit = 0;
+const int ETA_Duration_MaxLimit = 60999; 
+const int ETA_Duration_Unavailable = 65595; 
 #define HOURSINADAY 24
 #define MINUTESINAHOUR 60
 #define SECONDTOMILISECOND 1000
@@ -30,28 +34,32 @@ ETA::ETA()
 {
 }
 
-void ETA::setETA_Minute(int vehExpectedTimeOfArrival_Minute)
+void ETA::setETA_Minute(int vehicleExpectedTimeOfArrival_Minute)
 {
     
-    if (vehExpectedTimeOfArrival_Minute >= ETA_Minute_MinLimit && vehExpectedTimeOfArrival_Minute <= ETA_Minute_MaxLimit)    
-        expectedTimeOfArrival_Minute = vehExpectedTimeOfArrival_Minute; 
+    if (vehicleExpectedTimeOfArrival_Minute >= ETA_Minute_MinLimit && vehicleExpectedTimeOfArrival_Minute <= ETA_Minute_MaxLimit)    
+        expectedTimeOfArrival_Minute = vehicleExpectedTimeOfArrival_Minute; 
 
-    else
+    else 
         expectedTimeOfArrival_Minute = 1;
 }
 
-void ETA::setETA_Second(int vehExpectedTimeOfArrival_Second)
+void ETA::setETA_Second(int vehicleExpectedTimeOfArrival_Second)
 {
-    if (vehExpectedTimeOfArrival_Second >= ETA_Second_MinLimit && vehExpectedTimeOfArrival_Second <= ETA_Second_MaxLimit)
-        expectedTimeOfArrival_Second = static_cast<int>(vehExpectedTimeOfArrival_Second);
+    if (vehicleExpectedTimeOfArrival_Second >= ETA_Second_MinLimit && vehicleExpectedTimeOfArrival_Second <= ETA_Second_MaxLimit)
+        expectedTimeOfArrival_Second = static_cast<int>(vehicleExpectedTimeOfArrival_Second);
     
     else
         expectedTimeOfArrival_Second = ETA_Second_Unavailable;
 }
 
-void ETA::setETA_Duration(int vehDuration)
+void ETA::setETA_Duration(int vehicleExpectedTimeOfArrival_Duration)
 {
-    expectedTimeOfArrival_Duration = static_cast<int>(vehDuration);
+    if (vehicleExpectedTimeOfArrival_Duration >= ETA_Duration_MinLimit && vehicleExpectedTimeOfArrival_Duration <= ETA_Duration_MaxLimit)
+        expectedTimeOfArrival_Duration = static_cast<int>(vehicleExpectedTimeOfArrival_Duration);
+    
+    else
+        expectedTimeOfArrival_Duration = ETA_Duration_Unavailable;
 }
 
 int ETA::getETA_Minute()

@@ -92,7 +92,6 @@ private:
     int priorityRequestType{};
     int counter_VehicleInMap{};
     int tempVehicleSignalGroup{}; //tempVehicleSignalGroup store the vehicle signalGroup of last send out srm. Use it to check if signalGroup is changed or not.
-    int vehicleETA_Duration{};
     double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
     double vehicleDistanceFromStopBar{};
     double vehicleETA{};

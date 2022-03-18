@@ -227,7 +227,7 @@ string TransceiverDecoder::srmDecoder(string srmPayload)
         signalRequest.setPosition(DsrcConstants::damega2unit<int32_t>(srmOut.latitude), DsrcConstants::damega2unit<int32_t>(srmOut.longitude), DsrcConstants::deca2unit<int32_t>(srmOut.elevation));
         signalRequest.setHeading_Degree(round(DsrcConstants::unit2heading<uint16_t>(srmOut.heading)));
         signalRequest.setSpeed_MeterPerSecond(round(DsrcConstants::unit2kph<uint16_t>(srmOut.speed) * KPH_TO_MPS_CONVERSION));
-        signalRequest.setVehicleType(static_cast<unsigned int>(srmOut.vehType));
+        // signalRequest.setVehicleType(static_cast<unsigned int>(srmOut.vehType));
 
         jsonString = signalRequest.signalRequest2Json();
     }
@@ -291,7 +291,6 @@ string TransceiverDecoder::ssmDecoder(string ssmPayload)
             activeRequest.vehicleETAMinute = ssmOut.mpSignalRequetStatus[i].ETAminute;
 			activeRequest.vehicleETASecond = ssmOut.mpSignalRequetStatus[i].ETAsec;
             activeRequest.vehicleETADuration = ssmOut.mpSignalRequetStatus[i].duration;
-            // activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
             activeRequest.prsStatus = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].status);
             ActiveRequestTable.push_back(activeRequest);
         }

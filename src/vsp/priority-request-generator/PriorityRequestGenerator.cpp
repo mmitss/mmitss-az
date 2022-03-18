@@ -99,7 +99,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.vehicleLaneID = inBoundLaneID[i];
 			activeRequest.vehicleETAMinute = expectedTimeOfArrival_Minute[i];
 			activeRequest.vehicleETASecond = expectedTimeOfArrival_Second[i];
-			activeRequest.vehicleETADuration = expectedTimeOfArrival_Duration[i];
+			activeRequest.vehicleETADuration = static_cast<int>(expectedTimeOfArrival_Duration[i] / SECOND_MILISECOND_CONVERSION);
 			
 			if (getMsOfMinute() > expectedTimeOfArrival_Second[i])
 				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECOND_MINTUTE_CONVERSION + ((getMsOfMinute() - expectedTimeOfArrival_Second[i]) / SECOND_MILISECOND_CONVERSION) + SECOND_MINTUTE_CONVERSION;
@@ -126,15 +126,16 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
 {
 	string srmJsonString{};
-	int vehExpectedTimeOfArrival_Minute{};
-	int vehExpectedTimeOfArrival_Second{};
+	int vehicleExpectedTimeOfArrival_Minute{};
+	int vehicleExpectedTimeOfArrival_Second{};
+	int vehicleExpectedTimeOfArrival_Duration{};
 	int relativeETAInMiliSecond = static_cast <int>(getETA() * SECOND_MILISECOND_CONVERSION + getMsOfMinute());
 	
-	// vehExpectedTimeOfArrival_Second = static_cast<int>(remquo((relativeETAInSecond / SECOND_MINTUTE_CONVERSION), 1.0, &vehExpectedTimeOfArrival_Minute) * SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
-	// vehExpectedTimeOfArrival_Minute = getMinuteOfYear() + vehExpectedTimeOfArrival_Minute;
-	vehExpectedTimeOfArrival_Minute = getMinuteOfYear() + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
-	vehExpectedTimeOfArrival_Second = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
-	vehicleETA_Duration = minimumETA_Duration;
+	// vehicleExpectedTimeOfArrival_Second = static_cast<int>(remquo((relativeETAInSecond / SECOND_MINTUTE_CONVERSION), 1.0, &vehicleExpectedTimeOfArrival_Minute) * SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
+	// vehicleExpectedTimeOfArrival_Minute = getMinuteOfYear() + vehicleExpectedTimeOfArrival_Minute;
+	vehicleExpectedTimeOfArrival_Minute = getMinuteOfYear() + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
+	vehicleExpectedTimeOfArrival_Second = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
+	vehicleExpectedTimeOfArrival_Duration = minimumETA_Duration * SECOND_MILISECOND_CONVERSION;
 	setMsgCount(msgCount);
 	tempVehicleSpeed = getVehicleSpeed(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
 	tempVehicleSignalGroup = getSignalGroup();
@@ -147,7 +148,7 @@ string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, 
 	// signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
 	signalRequest.setPriorityRequestType(getPriorityRequestType());
 	signalRequest.setInBoundLaneIntersectionAccessPoint(getLaneID(), getApproachID());
-	signalRequest.setETA(vehExpectedTimeOfArrival_Minute, vehExpectedTimeOfArrival_Second, vehicleETA_Duration);
+	signalRequest.setETA(vehicleExpectedTimeOfArrival_Minute, vehicleExpectedTimeOfArrival_Second, vehicleExpectedTimeOfArrival_Duration);
 	signalRequest.setTemporaryVechileID(getVehicleID());
 	signalRequest.setBasicVehicleRole(getBasicVehicleRole());
 	signalRequest.setPosition(basicVehicle.getLatitude_DecimalDegree(), basicVehicle.getLongitude_DecimalDegree(), basicVehicle.getElevation_Meter());
