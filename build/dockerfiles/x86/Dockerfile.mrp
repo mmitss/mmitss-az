@@ -2,7 +2,7 @@
 #    Dockerfile to build an x86 platform image for a field intersection       #
 #    Image name: mmitssuarizona/mmitss-mrp-x86                                #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-x86-base:2.2
+FROM mmitssuarizona/mmitss-x86-base:3.0
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY build/bin/WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
