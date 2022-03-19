@@ -1194,7 +1194,6 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 		updateETAInActiveRequestTable();
 		sendSSM = true;
 		sendPriorityRequestList = true;
-		printActiveRequestTable();
 	}
 
 	else
