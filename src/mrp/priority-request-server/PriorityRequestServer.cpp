@@ -150,7 +150,7 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 
 	// Following Logic is for the SRM received from DanLaw unit since they doesn't send update request.
 	else if (!ActiveRequestTable.empty() && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
-			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest))) 
+			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
 	{
 		if (findVehicleIDOnTable->signalGroup != vehicleRequestedSignalGroup)
 			updateRequest = true;
@@ -392,7 +392,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 			activeRequest.signalGroup = vehicleRequestedSignalGroup;
 			activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 			activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-			activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
+			activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 			activeRequest.vehicleETA = vehicleETA;
 			activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 			activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -417,7 +417,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.signalGroup = getSplitPhase(vehicleRequestedSignalGroup);
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
+				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 				activeRequest.vehicleETA = vehicleETA;
 				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -459,7 +459,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.signalGroup = vehicleRequestedSignalGroup;
 				activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 				activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-				activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
+				activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 				activeRequest.vehicleETA = vehicleETA;
 				activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 				activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -483,7 +483,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 					activeRequest.signalGroup = getSplitPhase(vehicleRequestedSignalGroup);
 					activeRequest.vehicleETAMinute = signalRequest.getETA_Minute();
 					activeRequest.vehicleETASecond = signalRequest.getETA_Second();
-					activeRequest.vehicleETADuration = static_cast<int>(signalRequest.getETA_Duration() / SECOND_MILISECOND_CONVERSION);
+					activeRequest.vehicleETADuration = signalRequest.getETA_Duration();
 					activeRequest.vehicleETA = vehicleETA;
 					activeRequest.vehicleLatitude = signalRequest.getLatitude_DecimalDegree();
 					activeRequest.vehicleLongitude = signalRequest.getLongitude_DecimalDegree();
@@ -706,7 +706,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 			else
 				jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA"] = ActiveRequestTable[i].vehicleETA;
 
-			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
+			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration / SECOND_MILISECOND_CONVERSION;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
 		}
 
@@ -717,6 +717,7 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 
 	solverJsonString = Json::writeString(builder, jsonObject);
 	loggingData(solverJsonString);
+
 	sendSSM = false;
 	sendPriorityRequestList = false;
 
@@ -785,7 +786,6 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
 		{
 			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime - ActiveRequestTable[i].etaUpdateTime);
-			ActiveRequestTable[i].etaUpdateTime = currentTime;
 
 			if (ActiveRequestTable[i].vehicleETA <= 0)
 				ActiveRequestTable[i].vehicleETA = 0.0;
@@ -794,6 +794,11 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 
 			ActiveRequestTable[i].vehicleETAMinute = getMinuteOfYear() + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
 			ActiveRequestTable[i].vehicleETASecond = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
+
+			if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource) && ActiveRequestTable[i].vehicleETA == 0.0)
+				ActiveRequestTable[i].vehicleETADuration = static_cast<int>(ActiveRequestTable[i].vehicleETADuration - (currentTime - ActiveRequestTable[i].etaUpdateTime) * SECOND_MILISECOND_CONVERSION);
+
+			ActiveRequestTable[i].etaUpdateTime = currentTime;
 		}
 
 		etaUpdateTime = currentTime;
@@ -811,17 +816,17 @@ void PriorityRequestServer::printActiveRequestTable()
 	{
 		cout << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Active Request Table is following: " << endl;
 		cout << "VehicleID"
-			 << " "
-			 << "VehicleType"
-			 << " "
+			 << "	"
+			 << "VehicleRole"
+			 << "	"
 			 << "ETA"
-			 << " "
+			 << "	"
 			 << "ETADuration"
-			 << " "
+			 << "	"
 			 << "SignalGroup" << endl;
 
 		for (size_t i = 0; i < ActiveRequestTable.size(); i++)
-			cout << "   " << ActiveRequestTable[i].vehicleID << "       " << ActiveRequestTable[i].vehicleType << "        " << ActiveRequestTable[i].vehicleETA << "       " << ActiveRequestTable[i].vehicleETADuration << "         " << ActiveRequestTable[i].signalGroup << endl;
+			cout << "   " << ActiveRequestTable[i].vehicleID << "       	" << ActiveRequestTable[i].basicVehicleRole << "     	   	" << ActiveRequestTable[i].vehicleETA << "      " << ActiveRequestTable[i].vehicleETADuration << "     	    " << ActiveRequestTable[i].signalGroup << endl;
 	}
 
 	else
@@ -1178,7 +1183,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 			activeRequest.vehicleETA = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble();
 			activeRequest.vehicleETAMinute = getMinuteOfYear() + static_cast<int>(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble() / SECOND_MINTUTE_CONVERSION);
 			activeRequest.vehicleETASecond = static_cast<int>((fmod(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["ETA"].asDouble(), SECOND_MINTUTE_CONVERSION)) * getMsOfMinute());
-			activeRequest.vehicleETADuration = static_cast<int>(jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asInt() / SECOND_MILISECOND_CONVERSION);
+			activeRequest.vehicleETADuration = jsonObject["CoordinationRequestList"]["requestorInfo"][i]["CoordinationSplit"].asInt();
 			activeRequest.vehicleLaneID = coordinationLaneID;
 			activeRequest.msgReceivedTime = currentTime;
 			activeRequest.etaUpdateTime = currentTime;
@@ -1189,6 +1194,7 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 		updateETAInActiveRequestTable();
 		sendSSM = true;
 		sendPriorityRequestList = true;
+		printActiveRequestTable();
 	}
 
 	else
