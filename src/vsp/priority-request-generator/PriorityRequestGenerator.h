@@ -41,22 +41,22 @@ using std::ifstream;
 #define EmergencyVehicle 2
 #define Transit 6
 #define Truck 9
-#define SrmTimeGapValue 2.0
+#define SRM_TIME_GAP_VALUE 2.0
 #define DISTANCEUNITCONVERSION 100
-#define SECONDSINAMINUTE 60.0
-#define HOURSINADAY 24
-#define MINUTESINAHOUR 60
-#define SECONDTOMILISECOND 1000
+#define SECOND_MINTUTE_CONVERSION 60.0
+#define HOUR_DAY_CONVERSION 24
+#define MINTUTE_HOUR_CONVERSION 60
+#define SECOND_MILISECOND_CONVERSION 1000.0
 #define Degree_Conversion 10000000.0
 #define maxMsgCount 127
 #define minMsgCount 1
 #define minimumETA 2.0
-#define minimumETA_Duration 4.0
+#define minimumETA_Duration 4
 #define vehicleStartUpLossTime 2.0
 #define minimumVehicleSpeed 4.0
-#define vehicleSpeedDeviationLimit 4.0
-#define allowed_ETA_Difference 6.0
-#define kmToMeter 1000
+#define ALLOWED_SPEED_DEVIATION 4.0
+#define ALLOWED_ETA_DIFFERENCE 6.0
+
 
 enum msgType
 {
@@ -95,7 +95,6 @@ private:
     double tempVehicleSpeed{};    //tempVehicleSpeed store the vehicle speed of last send out srm. Use it to check if vehicle speed is changed or not.
     double vehicleDistanceFromStopBar{};
     double vehicleETA{};
-    double vehicleETA_Duration{};
     double vehicleSpeed{};
     double srmSendingTime{}; //temporary store the time when last SRM has been sent
     double requestTimedOutValue{};
@@ -133,6 +132,7 @@ public:
     void setVehicleIntersectionStatus(int vehIntersectionStatus);
     void setVehicleType();
     void setSimulationVehicleType(string vehType); //For PRGServer
+    void setBasicVehicleRole(int vehicle_Type);
     void setPriorityRequestType(int priority_Request_Type);
     void setLightSirenStatus(string jsonString);
     void setMsgCount(int msg_count);

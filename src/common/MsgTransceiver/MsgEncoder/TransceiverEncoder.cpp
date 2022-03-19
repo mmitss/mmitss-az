@@ -137,7 +137,7 @@ string TransceiverEncoder::TransceiverEncoder::SRMEncoder(string jsonString)
     Frame_element_t dsrcFrameIn;
     dsrcFrameIn.reset();
 
-    /// manual input ssmIn
+    /// manual input srmIn
     dsrcFrameIn.dsrcMsgId = MsgEnum::DSRCmsgID_srm;
     SRM_element_t &srmIn = dsrcFrameIn.srm;
     srmIn.timeStampMinute = signalRequest.getMinuteOfYear();
@@ -149,7 +149,7 @@ string TransceiverEncoder::TransceiverEncoder::SRMEncoder(string jsonString)
     srmIn.inApprochId = static_cast<int8_t>(signalRequest.getInBoundApproachID());
     srmIn.inLaneId = static_cast<int8_t>(signalRequest.getInBoundLaneID());
     srmIn.ETAsec = static_cast<int16_t>(signalRequest.getETA_Second());
-    srmIn.ETAminute = signalRequest.getETA_Minute();
+    srmIn.ETAminute = static_cast<uint32_t>(signalRequest.getETA_Minute());
     srmIn.duration = static_cast<int16_t>(signalRequest.getETA_Duration());
     srmIn.vehId = signalRequest.getTemporaryVehicleID();
     srmIn.latitude = DsrcConstants::unit2damega<int32_t>(signalRequest.getLatitude_DecimalDegree());
@@ -159,8 +159,8 @@ string TransceiverEncoder::TransceiverEncoder::SRMEncoder(string jsonString)
     srmIn.speed = DsrcConstants::kph2unit<uint16_t>(signalRequest.getSpeed_MeterPerSecond() * MPS_TO_KPH_CONVERSION);
     srmIn.reqType = static_cast<MsgEnum::requestType>(signalRequest.getPriorityRequestType());
     srmIn.vehRole = static_cast<MsgEnum::basicRole>(signalRequest.getBasicVehicleRole());
-    srmIn.vehType = static_cast<MsgEnum::vehicleType>(signalRequest.getVehicleType());
-    /// encode SSM payload
+    // srmIn.vehType = static_cast<MsgEnum::vehicleType>(signalRequest.getVehicleType());
+    /// encode SRM payload
     size_t payload_size = AsnJ2735Lib::encode_msgFrame(dsrcFrameIn, &buf[0], bufSize);
     if (payload_size > 0)
     {
@@ -289,8 +289,8 @@ string TransceiverEncoder::SSMEncoder(string jsonString)
     vector<int> inBoundApproachID = signalStatus.getInBoundApproachID();
     vector<int> basicVehicleRole = signalStatus.getBasicVehicleRole();
     vector<int> expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-    vector<double> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
-    vector<double> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
+    vector<int> expectedTimeOfArrival_Second = signalStatus.getETA_Second();
+    vector<int> expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
     vector<int> priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
     /// dsrcFrameIn to store input to UPER encoding function

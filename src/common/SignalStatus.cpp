@@ -22,7 +22,6 @@
 #include "Timestamp.h"
 
 const int ETA_CONVERTION = 60;
-const int ETA_DURATION = 2000;
 
 //Constructor
 SignalStatus::SignalStatus()
@@ -113,9 +112,11 @@ void SignalStatus::setETA(std::vector<ActiveRequest> ActiveRequestTable)
 {
     for (size_t i = 0; i < ActiveRequestTable.size(); i++)
     {
-        expectedTimeOfArrival_Minute.push_back(static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION));
-        expectedTimeOfArrival_Second.push_back(fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION));
-        expectedTimeOfArrival_Duration.push_back(ETA_DURATION);
+        //expectedTimeOfArrival_Minute.push_back(static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION));
+        //expectedTimeOfArrival_Second.push_back(fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION));
+        expectedTimeOfArrival_Minute.push_back(ActiveRequestTable[i].vehicleETAMinute);
+        expectedTimeOfArrival_Second.push_back(ActiveRequestTable[i].vehicleETAMinute);
+        expectedTimeOfArrival_Duration.push_back(ActiveRequestTable[i].vehicleETADuration);
     }
 }
 
@@ -198,12 +199,12 @@ std::vector<int> SignalStatus::getETA_Minute()
     return expectedTimeOfArrival_Minute;
 }
 
-std::vector<double> SignalStatus::getETA_Second()
+std::vector<int> SignalStatus::getETA_Second()
 {
     return expectedTimeOfArrival_Second;
 }
 
-std::vector<double> SignalStatus::getETA_Duration()
+std::vector<int> SignalStatus::getETA_Duration()
 {
     return expectedTimeOfArrival_Duration;
 }
@@ -260,8 +261,8 @@ std::string SignalStatus::signalStatus2Json(std::vector<ActiveRequest> ActiveReq
         jsonObject["SignalStatus"]["requestorInfo"][i]["basicVehicleRole"] = ActiveRequestTable[i].basicVehicleRole;
         jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundLaneID"] = ActiveRequestTable[i].vehicleLaneID;
         jsonObject["SignalStatus"]["requestorInfo"][i]["inBoundApproachID"] = ActiveRequestTable[i].vehicleApproachID;
-        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = static_cast<int>(ActiveRequestTable[i].vehicleETA / ETA_CONVERTION);
-        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = fmod(ActiveRequestTable[i].vehicleETA, ETA_CONVERTION);
+        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Minute"] = ActiveRequestTable[i].vehicleETAMinute;
+        jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Second"] = ActiveRequestTable[i].vehicleETASecond;
         jsonObject["SignalStatus"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration;
         jsonObject["SignalStatus"]["requestorInfo"][i]["priorityRequestStatus"] = ActiveRequestTable[i].prsStatus;
     }
@@ -315,9 +316,10 @@ void SignalStatus::json2SignalStatus(std::string jsonString)
                 expectedTimeOfArrival_Minute.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "ETA_Second")
-                expectedTimeOfArrival_Second.push_back(values[i][values[i].getMemberNames()[j]].asDouble());
+                expectedTimeOfArrival_Second.push_back(values[i][values[i].getMemberNames()[j]].asInt());
+
             if (values[i].getMemberNames()[j] == "ETA_Duration")
-                expectedTimeOfArrival_Duration.push_back(values[i][values[i].getMemberNames()[j]].asDouble());
+                expectedTimeOfArrival_Duration.push_back(values[i][values[i].getMemberNames()[j]].asInt());
 
             if (values[i].getMemberNames()[j] == "priorityRequestStatus")
                 priorityRequestStatus.push_back(values[i][values[i].getMemberNames()[j]].asInt());

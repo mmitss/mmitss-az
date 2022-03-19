@@ -2,75 +2,27 @@
     "MsgType": "SSM",
     "SignalStatus": {
         "intersectionID": 26379,
-        "minuteOfYear": 168455,
-        "msOfMinute": 30000,
+        "minuteOfYear": 98960,
+        "msOfMinute": 22000,
         "regionalID": 0,
         "requestorInfo": [
             {
-                "ETA_Duration": 18.0,
-                "ETA_Minute": 0,
-                "ETA_Second": 0.0,
-                "basicVehicleRole": 11,
-                "inBoundApproachID": 0,
-                "inBoundLaneID": 1,
-                "msgCount": 10,
-                "priorityRequestStatus": 4,
-                "requestID": 0,
-                "vehicleID": 1
-            },
-            {
-                "ETA_Duration": 18.0,
-                "ETA_Minute": 0,
-                "ETA_Second": 0.0,
-                "basicVehicleRole": 11,
-                "inBoundApproachID": 0,
-                "inBoundLaneID": 1,
-                "msgCount": 10,
-                "priorityRequestStatus": 4,
-                "requestID": 0,
-                "vehicleID": 2
-            },
-            {
-                "ETA_Duration": 20.0,
-                "ETA_Minute": 1,
-                "ETA_Second": 17.0,
-                "basicVehicleRole": 11,
-                "inBoundApproachID": 0,
-                "inBoundLaneID": 1,
-                "msgCount": 10,
-                "priorityRequestStatus": 4,
-                "requestID": 0,
-                "vehicleID": 3
-            },
-            {
-                "ETA_Duration": 20.0,
-                "ETA_Minute": 1,
-                "ETA_Second": 17.0,
-                "basicVehicleRole": 11,
-                "inBoundApproachID": 0,
-                "inBoundLaneID": 1,
-                "msgCount": 10,
-                "priorityRequestStatus": 4,
-                "requestID": 0,
-                "vehicleID": 4
-            },
-            {
-                "ETA_Duration": 4.0,
-                "ETA_Minute": 0,
-                "ETA_Second": 3.0,
+                "ETA_Duration": 4,
+                "ETA_Minute": 98960,
+                "ETA_Second": 22000,
                 "basicVehicleRole": 16,
                 "inBoundApproachID": 0,
-                "inBoundLaneID": 12,
-                "msgCount": 18,
+                "inBoundLaneID": 13,
+                "msgCount": 1,
                 "priorityRequestStatus": 4,
                 "requestID": 0,
                 "vehicleID": -1898502772
             }
         ],
-        "sequenceNumber": 52,
-        "updateCount": 71
+        "sequenceNumber": 9,
+        "updateCount": 1
     },
-    "Timestamp_posix": 1619652930.133302,
-    "Timestamp_verbose": "2021-04-28 23:35:30.133",
-    "noOfRequest": 5
+    "Timestamp_posix": 1647019222.4831851,
+    "Timestamp_verbose": "2022-03-11 17:20:22.483",
+    "noOfRequest": 1
 }

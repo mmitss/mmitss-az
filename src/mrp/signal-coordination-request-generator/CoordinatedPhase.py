@@ -20,6 +20,7 @@
     - provides an API for creating a dictionary for each Coordinated phase (optional function)
 '''
 
+
 class CoordinatedPhase:
     def __init__(self):
         self.phaseNo = 0
@@ -27,9 +28,11 @@ class CoordinatedPhase:
         self.vehicleID = 0
         self.basicVehicleRole = 0
         self.ETA = 0.0
+        self.ETA_Minute = 0  # minute of the year
+        self.ETA_Second = 0  # DSecond (millisecond)
         self.coordinationSplit = 0.0
         self.priorityRequestType = 0
         self.requestUpdateTime = 0.0
-    
+
     def asDict(self):
-        return {"requestedPhase":self.phaseNo, "vehicleType":self.vehicleType, "vehicleID":self.vehicleID, "basicVehicleRole":self.basicVehicleRole, "ETA":self.ETA, "CoordinationSplit":self.coordinationSplit, "priorityRequestType":self.priorityRequestType, "requestUpdateTime":self.requestUpdateTime}
+        return {"requestedPhase": self.phaseNo, "vehicleType": self.vehicleType, "vehicleID": self.vehicleID, "basicVehicleRole": self.basicVehicleRole, "ETA": self.ETA, "ETA_Minute": self.ETA_Minute, "ETA_Second": self.ETA_Second, "CoordinationSplit": self.coordinationSplit, "priorityRequestType": self.priorityRequestType, "requestUpdateTime": self.requestUpdateTime}
