@@ -132,7 +132,7 @@ class CoordinationRequestManager:
             ) + (relativeETAInMiliSecond // (SECOND_MINUTE_CONVERSION * SECOND_MILISECOND_CONVERSION))
             temporaryCoordinationRequest.ETA_Second = relativeETAInMiliSecond % (
                 SECOND_MINUTE_CONVERSION * SECOND_MILISECOND_CONVERSION)
-            temporaryCoordinationRequest.coordinationSplit = coordinationSplit
+            temporaryCoordinationRequest.coordinationSplit = int(coordinationSplit * SECOND_MILISECOND_CONVERSION)
             temporaryCoordinationRequest.priorityRequestType = self.priorityRequest
             temporaryCoordinationRequest.requestUpdateTime = time.time()
             coordinationRequestList.append(temporaryCoordinationRequest)
@@ -219,8 +219,8 @@ class CoordinationRequestManager:
                     if self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['ETA'] <= self.Minimum_ETA:
                         self.coordinationPriorityRequestDictionary['CoordinationRequestList'][
                             'requestorInfo'][i]['ETA'] = self.Minimum_ETA
-                        self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] = self.coordinationPriorityRequestDictionary[
-                            'CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] - (currentTime_UTC - temporaryRequestUpdateTime)
+                        self.coordinationPriorityRequestDictionary['CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] = int(self.coordinationPriorityRequestDictionary[
+                            'CoordinationRequestList']['requestorInfo'][i]['CoordinationSplit'] - (currentTime_UTC - temporaryRequestUpdateTime) * SECOND_MILISECOND_CONVERSION)
 
                     relativeETAInMiliSecond = self.coordinationPriorityRequestDictionary['CoordinationRequestList'][
                         'requestorInfo'][i]['ETA'] * SECOND_MILISECOND_CONVERSION + self.getMsOfMinute()
