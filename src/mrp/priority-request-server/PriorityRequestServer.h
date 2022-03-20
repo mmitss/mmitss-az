@@ -52,7 +52,8 @@ using std::vector;
 #define Maximum_Number_Of_Priority_Request 15
 #define ALLOWED_SPEED_DEVIATION 4.0
 #define ALLOWED_ETA_DIFFERENCE 6.0
-#define SRM_TIME_GAP_VALUE 6.0
+#define SRM_TIME_GAP_VALUE 8.0
+#define ART_UPDATE_FREQUENCY 0.5
 
 enum msgType
 {

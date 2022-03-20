@@ -40,6 +40,7 @@ struct ActiveRequest
     double vehicleSpeed;
     double msgReceivedTime;
     double etaUpdateTime; 
+    double artForwardTime;
     void reset()
     {
         vehicleID = 0;
@@ -64,5 +65,6 @@ struct ActiveRequest
         vehicleSpeed = 0.0;
         msgReceivedTime = 0.0;
         etaUpdateTime = 0.0;
+        artForwardTime = 0.0;
     }
 };

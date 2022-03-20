@@ -150,7 +150,8 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 
 	// Following Logic is for the SRM received from DanLaw unit since they doesn't send update request.
 	else if (!ActiveRequestTable.empty() && (findVehicleIDOnTable != ActiveRequestTable.end()) &&
-			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)))
+			 (signalRequest.getPriorityRequestType() == static_cast<int>(MsgEnum::requestType::priorityRequest)) &&
+			 (getPosixTimestamp() - findVehicleIDOnTable->msgReceivedTime) >= ART_UPDATE_FREQUENCY)
 	{
 		if (findVehicleIDOnTable->signalGroup != vehicleRequestedSignalGroup)
 			updateRequest = true;
@@ -161,7 +162,7 @@ bool PriorityRequestServer::updateActiveRequestTable(SignalRequest signalRequest
 		else if (fabs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE)
 			updateRequest = true;
 
-		else if (getPosixTimestamp() - findVehicleIDOnTable->etaUpdateTime >= SRM_TIME_GAP_VALUE)
+		else if (getPosixTimestamp() - findVehicleIDOnTable->artForwardTime >= SRM_TIME_GAP_VALUE)
 			updateRequest = true;
 	}
 
@@ -429,6 +430,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				ActiveRequestTable.push_back(activeRequest);
 			}
 			updateETAInActiveRequestTable();
+			sendPriorityRequestList = true;
 		}
 
 		else if (updateActiveRequestTable(signalRequest))
@@ -523,6 +525,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				findVehicleIDOnTable->etaUpdateTime = currentTime;
 			}
 			updateETAInActiveRequestTable();
+			sendPriorityRequestList = true;
 		}
 
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
@@ -561,12 +564,12 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 			}
 			updateETAInActiveRequestTable();
+			sendPriorityRequestList = true;
 		}
 
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
 		sendSSM = true;
-		sendPriorityRequestList = true;
 	}
 
 	else
@@ -708,6 +711,8 @@ string PriorityRequestServer::createJsonStringForPrioritySolver()
 
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["ETA_Duration"] = ActiveRequestTable[i].vehicleETADuration / SECOND_MILISECOND_CONVERSION;
 			jsonObject["PriorityRequestList"]["requestorInfo"][i]["speed_MeterPerSecond"] = ActiveRequestTable[i].vehicleSpeed;
+
+			ActiveRequestTable[i].artForwardTime = getPosixTimestamp();
 		}
 
 		sentClearRequest = false;
