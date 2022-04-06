@@ -36,6 +36,7 @@ The methods available from this class are the following:
 import datetime
 import time
 import json
+import pytz
 from CoordinatedPhase import CoordinatedPhase
 from Logger import Logger
 
@@ -329,7 +330,7 @@ class CoordinationRequestManager:
         """
         Method for obtaining minute of a year based on current time
         """
-        timeNow = datetime.datetime.now()
+        timeNow = datetime.datetime.now(tz=pytz.UTC)
         dayOfYear = int(timeNow.strftime("%j"))
         currentHour = timeNow.hour
         currentMinute = timeNow.minute
@@ -341,7 +342,7 @@ class CoordinationRequestManager:
         """
         Method for obtaining millisecond of a minute based on current time
         """
-        timeNow = datetime.datetime.now()
+        timeNow = datetime.datetime.now(tz=pytz.UTC)
         currentSecond = timeNow.second
         msOfMinute = currentSecond * SECOND_MILISECOND_CONVERSION
 
