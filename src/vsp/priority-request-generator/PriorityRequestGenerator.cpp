@@ -1018,35 +1018,37 @@ double PriorityRequestGenerator::getRequestTimedOutValue()
 }
 
 /*
-	- Obtain system time and calculte current Minute of the Year
-		--get the number of years passed (today's number of day in the year -1)
-		--get number of hours and minutes elapsed today
+	- Method for obtaining minute of a year based on GMT(UTC) time
 */
 int PriorityRequestGenerator::getMinuteOfYear()
 {
 	int minuteOfYear{};
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
 
-	int dayOfYear = timePtr->tm_yday;
-	int currentHour = timePtr->tm_hour;
-	int currentMinute = timePtr->tm_min;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
 
-	minuteOfYear = (dayOfYear - 1) * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
+	int dayOfYear = tm_gmt->tm_yday;
+	int currentHour = tm_gmt->tm_hour;
+	int currentMinute = tm_gmt->tm_min;
+
+	minuteOfYear = dayOfYear * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
 
 	return minuteOfYear;
 }
 
 /*
-	- Obtain system time for time stamp
+	- Method for obtaining millisecond of a minute based on GMT(UTC) time
 */
 int PriorityRequestGenerator::getMsOfMinute()
 {
 	int msOfMinute{};
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
 
-	int currentSecond = timePtr->tm_sec;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
+
+	int currentSecond = tm_gmt->tm_sec;
 
 	msOfMinute = currentSecond * static_cast<int>(SECOND_MILISECOND_CONVERSION);
 

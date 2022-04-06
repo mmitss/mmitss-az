@@ -951,31 +951,38 @@ void PriorityRequestServer::setVehicleType(SignalRequest signalRequest)
 }
 
 /*
-	Method for obtaining minute of a year based on current time.
+	- Method for obtaining minute of a year based on GMT(UTC) time
 */
 int PriorityRequestServer::getMinuteOfYear()
 {
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
+	int minuteOfYear{};
 
-	int dayOfYear = timePtr->tm_yday;
-	int currentHour = timePtr->tm_hour;
-	int currentMinute = timePtr->tm_min;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
 
-	minuteOfYear = (dayOfYear - 1) * HOURS_IN_A_DAY * MINUTES_IN_A_HOUR + currentHour * MINUTES_IN_A_HOUR + currentMinute;
+	int dayOfYear = tm_gmt->tm_yday;
+	int currentHour = tm_gmt->tm_hour;
+	int currentMinute = tm_gmt->tm_min;
+
+	minuteOfYear = dayOfYear * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
 
 	return minuteOfYear;
 }
 
 /*
-	Method for obtaining millisecond of a minute based on current time.
+	- Method for obtaining millisecond of a minute based on GMT(UTC) time
 */
 int PriorityRequestServer::getMsOfMinute()
 {
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
+	int msOfMinute{};
 
-	int currentSecond = timePtr->tm_sec;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
+
+	int currentSecond = tm_gmt->tm_sec;
+
 	msOfMinute = currentSecond * static_cast<int>(SECOND_MILISECOND_CONVERSION);
 
 	return msOfMinute;

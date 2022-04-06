@@ -45,8 +45,8 @@ using std::vector;
 #define TIME_GAP_BETWEEN_ETA_Update 1
 #define SEQUENCE_NUMBER_MINLIMIT 1
 #define SEQUENCE_NUMBER_MAXLIMIT 127
-#define HOURS_IN_A_DAY 24
-#define MINUTES_IN_A_HOUR 60
+#define HOUR_DAY_CONVERSION 24
+#define MINTUTE_HOUR_CONVERSION 60
 #define SECOND_MINTUTE_CONVERSION 60.0
 #define SECOND_MILISECOND_CONVERSION 1000.0
 #define Maximum_Number_Of_Priority_Request 15
@@ -64,9 +64,7 @@ class PriorityRequestServer
 {
 private:
     vector<ActiveRequest> ActiveRequestTable;
-    int minuteOfYear{};
-    int msOfMinute{};
-    int regionalID;
+    int regionalID{};
     int intersectionID{};
     int sequenceNumber{};
     int updateCount{};
