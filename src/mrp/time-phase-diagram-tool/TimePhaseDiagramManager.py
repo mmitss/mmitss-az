@@ -204,8 +204,9 @@ class TimePhaseDiagramManager:
         
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         
-        self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
+        self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
+        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
+        
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
 
         # plt.show()
@@ -263,8 +264,8 @@ class TimePhaseDiagramManager:
 
         ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
 
-        self.initializationTimestamp = ('{:%m%d%Y_%H%M%S}'.format(datetime.datetime.now()))
-        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/time-phase-diagram_" + self.initializationTimestamp + "_" + str(time.time())
+        self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
+        fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
         plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
         # plt.show()
         
@@ -280,7 +281,7 @@ class TimePhaseDiagramManager:
         list_of_files = os.listdir(path)
         full_path = [path + "/{0}".format(x) for x in list_of_files]
  
-        if len(full_path) > 30:
+        if len(full_path) > 300:
             oldest_file = min(full_path, key=os.path.getctime)
             print(oldest_file)
             os.remove(oldest_file)
