@@ -571,9 +571,7 @@ def performance_data():
             data = io.BytesIO()
             im.save(data, "JPEG")
             encoded_img_data = base64.b64encode(data.getvalue()).decode('utf-8')
-            t_diagrams.append(encoded_img_data) 
-
-       
+            t_diagrams.append(encoded_img_data)  
        
     except:
         diagrams = []
