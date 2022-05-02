@@ -495,12 +495,8 @@ def performance_data():
     file = ''
     for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
         i = 0
-    #file = "/nojournal/bin/v2x-data/vehicle_msgCountsLog_10062020_063432.csv"
-    print("***")
-    print(file)
-    print("***")
+
     #read the csv file and extracted the required columns and stored in the dataframe "df"   
- 
     if (file):
         col_list = ["log_timestamp_verbose","msg_type","msg_count"]
         df = pd.read_csv(file ,usecols=col_list)      
