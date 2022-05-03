@@ -159,7 +159,7 @@ else
 	    echo "Building System Interface..."
 	    cd ../../src/system-interface
 	    # Clean the folder and build for linux.
-	    pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
+	    pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --hidden-import=pandas --onefile --windowed system-interface.py &> /dev/null
 	    # Indicate Success/Failure of the build
 	    if [ "$?" -eq "0" ]; then
 		    mv dist/system-interface  ../../build/bin/SystemInterface/$PROCESSOR/M_SystemInterface
