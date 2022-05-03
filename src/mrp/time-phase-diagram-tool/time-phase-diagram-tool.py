@@ -63,7 +63,7 @@ def main():
     port = config["PortNumber"]["TimePhaseDiagramTool"]
     timePhaseDiagram_commInfo = (hostIp, port)
     timePhaseDiagramSocket.bind(timePhaseDiagram_commInfo)
-    timePhaseDiagramSocket.settimeout(2)
+    timePhaseDiagramSocket.settimeout(7)
     
     timeGapBetweenDiagramGenerationStatusChecking = config['SystemPerformanceTimeInterval']
     diagramGenerationStatus = checkTimePhaseDigramGeneratingStatus(configFile)

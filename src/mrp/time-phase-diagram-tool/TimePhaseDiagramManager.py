@@ -281,7 +281,7 @@ class TimePhaseDiagramManager:
         list_of_files = os.listdir(path)
         full_path = [path + "/{0}".format(x) for x in list_of_files]
  
-        if len(full_path) > 300:
+        if len(full_path) > 100:
             oldest_file = min(full_path, key=os.path.getctime)
             print(oldest_file)
             os.remove(oldest_file)
