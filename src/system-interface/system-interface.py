@@ -492,38 +492,37 @@ def performance_data():
         intName = data['IntersectionName']
         
     #ran a loop to search for the file matching the below mentioned pattern
+    file = ''
     for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
         i = 0
-    #file = "static/images/daisy-anthem_msgCountsLog_01012021_000000.csv"
-        
-    #read the csv file and extracted the required columns and stored in the dataframe "df"   
-    col_list = ["log_timestamp_verbose","msg_type","msg_count"]
-    df = pd.read_csv(file ,usecols=col_list)
-    if(df.empty):
-        t2 = 0
-        if thisPlatform == "roadside":
-            platform = "Infrastructure Side (MRP)"
-        elif thisPlatform == "vehicle":
-            platform = "Vehicle Side (VSP)"
-        df.columns = ["Time","Message","Count"]
-        df1 = df2 = df
 
-        
-    else:
-        #read the csv file again but just the timestamp column and determined the latest refreshed rate
-        #stored the dataframe in "rt" and assigned the Time column to "t1" as a list
-        rt = pd.read_csv(file , usecols= ["log_timestamp_verbose"])
-        t1= rt["log_timestamp_verbose"].tolist()
-        #t2 will be the most latest added time
-        t2 = max(t1)
-        #assigned names to the respective columns
-        df.columns = ["Time","Message","Count"]
-        #generated additional column to contain the cumulative count grouped by each message type
-        df['Cumulative'] = df.groupby(['Message'])['Count'].cumsum(axis=0)
-        #sorted the dataframe in descending order to obtain the latest entries on top and assigned to new dataframe "new_df"
-        new_df = df.sort_values(['Time'], ascending=False)
-        #dropped the rows with duplicate values and kept the latest entry i.e. the first entry of each mssg type
-        new_df = new_df.drop_duplicates(subset='Message', keep="first")
+    #read the csv file and extracted the required columns and stored in the dataframe "df"   
+    if (file):
+        col_list = ["log_timestamp_verbose","msg_type","msg_count"]
+        df = pd.read_csv(file ,usecols=col_list)      
+        if(df.empty):
+            t2 = 0
+            if thisPlatform == "roadside":
+                platform = "Infrastructure Side (MRP)"
+            elif thisPlatform == "vehicle":
+                platform = "Vehicle Side (VSP)"
+            df.columns = ["Time","Message","Count"]
+            df1 = df2 = df
+        else:
+            #read the csv file again but just the timestamp column and determined the latest refreshed rate
+            #stored the dataframe in "rt" and assigned the Time column to "t1" as a list
+            rt = pd.read_csv(file , usecols= ["log_timestamp_verbose"])
+            t1= rt["log_timestamp_verbose"].tolist()
+            #t2 will be the most latest added time
+            t2 = max(t1)
+            #assigned names to the respective columns
+            df.columns = ["Time","Message","Count"]
+            #generated additional column to contain the cumulative count grouped by each message type
+            df['Cumulative'] = df.groupby(['Message'])['Count'].cumsum(axis=0)
+            #sorted the dataframe in descending order to obtain the latest entries on top and assigned to new dataframe "new_df"
+            new_df = df.sort_values(['Time'], ascending=False)
+            #dropped the rows with duplicate values and kept the latest entry i.e. the first entry of each mssg type
+            new_df = new_df.drop_duplicates(subset='Message', keep="first")
 
         #checking whether to display the MRP or VSP 
         if thisPlatform == "roadside":
@@ -541,9 +540,6 @@ def performance_data():
             df2 = df2[df2.Message != 'SPaT']
             df2 = df2[df2.Message != 'SSM']
         
-        
-                
-
         elif thisPlatform == "vehicle":
             df1 = new_df
             df2 = new_df
@@ -554,7 +550,14 @@ def performance_data():
             df1 = df1[df1.Message != 'MAP']
             df1 = df1[df1.Message != 'SPaT']
             df1 = df1[df1.Message != 'SSM']
-
+    else:
+        df1 = pd.DataFrame()
+        df2 = pd.DataFrame()
+        t2 = 0
+        if thisPlatform == "roadside":
+            platform = "Infrastructure Side (MRP)"
+        elif thisPlatform == "vehicle":
+            platform = "Vehicle Side (VSP)"
     #time phase diagrams
     #checking if directory exists
     try:
@@ -568,9 +571,7 @@ def performance_data():
             data = io.BytesIO()
             im.save(data, "JPEG")
             encoded_img_data = base64.b64encode(data.getvalue()).decode('utf-8')
-            t_diagrams.append(encoded_img_data) 
-
-       
+            t_diagrams.append(encoded_img_data)  
        
     except:
         diagrams = []
