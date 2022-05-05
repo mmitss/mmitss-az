@@ -199,15 +199,15 @@ class TimePhaseDiagramManager:
                     ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
-        ax1.legend(loc='upper right', bbox_to_anchor=(0.9, 1), prop={"size": 18})
-        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
+        ax1.legend(loc='upper right', bbox_to_anchor=(1.0, 1.22), prop={"size": 18})
+        # ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
         
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         
         self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
         
-        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=100)
 
         # plt.show()
 
@@ -281,7 +281,7 @@ class TimePhaseDiagramManager:
         list_of_files = os.listdir(path)
         full_path = [path + "/{0}".format(x) for x in list_of_files]
  
-        if len(full_path) > 100:
+        if len(full_path) > 300:
             oldest_file = min(full_path, key=os.path.getctime)
             print(oldest_file)
             os.remove(oldest_file)
