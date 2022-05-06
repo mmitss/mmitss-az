@@ -23,7 +23,7 @@ following functions:
 (1) Creates "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram" directory if requires
 (2) Generates time-phase diagram
 (3) Checks for updates of the parameter in the config file after a specified time interval
-(4) Delete diagrams from archive directory if requires
+(4) Removes oldest diagram if required 
 ***************************************************************************************
 """
 
@@ -88,7 +88,7 @@ def main():
     optimizationResultsManager = OptimizationResultsManager()
     timePhaseDiagramManager = TimePhaseDiagramManager()
         
-    timePhaseDiagramManager.removeOldestDiagram()
+    timePhaseDiagramManager.archiveOldestDiagram()
     
     try:
         while True:
@@ -98,6 +98,7 @@ def main():
                 receivedMessage = json.loads(data)
                 if receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== True and bool(diagramGenerationStatus):
                     optimizationResultsManager.readOptimizationResultsFile()
+
                     
                 elif receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== False and bool(diagramGenerationStatus):
                     timePhaseDiagramManager.timePhaseDiagramMethodForNonOptimalSolution()
