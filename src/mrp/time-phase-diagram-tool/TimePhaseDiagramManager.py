@@ -207,7 +207,7 @@ class TimePhaseDiagramManager:
         self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
         
-        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=100)
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=72)
 
         # plt.show()
 
@@ -262,11 +262,11 @@ class TimePhaseDiagramManager:
         ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(datetime.datetime.now()) + ' / ' + str(time.time()) + ']', fontsize=18, style='italic', 
         bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
 
-        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
+        # ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
 
         self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
-        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=72)
         # plt.show()
         
         print("[{}]".format(str(round(time.time(), 4))) + " " + "Generate Time-Phase Diagram")
@@ -278,10 +278,10 @@ class TimePhaseDiagramManager:
         """ 
         path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
 
-        list_of_files = os.listdir(path)
-        full_path = [path + "/{0}".format(x) for x in list_of_files]
+        listOfDiagramsAndDirectory = os.listdir(path)
+        listOfDiagrams = [path + "/{0}".format(x) for x in listOfDiagramsAndDirectory if x.endswith(".jpg") ]
  
-        if len(full_path) > 300:
-            oldest_file = min(full_path, key=os.path.getctime)
-            print(oldest_file)
-            os.remove(oldest_file)
+        if len(listOfDiagrams) > 100:
+            oldestDiagram = min(listOfDiagrams, key=os.path.getctime)
+            shutil.move(oldestDiagram, "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive")
+

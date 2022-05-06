@@ -33,10 +33,24 @@ from OptimizationResultsManager import OptimizationResultsManager
 from TimePhaseDiagramManager import TimePhaseDiagramManager
 
 def createDirectory():
-    path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
+    path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive"
 
     if not os.path.exists(path):
         os.makedirs(path)
+
+def removeOldestDiagramFromArchive():
+        """
+        If there is more than specified number (e.g. 30) of time-phase diagrams in the directory, the oldest diagram will be removed.
+        The method checks the diagram generation to identify the oldest diagram.
+        """ 
+        path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive"
+
+        listOfDiagramsAndDirectory = os.listdir(path)
+        listOfDiagrams = [path + "/{0}".format(x) for x in listOfDiagramsAndDirectory if x.endswith(".jpg") ]
+ 
+        if len(listOfDiagrams) > 1100:
+            oldestDiagram = min(listOfDiagrams, key=os.path.getctime)
+            os.remove(oldestDiagram)           
 
 def checkTimePhaseDigramGeneratingStatus(configFile):  
     diagramGenerationStatus = False
@@ -79,10 +93,13 @@ def main():
         while True:
             try:
                 data, address = timePhaseDiagramSocket.recvfrom(1024)
+                startTime = time.time()
                 data = data.decode()
                 receivedMessage = json.loads(data)
                 if receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== True and bool(diagramGenerationStatus):
                     optimizationResultsManager.readOptimizationResultsFile()
+                    endTime = time.time()
+                    print('Time to complete process ', (endTime - startTime))
                     
                 elif receivedMessage["MsgType"]=="TimePhaseDiagram" and receivedMessage["OptimalSolutionStatus"]== False and bool(diagramGenerationStatus):
                     timePhaseDiagramManager.timePhaseDiagramMethodForNonOptimalSolution()
@@ -91,6 +108,7 @@ def main():
                 if (time.time() - generateDiagramStatusCheckingTime) >= timeGapBetweenDiagramGenerationStatusChecking:
                     diagramGenerationStatus = checkTimePhaseDigramGeneratingStatus(configFile)
                     generateDiagramStatusCheckingTime = time.time()
+                    removeOldestDiagramFromArchive()
                      
     except KeyboardInterrupt:
         print("Finished with ctrl+c")
