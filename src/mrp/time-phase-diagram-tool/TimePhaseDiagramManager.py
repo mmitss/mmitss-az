@@ -76,7 +76,7 @@ class TimePhaseDiagramManager:
         if ringNo == 'Ring1&2':
             color = 'tab:red'
             ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
-            ax1.set_ylabel('Ring 1 Phases', color=color,
+            ax1.set_ylabel('Active Phases in Ring 1', color=color,
                            fontsize=28, fontweight='bold')
             
             # Plot phase duration for each phase in ring 1
@@ -99,7 +99,7 @@ class TimePhaseDiagramManager:
             # Ring2
             ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
-            ax2.set_ylabel('Ring 2 Phases', color=color, fontsize=28, fontweight='bold')
+            ax2.set_ylabel('Active Phases in Ring 2 ', color=color, fontsize=28, fontweight='bold')
             # Plot phase duration for each phase in ring 2
             ax2.plot(self.cumulativeLeftCriticalPointsRing2,
                      self.cumulativePhaseHeightInRing2, color=color, linewidth=4)
@@ -199,7 +199,7 @@ class TimePhaseDiagramManager:
                     ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
-        ax1.legend(loc='upper right', bbox_to_anchor=(1.0, 1.22), prop={"size": 18})
+        ax1.legend(loc='upper right', bbox_to_anchor=(1.0, 1.20), prop={"size": 18})
         # ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
         
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -273,7 +273,7 @@ class TimePhaseDiagramManager:
         
     def removeOldestDiagram(self):
         """
-        If there is more than specified number (e.g. 30) of time-phase diagrams in the directory, the oldest diagram will be removed.
+        If there is more than specified number (e.g. 100) of time-phase diagrams in the directory, the oldest diagram will be archived.
         The method checks the diagram generation to identify the oldest diagram.
         """ 
         path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
