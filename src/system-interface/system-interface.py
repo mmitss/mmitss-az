@@ -32,6 +32,7 @@ import glob
 from PIL import Image
 import base64
 import io
+import fnmatch
 
 # Initialize application for either PyInstaller or Development
 if getattr(sys, 'frozen', False):
@@ -562,7 +563,8 @@ def performance_data():
     #checking if directory exists
     try:
         #extracting all the filenames from the directory
-        diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram")
+        diagrams = fnmatch.filter(os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"), "*.jpg")
+        print(diagrams)
         diagrams.sort()
         t_diagrams = []
         diagrams_path = ["/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/"+ diagram for diagram in diagrams]
