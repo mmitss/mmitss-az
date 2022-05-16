@@ -32,6 +32,7 @@ import glob
 from PIL import Image
 import base64
 import io
+import fnmatch
 
 # Initialize application for either PyInstaller or Development
 if getattr(sys, 'frozen', False):
@@ -524,32 +525,32 @@ def performance_data():
             #dropped the rows with duplicate values and kept the latest entry i.e. the first entry of each mssg type
             new_df = new_df.drop_duplicates(subset='Message', keep="first")
 
-        #checking whether to display the MRP or VSP 
-        if thisPlatform == "roadside":
-            #df1 is the dataframe folding the transmitted table
-            df1 = new_df
-            #df2 is the dataframe holding the received table
-            df2 = new_df
-            platform = "Infrastructure Side (MRP)"
-            #dropping unrequired rows from both dataframes to separate transmitted and received table
-            df1 = df1[df1.Message != 'SRM']
-            df1 = df1[df1.Message != 'RemoteBSM']
-            df1 = df1[df1.Message != 'HostBSM']
-            df2 = df2[df2.Message != 'HostBSM']
-            df2 = df2[df2.Message != 'MAP']
-            df2 = df2[df2.Message != 'SPaT']
-            df2 = df2[df2.Message != 'SSM']
-        
-        elif thisPlatform == "vehicle":
-            df1 = new_df
-            df2 = new_df
-            platform = "Vehicle Side (VSP)"
-            df2 = df2[df2.Message != 'SRM']
-            df2 = df2[df2.Message != 'HostBSM']
-            df1 = df1[df1.Message != 'RemoteBSM']
-            df1 = df1[df1.Message != 'MAP']
-            df1 = df1[df1.Message != 'SPaT']
-            df1 = df1[df1.Message != 'SSM']
+            #checking whether to display the MRP or VSP 
+            if thisPlatform == "roadside":
+                #df1 is the dataframe folding the transmitted table
+                df1 = new_df
+                #df2 is the dataframe holding the received table
+                df2 = new_df
+                platform = "Infrastructure Side (MRP)"
+                #dropping unrequired rows from both dataframes to separate transmitted and received table
+                df1 = df1[df1.Message != 'SRM']
+                df1 = df1[df1.Message != 'RemoteBSM']
+                df1 = df1[df1.Message != 'HostBSM']
+                df2 = df2[df2.Message != 'HostBSM']
+                df2 = df2[df2.Message != 'MAP']
+                df2 = df2[df2.Message != 'SPaT']
+                df2 = df2[df2.Message != 'SSM']
+            
+            elif thisPlatform == "vehicle":
+                df1 = new_df
+                df2 = new_df
+                platform = "Vehicle Side (VSP)"
+                df2 = df2[df2.Message != 'SRM']
+                df2 = df2[df2.Message != 'HostBSM']
+                df1 = df1[df1.Message != 'RemoteBSM']
+                df1 = df1[df1.Message != 'MAP']
+                df1 = df1[df1.Message != 'SPaT']
+                df1 = df1[df1.Message != 'SSM']
     else:
         df1 = pd.DataFrame()
         df2 = pd.DataFrame()
@@ -562,7 +563,8 @@ def performance_data():
     #checking if directory exists
     try:
         #extracting all the filenames from the directory
-        diagrams = os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram")
+        diagrams = fnmatch.filter(os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"), "*.jpg")
+        print(diagrams)
         diagrams.sort()
         t_diagrams = []
         diagrams_path = ["/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/"+ diagram for diagram in diagrams]

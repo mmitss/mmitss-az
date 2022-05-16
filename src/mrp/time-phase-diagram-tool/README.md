@@ -21,4 +21,4 @@ In the `mmitss-phase3-master-config.json` (config) file following keys need to b
 
 ## Known issues/limitations
 - The component stores a specified number of diagrams. It deletes the old diagrams if required to store new diagram.
-
+- The software component consumes lots of cpu if it runs on CVCP.

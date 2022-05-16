@@ -23,7 +23,7 @@ The methods available from this class are the following:
 - getParameters(): Method to set the parameters to draw time-phase diagram for a valid schedule
 - timePhaseDiagramMethodForOptimalSolution(): Method to generate time-phase diagram for a valid schedule
 - timePhaseDiagramMethodForNonOptimalSolution(): Method to generate a plot to indicate the timestamp when optimal solution is not achieved
-- removeOldestDiagram(): Method to remove the oldest diagram
+- archiveOldestDiagram(): Method to archive the oldest diagram
 ***************************************************************************************
 """
 
@@ -38,11 +38,11 @@ class TimePhaseDiagramManager:
     def __init__(self):
         self.initializationTimestamp = ""
 
-    def archiveOldDiagrams(self):
-        for file in os.listdir(r'/nojournal/bin/performance-measurement-diagrams/time-phase-diagram'):
-            if file.endswith(".jpg"):
-                shutil.move("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" +
-                            file, "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive")
+    # def archiveOldDiagrams(self):
+    #     for file in os.listdir(r'/nojournal/bin/performance-measurement-diagrams/time-phase-diagram'):
+    #         if file.endswith(".jpg"):
+    #             shutil.move("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" +
+    #                         file, "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive")
 
     def getParameters(self, cumulativeLeftCriticalPointsRing1, cumulativeRightCriticalPointsRing1, cumulativePhaseHeightInRing1, phaseSequenceInRing1,
                       cumulativeLeftCriticalPointsRing2, cumulativeRightCriticalPointsRing2, cumulativePhaseHeightInRing2, phaseSequenceInRing2,
@@ -69,14 +69,13 @@ class TimePhaseDiagramManager:
         The diagrams follow specific pattern name: "time-phase-diagram_" + "current data & time" + "_" + "the time as a floating point number expressed in seconds since the epoch, in UTC"
         """
         #If requires old file can be stored in different directory
-        # self.archiveOldDiagrams() 
-        self.removeOldestDiagram()
+        self.archiveOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         if ringNo == 'Ring1&2':
             color = 'tab:red'
             ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
-            ax1.set_ylabel('Ring 1 Phases', color=color,
+            ax1.set_ylabel('Phases in Ring 1', color=color,
                            fontsize=28, fontweight='bold')
             
             # Plot phase duration for each phase in ring 1
@@ -99,7 +98,7 @@ class TimePhaseDiagramManager:
             # Ring2
             ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
-            ax2.set_ylabel('Ring 2 Phases', color=color, fontsize=28, fontweight='bold')
+            ax2.set_ylabel('Phases in Ring 2', color=color, fontsize=28, fontweight='bold')
             # Plot phase duration for each phase in ring 2
             ax2.plot(self.cumulativeLeftCriticalPointsRing2,
                      self.cumulativePhaseHeightInRing2, color=color, linewidth=4)
@@ -199,15 +198,15 @@ class TimePhaseDiagramManager:
                     ax1.add_patch(Rectangle(
                         (x, y), z, h, angle=0.0, color='navy', linewidth=2))
 
-        ax1.legend(loc='upper right', bbox_to_anchor=(0.9, 1), prop={"size": 18})
-        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
+        ax1.legend(loc='upper right', bbox_to_anchor=(1.0, 1.22), prop={"size": 18})
+        # ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
         
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         
         self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
         
-        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=72)
 
         # plt.show()
 
@@ -243,8 +242,7 @@ class TimePhaseDiagramManager:
         If there is no optimal solution, a text message will be written in the plot.
         The diagram indicates the timestamp when optimization model failed to generate optimal solution.
         """        
-        # self.archiveOldDiagrams()
-        self.removeOldestDiagram()
+        self.archiveOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
@@ -262,26 +260,26 @@ class TimePhaseDiagramManager:
         ax1.text(0.1,0.5, 'Failed to generate optimal solution [' + str(datetime.datetime.now()) + ' / ' + str(time.time()) + ']', fontsize=18, style='italic', 
         bbox={'facecolor': 'red', 'alpha': 0.5, 'pad': 10})
 
-        ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
+        # ax1.set_title("Time-Phase Diagram [" + str(datetime.datetime.now()) + " / " + str(time.time()) + "]", fontsize=20, fontweight='bold')
 
         self.initializationTimestamp = ('{:%H.%M.%S.%f_%b.%d.%Y}'.format(datetime.datetime.now()))
         fileName = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/" + self.initializationTimestamp + "_time-phase-diagram"
-        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=300)
+        plt.savefig(fileName+'.jpg', bbox_inches='tight', dpi=72)
         # plt.show()
         
         print("[{}]".format(str(round(time.time(), 4))) + " " + "Generate Time-Phase Diagram")
         
-    def removeOldestDiagram(self):
+    def archiveOldestDiagram(self):
         """
-        If there is more than specified number (e.g. 30) of time-phase diagrams in the directory, the oldest diagram will be removed.
+        If there is more than specified number (e.g. 30) of time-phase diagrams in the directory, the oldest diagram will be archived.
         The method checks the diagram generation to identify the oldest diagram.
         """ 
         path = "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"
 
-        list_of_files = os.listdir(path)
-        full_path = [path + "/{0}".format(x) for x in list_of_files]
+        listOfDiagramsAndDirectory = os.listdir(path)
+        listOfDiagrams = [path + "/{0}".format(x) for x in listOfDiagramsAndDirectory if x.endswith(".jpg") ]
  
-        if len(full_path) > 100:
-            oldest_file = min(full_path, key=os.path.getctime)
-            print(oldest_file)
-            os.remove(oldest_file)
+        if len(listOfDiagrams) > 100:
+            oldestDiagram = min(listOfDiagrams, key=os.path.getctime)
+            shutil.move(oldestDiagram, "/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/archive")
+

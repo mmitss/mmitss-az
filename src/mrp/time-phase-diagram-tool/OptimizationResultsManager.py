@@ -101,10 +101,19 @@ class OptimizationResultsManager:
             elif lineIndex == 14:
                 noOfRequest = int(line)
                 requiredLineNo = 15 + noOfRequest
-                break
+                # break
         
+            elif lineIndex >=15 and lineIndex < requiredLineNo:
+                self.getPriorityRequests(line)
+            
+            elif lineIndex >=15 and lineIndex >= requiredLineNo:
+                break
+                 # self.optimizationResultsFile = open(self.fileName, 'r')
+        # for i, line in enumerate(self.optimizationResultsFile):
+        #     if i in range(15, requiredLineNo):
+
         self.optimizationResultsFile.close()
-        self.getPriorityRequests(requiredLineNo)
+        # self.getPriorityRequests(requiredLineNo)
         
         self.getCummulativeValues()
         self.generateTimePhaseDiagram()
@@ -254,68 +263,69 @@ class OptimizationResultsManager:
         self.cumulativeLeftCriticalPointsRing2 = np.insert(self.cumulativeLeftCriticalPointsRing2, 0, 0.0)
         self.cumulativeRightCriticalPointsRing2 = np.insert(self.cumulativeRightCriticalPointsRing2, 0, 0.0)
 
-    def getPriorityRequests(self, requiredLineNo):
+    # def getPriorityRequests(self, requiredLineNo):
+    def getPriorityRequests(self, line):
         """
         Method to get the priority requests information (vehile type, ETA etc.) from the OptimizationResults.txt 
         The optimization model generates optimal schedule for two cycles. Thus, priority requests are displayed for two cycle is the diagram.
         The ETA and ETA Duration are appended twice in their respective list.
         """
-        self.optimizationResultsFile = open(self.fileName, 'r')
-        for i, line in enumerate(self.optimizationResultsFile):
-            if i in range(15, requiredLineNo):
-                reqPhase, earliestArrival, latestArrival, delay, vehicleClass = line.split()
-                if int(vehicleClass) == EV:
-                    self.requestedPhase_EV.append(int(reqPhase))
-                    self.ETA_EV.append(float(latestArrival) - 4.0)
-                    self.ETA_EV.append(float(latestArrival) - 4.0)
-                    self.ETA_Duration_EV.append(4.0)
-                    self.ETA_Duration_EV.append(4.0)
-                    self.vehicleType_EV.append(int(vehicleClass))
-                    self.delay_EV.append(float(delay))
+        # self.optimizationResultsFile = open(self.fileName, 'r')
+        # for i, line in enumerate(self.optimizationResultsFile):
+        #     if i in range(15, requiredLineNo):
+        reqPhase, earliestArrival, latestArrival, delay, vehicleClass = line.split()
+        if int(vehicleClass) == EV:
+            self.requestedPhase_EV.append(int(reqPhase))
+            self.ETA_EV.append(float(latestArrival) - 4.0)
+            self.ETA_EV.append(float(latestArrival) - 4.0)
+            self.ETA_Duration_EV.append(4.0)
+            self.ETA_Duration_EV.append(4.0)
+            self.vehicleType_EV.append(int(vehicleClass))
+            self.delay_EV.append(float(delay))
 
-                elif int(vehicleClass) == TRANSIT:
-                    self.requestedPhase_Transit.append(int(reqPhase))
-                    self.ETA_Transit.append(float(latestArrival) - 4.0)
-                    self.ETA_Transit.append(float(latestArrival) - 4.0)
-                    self.ETA_Duration_Transit.append(4.0)
-                    self.ETA_Duration_Transit.append(4.0)
-                    self.vehicleType_Transit.append(int(vehicleClass))
-                    if (float(delay) > 0):
-                        self.delay_Transit.append(
-                            float(delay) - (float(latestArrival) - float(earliestArrival) - 4.0))
+        elif int(vehicleClass) == TRANSIT:
+            self.requestedPhase_Transit.append(int(reqPhase))
+            self.ETA_Transit.append(float(latestArrival) - 4.0)
+            self.ETA_Transit.append(float(latestArrival) - 4.0)
+            self.ETA_Duration_Transit.append(4.0)
+            self.ETA_Duration_Transit.append(4.0)
+            self.vehicleType_Transit.append(int(vehicleClass))
+            if (float(delay) > 0):
+                self.delay_Transit.append(
+                    float(delay) - (float(latestArrival) - float(earliestArrival) - 4.0))
 
-                elif int(vehicleClass) == TRUCK:
-                    self.requestedPhase_Truck.append(int(reqPhase))
-                    self.ETA_Truck.append(float(latestArrival) - 4.0)
-                    self.ETA_Truck.append(float(latestArrival) - 4.0)
-                    self.ETA_Duration_Truck.append(4.0)
-                    self.ETA_Duration_Truck.append(4.0)
-                    self.vehicleType_Truck.append(int(vehicleClass))
-                    if (float(delay) > 0):
-                        self.delay_Truck.append(
-                            float(delay) - (float(latestArrival) - float(earliestArrival) - 4.0))
+        elif int(vehicleClass) == TRUCK:
+            self.requestedPhase_Truck.append(int(reqPhase))
+            self.ETA_Truck.append(float(latestArrival) - 4.0)
+            self.ETA_Truck.append(float(latestArrival) - 4.0)
+            self.ETA_Duration_Truck.append(4.0)
+            self.ETA_Duration_Truck.append(4.0)
+            self.vehicleType_Truck.append(int(vehicleClass))
+            if (float(delay) > 0):
+                self.delay_Truck.append(
+                    float(delay) - (float(latestArrival) - float(earliestArrival) - 4.0))
 
-                elif int(vehicleClass) == DILEMMAZONE:
-                    self.requestedPhase_DilemmaZone.append(int(reqPhase))
-                    self.ETA_DilemmaZone.append(float(latestArrival) - 4.0)
-                    self.ETA_DilemmaZone.append(float(latestArrival) - 4.0)
-                    self.ETA_Duration_DilemmaZone.append(4.0)
-                    self.ETA_Duration_DilemmaZone.append(4.0)
-                    self.vehicleType_DilemmaZone.append(int(vehicleClass))
-                    self.delay_DilemmaZone.append(float(delay))
+        elif int(vehicleClass) == DILEMMAZONE:
+            self.requestedPhase_DilemmaZone.append(int(reqPhase))
+            self.ETA_DilemmaZone.append(float(latestArrival) - 4.0)
+            self.ETA_DilemmaZone.append(float(latestArrival) - 4.0)
+            self.ETA_Duration_DilemmaZone.append(4.0)
+            self.ETA_Duration_DilemmaZone.append(4.0)
+            self.vehicleType_DilemmaZone.append(int(vehicleClass))
+            self.delay_DilemmaZone.append(float(delay))
 
-                elif int(vehicleClass) == COORDINATION:
-                    self.requestedPhase_Coordination.append(int(reqPhase))
-                    self.ETA_Coordination.append(float(earliestArrival))
-                    self.ETA_Coordination.append(float(earliestArrival))
-                    self.ETA_Duration_Coordination.append(
-                        float(latestArrival) - float(earliestArrival))
-                    self.ETA_Duration_Coordination.append(
-                        float(latestArrival) - float(earliestArrival))
-                    self.vehicleType_Coordination.append(int(vehicleClass))
-                    self.delay_Coordination.append(float(delay))
+        elif int(vehicleClass) == COORDINATION:
+            self.requestedPhase_Coordination.append(int(reqPhase))
+            self.ETA_Coordination.append(float(earliestArrival))
+            self.ETA_Coordination.append(float(earliestArrival))
+            self.ETA_Duration_Coordination.append(
+                float(latestArrival) - float(earliestArrival))
+            self.ETA_Duration_Coordination.append(
+                float(latestArrival) - float(earliestArrival))
+            self.vehicleType_Coordination.append(int(vehicleClass))
+            self.delay_Coordination.append(float(delay))
 
-        self.optimizationResultsFile.close()
+        # self.optimizationResultsFile.close()
 
     def generateTimePhaseDiagram(self):
         """
