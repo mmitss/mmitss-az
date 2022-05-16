@@ -104,6 +104,7 @@ def main():
                     timePhaseDiagramManager.timePhaseDiagramMethodForNonOptimalSolution()
                     
             except:
+                timePhaseDiagramManager.archiveOldestDiagram()
                 if (time.time() - generateDiagramStatusCheckingTime) >= timeGapBetweenDiagramGenerationStatusChecking:
                     diagramGenerationStatus = checkTimePhaseDigramGeneratingStatus(configFile)
                     generateDiagramStatusCheckingTime = time.time()
