@@ -204,7 +204,7 @@ void PriorityRequestSolver::modifyPriorityRequestList()
             priorityRequestList.erase(findVehicleIDOnList);
             i--;
         }
-        else
+        else if (emergencyVehicleStatus)
             noOfEVInList++;
     }
 }
