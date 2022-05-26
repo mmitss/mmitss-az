@@ -109,6 +109,9 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 
 			else if (getMsOfMinute() == expectedTimeOfArrival_Second[i])
 				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECOND_MINTUTE_CONVERSION;
+			
+			if (activeRequest.vehicleETA <= 0.0)
+				activeRequest.vehicleETA = minimumETA;
 
 			activeRequest.prsStatus = priorityRequestStatus[i];
 			activeRequest.minuteOfYear = getMinuteOfYear();
