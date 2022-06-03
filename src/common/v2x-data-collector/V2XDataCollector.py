@@ -148,8 +148,7 @@ class V2XDataCollector:
                                 + "longitude" + "," 
                                 + "elevation" + "," 
                                 + "heading" + "," 
-                                + "speed" + "," 
-                                + "vehicleType"
+                                + "speed"
                                 + "\n")
         self.srmLogfile.write(csvHeader)
 
