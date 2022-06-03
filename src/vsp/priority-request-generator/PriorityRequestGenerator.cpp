@@ -100,17 +100,10 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.vehicleETAMinute = expectedTimeOfArrival_Minute[i];
 			activeRequest.vehicleETASecond = expectedTimeOfArrival_Second[i];
 			activeRequest.vehicleETADuration = static_cast<int>(expectedTimeOfArrival_Duration[i] / SECOND_MILISECOND_CONVERSION);
+				
+			vehicleETA = ((ETA_Minute - getMinuteOfYear()) * SECOND_MINTUTE_CONVERSION) + ((ETA_Second - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION);
 			
-			if (getMsOfMinute() > expectedTimeOfArrival_Second[i])
-				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECOND_MINTUTE_CONVERSION + ((getMsOfMinute() - expectedTimeOfArrival_Second[i]) / SECOND_MILISECOND_CONVERSION) + SECOND_MINTUTE_CONVERSION;
-
-			else if (getMsOfMinute() < expectedTimeOfArrival_Second[i])
-				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECOND_MINTUTE_CONVERSION + (expectedTimeOfArrival_Second[i] - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION;
-
-			else if (getMsOfMinute() == expectedTimeOfArrival_Second[i])
-				activeRequest.vehicleETA = (getMinuteOfYear() - expectedTimeOfArrival_Minute[i]) * SECOND_MINTUTE_CONVERSION;
-			
-			if (activeRequest.vehicleETA <= 0.0)
+			if (activeRequest.vehicleETA <= minimumETA)
 				activeRequest.vehicleETA = minimumETA;
 
 			activeRequest.prsStatus = priorityRequestStatus[i];
@@ -681,7 +674,7 @@ void PriorityRequestGenerator::setETA(double distance2go, double vehicle_Speed)
 	else
 		vehicleETA = minimumETA + vehicleStartUpLossTime;
 
-	if (vehicleETA <= 0)
+	if (vehicleETA <= minimumETA)
 		vehicleETA = minimumETA;
 }
 
