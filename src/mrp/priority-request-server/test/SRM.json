@@ -3,30 +3,29 @@
     "SignalRequest": {
         "basicVehicleRole": 16,
         "expectedTimeOfArrival": {
-            "ETA_Duration": 4,
-            "ETA_Minute": 97875,
-            "ETA_Second": 47656
+            "ETA_Duration": 5000,
+            "ETA_Minute": 220296,
+            "ETA_Second": 7820
         },
-        "heading_Degree": 89.453999999999994,
+        "heading_Degree": 269.0,
         "inBoundLane": {
-            "ApproachID": 5,
-            "LaneID": 13
+            "ApproachID": 0,
+            "LaneID": 3
         },
         "intersectionID": 26379,
-        "minuteOfYear": 97875,
-        "msOfMinute": 40000,
-        "msgCount": 1,
+        "minuteOfYear": 220295,
+        "msOfMinute": 47884,
+        "msgCount": 49,
         "position": {
-            "elevation_Meter": 740.15800000000002,
-            "latitude_DecimalDegree": 32.235889,
-            "longitude_DecimalDegree": -110.954002
+            "elevation_Meter": 718.5,
+            "latitude_DecimalDegree": 32.236061599999999,
+            "longitude_DecimalDegree": -110.9494773
         },
         "priorityRequestType": 1,
         "regionalID": 0,
-        "speed_MeterPerSecond": 17.731000000000002,
-        "vehicleID": -1898502772,
-        "vehicleType": 0
+        "speed_MeterPerSecond": 14.0,
+        "vehicleID": -1306411678
     },
-    "Timestamp_posix": 1646956450.107013,
-    "Timestamp_verbose": "2022-03-10 23:54:10.107"
+    "Timestamp_posix": 1654212947.888572,
+    "Timestamp_verbose": "2022-06-02 23:35:47.888"
 }
