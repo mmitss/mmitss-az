@@ -69,7 +69,7 @@ class TimePhaseDiagramManager:
         The diagrams follow specific pattern name: "time-phase-diagram_" + "current data & time" + "_" + "the time as a floating point number expressed in seconds since the epoch, in UTC"
         """
         #If requires old file can be stored in different directory
-        self.archiveOldestDiagram()
+        # self.archiveOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         if ringNo == 'Ring1&2':
@@ -242,7 +242,7 @@ class TimePhaseDiagramManager:
         If there is no optimal solution, a text message will be written in the plot.
         The diagram indicates the timestamp when optimization model failed to generate optimal solution.
         """        
-        self.archiveOldestDiagram()
+        # self.archiveOldestDiagram()
         fig, ax1 = plt.subplots(figsize=(18, 12))
 
         ax1.set_xlabel('Time (s)', fontsize=24, fontweight='bold')
