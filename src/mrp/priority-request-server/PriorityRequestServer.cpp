@@ -338,14 +338,7 @@ int PriorityRequestServer::getSplitPhase(int signalGroup)
 
 void PriorityRequestServer::calculateETA(int ETA_Minute, int ETA_Second)
 {
-	if (getMsOfMinute() > ETA_Second)
-		vehicleETA = (getMinuteOfYear() - ETA_Minute) * SECOND_MINTUTE_CONVERSION + ((getMsOfMinute() - ETA_Second) / SECOND_MILISECOND_CONVERSION) + SECOND_MINTUTE_CONVERSION;
-
-	else if (getMsOfMinute() < ETA_Second)
-		vehicleETA = (getMinuteOfYear() - ETA_Minute) * SECOND_MINTUTE_CONVERSION + (ETA_Second - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION;
-
-	if (getMsOfMinute() == ETA_Second)
-		vehicleETA = (getMinuteOfYear() - ETA_Minute) * SECOND_MINTUTE_CONVERSION;
+	vehicleETA = ((ETA_Minute - getMinuteOfYear()) * SECOND_MINTUTE_CONVERSION) + ((ETA_Second - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION);
 
 	if (vehicleETA < Minimum_ETA)
 		vehicleETA = Minimum_ETA;
@@ -794,7 +787,7 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 		{
 			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime - ActiveRequestTable[i].etaUpdateTime);
 
-			if (ActiveRequestTable[i].vehicleETA <= 0.0)
+			if (ActiveRequestTable[i].vehicleETA <= Minimum_ETA)
 			{
 				ActiveRequestTable[i].vehicleETA = Minimum_ETA;
 				ActiveRequestTable[i].vehicleETAMinute = currentMinuteOfYear;
