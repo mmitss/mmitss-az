@@ -88,7 +88,8 @@ void PriorityRequestGeneratorServer::processBSM(BasicVehicle basicVehicle)
                                                                         { return p.vehicleID == veheicleID; });
 
         findVehicleIDInList->PRG.setSimulationVehicleType(findVehicleIDInList->vehicleType);
-       
+        findVehicleIDInList->PRG.setBasicVehicleRole(findVehicleIDInList->PRG.getVehicleType());
+
         if (findVehicleIDInList->PRG.getVehicleType() != static_cast<int>(MsgEnum::vehicleType::car))
         {
             findVehicleIDInList->PRG.getVehicleInformationFromMAP(findVehicleIDInList->mapManager, basicVehicle);

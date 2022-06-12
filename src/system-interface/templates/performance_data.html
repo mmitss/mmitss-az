@@ -3,13 +3,12 @@
 
 {% block content %}
 
-<script src="https://unpkg.com/htmx.org@1.6.0" integrity="sha384-G4dtlRlMBrk5fEiRXDsLjriPo8Qk5ZeHVVxS8KhX6D7I9XXJlNqbdvRlp9/glk5D" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 <style>
     .diagram_list{
 
-        height:200px;
+        height:300px;
         width: auto;
         overflow-y: scroll;
         float:right;
@@ -18,10 +17,44 @@
         
     }
 
+    .highlight {
+        color: white;
+        background-color: #507a77;
+    }
+    .imgList{
+        width: auto;
+    }
+    a.redirect{
+
+        color:black ;
+        font-size: 25px;
+        background-color: rgb(219, 217, 217);
+        position:relative; left:50px; top:100px;
+        padding: 10px;
+        border-radius: 25px;
+    }
+    a {
+        text-decoration: none;
+        display:inline-block;
+        padding: 8px 16px;
+    }
+
+    a:hover {
+        background-color: #ddd;
+    }   
+
+    .preNext {
+        background-color: #f1f1f1;
+        color: black;
+        border-radius: 20%;
+        font-size: 25px;
+    }
+
 
     ul.a {
         list-style-type: none;
         margin: 0;
+        width:fit-content;
         padding: 5px;
     }
 
@@ -31,6 +64,11 @@
         color: white;
         background-color: #507a77;
     }
+    
+    h1.noData{
+        position:relative; left:250px; top:100px;
+    }
+    
     h4{
         color: seashell;
         font-weight: bold;
@@ -54,7 +92,7 @@
 
     table, td {
       border: 1px solid gray;
-      width: 800px;
+      width: auto;
       background-color: #afc5c3;
       padding: 15px;
       margin-left:auto; 
@@ -96,9 +134,11 @@
             <div class="tab-content">
 
                 <div id="tables" role="tabpanel" class="tab-pane fade in active">
+                {% if time != 0 %}
                 <div class="header">
                         <h1>Performance Data: {{platform}}</h1><br>
-                        Last refreshed : {{time}}  <hr>
+                        Last refreshed : {{time}}
+                        <hr>
                 </div>
                 <div><b>Messages Transmitted</b>
                     {{tables1 | safe}}</div>
@@ -108,53 +148,53 @@
                     {{tables2 | safe}}
                     <br><br>
                 </div>
+                {% else %}
+                <h1 class="noData">No Performance Data Available</h1>
+                {% endif %}
                 </div>
-
-                
-                
-                <script>
-                $(document).ready(function(){
-                    setInterval(function(){
-                        $("#tables").load(" #tables > *");
-                        console.log("reload...") ;
-                    }, 30000);
-                    });
-                </script>
-
-
-
-
-
-        
+       
 
                 <div role="tabpanel" class="tab-pane fade" id="diagrams">
 
+                    {% set index=0 %}
+                    {% if diagrams %}
                     <table class="imgTd"><tr><td>
                         <h4 id='highlight'>{{diagrams[0]}}</h4>
-                        <img src="../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/{{diagrams[0]}}" alt="No time phase diagrams were found" width="600" height="500" id="picture">
-                    </td>
+                        <img id="picture" src="data:image/jpeg;base64, {{ t_diagrams[0] }}">
+
+                       
                     <td>                  
                         
                         
                 
                 
                     <div class="diagram_list" id="list">
-                        <ul class = "a">
-
+                       
+                            <ul class = "a">
                             {% for diagram in diagrams %}
-                            <li id="imgList" onclick="changeDiagram( '{{ diagrams[loop.index -1] }}','{{loop.index -1}}' )">{{diagram}}</li>
+                            <li class ="imgList" id="imgList" onclick="changeDiagram( '{{loop.index}}')">{{diagram}}</li>
                             {% endfor %}
+                            </ul>
 
-                        </ul>
                         
                     </div>
                     </td></tr></table>
-                
+                    <br>
 
-
+                    <div style="text-align:center">
+                        <a  id ='prev' class="preNext" onclick="prevDiagram()" >Prev</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id ='next' class="preNext" onclick="nextDiagram()">Next</a>
+                    </div>
+                    {% else %}
+                    <a class="redirect" href="../configuration">No Time Phase Diagrams Available – Enable Generation in the System Configuration tab</a>
+                    {% endif %}
+                    
+                   
                 </div>
             </div>
-
+            <div>
+                <input type="submit" value="Refresh Performance Data">
+            </div>
 
         </div>
     </form>
@@ -166,20 +206,60 @@
 <script type="text/javascript">
 
 
-$(document).ready(function(){
-setInterval(function(){
-    $("#list").load(" #list > *");
-    console.log("reloading...") ;
-}, 30000);
-});
+$('.a li').click(function(){
+    $('.highlight').removeClass('highlight');
+$(this).addClass('highlight');
 
-function changeDiagram(Img,Int){
+})
+
+$('#prev').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
+$('#next').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
+
+
+var Ind = 0
+let t_diagrams = JSON.parse('{{ t_diagrams| tojson }}');
+let diagrams = JSON.parse('{{ diagrams| tojson }}');
+
+
+
+function prevDiagram(){
+
+    if(Ind > 0){
+        Ind-=1;
+        var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+        document.getElementById("picture").src = newDig;
+        document.getElementById("highlight").innerText = diagrams[Ind];
+        console.log(diagrams[Ind]);
+
+    }
+}
+
+function nextDiagram(){
+
+    if (Ind < t_diagrams.length-1){
+    Ind +=1 ;
+    var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+    document.getElementById("picture").src = newDig;
+    document.getElementById("highlight").innerText = diagrams[Ind];
+    console.log(diagrams[Ind]);
+    }
+
+}
+
+function changeDiagram(In){
     
-    console.log(Img);
-    var newImg = '../nojournal/bin/performance-measurement-diagrams/time-phase-diagram/' + Img ;
+    Ind = In -1 ;
+    var newImg = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+    console.log(newImg);
     document.getElementById("picture").src = newImg;
 
-    document.getElementById("highlight").innerText = Img ;
+    document.getElementById("highlight").innerText = diagrams[Ind] ;
 
 }
 

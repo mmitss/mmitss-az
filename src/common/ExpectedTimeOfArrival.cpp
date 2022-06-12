@@ -14,42 +14,52 @@
 */
 
 #include <iostream>
+#include <time.h>
 #include "ExpectedTimeOfArrival.h"
 
-const double second_MinLimit = 0.0;
-const double second_MaxLimit = 59.99; //This value comes frrom J2735 standard
+//These values come from J2735 2016 standard
+const int ETA_Minute_MinLimit = 0;
+const int ETA_Minute_MaxLimit = 527040;
+const int ETA_Second_MinLimit = 0;
+const int ETA_Second_MaxLimit = 60999; 
+const int ETA_Second_Unavailable = 65595; 
+const int ETA_Duration_MinLimit = 0;
+const int ETA_Duration_MaxLimit = 60999; 
+const int ETA_Duration_Unavailable = 65595; 
+#define HOURSINADAY 24
+#define MINUTESINAHOUR 60
+#define SECONDTOMILISECOND 1000
 
 ETA::ETA()
 {
 }
 
-void ETA::setETA_Minute(int vehExpectedTimeOfArrival_Minute)
+void ETA::setETA_Minute(int vehicleExpectedTimeOfArrival_Minute)
 {
-    expectedTimeOfArrival_Minute = vehExpectedTimeOfArrival_Minute;
+    
+    if (vehicleExpectedTimeOfArrival_Minute >= ETA_Minute_MinLimit && vehicleExpectedTimeOfArrival_Minute <= ETA_Minute_MaxLimit)    
+        expectedTimeOfArrival_Minute = vehicleExpectedTimeOfArrival_Minute; 
+
+    else 
+        expectedTimeOfArrival_Minute = 1;
 }
 
-bool ETA::setETA_Second(double vehExpectedTimeOfArrival_Second)
+void ETA::setETA_Second(int vehicleExpectedTimeOfArrival_Second)
 {
-    bool bvehExpectedTimeOfArrival_Second = true;
-
-    if (vehExpectedTimeOfArrival_Second >= second_MinLimit && vehExpectedTimeOfArrival_Second <= second_MaxLimit)
-        expectedTimeOfArrival_Second = vehExpectedTimeOfArrival_Second;
+    if (vehicleExpectedTimeOfArrival_Second >= ETA_Second_MinLimit && vehicleExpectedTimeOfArrival_Second <= ETA_Second_MaxLimit)
+        expectedTimeOfArrival_Second = static_cast<int>(vehicleExpectedTimeOfArrival_Second);
+    
     else
-        bvehExpectedTimeOfArrival_Second = false;
-
-    return bvehExpectedTimeOfArrival_Second;
+        expectedTimeOfArrival_Second = ETA_Second_Unavailable;
 }
 
-bool ETA::setETA_Duration(double vehDuration)
+void ETA::setETA_Duration(int vehicleExpectedTimeOfArrival_Duration)
 {
-    bool bvehDuration = true;
-
-    if (vehDuration >= second_MinLimit && vehDuration <= second_MaxLimit)
-        expectedTimeOfArrival_Duration = vehDuration;
+    if (vehicleExpectedTimeOfArrival_Duration >= ETA_Duration_MinLimit && vehicleExpectedTimeOfArrival_Duration <= ETA_Duration_MaxLimit)
+        expectedTimeOfArrival_Duration = static_cast<int>(vehicleExpectedTimeOfArrival_Duration);
+    
     else
-        bvehDuration = false;
-
-    return bvehDuration;
+        expectedTimeOfArrival_Duration = ETA_Duration_Unavailable;
 }
 
 int ETA::getETA_Minute()
@@ -57,12 +67,12 @@ int ETA::getETA_Minute()
     return expectedTimeOfArrival_Minute;
 }
 
-double ETA::getETA_Second()
+int ETA::getETA_Second()
 {
     return expectedTimeOfArrival_Second;
 }
 
-double ETA::getETA_Duration()
+int ETA::getETA_Duration()
 {
     return expectedTimeOfArrival_Duration;
 }

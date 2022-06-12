@@ -116,12 +116,14 @@ def main():
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateVirtualCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
                 logger.loggingAndConsoleDisplay("Virtual Coorination Request is Sent to PRS")
+                print("Coordination request is following:\n", coordinationPriorityRequestJsonString)
             # Check if it is required to generate coordination requests to avoid PRS timed-out
             # Formulate a json string for coordination requests and send it to the PRS 
             elif bool(coordinationRequestManager.checkUpdateRequestSendingRequirement()):
                 coordinationPriorityRequestJsonString = coordinationRequestManager.generateUpdatedCoordinationPriorityRequest()
                 coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
                 logger.loggingAndConsoleDisplay("Sent updated Coordination Request to avoid PRS timed-out")
+                print("Coordination request is following:\n", coordinationPriorityRequestJsonString)
             # The method updates ETA for each coordination request
             # The method deletes the old coordination requests.
             # The method sends the coordination requests list in a JSON formate to the PRS after deleting the old requests
@@ -134,13 +136,13 @@ def main():
                         coordinationSocket.sendto(coordinationPriorityRequestJsonString.encode(), priorityRequestServerAddress)
                         logger.looging(coordinationPriorityRequestJsonString)
                         logger.loggingAndConsoleDisplay("Sent coordination request list to PRS after deletion process")
-                
+                        print("Coordination request is following:\n", coordinationPriorityRequestJsonString)
                 if bool(coordinationPlanManager.checkTimedOutCoordinationPlanClearingRequirement()):
                     coordinationRequestManager.clearTimedOutCoordinationPlan()
                     coordinationClearRequestJsonString = coordinationRequestManager.getCoordinationClearRequestDictionary()
                     coordinationSocket.sendto(coordinationClearRequestJsonString.encode(), priorityRequestServerAddress)
                     logger.loggingAndConsoleDisplay("Sent coordination clear request list to PRS since active coordination plan is timed-out")
-                                    
+                    print("Coordination request is following:\n", coordinationPriorityRequestJsonString)                
             time.sleep(1)
     coordinationSocket.close()
     

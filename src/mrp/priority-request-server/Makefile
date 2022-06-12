@@ -1,4 +1,4 @@
-# PRG Makefile 
+# PRS Makefile 
 BUILD_ROOT=../../..
 MAKE_ROOT :=$(BUILD_ROOT)/make
 include $(MAKE_ROOT)/newheader.mk

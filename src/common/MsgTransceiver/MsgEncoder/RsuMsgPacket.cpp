@@ -1,3 +1,19 @@
+/*
+**********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  RsuMsgPacket.cpp
+  Created by: Niraj Altekar
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. 
+*/
+
+
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -31,11 +47,11 @@ RsuMsgPacket::RsuMsgPacket()
     mapPsid = jsonObject_config["psid"]["map"].asString();
     ssmPsid = jsonObject_config["psid"]["ssm"].asString();
 
-    bsmTxChannel = jsonObject_config["TxChannel"]["bsm"].asInt();
-    srmTxChannel = jsonObject_config["TxChannel"]["srm"].asInt();
-    mapTxChannel = jsonObject_config["TxChannel"]["map"].asInt();
-    spatTxChannel = jsonObject_config["TxChannel"]["spat"].asInt();
-    ssmTxChannel = jsonObject_config["TxChannel"]["ssm"].asInt();
+    bsmTxChannel = jsonObject_config["TxChannel"]["bsm"].asString();
+    srmTxChannel = jsonObject_config["TxChannel"]["srm"].asString();
+    mapTxChannel = jsonObject_config["TxChannel"]["map"].asString();
+    spatTxChannel = jsonObject_config["TxChannel"]["spat"].asString();
+    ssmTxChannel = jsonObject_config["TxChannel"]["ssm"].asString();
 
     bsmTxMode = jsonObject_config["TxMode"]["bsm"].asString();
     srmTxMode = jsonObject_config["TxMode"]["srm"].asString();

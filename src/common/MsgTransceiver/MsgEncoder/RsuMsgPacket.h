@@ -1,3 +1,16 @@
+/***********************************************************************************
+ © 2019 Arizona Board of Regents on behalf of the University of Arizona with rights
+       granted for USDOT OSADP distribution with the Apache 2.0 open source license.
+**********************************************************************************
+  RsuMsgPacket.h
+  Created by: Niraj Altekar
+  University of Arizona   
+  College of Engineering
+  This code was developed under the supervision of Professor Larry Head
+  in the Systems and Industrial Engineering Department.
+  Revision History:
+  1. Header file for RsuMsgPacket class
+*/
 #ifndef _RSU_MSG_PACKET_
 #define _RSU_MSG_PACKET_
 
@@ -9,7 +22,7 @@ class RsuMsgPacket
         std::string psid{};
         int priority = 7;
         std::string txMode{};
-        int txChannel{};
+        std::string txChannel{};
         std::string txInterval = "0";
         std::string deliveryStart = "";
         std::string deliveryStop = "";
@@ -31,11 +44,11 @@ class RsuMsgPacket
         std::string mapPsid{};
         std::string ssmPsid{};
 
-        int bsmTxChannel{};
-        int srmTxChannel{};
-        int mapTxChannel{};
-        int spatTxChannel{};
-        int ssmTxChannel{};
+        std::string bsmTxChannel{};
+        std::string srmTxChannel{};
+        std::string mapTxChannel{};
+        std::string spatTxChannel{};
+        std::string ssmTxChannel{};
 
         std::string bsmTxMode{};
         std::string srmTxMode{};

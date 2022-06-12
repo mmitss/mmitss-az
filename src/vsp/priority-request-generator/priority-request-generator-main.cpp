@@ -43,7 +43,7 @@ int main()
     const int dataCollectorPort = static_cast<short unsigned int>(jsonObject["PortNumber"]["DataCollector"].asInt());
     const int srmReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["MessageTransceiver"]["MessageEncoder"].asInt());
     const int prgStatusReceiverPortNo = static_cast<short unsigned int>(jsonObject["PortNumber"]["HMIController"].asInt());
-        
+    
     char receiveBuffer[40960];
     string srmJsonString{};
     string prgStatusJsonString{};
@@ -90,6 +90,7 @@ int main()
         // The active request table (ART) will be managed for the connected vehicle.
         else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
+
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
             signalStatus.reset();

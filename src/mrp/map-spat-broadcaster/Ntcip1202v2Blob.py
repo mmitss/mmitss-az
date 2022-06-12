@@ -110,7 +110,7 @@ class Ntcip1202v2Blob:
         # Derived from system time (Not controller's time)
         currentTimeMs = int(round(time.time() * 10))
         startOfTheYear = datetime.datetime((datetime.datetime.now().year), 1, 1)
-        timeSinceStartOfTheYear = (datetime.datetime.now() - startOfTheYear)
+        timeSinceStartOfTheYear = (datetime.datetime.utcnow() - startOfTheYear)
         self.minuteOfYear = int(timeSinceStartOfTheYear.total_seconds()/60)
         self.msOfMinute = int((timeSinceStartOfTheYear.total_seconds() - (self.minuteOfYear * 60))*1000)
 ##################################### VEH INFORMATION ####################################################################

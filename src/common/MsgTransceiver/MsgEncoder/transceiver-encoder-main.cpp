@@ -9,7 +9,7 @@
 int main()
 {
     Json::Value jsonObject_config;
-    std::ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
+    ifstream configJson("/nojournal/bin/mmitss-phase3-master-config.json");
     string configJsonString((std::istreambuf_iterator<char>(configJson)), std::istreambuf_iterator<char>());
     Json::CharReaderBuilder builder;
     Json::CharReader * reader = builder.newCharReader();

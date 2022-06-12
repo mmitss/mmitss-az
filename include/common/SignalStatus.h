@@ -38,8 +38,8 @@ private:
 	std::vector<int>inBoundApproachID{};
 	std::vector<int>basicVehicleRole{};
 	std::vector<int>expectedTimeOfArrival_Minute{};
-	std::vector<double>expectedTimeOfArrival_Second{};
-	std::vector<double>expectedTimeOfArrival_Duration{};
+	std::vector<int>expectedTimeOfArrival_Second{};
+	std::vector<int>expectedTimeOfArrival_Duration{};
 	std::vector<int>priorityRequestStatus{};
 
 public:
@@ -78,8 +78,8 @@ public:
 	std::vector<int> getInBoundLaneID();
 	std::vector<int> getInBoundApproachID();
 	std::vector<int> getETA_Minute();
-	std::vector<double> getETA_Second();
-	std::vector<double> getETA_Duration();
+	std::vector<int> getETA_Second();
+	std::vector<int> getETA_Duration();
 	std::vector<int> getPriorityRequestStatus();
 
 	void reset(void);

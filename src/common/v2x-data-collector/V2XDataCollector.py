@@ -148,8 +148,7 @@ class V2XDataCollector:
                                 + "longitude" + "," 
                                 + "elevation" + "," 
                                 + "heading" + "," 
-                                + "speed" + "," 
-                                + "vehicleType"
+                                + "speed"
                                 + "\n")
         self.srmLogfile.write(csvHeader)
 
@@ -370,7 +369,7 @@ class V2XDataCollector:
         elevation = str(jsonData["SignalRequest"]["position"]["elevation_Meter"])
         heading = str(jsonData["SignalRequest"]["heading_Degree"])
         speed = str(jsonData["SignalRequest"]["speed_MeterPerSecond"])
-        vehicleType = str(jsonData["SignalRequest"]["vehicleType"])
+        # vehicleType = str(jsonData["SignalRequest"]["vehicleType"])
         
         csv = (log_timestamp_verbose + "," 
                 + log_timestamp_posix + "," 
@@ -393,8 +392,9 @@ class V2XDataCollector:
                 + elevation + "," 
                 + heading + "," 
                 + speed + "," 
-                + vehicleType
-                + "\n")
+                "\n")
+                # + vehicleType
+                # + "\n")
         return csv
 
     def ssm_json_to_csv(self, jsonData:json):

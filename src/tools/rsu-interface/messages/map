@@ -1,9 +1,9 @@
 Version=0.7
 Type=MAP
-PSID=0x8002
+PSID=0xE0000017
 Priority=7
-TxMode=CONT
-TxChannel=172
+TxMode=ALT
+TxChannel=SCH
 TxInterval=
 DeliveryStart=
 DeliveryStop=
