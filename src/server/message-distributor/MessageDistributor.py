@@ -28,9 +28,11 @@ class MessageDistributor():
       
     ``config`` is the json object of the configuration file.
     """
-    def __init__(self, config:json):
+    def __init__(self, masterConfig:json, config:json):
+        self.masterConfig = masterConfig
         self.config = config
         self.intersectionList=config["intersections"]
+        self.dataCollectorPort = self.masterConfig["PortNumber"]["DataCollector"]
 
         # BSM Clients:
         self.transit_client_list=self.getBsmClientsList("Transit")
@@ -44,7 +46,7 @@ class MessageDistributor():
 
         # SSM Clients:
         self.ssm_client_list=self.getSsmClientsList()
-        
+               
         ''' This socket is used only for outgoing messages. The socket for incoming 
             messages needs to be opened (and closed) in the wrapper module
         ''' 
@@ -168,10 +170,11 @@ class MessageDistributor():
             msgDistance = haversine.haversine((msgLatitude, msgLongitude), 
                                                 (intersectionLatitude, intersectionLongitude), 
                                                 unit=haversine.Unit.METERS)
-
+            
             if msgDistance <= intersection["dsrc_range_Meter"]:
                 if messageType == "SRM":
                     self.send_message_to_client((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["srm_client_port"]))
+                    self.send_message_to_client((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], self.dataCollectorPort))
                     print("Distributed SRM")
                 elif messageType == "BSM": 
                     self.send_message_to_client((json.dumps(timestampedMessage)).encode(), (intersection["ip_address"], intersection["bsm_client_port"]))
