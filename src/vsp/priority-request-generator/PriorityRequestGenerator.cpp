@@ -1172,15 +1172,12 @@ void PriorityRequestGenerator::loggingData(string logString)
 */
 void PriorityRequestGenerator::displayConsoleData(string consoleString)
 {
-	ofstream logFile;
 	double timestamp = getPosixTimestamp();
 
 	if (consoleOutput)
 	{
-		logFile.open(logFileName, std::ios_base::app);
 		cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
 		cout << consoleString << endl;
-		logFile.close();
 	}
 }
 
