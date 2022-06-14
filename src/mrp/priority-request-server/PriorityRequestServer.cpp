@@ -787,13 +787,10 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 		{
 			ActiveRequestTable[i].vehicleETA = ActiveRequestTable[i].vehicleETA - (currentTime - ActiveRequestTable[i].etaUpdateTime);
 
-			if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource) && ActiveRequestTable[i].vehicleETA == 0.0)
-			{	
+			if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource) && ActiveRequestTable[i].vehicleETA <= 0.0)	
 				ActiveRequestTable[i].vehicleETADuration = static_cast<int>(ActiveRequestTable[i].vehicleETADuration - (currentTime - ActiveRequestTable[i].etaUpdateTime) * SECOND_MILISECOND_CONVERSION);
-				ActiveRequestTable[i].vehicleETA = Minimum_ETA;
-			}
 			
-			else if (ActiveRequestTable[i].vehicleETA <= Minimum_ETA)
+			if (ActiveRequestTable[i].vehicleETA <= Minimum_ETA)
 				ActiveRequestTable[i].vehicleETA = Minimum_ETA;
 
 			relativeETAInMiliSecond = static_cast<int>(ActiveRequestTable[i].vehicleETA * SECOND_MILISECOND_CONVERSION + currentMsOfMinute);
