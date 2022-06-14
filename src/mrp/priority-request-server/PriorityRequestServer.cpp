@@ -790,14 +790,15 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 			if (ActiveRequestTable[i].basicVehicleRole == static_cast<int>(MsgEnum::basicRole::roadsideSource) && ActiveRequestTable[i].vehicleETA == 0.0)
 			{	
 				ActiveRequestTable[i].vehicleETADuration = static_cast<int>(ActiveRequestTable[i].vehicleETADuration - (currentTime - ActiveRequestTable[i].etaUpdateTime) * SECOND_MILISECOND_CONVERSION);
-				ActiveRequestTable[i].vehicleETA = 0.0;
+				ActiveRequestTable[i].vehicleETA = Minimum_ETA;
 			}
+			
 			else if (ActiveRequestTable[i].vehicleETA <= Minimum_ETA)
 				ActiveRequestTable[i].vehicleETA = Minimum_ETA;
 
-			relativeETAInMiliSecond = static_cast<int>(ActiveRequestTable[i].vehicleETA * SECOND_MILISECOND_CONVERSION + getMsOfMinute());
+			relativeETAInMiliSecond = static_cast<int>(ActiveRequestTable[i].vehicleETA * SECOND_MILISECOND_CONVERSION + currentMsOfMinute);
 
-			ActiveRequestTable[i].vehicleETAMinute = getMinuteOfYear() + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
+			ActiveRequestTable[i].vehicleETAMinute = currentMinuteOfYear + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
 			ActiveRequestTable[i].vehicleETASecond = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
 
 			ActiveRequestTable[i].etaUpdateTime = currentTime;
