@@ -37,7 +37,7 @@ else:
 config = json.load(configFile)
 configFile.close()
 
-msgDist = MessageDistributor(config)
+msgDist = MessageDistributor(masterConfig, config)
 
 receivingSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 if TESTING:
