@@ -101,7 +101,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.vehicleETASecond = expectedTimeOfArrival_Second[i];
 			activeRequest.vehicleETADuration = static_cast<int>(expectedTimeOfArrival_Duration[i] / SECOND_MILISECOND_CONVERSION);
 				
-			vehicleETA = ((expectedTimeOfArrival_Minute[i] - getMinuteOfYear()) * SECOND_MINTUTE_CONVERSION) + ((expectedTimeOfArrival_Second[i] - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION);
+			activeRequest.vehicleETA = ((expectedTimeOfArrival_Minute[i] - getMinuteOfYear()) * SECOND_MINTUTE_CONVERSION) + ((expectedTimeOfArrival_Second[i] - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION);
 			
 			// if (activeRequest.vehicleETA <= minimumETA)
 			// 	activeRequest.vehicleETA = minimumETA;

@@ -90,7 +90,6 @@ int main()
         // The active request table (ART) will be managed for the connected vehicle.
         else if (msgType == MsgEnum::DSRCmsgID_ssm)
         {
-
             signalStatus.json2SignalStatus(receivedJsonString);
             PRG.creatingSignalRequestTable(signalStatus);
             signalStatus.reset();

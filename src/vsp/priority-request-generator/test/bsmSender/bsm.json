@@ -1,17 +1,17 @@
 {
     "BasicVehicle": {
-        "heading_Degree": 89.454,
+        "heading_Degree": 269.82,
         "position": {
             "elevation_Meter": 740.158,
-            "latitude_DecimalDegree":  32.235889,
-            "longitude_DecimalDegree": -110.954002
+            "latitude_DecimalDegree":  32.2360953,
+            "longitude_DecimalDegree": -110.9513268
         },
-        "secMark_Second": 900,
+        "secMark_Second": 56000,
         "size": {
             "length_cm": 1239.994,
             "width_cm": 304.013
         },
-        "speed_MeterPerSecond": 17.731,
+        "speed_MeterPerSecond": 13.8,
         "temporaryID": -1898502772,
         "type": "Transit"
     },

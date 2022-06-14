@@ -2,27 +2,27 @@
     "MsgType": "SSM",
     "SignalStatus": {
         "intersectionID": 26379,
-        "minuteOfYear": 98960,
-        "msOfMinute": 22000,
+        "minuteOfYear": 237510,
+        "msOfMinute": 56000,
         "regionalID": 0,
         "requestorInfo": [
             {
-                "ETA_Duration": 4,
-                "ETA_Minute": 98960,
-                "ETA_Second": 22000,
+                "ETA_Duration": 4000,
+                "ETA_Minute": 237511,
+                "ETA_Second": 2392,
                 "basicVehicleRole": 16,
                 "inBoundApproachID": 0,
-                "inBoundLaneID": 13,
-                "msgCount": 1,
+                "inBoundLaneID": 1,
+                "msgCount": 2,
                 "priorityRequestStatus": 4,
                 "requestID": 0,
-                "vehicleID": -1898502772
+                "vehicleID": 130
             }
         ],
-        "sequenceNumber": 9,
-        "updateCount": 1
+        "sequenceNumber": 3,
+        "updateCount": 2
     },
-    "Timestamp_posix": 1647019222.4831851,
-    "Timestamp_verbose": "2022-03-11 17:20:22.483",
+    "Timestamp_posix": 1655245856.4118991,
+    "Timestamp_verbose": "2022-06-14 22:30:56.411",
     "noOfRequest": 1
 }
