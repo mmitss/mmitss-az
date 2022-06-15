@@ -4,7 +4,7 @@
         "basicVehicleRole": 16,
         "expectedTimeOfArrival": {
             "ETA_Duration": 5000,
-            "ETA_Minute": 220296,
+            "ETA_Minute": 238994,
             "ETA_Second": 7820
         },
         "heading_Degree": 269.0,
@@ -13,7 +13,7 @@
             "LaneID": 3
         },
         "intersectionID": 26379,
-        "minuteOfYear": 220295,
+        "minuteOfYear": 238993,
         "msOfMinute": 47884,
         "msgCount": 49,
         "position": {

@@ -16,7 +16,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hostIp,port))
 
 prirorityRequestServerPort = config["PortNumber"]["PriorityRequestServer"]
-communicationInfo = (hostIp, prirorityRequestServerPort)
+communicationInfo = ("10.12.6.3", prirorityRequestServerPort)
 
 while True:
     f = open(fileName, 'r')
@@ -25,6 +25,6 @@ while True:
 
     print(("\n[{}]".format(time.time()) + " " + "Sent SRM msg to PRS"))
     # print(("\n[{}]".format(time.time()) + " " + data))
-
+    time.sleep(1.0)
     f.close()
 s.close()
