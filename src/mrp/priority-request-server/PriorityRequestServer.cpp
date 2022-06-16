@@ -794,9 +794,9 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 	loggingData(std::to_string(previousMinuteOfYear));
 	loggingData("Previous Millisecond of Minute is following");
 	loggingData(std::to_string(previousMsOfMinute));
-	loggingData("Previous Minute of the Year is following");
+	loggingData("Current Minute of the Year is following");
 	loggingData(std::to_string(currentMinuteOfYear));
-	loggingData("Previous Millisecond of Minute is following");
+	loggingData("Current Millisecond of Minute is following");
 	loggingData(std::to_string(currentMsOfMinute));
 
 	if (!ActiveRequestTable.empty())
