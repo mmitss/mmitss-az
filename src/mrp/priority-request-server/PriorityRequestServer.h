@@ -118,16 +118,14 @@ public:
     void setRequestedSignalGroup(SignalRequest signalRequest);
     void setSrmMessageStatus(SignalRequest signalRequest);
     void setETAUpdateTime();
+    void setMinuteOfYear();
+    void setMsOfMinute();
     void readconfigFile();
     void loggingData(string logString);
     void displayConsoleData(string consoleString);
     void calculateETA(int ETA_Minute, int ETA_Second);
     int getMessageType(string jsonString);
     int getRequestTimedOutVehicleID();
-    // int getMinuteOfYear();
-    // int getMsOfMinute();
-    void getMinuteOfYear();
-    void getMsOfMinute();
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
     int getSplitPhase(int signalGroup);

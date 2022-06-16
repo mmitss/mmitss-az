@@ -366,11 +366,8 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 
 	if (acceptSignalRequest(signalRequest))
 	{
-		// currentMinuteOfYear = getMinuteOfYear();
-		// currentMsOfMinute = getMsOfMinute();
-
-		getMinuteOfYear();
-		getMsOfMinute();
+		setMinuteOfYear();
+		setMsOfMinute();
 
 		calculateETA(signalRequest.getETA_Minute(), signalRequest.getETA_Second());
 		setRequestedSignalGroup(signalRequest);
@@ -428,8 +425,6 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.etaUpdateTime = currentTime;
 				ActiveRequestTable.push_back(activeRequest);
 			}
-			updateETAInActiveRequestTable();
-			sendPriorityRequestList = true;
 		}
 
 		else if (updateActiveRequestTable(signalRequest))
@@ -523,8 +518,6 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				findVehicleIDOnTable->msgReceivedTime = currentTime;
 				findVehicleIDOnTable->etaUpdateTime = currentTime;
 			}
-			updateETAInActiveRequestTable();
-			sendPriorityRequestList = true;
 		}
 
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
@@ -562,10 +555,10 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				if (findVehicleIDOnTable != ActiveRequestTable.end())
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 			}
-			updateETAInActiveRequestTable();
-			sendPriorityRequestList = true;
 		}
 
+		updateETAInActiveRequestTable();
+		sendPriorityRequestList = true;
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
 		sendSSM = true;
@@ -785,19 +778,8 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 	double currentTime = getPosixTimestamp();
 	int relativeETAInMiliSecond{};
 
-	// currentMinuteOfYear = getMinuteOfYear();
-	// currentMsOfMinute = getMsOfMinute();
-	getMinuteOfYear();
-	getMsOfMinute();
-
-	loggingData("Previous Minute of the Year is following");
-	loggingData(std::to_string(previousMinuteOfYear));
-	loggingData("Previous Millisecond of Minute is following");
-	loggingData(std::to_string(previousMsOfMinute));
-	loggingData("Current Minute of the Year is following");
-	loggingData(std::to_string(currentMinuteOfYear));
-	loggingData("Current Millisecond of Minute is following");
-	loggingData(std::to_string(currentMsOfMinute));
+	setMinuteOfYear();
+	setMsOfMinute();
 
 	if (!ActiveRequestTable.empty())
 	{
@@ -816,19 +798,10 @@ void PriorityRequestServer::updateETAInActiveRequestTable()
 			ActiveRequestTable[i].vehicleETAMinute = currentMinuteOfYear + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
 			ActiveRequestTable[i].vehicleETASecond = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
 
-			if ((ActiveRequestTable[i].vehicleETAMinute == currentMinuteOfYear && ActiveRequestTable[i].vehicleETASecond >= currentMsOfMinute) ||
-				(ActiveRequestTable[i].vehicleETAMinute > currentMinuteOfYear))
-				loggingData("ETA is updated properly");
-
-			else if ((ActiveRequestTable[i].vehicleETAMinute == currentMinuteOfYear && ActiveRequestTable[i].vehicleETASecond < currentMsOfMinute))
-				loggingData("ETA is not updated properly");
-
 			ActiveRequestTable[i].etaUpdateTime = currentTime;
 		}
 
 		etaUpdateTime = currentTime;
-		previousMinuteOfYear = currentMinuteOfYear;
-		previousMsOfMinute = currentMsOfMinute;
 	}
 }
 
@@ -973,13 +946,10 @@ void PriorityRequestServer::setVehicleType(SignalRequest signalRequest)
 }
 
 /*
-	- Method for obtaining minute of a year based on GMT(UTC) time
+	- Method for setting current minute of a year based on GMT(UTC) time
 */
-// int PriorityRequestServer::getMinuteOfYear()
-void PriorityRequestServer::getMinuteOfYear()
+void PriorityRequestServer::setMinuteOfYear()
 {
-	// int minuteOfYear{};
-
 	time_t curr_time;
 	curr_time = time(NULL);
 	tm *tm_gmt = gmtime(&curr_time);
@@ -988,31 +958,21 @@ void PriorityRequestServer::getMinuteOfYear()
 	int currentHour = tm_gmt->tm_hour;
 	int currentMinute = tm_gmt->tm_min;
 
-	// minuteOfYear = dayOfYear * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
 	currentMinuteOfYear = dayOfYear * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
-
-	// return minuteOfYear;
 }
 
 /*
-	- Method for obtaining millisecond of a minute based on GMT(UTC) time
+	- Method for setting current millisecond of a minute based on GMT(UTC) time
 */
-// int PriorityRequestServer::getMsOfMinute()
-void PriorityRequestServer::getMsOfMinute()
+void PriorityRequestServer::setMsOfMinute()
 {
-	// int msOfMinute{};
-
 	time_t curr_time;
 	curr_time = time(NULL);
 	tm *tm_gmt = gmtime(&curr_time);
 
 	int currentSecond = tm_gmt->tm_sec;
 
-	// msOfMinute = currentSecond * static_cast<int>(SECOND_MILISECOND_CONVERSION);
-
 	currentMsOfMinute = currentSecond * static_cast<int>(SECOND_MILISECOND_CONVERSION);
-
-	// return msOfMinute;
 }
 
 /*
@@ -1192,11 +1152,8 @@ void PriorityRequestServer::manageCoordinationRequest(string jsonString)
 	displayConsoleData("Received Coordination Request from Signal Coordination Request Generator");
 	loggingData("Received Coordination Request from Signal Coordination Request Generator");
 
-	// currentMinuteOfYear = getMinuteOfYear();
-	// currentMsOfMinute = getMsOfMinute();
-
-	getMinuteOfYear();
-	getMsOfMinute();
+	setMinuteOfYear();
+	setMsOfMinute();
 	setETAUpdateTime();
 
 	reader->parse(jsonString.c_str(), jsonString.c_str() + jsonString.size(), &jsonObject, &errors);
