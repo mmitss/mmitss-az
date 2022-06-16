@@ -16,7 +16,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((hostIp,port))
 
 prirorityRequestServerPort = config["PortNumber"]["PriorityRequestServer"]
-communicationInfo = ("10.12.6.3", prirorityRequestServerPort)
+communicationInfo = (hostIp, prirorityRequestServerPort)
 
 while True:
     f = open(fileName, 'r')

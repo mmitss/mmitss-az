@@ -76,6 +76,8 @@ private:
     int msgReceived{};
     int msgServed{};
     int msgRejected{};
+    int currentMinuteOfYear{};
+    int currentMsOfMinute{};
     double msgSentTime{};
     double expectedTimeOfArrivalToStopBar{};
     double requestTimedOutValue{};
