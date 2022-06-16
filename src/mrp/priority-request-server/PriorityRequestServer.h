@@ -78,6 +78,8 @@ private:
     int msgRejected{};
     int currentMinuteOfYear{};
     int currentMsOfMinute{};
+    int previousMinuteOfYear{};
+    int previousMsOfMinute{};
     double msgSentTime{};
     double expectedTimeOfArrivalToStopBar{};
     double requestTimedOutValue{};
@@ -122,8 +124,10 @@ public:
     void calculateETA(int ETA_Minute, int ETA_Second);
     int getMessageType(string jsonString);
     int getRequestTimedOutVehicleID();
-    int getMinuteOfYear();
-    int getMsOfMinute();
+    // int getMinuteOfYear();
+    // int getMsOfMinute();
+    void getMinuteOfYear();
+    void getMsOfMinute();
     int getPRSSequenceNumber();
     int getPRSUpdateCount();
     int getSplitPhase(int signalGroup);
