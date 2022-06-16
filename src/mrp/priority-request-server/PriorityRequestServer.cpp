@@ -368,7 +368,6 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 	{
 		setMinuteOfYear();
 		setMsOfMinute();
-
 		calculateETA(signalRequest.getETA_Minute(), signalRequest.getETA_Second());
 		setRequestedSignalGroup(signalRequest);
 
@@ -425,6 +424,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				activeRequest.etaUpdateTime = currentTime;
 				ActiveRequestTable.push_back(activeRequest);
 			}
+			sendPriorityRequestList = true;
 		}
 
 		else if (updateActiveRequestTable(signalRequest))
@@ -518,6 +518,7 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				findVehicleIDOnTable->msgReceivedTime = currentTime;
 				findVehicleIDOnTable->etaUpdateTime = currentTime;
 			}
+			sendPriorityRequestList = true;
 		}
 
 		else if (deleteRequestfromActiveRequestTable(signalRequest))
@@ -555,10 +556,10 @@ void PriorityRequestServer::manageSignalRequestTable(SignalRequest signalRequest
 				if (findVehicleIDOnTable != ActiveRequestTable.end())
 					ActiveRequestTable.erase(findVehicleIDOnTable);
 			}
+			sendPriorityRequestList = true;
 		}
 
 		updateETAInActiveRequestTable();
-		sendPriorityRequestList = true;
 		setPriorityRequestStatus();
 		setSrmMessageStatus(signalRequest);
 		sendSSM = true;
