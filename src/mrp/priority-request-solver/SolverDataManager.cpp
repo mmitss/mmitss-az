@@ -186,7 +186,7 @@ void SolverDataManager::modifyGreenMax(bool emergencyVehicleStatus)
 void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 {
     int temporaryPhase{};
-    double pedistrianServiceTime{};
+    double pedestrianServiceTime{};
 
     if (!conflictingPedCallList.empty())
     {
@@ -199,22 +199,25 @@ void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 
             if (findConflictingPedCallSignalGroup != trafficSignalPlan.end())
             {
-                pedistrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
+                pedestrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
 
-                if (findConflictingPedCallSignalGroup->minGreen < pedistrianServiceTime)
-                    findConflictingPedCallSignalGroup->minGreen = pedistrianServiceTime;
+                if (findConflictingPedCallSignalGroup->minGreen < pedestrianServiceTime)
+                    findConflictingPedCallSignalGroup->minGreen = pedestrianServiceTime;
 
-                if (findConflictingPedCallSignalGroup->maxGreen < pedistrianServiceTime)
-                    findConflictingPedCallSignalGroup->maxGreen = pedistrianServiceTime;
+                if (findConflictingPedCallSignalGroup->maxGreen < pedestrianServiceTime)
+                    findConflictingPedCallSignalGroup->maxGreen = pedestrianServiceTime;
             }
         }
     }
 }
 
+/*
+    - When pedestraian call is serving, minimum and maximum green time for that phase will be greater than or equal to pedestrian service time
+*/
 void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
 {
     int temporaryPhase{};
-    double pedistrianServiceTime{};
+    double pedestrianServiceTime{};
 
     if (trafficControllerStatus[0].currentPedCallStatus1)
     {
@@ -224,13 +227,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        pedistrianServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear;
+        pedestrianServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear;
 
-        if (findSignalGroup1->minGreen < pedistrianServiceTime)
-            findSignalGroup1->minGreen = pedistrianServiceTime;
+        if (findSignalGroup1->minGreen < pedestrianServiceTime)
+            findSignalGroup1->minGreen = pedestrianServiceTime;
 
-        if (findSignalGroup1->maxGreen < pedistrianServiceTime)
-            findSignalGroup1->maxGreen = pedistrianServiceTime;
+        if (findSignalGroup1->maxGreen < pedestrianServiceTime)
+            findSignalGroup1->maxGreen = pedestrianServiceTime;
     }
 
     if (trafficControllerStatus[0].currentPedCallStatus2)
@@ -241,13 +244,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        pedistrianServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear;
+        pedestrianServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear;
 
-        if (findSignalGroup2->minGreen < pedistrianServiceTime)
-            findSignalGroup2->minGreen = pedistrianServiceTime;
+        if (findSignalGroup2->minGreen < pedestrianServiceTime)
+            findSignalGroup2->minGreen = pedestrianServiceTime;
 
-        if (findSignalGroup2->maxGreen < pedistrianServiceTime)
-            findSignalGroup2->maxGreen = pedistrianServiceTime;
+        if (findSignalGroup2->maxGreen < pedestrianServiceTime)
+            findSignalGroup2->maxGreen = pedestrianServiceTime;
     }
 }
 
