@@ -121,15 +121,13 @@
 </style>
 
 <div class="container">
-    <div class="page-header">
-        <h1>Performance Data</h1>
-    </div>
     <form method="post">
 
             <div id="tables" role="tabpanel" class="tab-pane fade in active">
+            <a href="#tables"></a>
             {% if time != 0 %}
             <div class="header">
-                    <h1>Performance Data: {{platform}}</h1><br>
+                    <h1>Performance Data Message Count: {{platform}}</h1><br>
                     Last refreshed : {{time}}
                     <hr>
             </div>
@@ -146,9 +144,14 @@
             {% endif %}
             </div>
     
-        <div>
-            <input type="submit" value="Refresh Performance Data">
-        </div>
+            <script>
+                $(document).ready(function(){
+                    setInterval(function(){
+                        $("#tables").load(" #tables > *");
+                        console.log("reload...") ;
+                    }, 30000);
+                    });
+            </script>
 
     </form>
 </div>
