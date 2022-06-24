@@ -1,0 +1,277 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<style>
+    .diagram_list{
+
+        height:300px;
+        width: auto;
+        overflow-y: scroll;
+        float:right;
+        border: 2px solid black;
+        background-color: white;
+        
+    }
+
+    .highlight {
+        color: white;
+        background-color: #507a77;
+    }
+    .imgList{
+        width: auto;
+    }
+    a.redirect{
+
+        color:black ;
+        font-size: 25px;
+        background-color: rgb(219, 217, 217);
+        position:relative; left:50px; top:100px;
+        padding: 10px;
+        border-radius: 25px;
+    }
+    a {
+        text-decoration: none;
+        display:inline-block;
+        padding: 8px 16px;
+    }
+
+    a:hover {
+        background-color: #ddd;
+    }   
+
+    .preNext {
+        background-color: #f1f1f1;
+        color: black;
+        border-radius: 20%;
+        font-size: 25px;
+    }
+
+
+    ul.a {
+        list-style-type: none;
+        margin: 0;
+        width:fit-content;
+        padding: 5px;
+    }
+
+
+    ul.a li:hover{
+        display: block;
+        color: white;
+        background-color: #507a77;
+    }
+    
+    h1.noData{
+        position:relative; left:250px; top:100px;
+    }
+    
+    h4{
+        color: seashell;
+        font-weight: bold;
+    }
+    table.imgTd td {
+      border: 2px solid gray;
+      background-color: #afc5c3;
+      width: auto;
+      padding: 10px;
+      margin-left:auto; 
+      margin-right:auto;
+     
+    }
+
+
+    img {
+    width: 550px;
+    padding: 20px;
+
+    }
+
+    table, td {
+      border: 1px solid gray;
+      width: auto;
+      background-color: #afc5c3;
+      padding: 15px;
+      margin-left:auto; 
+      margin-right:auto;
+     
+    }
+    th {
+        color:azure;
+        background-color: rgba(70, 192, 155, 0.884);
+        padding: 15px;
+        
+    }
+    td:nth-child(even) {
+        background-color: #fffdfd;
+        
+        }
+    .header{
+        text-align: center;
+
+    }
+    b {
+        margin-left: 24%;
+        font-size: 25px;
+    }
+    
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Performance Data</h1>
+    </div>
+    <form method="post">
+        <div role="tabpanel">
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active"><a href="#tables" aria-controls="tables" role="tab" data-toggle="tab">Tables</a></li>
+                <li role="presentation"><a href="#diagrams" aria-controls="diagram" role="tab" data-toggle="tab">Time Phase Diagrams</a></li>
+            </ul>
+
+            <div class="tab-content">
+
+                <div id="tables" role="tabpanel" class="tab-pane fade in active">
+                {% if time != 0 %}
+                <div class="header">
+                        <h1>Performance Data: {{platform}}</h1><br>
+                        Last refreshed : {{time}}
+                        <hr>
+                </div>
+                <div><b>Messages Transmitted</b>
+                    {{tables1 | safe}}</div>
+                <br>
+                <br>
+                <div><b>Messages Received</b>
+                    {{tables2 | safe}}
+                    <br><br>
+                </div>
+                {% else %}
+                <h1 class="noData">No Performance Data Available</h1>
+                {% endif %}
+                </div>
+       
+
+                <div role="tabpanel" class="tab-pane fade" id="diagrams">
+
+                    {% set index=0 %}
+                    {% if diagrams %}
+                    <table class="imgTd"><tr><td>
+                        <h4 id='highlight'>{{diagrams[0]}}</h4>
+                        <img id="picture" src="data:image/jpeg;base64, {{ t_diagrams[0] }}">
+
+                       
+                    <td>                  
+                        
+                        
+                
+                
+                    <div class="diagram_list" id="list">
+                       
+                            <ul class = "a">
+                            {% for diagram in diagrams %}
+                            <li class ="imgList" id="imgList" onclick="changeDiagram( '{{loop.index}}')">{{diagram}}</li>
+                            {% endfor %}
+                            </ul>
+
+                        
+                    </div>
+                    </td></tr></table>
+                    <br>
+
+                    <div style="text-align:center">
+                        <a  id ='prev' class="preNext" onclick="prevDiagram()" >Prev</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a id ='next' class="preNext" onclick="nextDiagram()">Next</a>
+                    </div>
+                    {% else %}
+                    <a class="redirect" href="../configuration">No Time Phase Diagrams Available – Enable Generation in the System Configuration tab</a>
+                    {% endif %}
+                    
+                   
+                </div>
+            </div>
+            <div>
+                <input type="submit" value="Refresh Performance Data">
+            </div>
+
+        </div>
+    </form>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+$('.a li').click(function(){
+    $('.highlight').removeClass('highlight');
+$(this).addClass('highlight');
+
+})
+
+$('#prev').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
+$('#next').click(function(){
+    $('.highlight').removeClass('highlight');
+    $('li').filter('.imgList').eq(Ind).addClass('highlight');
+})
+
+
+var Ind = 0
+let t_diagrams = JSON.parse('{{ t_diagrams| tojson }}');
+let diagrams = JSON.parse('{{ diagrams| tojson }}');
+
+
+
+function prevDiagram(){
+
+    if(Ind > 0){
+        Ind-=1;
+        var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+        document.getElementById("picture").src = newDig;
+        document.getElementById("highlight").innerText = diagrams[Ind];
+        console.log(diagrams[Ind]);
+
+    }
+}
+
+function nextDiagram(){
+
+    if (Ind < t_diagrams.length-1){
+    Ind +=1 ;
+    var newDig = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+    document.getElementById("picture").src = newDig;
+    document.getElementById("highlight").innerText = diagrams[Ind];
+    console.log(diagrams[Ind]);
+    }
+
+}
+
+function changeDiagram(In){
+    
+    Ind = In -1 ;
+    var newImg = "data:image/jpeg;base64, "+ t_diagrams[Ind]  ;
+    console.log(newImg);
+    document.getElementById("picture").src = newImg;
+
+    document.getElementById("highlight").innerText = diagrams[Ind] ;
+
+}
+
+
+
+
+
+
+
+</script>
+
+
+
+{% endblock %}
+

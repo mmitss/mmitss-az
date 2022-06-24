@@ -7,7 +7,7 @@
             "TravelDirection": "EastBound",
             "ApproachNo": 5,
             "Latitude_DecimalDegree": 32.235896,
-            "Longitude_DecimalDegree": -110.954722,
+            "Longitude_DecimalDegree": -110.954834,
             "Elevation_Meter": 742,
             "Heading_Degree": 90.0
         },
@@ -16,8 +16,8 @@
             "IntersectionID": 26379,
             "TravelDirection": "WestBound",
             "ApproachNo": 1,
-            "Latitude_DecimalDegree":  32.236093,
-            "Longitude_DecimalDegree": -110.951124,
+            "Latitude_DecimalDegree":  32.236094,
+            "Longitude_DecimalDegree": -110.951004,
             "Elevation_Meter": 740.158,
             "Heading_Degree": 269.45    
         },

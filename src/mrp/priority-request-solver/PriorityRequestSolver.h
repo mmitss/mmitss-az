@@ -32,6 +32,10 @@ using std::vector;
 #define SignalCoordinationVehicleType 20
 #define MinuteToSecondCoversion 60.0
 #define HourToSecondConversion 3600.0
+#define EmergencyVehicle 2
+#define Transit 6
+#define Truck 9
+#define CoordinationVehicleType 20
 
 enum msgType
 {
@@ -55,12 +59,13 @@ private:
   bool optimalSolutionStatus{};
   bool logging{};
   bool consoleOutput{};
-  double EmergencyVehicleWeight{};
-  double EmergencyVehicleSplitPhaseWeight{};
-  double TransitWeight{};
-  double TruckWeight{};
-  double DilemmaZoneRequestWeight{};
-  double CoordinationWeight{};
+  double EmergencyVehicleWeight{1.0};
+  double EmergencyVehicleSplitPhaseWeight{0.1};
+  double TransitWeight{1.0};
+  double TruckWeight{1.0};
+  double DilemmaZoneRequestWeight{20.0};
+  double CoordinationWeight{0.1};
+  double FlexibilityWeight{0.01};
   double MaximumGreen{};
   double cycleLength{};
   double offset{};
@@ -105,7 +110,7 @@ public:
   ~PriorityRequestSolver();
 
   void createPriorityRequestList(string jsonString);
-  void createDilemmaZoneRequestList();
+  void setDilemmaZoneRequesStatus();
   void modifyPriorityRequestList();
   void modifySignalTimingPlan();
   void modifyCoordinationSignalTimingPlan();
@@ -131,6 +136,7 @@ public:
   string getSignalTimingPlanRequestString();
   string getCurrentSignalStatusRequestString();
   string getSignalCoordinationTimingPlanRequestString();
+  string getTimePhaseDiagramMessageString();
   int getMessageType(string jsonString);
   double getCoefficientOfFrictionValue(double vehicleSpeed);
   double getCurrentTime();

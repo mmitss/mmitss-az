@@ -18,11 +18,12 @@
 #include <algorithm>
 #include <numeric>
 
-TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value,
+TrafficConrtollerStatusManager::TrafficConrtollerStatusManager(bool emergencyVehicle_Status, bool transitOrTruck_RequestStatus, bool coordination_Request_Status, double cycle_Length, double offset_Value,
                                                                double coordination_StartTime, double elapsed_Time_In_Cycle, int coordinated_Phase1, int coordinated_Phase2,
                                                                bool logging_Status, bool console_Output_Status, vector<int> listOfDummyPhases,
                                                                vector<TrafficControllerData::TrafficSignalPlan> traffic_Signal_Timing_Plan)
 {
+    emergencyVehicleStatus = emergencyVehicle_Status;
     transitOrTruckRequestStatus = transitOrTruck_RequestStatus;
     coordinationRequestStatus = coordination_Request_Status;
     cycleLength = cycle_Length;
@@ -236,7 +237,7 @@ void TrafficConrtollerStatusManager::modifyTrafficControllerStatus()
             - if  and remaining Gmax is greater than zero (Gmax is timing) and elaspedGmax (Gmax - remainingGmax) greater than  gmin, than elapsed green time will be elaspedGmax
             - if  and remaining Gmax is zero (Gmax is timed already) and elaspedGmax (Gmax - remainingGmax) greater than  zero (it will be more than Gmax), than elapsed green time will be elaspedGmax
     */
-    if (transitOrTruckRequestStatus)
+    if (transitOrTruckRequestStatus || emergencyVehicleStatus)
     {
         for (size_t i = 0; i < trafficControllerStatus.size(); i++)
         {

@@ -15,8 +15,9 @@
 
 #include "OptimizationModelManager.h"
 
-OptimizationModelManager::OptimizationModelManager()
+OptimizationModelManager::OptimizationModelManager(double Flexibility_Weight)
 {
+    FlexibilityWeight = Flexibility_Weight;
 }
 
 /*
@@ -65,12 +66,11 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
     FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
-
+    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EVs are 1, Transits are 2, Trucks are 3, DIlemmaZoneRequests are 4, CoordinationRequests are 5, and EVSplitRequests are 4, 
     FileMod << "set E:={1,2};\n";
     FileMod << "\n";
-    //========================Parameters=========================
 
+    //========================Parameters=========================
     FileMod << "param y    {p in P}, >=0,default 0;\n";
     FileMod << "param red  {p in P}, >=0,default 0;\n";
     FileMod << "param gmin {p in P}, >=0,default 0;\n";
@@ -99,9 +99,9 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
     FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := (if ((k==1 and p==CoordinatedPhase1)) then (gmax[p]+EarlyReturnValue1) else (if ((k==1 and p==CoordinatedPhase2)) then (gmax[p]+EarlyReturnValue2) else	gmax[p]));\n";
-
     FileMod << "\n";
-    // ==================== VARIABLES =======================
+
+    // ==================== Variables =======================
     FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
@@ -163,7 +163,7 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - " << FlexibilityWeight << "*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
     FileMod << "  minimize delay: PriorityDelay;     \n";
     //=============================Writing the Optimal Output into the /nojournal/bin/OptimizationResults.txt file ==================================
@@ -220,7 +220,7 @@ void OptimizationModelManager::generateModFile(int noOfPhase, vector<int> PhaseN
     FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flexibility>>\"/nojournal/bin/OptimizationResults.txt\"; \n";
 
     FileMod << "printf \"%5.2f \\n \", Flexibility >>\"/nojournal/bin/OptimizationResults.txt\"; ";
-    // FileMod << "printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";";
+
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;";
     FileMod.close();
@@ -278,13 +278,10 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "set K  := {1..3};\n"; //Only two cycles ahead are considered in the model. But we should count the third cycle in the cycle set. Because, assume we are in the midle of cycle one. Therefore, we have cycle 1, 2 and half of cycle 3.
     FileMod << "set J  := {1..15};\n"; //Priority Type for all the priority requests in the list
     FileMod << "set P2 := {1..8};\n";
-    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, EVSplitRequest are 4, Coordination are 5
-
+    FileMod << "set T  := {1..10};\n"; //The model can serve at most 10 different types of vehicle simultaneously among which EV are 1, Transit are 2, Trucks are 3, DilemmaZoneRequests are 4, Coordination are 5, and EVSplitRequest are 6
     FileMod << "set E:={1,2};\n";
-    FileMod << "set DZ:={1,2};\n"; //For Dilemma Zone priority request
-
     FileMod << "\n";
-    // //========================Parameters=========================
+    //========================Parameters=========================
 
     FileMod << "param y    {p in P}, >=0,default 0;\n";
     FileMod << "param red  {p in P}, >=0,default 0;\n";
@@ -310,27 +307,17 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "param PassedGrn1{p in P,k in K},:=(if ((p==SP1 and k==1))then Grn1 else 0);\n";
     FileMod << "param PassedGrn2{p in P,k in K},:=(if ((p==SP2 and k==1))then Grn2 else 0);\n";
     FileMod << "param ReqNo:=sum{p in P,j in J} active_pj[p,j];\n";
-    /*************************DilemmaZone***************************/
-    FileMod << "param Dl{p in P, dz in DZ}, >=0,  default 0;\n";
-    FileMod << "param Du{p in P, dz in DZ}, >=0,  default 0;\n";
-    FileMod << "param DilemmaZoneVehicleClass:=5,integer;\n";
-    FileMod << "param DilemmaZoneWeight, default 0;\n";
-    FileMod << "param active_dilemmazone_p{p in P, dz in DZ}, integer, :=(if Dl[p,dz]>0 then 1 else	0);\n";
-    FileMod << "param DilemmaZoneReqNo:=sum{p in P, dz in DZ} active_dilemmazone_p[p,dz];\n";
     FileMod << "param gmaxPerRng{p in P,k in K}, := gmax[p];\n";
     FileMod << "\n";
-    // ==================== VARIABLES =======================
+    // ==================== Variables =======================
     FileMod << "var t{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var g{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var v{p in P,k in K,e in E}, >=0;\n";
     FileMod << "var d{p in P,j in J}, >=0;\n";
     FileMod << "var theta{p in P,j in J}, binary;\n";
     FileMod << "var ttheta{p in P,j in J}, >=0;\n";
-    FileMod << "var dilemmazone_d{p in P, dz in DZ}, >=0;\n";
-    FileMod << "var dilemmazone_theta{p in P, dz in DZ}, binary;\n";
-    FileMod << "var dilemmazone_ttheta{p in P, dz in DZ}, >=0;\n";
     FileMod << "var PriorityDelay;\n";
-    FileMod << "var DilemmaZoneDelay;\n";
+
     FileMod << "var Flexibility;\n";
 
     FileMod << "\n";
@@ -454,23 +441,9 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "s.t. PriorityConstraint9{e in E,p in P,j in J: active_pj[p,j]>0}:    Ru[p,j]*theta[p,j] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
 
     FileMod << "s.t. FlexibilityConstraint: Flexibility= sum{p in P,k in K} (t[p,k,2]-t[p,k,1])*coef[p,k];\n ";
-    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - 0.01*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
+    FileMod << "s.t. RD: PriorityDelay=( sum{p in P,j in J, tt in T} (priorityTypeWeight[j,tt]*active_pj[p,j]*d[p,j] ) )  - " << FlexibilityWeight << "*Flexibility; \n "; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
 
-    /****************************************DilemmaZone Constraints ************************************/
-    FileMod << "s.t. DilemmaZonePriorityConstraint1{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>=(t[p,1,e]*coef[p,1]+t[p,2,e]*(1-coef[p,1]))-Dl[p,dz]; \n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint2{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    M*dilemmazone_theta[p,dz]>=Du[p,dz]-((t[p,1,e]+g[p,1,e])*coef[p,1]+(t[p,2,e]+g[p,2,e])*(1-coef[p,1]));\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint3{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_d[p,dz]>= dilemmazone_ttheta[p,dz]-Dl[p,dz]*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint4{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,1,e]*coef[p,1]+g[p,2,e]*(1-coef[p,1])>= (Du[p,dz]-Dl[p,dz])*(1-dilemmazone_theta[p,dz]);\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint5{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    dilemmazone_ttheta[p,dz]<=M*dilemmazone_theta[p,dz];\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint6{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))-M*(1-dilemmazone_theta[p,dz])<=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint7{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    (t[p,2,e]*coef[p,1]+t[p,3,e]*(1-coef[p,1]))+M*(1-dilemmazone_theta[p,dz])>=dilemmazone_ttheta[p,dz];\n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint8{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    g[p,2,e]*coef[p,1]+g[p,3,e]*(1-coef[p,1])>=(Du[p,dz]-Dl[p,dz])*dilemmazone_theta[p,dz]; \n";
-    FileMod << "s.t. DilemmaZonePriorityConstraint9{e in E,p in P, dz in DZ: active_dilemmazone_p[p,dz]>0}:    Du[p,dz]*dilemmazone_theta[p,dz] <= (t[p,2,e]+g[p,2,e])*coef[p,1]+(t[p,3,e]+g[p,3,e])*(1-coef[p,1]) ; \n";
-
-    FileMod << "s.t. DD: DilemmaZoneDelay=( sum{p in P, dz in DZ} (DilemmaZoneWeight*active_dilemmazone_p[p,dz]*dilemmazone_d[p,dz] ) )  - 0.01*Flexibility; \n"; // The coeficient to Flexibility should be small. Even with this small coeficient, the optimzation tried to open up flexibility for actuation between the left Critical Points and right Critical Points
-                                                                                                                                                           /***************************************************************************************************/
-
-    FileMod << "  minimize delay: PriorityDelay + DilemmaZoneDelay;     \n";
+    FileMod << "  minimize delay: PriorityDelay;     \n";
 
     //=============================Writing the Optimal Output into the /nojournal/bin/OptimizationResults.txt file ==================================
     FileMod << "  \n";
@@ -516,22 +489,17 @@ void OptimizationModelManager::generateEVModFile(vector<TrafficControllerData::T
     FileMod << "        printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     FileMod << " } \n";
     FileMod << "  \n";
-    FileMod << "printf \"%3d \\n \", ReqNo + DilemmaZoneReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
+
+    FileMod << "printf \"%3d \\n \", ReqNo >>\"/nojournal/bin/OptimizationResults.txt\";  \n";
     FileMod << "  \n";
     FileMod << "for {p in P,j in J : Rl[p,j]>0}  \n";
     FileMod << " {  \n";
     FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Rl[p,j],Ru[p,j], d[p,j] , priorityType[j] >>\"/nojournal/bin/OptimizationResults.txt\";\n"; 
     FileMod << " } \n";
     
-    FileMod << "for {p in P,dz in DZ : Dl[p,dz]>0}  \n";
-    FileMod << " {  \n";
-    FileMod << "   printf \"%d  %5.2f  %5.2f  %5.2f %d \\n \", p, Dl[p,dz],Du[p,dz], dilemmazone_d[p,dz] , DilemmaZoneVehicleClass >>\"/nojournal/bin/OptimizationResults.txt\";\n"; 
-    FileMod << " } \n";
-
     FileMod << "printf \"%5.2f \\n \", PriorityDelay + 0.01*Flexibility>>\"/nojournal/bin/OptimizationResults.txt\"; \n";
 
     FileMod << "printf \"%5.2f \\n \", Flexibility >>\"/nojournal/bin/OptimizationResults.txt\"; \n";
-    // FileMod << "printf \" \\n \">>\"/nojournal/bin/OptimizationResults.txt\";\n";
     //------------- End of Print the Main body of mode----------------
     FileMod << "end;\n";
     FileMod.close();

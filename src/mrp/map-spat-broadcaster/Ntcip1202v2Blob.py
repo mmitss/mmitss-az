@@ -110,7 +110,7 @@ class Ntcip1202v2Blob:
         # Derived from system time (Not controller's time)
         currentTimeMs = int(round(time.time() * 10))
         startOfTheYear = datetime.datetime((datetime.datetime.now().year), 1, 1)
-        timeSinceStartOfTheYear = (datetime.datetime.now() - startOfTheYear)
+        timeSinceStartOfTheYear = (datetime.datetime.utcnow() - startOfTheYear)
         self.minuteOfYear = int(timeSinceStartOfTheYear.total_seconds()/60)
         self.msOfMinute = int((timeSinceStartOfTheYear.total_seconds() - (self.minuteOfYear * 60))*1000)
 ##################################### VEH INFORMATION ####################################################################
@@ -246,7 +246,7 @@ class Ntcip1202v2Blob:
         
         # Time since change to current state - check inactive phases first!:
         for i in range(0,self.numPedPhases):
-            if i in self.inactivePedPhases:
+            if i+1 in self.inactivePedPhases:
                 self.pedElapsedTime[i] = 0.0
             else:
                 if self.pedCurrState[i] == self.pedPrevState[i]:

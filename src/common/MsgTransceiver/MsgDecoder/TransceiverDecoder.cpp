@@ -227,7 +227,7 @@ string TransceiverDecoder::srmDecoder(string srmPayload)
         signalRequest.setPosition(DsrcConstants::damega2unit<int32_t>(srmOut.latitude), DsrcConstants::damega2unit<int32_t>(srmOut.longitude), DsrcConstants::deca2unit<int32_t>(srmOut.elevation));
         signalRequest.setHeading_Degree(round(DsrcConstants::unit2heading<uint16_t>(srmOut.heading)));
         signalRequest.setSpeed_MeterPerSecond(round(DsrcConstants::unit2kph<uint16_t>(srmOut.speed) * KPH_TO_MPS_CONVERSION));
-        signalRequest.setVehicleType(static_cast<unsigned int>(srmOut.vehType));
+        // signalRequest.setVehicleType(static_cast<unsigned int>(srmOut.vehType));
 
         jsonString = signalRequest.signalRequest2Json();
     }
@@ -288,7 +288,8 @@ string TransceiverDecoder::ssmDecoder(string ssmPayload)
             activeRequest.msgCount = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].sequenceNumber);
             activeRequest.basicVehicleRole = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].vehRole);
             activeRequest.vehicleLaneID = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].inLaneId);
-            activeRequest.vehicleETA = ssmOut.mpSignalRequetStatus[i].ETAminute * 60.0 + ssmOut.mpSignalRequetStatus[i].ETAsec;
+            activeRequest.vehicleETAMinute = ssmOut.mpSignalRequetStatus[i].ETAminute;
+			activeRequest.vehicleETASecond = ssmOut.mpSignalRequetStatus[i].ETAsec;
             activeRequest.vehicleETADuration = ssmOut.mpSignalRequetStatus[i].duration;
             activeRequest.prsStatus = static_cast<unsigned int>(ssmOut.mpSignalRequetStatus[i].status);
             ActiveRequestTable.push_back(activeRequest);
@@ -362,45 +363,74 @@ string TransceiverDecoder::spatDecoder(string spatPayload)
         jsonObject["Spat"]["msOfMinute"] = spatOut.timeStampSec;
         jsonObject["Spat"]["status"] = spatOut.status.to_string();
 
+        int vehListLocation = 0;
         for (int i = 0; i < 8; i++)
         {
             if (spatOut.permittedPhases.test(i))
             {
                 const auto &phaseState = spatOut.phaseState[i];
-                jsonObject["Spat"]["phaseState"][i]["phaseNo"] = (i + 1);
-                jsonObject["Spat"]["phaseState"][i]["startTime"] = phaseState.startTime;
-                jsonObject["Spat"]["phaseState"][i]["minEndTime"] = phaseState.minEndTime;
-                jsonObject["Spat"]["phaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
-                jsonObject["Spat"]["phaseState"][i]["elapsedTime"] = 0;
+                jsonObject["Spat"]["phaseState"][vehListLocation]["phaseNo"] = (i + 1);
+                jsonObject["Spat"]["phaseState"][vehListLocation]["startTime"] = phaseState.startTime;
+                jsonObject["Spat"]["phaseState"][vehListLocation]["minEndTime"] = phaseState.minEndTime;
+                jsonObject["Spat"]["phaseState"][vehListLocation]["maxEndTime"] = phaseState.maxEndTime;
+                jsonObject["Spat"]["phaseState"][vehListLocation]["elapsedTime"] = -1;
                 currVehPhaseState = static_cast<unsigned int>(phaseState.currState);
                 if (currVehPhaseState == RED)
-                    jsonObject["Spat"]["phaseState"][i]["currState"] = "red";
+                    jsonObject["Spat"]["phaseState"][vehListLocation]["currState"] = "red";
                 else if (currVehPhaseState == YELLOW)
-                    jsonObject["Spat"]["phaseState"][i]["currState"] = "yellow";
+                    jsonObject["Spat"]["phaseState"][vehListLocation]["currState"] = "yellow";
                 else if (currVehPhaseState == GREEN)
-                    jsonObject["Spat"]["phaseState"][i]["currState"] = "green";
+                    jsonObject["Spat"]["phaseState"][vehListLocation]["currState"] = "green";
                 else if (currVehPhaseState == PERMISSIVE)
-                    jsonObject["Spat"]["phaseState"][i]["currState"] = "permissive_yellow";
+                    jsonObject["Spat"]["phaseState"][vehListLocation]["currState"] = "permissive_yellow";
+                vehListLocation += 1;
             }
         }
 
+        int pedListLocation = 0;
         for (int i = 0; i < 8; i++)
         {
             if (spatOut.permittedPedPhases.test(i))
             {
                 const auto &phaseState = spatOut.pedPhaseState[i];
-                jsonObject["Spat"]["pedPhaseState"][i]["phaseNo"] = (i + 1);
-                jsonObject["Spat"]["pedPhaseState"][i]["startTime"] = phaseState.startTime;
-                jsonObject["Spat"]["pedPhaseState"][i]["minEndTime"] = phaseState.minEndTime;
-                jsonObject["Spat"]["pedPhaseState"][i]["maxEndTime"] = phaseState.maxEndTime;
-                jsonObject["Spat"]["pedPhaseState"][i]["elapsedTime"] = 0;
+                int phaseNo = 0;
+
+                if (i == 4)
+                {
+                    phaseNo = 2;
+                }
+                else if (i == 5)
+                {
+                    phaseNo = 4;
+                }
+                else if (i == 6)
+                {
+                    phaseNo = 6;
+                }
+                else if (i == 7)
+                {
+                    phaseNo = 8;
+                }
+                else
+                {
+                    std::cout << "Invalid pedestrian phase" << std::endl;
+                    phaseNo = i+1;
+                }
+
+
+                jsonObject["Spat"]["pedPhaseState"][pedListLocation]["phaseNo"] = phaseNo;
+                jsonObject["Spat"]["pedPhaseState"][pedListLocation]["startTime"] = phaseState.startTime;
+                jsonObject["Spat"]["pedPhaseState"][pedListLocation]["minEndTime"] = phaseState.minEndTime;
+                jsonObject["Spat"]["pedPhaseState"][pedListLocation]["maxEndTime"] = phaseState.maxEndTime;
+                jsonObject["Spat"]["pedPhaseState"][pedListLocation]["elapsedTime"] = -1;
                 currPedPhaseState = static_cast<unsigned int>(phaseState.currState);
                 if (currPedPhaseState == DONOTWALK)
-                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "do_not_walk";
+                    jsonObject["Spat"]["pedPhaseState"][pedListLocation]["currState"] = "do_not_walk";
                 else if (currPedPhaseState == PEDCLEAR)
-                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "ped_clear";
+                    jsonObject["Spat"]["pedPhaseState"][pedListLocation]["currState"] = "ped_clear";
                 else if (currPedPhaseState == WALK)
-                    jsonObject["Spat"]["pedPhaseState"][i]["currState"] = "walk";
+                    jsonObject["Spat"]["pedPhaseState"][pedListLocation]["currState"] = "walk";
+                pedListLocation += 1;
             }
         }
 

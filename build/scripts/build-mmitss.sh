@@ -159,7 +159,7 @@ else
 	    echo "Building System Interface..."
 	    cd ../../src/system-interface
 	    # Clean the folder and build for linux.
-	    pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --onefile --windowed system-interface.py &> /dev/null
+	    pyinstaller --add-data "templates:templates" --add-data "static:static" --additional-hooks-dir=. --hidden-import=pandas --onefile --windowed system-interface.py &> /dev/null
 	    # Indicate Success/Failure of the build
 	    if [ "$?" -eq "0" ]; then
 		    mv dist/system-interface  ../../build/bin/SystemInterface/$PROCESSOR/M_SystemInterface
@@ -289,6 +289,26 @@ else
 	    # Indicate Success/Failure of the build
 	    if [ "$?" -eq "0" ]; then
 		    mv dist/map-spat-broadcaster  ../../../build/bin/MapSpatBroadcaster/$PROCESSOR/M_MapSpatBroadcaster
+		    echo -e "${green}Successful${nocolor}"
+	    else
+		    echo -e "${red}Failed${nocolor}"
+	    fi
+	    # Remove the .o files to keep the folders clean
+	    rm -r build dist *.spec &> /dev/null
+	    rm -r __pycache__ &> /dev/null
+	    # Return back to original directory to go over the process again for another one
+	    cd - &> /dev/null
+	    sleep 1s
+	    #######################################################################################
+
+        #######################################################################################
+	    echo "Building Time Phase Diagram Tool..."
+	    cd ../../src/mrp/time-phase-diagram-tool
+	    # Clean the folder and build for linux.
+	    pyinstaller --hidden-import=pkg_resources.py2_warn --onefile --windowed time-phase-diagram-tool.py  &> /dev/null
+	    # Indicate Success/Failure of the build
+	    if [ "$?" -eq "0" ]; then
+		    mv dist/time-phase-diagram-tool  ../../../build/bin/TimePhaseDiagramTool/$PROCESSOR/M_TimePhaseDiagramTool
 		    echo -e "${green}Successful${nocolor}"
 	    else
 		    echo -e "${red}Failed${nocolor}"

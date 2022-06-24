@@ -12,6 +12,7 @@
     "VehicleType": "Transit",
 	"Logging": true,
 	"ConsoleOutput": true,
+	"TimePhaseDiagram": true,
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": 1.0,
 	"SystemPerformanceTimeInterval": 300.0,
@@ -54,14 +55,14 @@
 		"MapEngine": 20024,
 		"LightSirenStatusManager": 20025,
 		"PeerToPeerPriority": 20026,
-		"SystemPerformanceDataCollector": 20027
+        "TimePhaseDiagramTool": 20027
 	},
     "psid": {
-		"map": "8002",
+		"map": "E0000017",
 		"spat": "8002",
-		"rsm": "8002",
-		"srm": "8002",
-		"ssm": "8002",
+		"rsm": "8003",
+		"srm": "E0000016",
+		"ssm": "E0000015",
 		"bsm": "20"
 	},
 	"msgId": {
@@ -73,22 +74,22 @@
 		"ssm_lower": "001e",
 		"ssm_upper": "001E",
 		"bsm": "0014"
-    },
-    "TxChannel": {
-		"map": 172,
-		"spat": 172,
-		"rsm": 172,
-		"srm": 182,
-		"ssm": 182,
-		"bsm": 172
+	},
+	"TxChannel": {
+		"map": "SCH",
+		"spat": "SCH",
+		"rsm": "SCH",
+		"srm": "SCH",
+		"ssm": "SCH",
+		"bsm": "SCH"
 	},
 	"TxMode": {
-		"map": "CONT",
-		"spat": "CONT",
-		"rsm": "CONT",
+		"map": "ALT",
+		"spat": "ALT",
+		"rsm": "ALT",
 		"srm": "ALT",
 		"ssm": "ALT",
-		"bsm": "CONT"
+		"bsm": "ALT"
 	},
 	"SignalController": 
 	{
@@ -150,6 +151,7 @@
         "TransitWeight":1.0,
         "TruckWeight":1.0,
         "DilemmaZoneRequestWeight": 20.0,
-        "CoordinationWeight":1.0
+        "CoordinationWeight":1.0,
+		"FlexibilityWeight": 0.01
     }
 }

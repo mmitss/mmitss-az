@@ -45,6 +45,7 @@ PriorityRequestGenerator::PriorityRequestGenerator()
 {
 	readConfigFile();
 	setVehicleType();
+	setBasicVehicleRole(vehicleType);
 }
 
 /*
@@ -59,8 +60,8 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 	vector<int> inBoundLaneID{};
 	vector<int> basicVehicleRole_ssm{}; //insted of basicVehicleRole, basicVehicleRole_ssm is declared, otherwise it shadowed the declaration
 	vector<int> expectedTimeOfArrival_Minute{};
-	vector<double> expectedTimeOfArrival_Second{};
-	vector<double> expectedTimeOfArrival_Duration{};
+	vector<int> expectedTimeOfArrival_Second{};
+	vector<int> expectedTimeOfArrival_Duration{};
 	vector<int> priorityRequestStatus{};
 	ActiveRequest activeRequest;
 	activeRequest.reset();
@@ -85,7 +86,7 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 		inBoundLaneID = signalStatus.getInBoundLaneID();
 		basicVehicleRole_ssm = signalStatus.getBasicVehicleRole();
 		expectedTimeOfArrival_Minute = signalStatus.getETA_Minute();
-		expectedTimeOfArrival_Second = signalStatus.getETA_Second();;
+		expectedTimeOfArrival_Second = signalStatus.getETA_Second();
 		expectedTimeOfArrival_Duration = signalStatus.getETA_Duration();
 		priorityRequestStatus = signalStatus.getPriorityRequestStatus();
 
@@ -96,14 +97,22 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 			activeRequest.msgCount = msgCount_ssm[i];
 			activeRequest.basicVehicleRole = basicVehicleRole_ssm[i];
 			activeRequest.vehicleLaneID = inBoundLaneID[i];
-			activeRequest.vehicleETA = expectedTimeOfArrival_Minute[i] * SECONDSINAMINUTE + expectedTimeOfArrival_Second[i];
-			activeRequest.vehicleETADuration = expectedTimeOfArrival_Duration[i];
+			activeRequest.vehicleETAMinute = expectedTimeOfArrival_Minute[i];
+			activeRequest.vehicleETASecond = expectedTimeOfArrival_Second[i];
+			activeRequest.vehicleETADuration = static_cast<int>(expectedTimeOfArrival_Duration[i] / SECOND_MILISECOND_CONVERSION);
+				
+			activeRequest.vehicleETA = ((expectedTimeOfArrival_Minute[i] - getMinuteOfYear()) * SECOND_MINTUTE_CONVERSION) + ((expectedTimeOfArrival_Second[i] - getMsOfMinute()) / SECOND_MILISECOND_CONVERSION);
+			
+			// if (activeRequest.vehicleETA <= minimumETA)
+			// 	activeRequest.vehicleETA = minimumETA;
+
 			activeRequest.prsStatus = priorityRequestStatus[i];
 			activeRequest.minuteOfYear = getMinuteOfYear();
 			ActiveRequestTable.push_back(activeRequest);
 		}
 	}
 
+	printActiveRequestTable();
 	return ActiveRequestTable;
 }
 
@@ -113,11 +122,16 @@ vector<ActiveRequest> PriorityRequestGenerator::creatingSignalRequestTable(Signa
 string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, SignalRequest signalRequest, MapManager mapManager)
 {
 	string srmJsonString{};
-	int vehExpectedTimeOfArrival_Minute{};
-	double vehExpectedTimeOfArrival_Second{};
+	int vehicleExpectedTimeOfArrival_Minute{};
+	int vehicleExpectedTimeOfArrival_Second{};
+	int vehicleExpectedTimeOfArrival_Duration{};
+	int relativeETAInMiliSecond = static_cast <int>(getETA() * SECOND_MILISECOND_CONVERSION + getMsOfMinute());
 	
-	vehExpectedTimeOfArrival_Second = remquo((getETA() / SECONDSINAMINUTE), 1.0, &vehExpectedTimeOfArrival_Minute);
-	vehicleETA_Duration = minimumETA_Duration;
+	// vehicleExpectedTimeOfArrival_Second = static_cast<int>(remquo((relativeETAInSecond / SECOND_MINTUTE_CONVERSION), 1.0, &vehicleExpectedTimeOfArrival_Minute) * SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
+	// vehicleExpectedTimeOfArrival_Minute = getMinuteOfYear() + vehicleExpectedTimeOfArrival_Minute;
+	vehicleExpectedTimeOfArrival_Minute = getMinuteOfYear() + (relativeETAInMiliSecond / static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION));
+	vehicleExpectedTimeOfArrival_Second = relativeETAInMiliSecond % static_cast<int>(SECOND_MINTUTE_CONVERSION * SECOND_MILISECOND_CONVERSION);
+	vehicleExpectedTimeOfArrival_Duration = minimumETA_Duration * SECOND_MILISECOND_CONVERSION;
 	setMsgCount(msgCount);
 	tempVehicleSpeed = getVehicleSpeed(); //storing vehicle speed while sending srm. It will be use to compare if there is any speed change or not
 	tempVehicleSignalGroup = getSignalGroup();
@@ -127,10 +141,10 @@ string PriorityRequestGenerator::createSRMJsonString(BasicVehicle basicVehicle, 
 	signalRequest.setMsgCount(getMsgCount());
 	signalRequest.setRegionalID(getRegionalID());
 	signalRequest.setIntersectionID(getIntersectionID());
-	signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
+	// signalRequest.setVehicleType(getVehicleType()); //getVehicleType() function has to be executed before the getBasicVehicleRole()
 	signalRequest.setPriorityRequestType(getPriorityRequestType());
 	signalRequest.setInBoundLaneIntersectionAccessPoint(getLaneID(), getApproachID());
-	signalRequest.setETA(vehExpectedTimeOfArrival_Minute, vehExpectedTimeOfArrival_Second * SECONDSINAMINUTE, vehicleETA_Duration);
+	signalRequest.setETA(vehicleExpectedTimeOfArrival_Minute, vehicleExpectedTimeOfArrival_Second, vehicleExpectedTimeOfArrival_Duration);
 	signalRequest.setTemporaryVechileID(getVehicleID());
 	signalRequest.setBasicVehicleRole(getBasicVehicleRole());
 	signalRequest.setPosition(basicVehicle.getLatitude_DecimalDegree(), basicVehicle.getLongitude_DecimalDegree(), basicVehicle.getElevation_Meter());
@@ -190,7 +204,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 	bool requestSendingRequirement{false};
 	double currentTime = getPosixTimestamp();
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																		[&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
+																		[&](ActiveRequest const &p)
+																		{ return p.vehicleID == temporaryVehicleID; });
 
 	//If vehicle is out of the map but priority request is available in the ART, it is required to send a cancellation request.
 	if ((activeMapStatus == false) && (findVehicleIDOnTable != ActiveRequestTable.end()))
@@ -227,7 +242,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 	}
 
 	else if (activeMapStatus && (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
-			 ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 ((currentTime - srmSendingTime) >= SRM_TIME_GAP_VALUE))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -248,7 +263,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
 		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) &&
-				 (abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit))
+				 (abs(vehicleSpeed - tempVehicleSpeed) >= ALLOWED_SPEED_DEVIATION))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -258,7 +273,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement()
 
 		//If vehicleID is in ART and vehicle ETA changes by threshold value, vehicle should send srm
 		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) &&
-				 (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= allowed_ETA_Difference))
+				 (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -306,7 +321,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 	checkPassedNearestBusStop();
 
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																		[&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
+																		[&](ActiveRequest const &p)
+																		{ return p.vehicleID == temporaryVehicleID; });
 
 	//If vehicle is out of the map but priority request is available in the ART, it is required to send a cancellation request.
 	if (!activeMapStatus && (findVehicleIDOnTable != ActiveRequestTable.end()))
@@ -343,7 +359,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 
 	else if (activeMapStatus && (busStopPassedStatus == true) &&
 			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
-			 ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 ((currentTime - srmSendingTime) >= SRM_TIME_GAP_VALUE))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -363,7 +379,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(vehicleSpeed - tempVehicleSpeed) >= ALLOWED_SPEED_DEVIATION))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -372,7 +388,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(vector<BusStopInfo
 		}
 
 		//If vehicleID is in the ART and its ETA is changed by threshold value, vehicle should send srm
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= allowed_ETA_Difference))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -424,7 +440,8 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 	lightSirenStatus = light_Siren_Status;
 
 	vector<ActiveRequest>::iterator findVehicleIDOnTable = std::find_if(std::begin(ActiveRequestTable), std::end(ActiveRequestTable),
-																		[&](ActiveRequest const &p) { return p.vehicleID == temporaryVehicleID; });
+																		[&](ActiveRequest const &p)
+																		{ return p.vehicleID == temporaryVehicleID; });
 
 	//If vehicle is out of the map but priority request is available in the ART, it is required to send a cancellation request.
 	if (!activeMapStatus && (findVehicleIDOnTable != ActiveRequestTable.end()))
@@ -461,7 +478,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 
 	else if (activeMapStatus && (lightSirenStatus == true) &&
 			 (vehicleIntersectionStatus == static_cast<int>(MsgEnum::mapLocType::onInbound)) &&
-			 ((currentTime - srmSendingTime) >= SrmTimeGapValue))
+			 ((currentTime - srmSendingTime) >= SRM_TIME_GAP_VALUE))
 	{
 		//If vehicleID is not in the ART, vehicle should send SRM
 		if (findVehicleIDOnTable == ActiveRequestTable.end())
@@ -481,7 +498,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		}
 
 		//If vehicleID is in ART and vehicle speed changes by threshold value (for example 5m/s), vehicle should send srm.
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(vehicleSpeed - tempVehicleSpeed) >= vehicleSpeedDeviationLimit))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(vehicleSpeed - tempVehicleSpeed) >= ALLOWED_SPEED_DEVIATION))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -490,7 +507,7 @@ bool PriorityRequestGenerator::checkRequestSendingRequirement(bool light_Siren_S
 		}
 
 		//If vehicleID is in the ART and its ETA is changed by threshold value, vehicle should send srm
-		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= allowed_ETA_Difference))
+		else if ((findVehicleIDOnTable != ActiveRequestTable.end()) && (abs(findVehicleIDOnTable->vehicleETA - vehicleETA) >= ALLOWED_ETA_DIFFERENCE))
 		{
 			requestSendingRequirement = true;
 			requestSendStatus = true;
@@ -657,7 +674,7 @@ void PriorityRequestGenerator::setETA(double distance2go, double vehicle_Speed)
 	else
 		vehicleETA = minimumETA + vehicleStartUpLossTime;
 
-	if (vehicleETA <= 0)
+	if (vehicleETA <= minimumETA)
 		vehicleETA = minimumETA;
 }
 
@@ -891,16 +908,16 @@ void PriorityRequestGenerator::setVehicleType()
 	{
 		if (jsonObject["VehicleType"].asString() == "Transit")
 		{
-			vehicleType = Transit;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::bus);
 			getBusStopInformation();
 		}
 
 		else if (jsonObject["VehicleType"].asString() == "Truck")
-			vehicleType = Truck;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::axleCnt4);
 
 		else if (jsonObject["VehicleType"].asString() == "EmergencyVehicle")
 		{
-			vehicleType = EmergencyVehicle;
+			vehicleType = static_cast<int>(MsgEnum::vehicleType::special);
 			lightSirenStatus = false;
 		}
 	}
@@ -912,20 +929,39 @@ void PriorityRequestGenerator::setSimulationVehicleType(string vehType)
 
 	if (vehType == "Transit")
 	{
-		vehicleType = Transit;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::bus);
 		getBusStopInformation();
 	}
 
 	else if (vehType == "Truck")
-		vehicleType = Truck;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::axleCnt4);
 
 	else if (vehType == "EmergencyVehicle")
 	{
-		vehicleType = EmergencyVehicle;
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::special);
 		lightSirenStatus = true;
 	}
+	else
+		vehicleType = static_cast<int>(MsgEnum::vehicleType::car);
 }
 
+/*
+	- Define vehile role based on vehicle type
+*/
+void PriorityRequestGenerator::setBasicVehicleRole(int vehicle_Type)
+{
+	if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::bus))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::transit);
+
+	else if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::truck);
+
+	else if (vehicle_Type == static_cast<int>(MsgEnum::vehicleType::special))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::fire);
+
+	else if (vehicle_Type == static_cast<int>(vehicleType::unavailable))
+		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::unavailable);
+}
 /*
 	- Define priority status based on vehicle status
 		--If vehicle is at inBoundLane, the priority request type will be priorityRequest
@@ -955,22 +991,10 @@ int PriorityRequestGenerator::getVehicleType()
 }
 
 /*
-	- Define vehile role based on vehicle type
+	- getter for vehile role 
 */
 int PriorityRequestGenerator::getBasicVehicleRole()
 {
-	if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::bus))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::transit);
-
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::truck);
-
-	else if (getVehicleType() == static_cast<int>(MsgEnum::vehicleType::special))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::fire);
-
-	else if (getVehicleType() == static_cast<int>(vehicleType::unavailable))
-		basicVehicleRole = static_cast<int>(MsgEnum::basicRole::unavailable);
-
 	return basicVehicleRole;
 }
 
@@ -990,37 +1014,39 @@ double PriorityRequestGenerator::getRequestTimedOutValue()
 }
 
 /*
-	- Obtain system time and calculte current Minute of the Year
-		--get the number of years passed (today's number of day in the year -1)
-		--get number of hours and minutes elapsed today
+	- Method for obtaining minute of a year based on GMT(UTC) time
 */
 int PriorityRequestGenerator::getMinuteOfYear()
 {
 	int minuteOfYear{};
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
 
-	int dayOfYear = timePtr->tm_yday;
-	int currentHour = timePtr->tm_hour;
-	int currentMinute = timePtr->tm_min;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
 
-	minuteOfYear = (dayOfYear - 1) * HOURSINADAY * MINUTESINAHOUR + currentHour * MINUTESINAHOUR + currentMinute;
+	int dayOfYear = tm_gmt->tm_yday;
+	int currentHour = tm_gmt->tm_hour;
+	int currentMinute = tm_gmt->tm_min;
+
+	minuteOfYear = dayOfYear * HOUR_DAY_CONVERSION * MINTUTE_HOUR_CONVERSION + currentHour * MINTUTE_HOUR_CONVERSION + currentMinute;
 
 	return minuteOfYear;
 }
 
 /*
-	- Obtain system time for time stamp
+	- Method for obtaining millisecond of a minute based on GMT(UTC) time
 */
 int PriorityRequestGenerator::getMsOfMinute()
 {
 	int msOfMinute{};
-	time_t t = time(NULL);
-	tm *timePtr = gmtime(&t);
 
-	int currentSecond = timePtr->tm_sec;
+	time_t curr_time;
+	curr_time = time(NULL);
+	tm *tm_gmt = gmtime(&curr_time);
 
-	msOfMinute = currentSecond * SECONDTOMILISECOND;
+	int currentSecond = tm_gmt->tm_sec;
+
+	msOfMinute = currentSecond * static_cast<int>(SECOND_MILISECOND_CONVERSION);
 
 	return msOfMinute;
 }
@@ -1084,7 +1110,8 @@ vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvailableMa
 	if (!activeMapList.empty())
 	{
 		vector<Map::AvailableMap>::iterator findActiveMap = std::find_if(std::begin(mapManager.availableMapList), std::end(mapManager.availableMapList),
-																		 [&](Map::AvailableMap const &p) { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
+																		 [&](Map::AvailableMap const &p)
+																		 { return p.availableMapFileName == activeMapList.front().activeMapFileName; });
 
 		if (findActiveMap != availableMapList.end())
 			findActiveMap->activeMapStatus = "True";
@@ -1108,8 +1135,19 @@ vector<Map::AvailableMap> PriorityRequestGenerator::manageMapStatusInAvailableMa
 */
 void PriorityRequestGenerator::printActiveRequestTable()
 {
+	double timeStamp = getPosixTimestamp();
+
+	cout << "[" << fixed << showpoint << setprecision(2) << timeStamp << "] Active Request Table is following: " << endl;
+	cout << "VehicleID"
+		 << "	"
+		 << "ETA"
+		 << "	"
+		 << "ETADuration"
+		 << "	"
+		 << "Vehicle Role" << endl;
+
 	for (size_t i = 0; i < ActiveRequestTable.size(); i++)
-		cout << ActiveRequestTable[i].vehicleID << " " << ActiveRequestTable[i].vehicleETA << " " << ActiveRequestTable[i].basicVehicleRole << " " << endl;
+		cout << ActiveRequestTable[i].vehicleID << "	 " << ActiveRequestTable[i].vehicleETA << " 		" << ActiveRequestTable[i].vehicleETADuration << "		" << ActiveRequestTable[i].basicVehicleRole << endl;
 }
 
 /*
@@ -1134,15 +1172,12 @@ void PriorityRequestGenerator::loggingData(string logString)
 */
 void PriorityRequestGenerator::displayConsoleData(string consoleString)
 {
-	ofstream logFile;
 	double timestamp = getPosixTimestamp();
 
 	if (consoleOutput)
 	{
-		logFile.open(logFileName, std::ios_base::app);
 		cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
 		cout << consoleString << endl;
-		logFile.close();
 	}
 }
 
@@ -1166,7 +1201,7 @@ void PriorityRequestGenerator::readConfigFile()
 
 	if (parsingSuccessful)
 	{
-		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SrmTimeGapValue;
+		requestTimedOutValue = (jsonObject["SRMTimedOutTime"]).asDouble() - SRM_TIME_GAP_VALUE;
 		logging = jsonObject["Logging"].asBool();
 		consoleOutput = jsonObject["ConsoleOutput"].asBool();
 	}
@@ -1205,10 +1240,10 @@ void PriorityRequestGenerator::setLightSirenStatus(string jsonString)
 	if (parsingSuccessful)
 	{
 
-		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == EmergencyVehicle)
+		if ((jsonObject["LightSirenStatus"]).asString() == "ON" && vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
 			lightSirenStatus = true;
 
-		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == EmergencyVehicle)
+		else if ((jsonObject["LightSirenStatus"]).asString() == "OFF" && vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
 			lightSirenStatus = false;
 	}
 }

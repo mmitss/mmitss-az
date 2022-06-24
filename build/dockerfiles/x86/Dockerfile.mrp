@@ -2,7 +2,7 @@
 #    Dockerfile to build an x86 platform image for a field intersection       #
 #    Image name: mmitssuarizona/mmitss-mrp-x86                                #
 #-----------------------------------------------------------------------------#
-FROM mmitssuarizona/mmitss-x86-base:2.1
+FROM mmitssuarizona/mmitss-x86-base:3.0
 MAINTAINER D Cunningham (donaldcunningham@email.arizona.edu)
 
 COPY build/bin/WirelessMsgDecoder/x86/M_WirelessMsgDecoder /mmitss
@@ -17,5 +17,6 @@ COPY build/bin/V2XDataCollector/x86/M_V2XDataCollector /mmitss
 COPY build/bin/V2XDataTransfer/x86/M_V2XDataTransfer /mmitss
 COPY build/bin/SignalCoordinationRequestGenerator/x86/M_SignalCoordinationRequestGenerator /mmitss
 COPY build/bin/TrajectoryAware/x86/M_TrajectoryAware /mmitss
+COPY build/bin/TimePhaseDiagramTool/x86/M_TimePhaseDiagramTool /mmitss
 
 ENTRYPOINT ["/usr/bin/supervisord", "--configuration=/nojournal/bin/supervisord.conf"]

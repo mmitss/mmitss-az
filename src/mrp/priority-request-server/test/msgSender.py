@@ -18,12 +18,13 @@ s.bind((hostIp,port))
 prirorityRequestServerPort = config["PortNumber"]["PriorityRequestServer"]
 communicationInfo = (hostIp, prirorityRequestServerPort)
 
-f = open(fileName, 'r')
-data = f.read()
-s.sendto(data.encode(),communicationInfo)
-print (time.time())
-print(data.encode())
+while True:
+    f = open(fileName, 'r')
+    data = f.read()
+    s.sendto(data.encode(),communicationInfo)
 
-
-f.close()
+    print(("\n[{}]".format(time.time()) + " " + "Sent SRM msg to PRS"))
+    # print(("\n[{}]".format(time.time()) + " " + data))
+    time.sleep(1.0)
+    f.close()
 s.close()

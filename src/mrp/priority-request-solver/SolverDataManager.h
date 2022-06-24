@@ -27,9 +27,10 @@ using std::vector;
 #define VehicleClass_EmergencyVehicle 1
 #define VehicleClass_Transit 2
 #define VehicleClass_Truck 3
-#define VehicleClass_EmergencyVehicleSplitRequest 4
+#define VehicleClass_DilemmaZone 4
 #define VehicleClass_Coordination 5
-#define SignalCoordinationVehicleType 20
+#define VehicleClass_EmergencyVehicleSplitRequest 6
+#define CoordinationVehicleType 20
 #define Maximum_Number_Of_Priority_Request 15
 
 class SolverDataManager
@@ -39,6 +40,7 @@ private:
   int numberOfTruckInList{};
   int numberOfEVInList{};
   int numberOfEVSplitRequestInList{};
+  int numberOfDilemmaZoneRequestInList{};
   int numberOfCoordinationRequestInCycle1{};
   int numberOfCoordinationRequestInCycle2{};
   double maxEV_ETA{};
@@ -82,7 +84,6 @@ public:
   void modifyCurrentSignalStatus(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
   void adjustGreenTimeForPedCall(vector<int> P11, vector<int> P12, vector<int> P21, vector<int> P22);
   void generateDatFile(bool emergencyVehicleStatus, double earlyReturnValue1, double earlyReturnValue2, int coordinatedPhase1, int coordinatedPhase2);
-  void removedInfeasiblePriorityRequest();
   void validateGmaxForEVSignalTimingPlan(vector<int> EV_P11, vector<int> EV_P12, vector<int> EV_P21, vector<int> EV_P22);
   double calulateGmax(vector<int>PhaseGroup);
   bool findSignalGroupInList(int signalGroup);

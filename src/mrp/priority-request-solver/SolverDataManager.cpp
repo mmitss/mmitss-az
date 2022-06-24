@@ -98,7 +98,7 @@ vector<int> SolverDataManager::getRequestedSignalGroupFromPriorityRequestList()
 {
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
-        if (priorityRequestList[i].vehicleType != SignalCoordinationVehicleType)
+        if (priorityRequestList[i].vehicleType != CoordinationVehicleType)
             requestedSignalGroup.push_back(priorityRequestList[i].requestedPhase);
     }
     removeDuplicateSignalGroup();
@@ -186,7 +186,7 @@ void SolverDataManager::modifyGreenMax(bool emergencyVehicleStatus)
 void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 {
     int temporaryPhase{};
-    double pedistrianServiceTime{};
+    double pedestrianServiceTime{};
 
     if (!conflictingPedCallList.empty())
     {
@@ -199,22 +199,25 @@ void SolverDataManager::modifyGreenTimeForConflictingPedCalls()
 
             if (findConflictingPedCallSignalGroup != trafficSignalPlan.end())
             {
-                pedistrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
+                pedestrianServiceTime = findConflictingPedCallSignalGroup->pedWalk + findConflictingPedCallSignalGroup->pedClear;
 
-                if (findConflictingPedCallSignalGroup->minGreen < pedistrianServiceTime)
-                    findConflictingPedCallSignalGroup->minGreen = pedistrianServiceTime;
+                if (findConflictingPedCallSignalGroup->minGreen < pedestrianServiceTime)
+                    findConflictingPedCallSignalGroup->minGreen = pedestrianServiceTime;
 
-                if (findConflictingPedCallSignalGroup->maxGreen < pedistrianServiceTime)
-                    findConflictingPedCallSignalGroup->maxGreen = pedistrianServiceTime;
+                if (findConflictingPedCallSignalGroup->maxGreen < pedestrianServiceTime)
+                    findConflictingPedCallSignalGroup->maxGreen = pedestrianServiceTime;
             }
         }
     }
 }
 
+/*
+    - When pedestraian call is serving, minimum and maximum green time for that phase will be greater than or equal to pedestrian service time
+*/
 void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
 {
     int temporaryPhase{};
-    double pedistrianServiceTime{};
+    double pedestrianServiceTime{};
 
     if (trafficControllerStatus[0].currentPedCallStatus1)
     {
@@ -224,13 +227,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        pedistrianServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear;
+        pedestrianServiceTime = findSignalGroup1->pedWalk + findSignalGroup1->pedClear;
 
-        if (findSignalGroup1->minGreen < pedistrianServiceTime)
-            findSignalGroup1->minGreen = pedistrianServiceTime;
+        if (findSignalGroup1->minGreen < pedestrianServiceTime)
+            findSignalGroup1->minGreen = pedestrianServiceTime;
 
-        if (findSignalGroup1->maxGreen < pedistrianServiceTime)
-            findSignalGroup1->maxGreen = pedistrianServiceTime;
+        if (findSignalGroup1->maxGreen < pedestrianServiceTime)
+            findSignalGroup1->maxGreen = pedestrianServiceTime;
     }
 
     if (trafficControllerStatus[0].currentPedCallStatus2)
@@ -241,13 +244,13 @@ void SolverDataManager::modifyGreenTimeForCurrentPedCalls()
             std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
                          [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
 
-        pedistrianServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear;
+        pedestrianServiceTime = findSignalGroup2->pedWalk + findSignalGroup2->pedClear;
 
-        if (findSignalGroup2->minGreen < pedistrianServiceTime)
-            findSignalGroup2->minGreen = pedistrianServiceTime;
+        if (findSignalGroup2->minGreen < pedestrianServiceTime)
+            findSignalGroup2->minGreen = pedestrianServiceTime;
 
-        if (findSignalGroup2->maxGreen < pedistrianServiceTime)
-            findSignalGroup2->maxGreen = pedistrianServiceTime;
+        if (findSignalGroup2->maxGreen < pedestrianServiceTime)
+            findSignalGroup2->maxGreen = pedestrianServiceTime;
     }
 }
 
@@ -282,7 +285,6 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earl
     int numberOfRequest{};
     int numberOfCoordinationRequest{};
     int ReqSeq = 1;
-    int dilemmaZoneReq = 1;
     double ETA_Range{};
     ofstream fs;
 
@@ -331,55 +333,7 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earl
 
     fs << "param priorityType:= ";
 
-    if (!priorityRequestList.empty() && dilemmaZoneRequestList.empty())
-    {
-        for (size_t i = 0; i < priorityRequestList.size(); i++)
-        {
-            if (i < Maximum_Number_Of_Priority_Request)
-            {
-                vehicleClass = 0;
-                numberOfRequest++;
-
-                if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::special))
-                {
-                    numberOfEVInList++;
-                    vehicleClass = VehicleClass_EmergencyVehicle;
-                }
-
-                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::bus))
-                {
-                    numberOfTransitInList++;
-                    vehicleClass = VehicleClass_Transit;
-                }
-
-                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
-                {
-                    numberOfTruckInList++;
-                    vehicleClass = VehicleClass_Truck;
-                }
-
-                else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
-                {
-                    numberOfCoordinationRequest++;
-                    vehicleClass = VehicleClass_Coordination;
-                }
-
-                fs << numberOfRequest;
-                fs << " " << vehicleClass << " ";
-            }
-        }
-        while (numberOfRequest < Maximum_Number_Of_Priority_Request)
-        {
-            numberOfRequest++;
-            fs << numberOfRequest;
-            fs << " ";
-            fs << 0;
-            fs << " ";
-        }
-        fs << " ;  \n";
-    }
-
-    else if (!priorityRequestList.empty() && !dilemmaZoneRequestList.empty())
+    if (!priorityRequestList.empty())
     {
         for (size_t i = 0; i < priorityRequestList.size(); i++)
         {
@@ -406,10 +360,16 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earl
                     vehicleClass = VehicleClass_Transit;
                 }
 
-                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4))
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4) && !priorityRequestList[i].dilemmaZoneStatus)
                 {
                     numberOfTruckInList++;
                     vehicleClass = VehicleClass_Truck;
+                }
+
+                else if (priorityRequestList[i].vehicleType == static_cast<int>(MsgEnum::vehicleType::axleCnt4) && priorityRequestList[i].dilemmaZoneStatus)
+                {
+                    numberOfDilemmaZoneRequestInList++;
+                    vehicleClass = VehicleClass_DilemmaZone;
                 }
 
                 else if (priorityRequestList[i].vehicleType == coordinationVehicleType)
@@ -460,8 +420,8 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earl
         fs << 0;
 
     fs << " 4 ";
-    if (numberOfEVSplitRequestInList > 0)
-        fs << EmergencyVehicleSplitPhaseWeight;
+    if (numberOfDilemmaZoneRequestInList > 0)
+        fs << DilemmaZoneRequestWeight;
 
     else
         fs << 0;
@@ -473,52 +433,14 @@ void SolverDataManager::generateDatFile(bool emergencyVehicleStatus, double earl
     else
         fs << 0;
 
-    fs << " 6 0 7 0 8 0 9 0 10 0 ; \n";
+    fs << " 6 ";
+    if (numberOfEVSplitRequestInList > 0)
+        fs << EmergencyVehicleSplitPhaseWeight;
 
-    if (!dilemmaZoneRequestList.empty())
-    {
-        fs << "param DilemmaZoneWeight:= " << DilemmaZoneRequestWeight << ";\n";
-        fs << "param Dl (tr): 1 2 3 4 5 6 7 8:=\n";
-        for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
-        {
-            if (i < Maximum_Number_Of_Priority_Request)
-            {
-                fs << dilemmaZoneReq << "  ";
-                for (size_t j = 1; j < 9; j++)
-                {
-                    if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
-                        fs << dilemmaZoneRequestList[i].vehicleETA << "\t";
+    else
+        fs << 0;
 
-                    else
-                        fs << ".\t";
-                }
-                dilemmaZoneReq++;
-                fs << "\n";
-            }
-        }
-        fs << ";\n";
-        dilemmaZoneReq = 1;
-
-        fs << "param Du (tr): 1 2 3 4 5 6 7 8:=\n";
-        for (size_t i = 0; i < dilemmaZoneRequestList.size(); i++)
-        {
-            if (i < Maximum_Number_Of_Priority_Request)
-            {
-                fs << dilemmaZoneReq << "  ";
-                for (size_t j = 1; j < 9; j++)
-                {
-                    if (dilemmaZoneRequestList[i].requestedPhase == static_cast<int>(j))
-                        fs << dilemmaZoneRequestList[i].vehicleETA + dilemmaZoneRequestList[i].vehicleETA_Duration << "\t";
-
-                    else
-                        fs << ".\t";
-                }
-                dilemmaZoneReq++;
-                fs << "\n";
-            }
-        }
-        fs << ";\n";
-    }
+    fs << " 7 0 8 0 9 0 10 0 ; \n";
 
     fs << "param Rl (tr): 1 2 3 4 5 6 7 8:=\n";
 
@@ -725,50 +647,6 @@ double SolverDataManager::calulateGmax(vector<int> PhaseGroup)
     sumOfGmax = accumulate(greenTime.begin(), greenTime.end(), 0);
 
     return sumOfGmax;
-}
-
-/*
-    - There may be infeasible solution if the coordination request is placed after the second cycle.
-    - The method will delete those infeasible coordination request
-*/
-void SolverDataManager::removedInfeasiblePriorityRequest()
-{
-    double remainingTimeInTwoCycleLength{}; //(cycleLength * 2) - trafficControllerStatus[0].elapsedGreen1;
-    double sumOfPhaseDuration{};
-    double sumOfElapsedPhaseDuration{};
-    int temporaryVehicleID{};
-    vector<double> phaseDuration{};
-    vector<double> elapsedPhaseDuration{};
-
-    for (int i = 0; i < 4; i++)
-    {
-        phaseDuration.push_back(trafficSignalPlan[i].maxGreen);
-        phaseDuration.push_back(trafficSignalPlan[i].yellowChange);
-        phaseDuration.push_back(trafficSignalPlan[i].redClear);
-
-        if (trafficSignalPlan[i].phaseNumber < trafficControllerStatus[0].startingPhase1)
-        {
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].maxGreen);
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].yellowChange);
-            elapsedPhaseDuration.push_back(trafficSignalPlan[i].redClear);
-        }
-    }
-    sumOfPhaseDuration = accumulate(phaseDuration.begin(), phaseDuration.end(), 0);
-    sumOfElapsedPhaseDuration = accumulate(elapsedPhaseDuration.begin(), elapsedPhaseDuration.end(), 0);
-    remainingTimeInTwoCycleLength = (sumOfPhaseDuration * 2) - sumOfElapsedPhaseDuration - trafficControllerStatus[0].elapsedGreen1;
-
-    for (size_t i = 0; i < priorityRequestList.size(); i++)
-    {
-        if ((priorityRequestList[i].vehicleETA + priorityRequestList[i].vehicleETA_Duration) > remainingTimeInTwoCycleLength)
-        {
-            temporaryVehicleID = priorityRequestList[i].vehicleID;
-            vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                             [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
-
-            priorityRequestList.erase(findVehicleIDOnList);
-            i--;
-        }
-    }
 }
 
 /*

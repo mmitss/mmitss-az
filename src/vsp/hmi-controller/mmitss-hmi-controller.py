@@ -19,6 +19,7 @@ import socket
 import json
 import time
 import os
+import J2735Helper
 
 from Position3D import Position3D
 from BasicVehicle import BasicVehicle
@@ -42,6 +43,9 @@ hmiIP = '127.0.0.1' #hmi runs on the same computer/laptop
 hmiPort = 20010
 hmi = (hmiIP, hmiPort)
 
+# Create an object of UtcHelper class (this converts timeMark (SAE J2735 object) to deciseconds for display
+utcHelper = J2735Helper.J2735Helper()
+
 bool_map = {"TRUE": True, "True": True, "FALSE": False, "False": False} # this could be come the SPaT phaseStatus data map
 spat_map_active = False
 spat_map_ID = -1 # map ID's are positive integers, so if no map is active set this to -1 to avoid any positive intergre number map
@@ -58,7 +62,12 @@ spat_state = {0 : "unknown", # based on the MOvementPhaseState from the SAE J273
               9 : "caution-Conflicting-Traffic", # flashing yellow (yield)
               "do_not_walk": "stop-And-Remain",
               "ped_clear": "protected-clearance",
-              "walk": "protected-Movement-Allowed"
+              "walk": "protected-Movement-Allowed",
+              3 : "stop-And-Remain", # red light (Red ball) [Don't walk]
+              6 : "protected-Movement-Allowed",  # protected green (e.g. left turn arrow) - Green Arrow (direction?) [also walk]
+              7 : "permissive-clearance", # permissive yellow (clear intersection) - Yellow 
+              8 : "protected-clearance", # protected yellow (clear intersection) - Yellow arrow  [ also ped clear= Flashing Don;t Walk]
+              
               } 
 spat_signal_head = {"stop-And-Remain" : "red", "stop-Then-Proceed" : "red_flash", "protected-Movement-Allowed" : "green", "permissive-Movement-Allowed" : "green",
     "permissive-clearance" : "yellow", "protected-clearance" : "yellow",  "dark" : "dark", "unknown" : "unknown",
@@ -235,7 +244,7 @@ while True:
 
     try:
 
-        if sourcePort == 10002 :
+        if sourcePort == 10002:
             # process the remote vehicle and SPaT data
             # print('remote bsm and spat data', line)
 
@@ -267,7 +276,44 @@ while True:
                     tick_SPaT = newSPaT
                 if spat_map_active :
                     markSPaTtime = time.time()
-                    SPaT_data = remoteInterfacejson
+                    SPaT_data = json.loads(utcHelper.modify_spat_json_to_deciSecFromNow(json.dumps(remoteInterfacejson)))
+                    # Fill inactive phases with "0"
+                    vehPhasesLength = len(SPaT_data["Spat"]["phaseState"])
+                    activeVehPhases = [phase["phaseNo"] for phase in SPaT_data["Spat"]["phaseState"]]
+                    
+                    pedPhasesLength = len(SPaT_data["Spat"]["pedPhaseState"])
+                    activePedPhases = [phase["phaseNo"] for phase in SPaT_data["Spat"]["pedPhaseState"]]
+                    
+                    vehPhaseIndexer = 0
+                    for vehPhase in range(8):
+                        phaseNo = vehPhase + 1
+                        if phaseNo not in activeVehPhases:
+                            phaseDict = [dict({
+                                                "phaseNo": phaseNo,
+                                                "currState": 0,
+                                                "startTime": -1,
+                                                "minEndTime": -1,
+                                                "maxEndTime": -1,
+                                                "elapsedTime": -1
+                                            })]
+                            SPaT_data["Spat"]["phaseState"] += phaseDict
+                    SPaT_data["Spat"]["phaseState"] = sorted(SPaT_data["Spat"]["phaseState"], key=lambda k: k['phaseNo']) 
+
+                    
+                    for pedPhase in range(8):
+                        phaseNo = pedPhase + 1
+                        if phaseNo not in activePedPhases:
+                            phaseDict = [dict({
+                                                "phaseNo": phaseNo,
+                                                "currState": 0,
+                                                "startTime": -1,
+                                                "minEndTime": -1,
+                                                "maxEndTime": -1,
+                                                "elapsedTime": -1
+                                            })]
+                            SPaT_data["Spat"]["pedPhaseState"] += phaseDict
+                    SPaT_data["Spat"]["pedPhaseState"] = sorted(SPaT_data["Spat"]["pedPhaseState"], key=lambda k: k['phaseNo']) 
+
                     SPaT = []
                     pedSPaT = []
                     if SPaT_data["Spat"]["IntersectionState"]["intersectionID"] == spat_map_ID :

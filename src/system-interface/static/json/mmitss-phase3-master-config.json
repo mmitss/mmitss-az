@@ -12,13 +12,14 @@
 	"VehicleType": "Transit",
 	"Logging": true,
 	"ConsoleOutput": true,
+	"TimePhaseDiagram": true,
 	"SRMTimedOutTime": 10.0,
 	"ScheduleExecutionBuffer": "Deprecated",
 	"SystemPerformanceTimeInterval": 300.0,
 	"ApplicationPlatform": "roadside",
+	"CoordinationPlanCheckingTimeInterval": 300,
 	"PeerDataDecoding": false,
 	"OffmapBsmFiltering": true,
-	"CoordinationPlanCheckingTimeInterval": 300,
 	"PortNumber": {
 		"MessageTransceiver": {
 			"MessageSender": "Deprecated",
@@ -51,7 +52,8 @@
 		"TrajectoryAware_MapEngineInterface": 20023,
 		"MapEngine": "Component is Yet to Come",
 		"LightSirenStatusManager": 20025,
-		"PeerToPeerPriority": 20026
+		"PeerToPeerPriority": 20026,
+		"TimePhaseDiagramTool": 20027
 	},
 	"psid": {
 		"map": "8002",
@@ -116,15 +118,15 @@
 	},
 	"DataTransfer": {
 		"server": {
-			"data_directory": "/home/nvaltekar/Desktop",
-			"ip_address": "127.0.0.1",
+			"data_directory": "/home/administrator/mmitss",
+			"ip_address": "172.3.1.91",
 			"username": "username",
 			"password": "password"
 		},
 		"intersection": [
 			{
-				"name": "interesection-1",
-				"v2x-data_location": "/home/nvaltekar/testdata"
+				"name": "daisy-gavilan",
+				"v2x-data_location": "/home/ubuntu/daisy-gavilan/bin/v2x-data"
 			}
 		],
 		"StartTime_PushToServer": {
@@ -138,6 +140,7 @@
 		"TransitWeight": 1.0,
 		"TruckWeight": 1.0,
 		"DilemmaZoneRequestWeight": 20.0,
-		"CoordinationWeight": 1.0
+		"CoordinationWeight": 0.1,
+		"FlexibilityWeight": 0.01
 	}
 }

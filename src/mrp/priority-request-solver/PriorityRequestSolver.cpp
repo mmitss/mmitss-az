@@ -147,7 +147,7 @@ double PriorityRequestSolver::getCoefficientOfFrictionValue(double vehicleSpeed)
 /*
     - The following method responsible for checking whether any heavy vehicle is in the dilemma zoe or not.
 */
-void PriorityRequestSolver::createDilemmaZoneRequestList()
+void PriorityRequestSolver::setDilemmaZoneRequesStatus()
 {
     double initialVehicleSpeed{};
     double stoppingSightDistance{};
@@ -164,16 +164,16 @@ void PriorityRequestSolver::createDilemmaZoneRequestList()
             coefficientOfFriction = getCoefficientOfFrictionValue(initialVehicleSpeed);
             stoppingSightDistance = 1.47 * perceptionResponseTime * initialVehicleSpeed + std::pow(initialVehicleSpeed, 2) / (30 * coefficientOfFriction);
             if (priorityRequestList[i].vehicleDistanceFromStopBar <= stoppingSightDistance)
-
-                dilemmaZoneRequestList.push_back(priorityRequestList[i]);
+                priorityRequestList[i].dilemmaZoneStatus = true;
         }
     }
 }
 
 /*
-    - If there is EV priority request in the list, following method will delete all the priority request from the list apart from EV request.
-    - Check vehicle type for all the received request.
-    - If vehicle type is not EV(For EV vehicleType is 2) remove that request from the list.
+    - If priority weight is zero for a particular type of request, following method removes those requests which matches the corresponding vehicle type.
+    - If there is EV priority request in the list, following method deletes all the priority requests from the list apart from EV request.
+        - Checks vehicle type for all the received request.
+        - If vehicle type is not EV(For EV vehicleType is 2) remove that request from the list.
 */
 void PriorityRequestSolver::modifyPriorityRequestList()
 {
@@ -182,15 +182,29 @@ void PriorityRequestSolver::modifyPriorityRequestList()
     for (size_t i = 0; i < priorityRequestList.size(); i++)
     {
         temporaryVehicleID = priorityRequestList[i].vehicleID;
-        if (priorityRequestList[i].vehicleType != 2)
+
+        if ((priorityRequestList[i].vehicleType == EmergencyVehicle && EmergencyVehicleWeight == 0.0) ||
+            (priorityRequestList[i].vehicleType == Transit && TransitWeight == 0.0) || (priorityRequestList[i].vehicleType == Truck && TruckWeight == 0.0) ||
+            (priorityRequestList[i].vehicleType == CoordinationVehicleType && CoordinationWeight == 0.0))
         {
             vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                             [&](RequestList const &p) { return p.vehicleID == temporaryVehicleID; });
+                                                                             [&](RequestList const &p)
+                                                                             { return p.vehicleID == temporaryVehicleID; });
 
             priorityRequestList.erase(findVehicleIDOnList);
             i--;
         }
-        else
+
+        else if (emergencyVehicleStatus && priorityRequestList[i].vehicleType != EmergencyVehicle && !priorityRequestList[i].dilemmaZoneStatus)
+        {
+            vector<RequestList>::iterator findVehicleIDOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
+                                                                             [&](RequestList const &p)
+                                                                             { return p.vehicleID == temporaryVehicleID; });
+
+            priorityRequestList.erase(findVehicleIDOnList);
+            i--;
+        }
+        else if (emergencyVehicleStatus)
             noOfEVInList++;
     }
 }
@@ -252,7 +266,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -275,7 +290,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -314,7 +330,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -330,7 +347,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -360,7 +378,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -376,7 +395,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -409,7 +429,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -439,7 +460,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -470,7 +492,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -492,7 +515,8 @@ void PriorityRequestSolver::managePriorityRequestListForEV()
                 for (size_t j = 0; j < priorityRequestList.size(); j++)
                 {
                     vector<RequestList>::iterator findSignalGroupOnList = std::find_if(std::begin(priorityRequestList), std::end(priorityRequestList),
-                                                                                       [&](RequestList const &p) { return p.requestedPhase == temporaryPhase; });
+                                                                                       [&](RequestList const &p)
+                                                                                       { return p.requestedPhase == temporaryPhase; });
 
                     if (findSignalGroupOnList != priorityRequestList.end())
                     {
@@ -516,9 +540,9 @@ void PriorityRequestSolver::setOptimizationInput()
 {
     if (emergencyVehicleStatus)
     {
-        OptimizationModelManager optimizationModelManager;
+        OptimizationModelManager optimizationModelManager(FlexibilityWeight);
 
-        createDilemmaZoneRequestList();
+        setDilemmaZoneRequesStatus();
         modifyPriorityRequestList();
         getRequestedSignalGroup();
         managePriorityRequestListForEV();
@@ -542,6 +566,7 @@ void PriorityRequestSolver::setOptimizationInput()
 
     else if (transitOrTruckRequestStatus)
     {
+        modifyPriorityRequestList();
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
                                             trafficSignalPlan, conflictingPedCallList, EmergencyVehicleWeight,
                                             EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
@@ -559,6 +584,7 @@ void PriorityRequestSolver::setOptimizationInput()
 
     else if (signalCoordinationRequestStatus)
     {
+        modifyPriorityRequestList();
         SolverDataManager solverDataManager(dilemmaZoneRequestList, priorityRequestList, trafficControllerStatus,
                                             trafficSignalPlan_SignalCoordination, conflictingPedCallList, EmergencyVehicleWeight,
                                             EmergencyVehicleSplitPhaseWeight, TransitWeight, TruckWeight,
@@ -571,7 +597,6 @@ void PriorityRequestSolver::setOptimizationInput()
         solverDataManager.modifyGreenTimeForCurrentPedCalls();
         solverDataManager.adjustGreenTimeForPedCall(P11, P12, P21, P22);
         solverDataManager.modifyCurrentSignalStatus(P11, P12, P21, P22);
-        // solverDataManager.removedInfeasiblePriorityRequest();
         solverDataManager.generateDatFile(emergencyVehicleStatus, earlyReturnedValue1, earlyReturnedValue2, coordinatedPhase1, coordinatedPhase2);
         priorityRequestList = solverDataManager.getPriorityRequestList();
     }
@@ -658,43 +683,51 @@ skip:
     - This method calls finEVInList() function to check whether emergency vehicle is in the list or not
     - This method also calls setOptimizationInput() to process all the input data for the GLPK solver and GLPKSolver() method to solve the optimization problem.
     - This function finally calls ScheduleManage class to process the schedule for the TCI in JSON string format.
+    - This function doesn't solve the optimization problem and send the schedule when priority request list is empty (priority request list is empty when priority weight is zero). 
 */
 string PriorityRequestSolver::getScheduleforTCI()
 {
     scheduleJsonString.clear();
     setOptimizationInput();
-    GLPKSolver();
 
-    if (emergencyVehicleStatus)
+    if (!priorityRequestList.empty())
     {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, emergencyVehicleStatus);
+        GLPKSolver();
 
-        scheduleManager.obtainRequiredSignalGroup();
-        scheduleManager.readOptimalSignalPlan();
-        scheduleManager.createEventList();
-        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
-        scheduleJsonString = scheduleManager.createScheduleJsonString();
+        if (emergencyVehicleStatus)
+        {
+            ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_EV, emergencyVehicleStatus);
+
+            scheduleManager.obtainRequiredSignalGroup();
+            scheduleManager.readOptimalSignalPlan();
+            scheduleManager.createEventList();
+            optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+            scheduleJsonString = scheduleManager.createScheduleJsonString();
+        }
+
+        else if (transitOrTruckRequestStatus)
+        {
+            ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
+            scheduleManager.obtainRequiredSignalGroup();
+            scheduleManager.readOptimalSignalPlan();
+            scheduleManager.createEventList();
+            optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+            scheduleJsonString = scheduleManager.createScheduleJsonString();
+        }
+
+        else if (signalCoordinationRequestStatus)
+        {
+            ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
+            scheduleManager.obtainRequiredSignalGroup();
+            scheduleManager.readOptimalSignalPlan();
+            scheduleManager.createEventList();
+            optimalSolutionStatus = scheduleManager.validateOptimalSolution();
+            scheduleJsonString = scheduleManager.createScheduleJsonString();
+        }
     }
 
-    else if (transitOrTruckRequestStatus)
-    {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan, emergencyVehicleStatus);
-        scheduleManager.obtainRequiredSignalGroup();
-        scheduleManager.readOptimalSignalPlan();
-        scheduleManager.createEventList();
-        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
-        scheduleJsonString = scheduleManager.createScheduleJsonString();
-    }
-
-    else if (signalCoordinationRequestStatus)
-    {
-        ScheduleManager scheduleManager(priorityRequestList, trafficControllerStatus, trafficSignalPlan_SignalCoordination, emergencyVehicleStatus);
-        scheduleManager.obtainRequiredSignalGroup();
-        scheduleManager.readOptimalSignalPlan();
-        scheduleManager.createEventList();
-        optimalSolutionStatus = scheduleManager.validateOptimalSolution();
-        scheduleJsonString = scheduleManager.createScheduleJsonString();
-    }
+    else 
+        optimalSolutionStatus = false;
 
     priorityRequestList.clear();
     dilemmaZoneRequestList.clear();
@@ -784,7 +817,8 @@ void PriorityRequestSolver::getEVTrafficSignalPlan()
         temporaryPhase = temporaryPhaseNumber.at(i);
 
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryPhase; });
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p)
+                                                                                                        { return p.phaseNumber == temporaryPhase; });
 
         if (findSignalGroupOnList != trafficSignalPlan_EV.end())
             trafficSignalPlan_EV.erase(findSignalGroupOnList);
@@ -839,7 +873,8 @@ void PriorityRequestSolver::validateEVTrafficSignalPlan()
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findAssociatedSignalGroupOnList =
                 std::find_if(std::begin(trafficSignalPlan_EV), std::end(trafficSignalPlan_EV),
-                             [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == associatedSignalGroup; });
+                             [&](TrafficControllerData::TrafficSignalPlan const &p)
+                             { return p.phaseNumber == associatedSignalGroup; });
 
             if (findAssociatedSignalGroupOnList != trafficSignalPlan_EV.end())
             {
@@ -888,10 +923,10 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
     findEmergencyVehicleRequestInList();
     findTransitOrTruckRequestInList();
     findCoordinationRequestInList();
-    
+
     if (transitOrTruckRequestStatus || emergencyVehicleStatus)
     {
-        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(emergencyVehicleStatus, transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
                                                                       coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                       logging, consoleOutput, dummyPhasesList,
                                                                       trafficSignalPlan);
@@ -912,7 +947,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
         elapsedTimeInCycle = fmod((currentTimeOfToday - coordinationStartTime - offset), cycleLength);
         loggingData("The elapsed time in a cycle is " + std::to_string(elapsedTimeInCycle));
 
-        TrafficConrtollerStatusManager trafficConrtollerStatusManager(transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
+        TrafficConrtollerStatusManager trafficConrtollerStatusManager(emergencyVehicleStatus, transitOrTruckRequestStatus, signalCoordinationRequestStatus, cycleLength, offset,
                                                                       coordinationStartTime, elapsedTimeInCycle, coordinatedPhase1, coordinatedPhase2,
                                                                       logging, consoleOutput, dummyPhasesList,
                                                                       trafficSignalPlan_SignalCoordination);
@@ -937,7 +972,7 @@ void PriorityRequestSolver::getCurrentSignalStatus(string jsonString)
 */
 void PriorityRequestSolver::setCurrentSignalTimingPlan(string jsonString)
 {
-    OptimizationModelManager optimizationModelManager;
+    OptimizationModelManager optimizationModelManager(FlexibilityWeight);
     TrafficControllerData::TrafficSignalPlan signalPlan;
     Json::Value jsonObject;
     Json::CharReaderBuilder builder;
@@ -1141,7 +1176,8 @@ void PriorityRequestSolver::modifySignalTimingPlan()
         temporarySignalGroup = trafficSignalPlan[i].phaseNumber;
 
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p)
+                                                                                                        { return p.phaseNumber == temporarySignalGroup; });
 
         if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan[i].minGreen == 0))
         {
@@ -1151,7 +1187,8 @@ void PriorityRequestSolver::modifySignalTimingPlan()
                 temporaryCompitableSignalGroup = temporarySignalGroup - NumberOfPhasePerRing;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan), std::end(trafficSignalPlan),
-                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p)
+                                                                                                                      { return p.phaseNumber == temporaryCompitableSignalGroup; });
 
             findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
             findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
@@ -1182,7 +1219,8 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
         temporarySignalGroup = trafficSignalPlan_SignalCoordination[i].phaseNumber;
 
         vector<TrafficControllerData::TrafficSignalPlan>::iterator findSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporarySignalGroup; });
+                                                                                                        [&](TrafficControllerData::TrafficSignalPlan const &p)
+                                                                                                        { return p.phaseNumber == temporarySignalGroup; });
 
         if ((temporarySignalGroup % 2 == 0) && (trafficSignalPlan_SignalCoordination[i].minGreen == 0 || trafficSignalPlan_SignalCoordination[i].maxGreen == 0))
         {
@@ -1193,7 +1231,8 @@ void PriorityRequestSolver::modifyCoordinationSignalTimingPlan()
                 temporaryCompitableSignalGroup = temporarySignalGroup - 4;
 
             vector<TrafficControllerData::TrafficSignalPlan>::iterator findCompitableSignalGroupOnList = std::find_if(std::begin(trafficSignalPlan_SignalCoordination), std::end(trafficSignalPlan_SignalCoordination),
-                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p) { return p.phaseNumber == temporaryCompitableSignalGroup; });
+                                                                                                                      [&](TrafficControllerData::TrafficSignalPlan const &p)
+                                                                                                                      { return p.phaseNumber == temporaryCompitableSignalGroup; });
 
             findSignalGroupOnList->pedWalk = findCompitableSignalGroupOnList->pedWalk;
             findSignalGroupOnList->pedClear = findCompitableSignalGroupOnList->pedClear;
@@ -1326,6 +1365,7 @@ void PriorityRequestSolver::getPriorityWeights()
     TruckWeight = jsonObject["PriorityParameter"]["TruckWeight"].asDouble();
     DilemmaZoneRequestWeight = jsonObject["PriorityParameter"]["DilemmaZoneRequestWeight"].asDouble();
     CoordinationWeight = jsonObject["PriorityParameter"]["CoordinationWeight"].asDouble();
+    FlexibilityWeight = jsonObject["PriorityParameter"]["FlexibilityWeight"].asDouble();
 
     priorityWeightsCheckedTime = currentTime;
     displayConsoleData("priority requests weights are updated");
@@ -1362,6 +1402,25 @@ string PriorityRequestSolver::getSignalCoordinationTimingPlanRequestString()
     builder["indentation"] = "";
 
     jsonObject["MsgType"] = "CoordinationPlanRequest";
+    jsonString = Json::writeString(builder, jsonObject);
+
+    return jsonString;
+}
+
+/*
+    - The following method creates Json string message which will send to Time-Phase-Diagram-Tool for generating diagrams if require.
+*/
+string PriorityRequestSolver::getTimePhaseDiagramMessageString()
+{
+    std::string jsonString{};
+    Json::Value jsonObject;
+    Json::StreamWriterBuilder builder;
+    builder["commentStyle"] = "None";
+    builder["indentation"] = "";
+
+    jsonObject["MsgType"] = "TimePhaseDiagram";
+    jsonObject["OptimalSolutionStatus"] = optimalSolutionStatus;
+
     jsonString = Json::writeString(builder, jsonObject);
 
     return jsonString;
@@ -1455,7 +1514,7 @@ void PriorityRequestSolver::readConfigFile()
     {
         double timeStamp = getPosixTimestamp();
         logFile.open(logFileName);
-        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
+        logFile << "[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Open PRSolver log file " << intersectionName << " intersection" << endl;
     }
 }
 
@@ -1468,7 +1527,7 @@ void PriorityRequestSolver::loggingData(string logString)
 
     if (logging)
     {
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] [" << getVerboseTimestamp() << "] ";
         logFile << logString << endl;
     }
 }
@@ -1482,7 +1541,7 @@ void PriorityRequestSolver::displayConsoleData(string consoleString)
 
     if (consoleOutput)
     {
-        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] ";
+        cout << "\n[" << fixed << showpoint << setprecision(4) << timestamp << "] [" << getVerboseTimestamp() << "] ";
         cout << consoleString << endl;
     }
 }
@@ -1498,13 +1557,13 @@ void PriorityRequestSolver::loggingOptimizationData()
     {
         double timeStamp = getPosixTimestamp();
 
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization data file is following:\n\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Current optimization data file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationModelData.dat");
         for (string line; getline(infile, line);)
             logFile << line << endl;
         infile.close();
 
-        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] Current optimization results file is following:\n\n";
+        logFile << "\n[" << fixed << showpoint << setprecision(4) << timeStamp << "] [" << getVerboseTimestamp() << "] Current optimization results file is following:\n\n";
         infile.open("/nojournal/bin/OptimizationResults.txt");
         for (std::string line; getline(infile, line);)
             logFile << line << endl;

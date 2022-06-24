@@ -18,13 +18,21 @@ This is a web-based Python Flask application that has the following functionalit
 ***************************************************************************************
 """
 
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, send_from_directory
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, BooleanField, DecimalField, validators, SelectField
 from wtforms.validators import *
 from flask_bootstrap import Bootstrap
 import os
 import sys
+import pandas as pd
+import csv
+import json
+import glob
+from PIL import Image
+import base64
+import io
+import fnmatch
 
 # Initialize application for either PyInstaller or Development
 if getattr(sys, 'frozen', False):
@@ -78,6 +86,7 @@ class ConfigurationForm(FlaskForm):
     vehicleType                     = SelectField('Vehicle Type', choices = ["Transit", "EmergencyVehicle", "Truck"])
     logging                         = BooleanField('Logging')
     consoleOutput                   = BooleanField('Console Output')
+    timePhaseDiagram   = BooleanField('Time Phase Diagram')
     srmTimedOutTime                 = StringField('SRM Timed Out Time (seconds)')
     scheduleExecutionBuffer         = StringField('Schedule Execution Buffer')
     systemPerformanceTimeInterval   = StringField('System Performance Time Interval (seconds)')
@@ -115,6 +124,7 @@ class ConfigurationForm(FlaskForm):
     portNumberMapEngine                             = IntegerField('Port Number: Map Engine')
     portNumberLightSirenStatusManager               = IntegerField('Port Number: Light Siren Status Manager')
     portNumberPeerToPeerPriority                    = IntegerField('Port Number: Peer To Peer Priority')
+    portNumberTimePhaseDiagramTool                  = IntegerField('Port Number: Time Phase Diagram Tool')
     psidMap = StringField('PSID: Map')
     psidSPaT = StringField('PSID: SPaT')    
     psidRSM = StringField('PSID: RSM')    
@@ -129,12 +139,12 @@ class ConfigurationForm(FlaskForm):
     msgIdSSMLower = StringField('Msg ID: SSM Lower')
     msgIdSSMUpper = StringField('Msg ID: SSM Upper')
     msgIdBSM = StringField('Msg ID: BSM')
-    txChannelMap    = IntegerField('Tx Channel: Map')
-    txChannelSPaT   = IntegerField('Tx Channel: SPaT')    
-    txChannelRSM    = IntegerField('Tx Channel: RSM')    
-    txChannelSRM    = IntegerField('Tx Channel: SRM')    
-    txChannelSSM    = IntegerField('Tx Channel: SSM')    
-    txChannelBSM    = IntegerField('Tx Channel: BSM')
+    txChannelMap    = StringField('Tx Channel: Map')
+    txChannelSPaT   = StringField('Tx Channel: SPaT')    
+    txChannelRSM    = StringField('Tx Channel: RSM')    
+    txChannelSRM    = StringField('Tx Channel: SRM')    
+    txChannelSSM    = StringField('Tx Channel: SSM')    
+    txChannelBSM    = StringField('Tx Channel: BSM')
     txModeMap       = StringField('Tx Mode: Map')
     txModeSPaT      = StringField('Tx Mode: SPaT')    
     txModeRSM       = StringField('Tx Mode: RSM')    
@@ -173,7 +183,8 @@ class ConfigurationForm(FlaskForm):
     priorityTransitWeight                = StringField('Transit Weight')    
     priorityTruckWeight                 = StringField('Truck Weight')    
     priorityDilemmaZoneRequestWeight      = StringField('Dilemma Zone Request Weight (Truck Only)')    
-    priorityCoordinationWeight            = StringField('Coordination Weight')    
+    priorityCoordinationWeight            = StringField('Coordination Weight')
+    priorityFlexibilityWeight             = StringField('Flexibility Weight')    
     coordinationPlanCheckingTimeInterval  = IntegerField('Coordination Plan Update Interval (seconds)')    
 
 # System Configuration data object
@@ -192,6 +203,12 @@ class SysConfig:
         self.vehicleType = data['VehicleType']
         self.logging = data['Logging']
         self.consoleOutput = data['ConsoleOutput']
+        # check for past versions that may not have element
+        try:
+            self.timePhaseDiagram = data['TimePhaseDiagram']
+        except (KeyError):
+            flash("Time Phase Diagram field has not been saved.")
+            self.timePhaseDiagram = False
         self.srmTimedOutTime = data['SRMTimedOutTime']
         self.scheduleExecutionBuffer = data['ScheduleExecutionBuffer']
         self.systemPerformanceTimeInterval = data['SystemPerformanceTimeInterval']
@@ -229,6 +246,11 @@ class SysConfig:
         self.portNumberMapEngine = data['PortNumber']['MapEngine']
         self.portNumberLightSirenStatusManager = data['PortNumber']['LightSirenStatusManager']
         self.portNumberPeerToPeerPriority = data['PortNumber']['PeerToPeerPriority']
+        try:
+            self.portNumberTimePhaseDiagramTool = data['PortNumber']['TimePhaseDiagramTool']
+        except (KeyError):
+            flash("Time Phase Diagram Tool field has not been saved.")
+            self.portNumberTimePhaseDiagramTool = "0"
         self.psidMap = data['psid']['map']
         self.psidSPaT = data['psid']['spat']
         self.psidRSM = data['psid']['rsm']
@@ -288,7 +310,21 @@ class SysConfig:
         self.priorityTruckWeight                = data['PriorityParameter']['TruckWeight']
         self.priorityDilemmaZoneRequestWeight   = data['PriorityParameter']['DilemmaZoneRequestWeight']
         self.priorityCoordinationWeight         = data['PriorityParameter']['CoordinationWeight']
+        try:
+            self.priorityFlexibilityWeight          = data['PriorityParameter']['FlexibilityWeight']
+        except (KeyError):
+            flash("Flexibility Weight field has not been saved.")
+            self.priorityFlexibilityWeight          = "0.00"
         self.coordinationPlanCheckingTimeInterval   = data['CoordinationPlanCheckingTimeInterval']
+
+'''
+def buildMissingFieldsList(missingFields):
+    if missing_fields_message.Empty()
+        # add preamble
+    else
+        # append missing fields
+    return intList
+'''
 
 def convertToList(formString):
     # remove any brackets
@@ -318,6 +354,7 @@ def prepareJSONData(data, form):
     data['VehicleType']= form.vehicleType.data
     data['Logging']= form.logging.data
     data['ConsoleOutput']=form.consoleOutput.data
+    data['TimePhaseDiagram']=form.timePhaseDiagram.data
     data['SRMTimedOutTime']= float(form.srmTimedOutTime.data)
     data['ScheduleExecutionBuffer']= 'Deprecated'
     data['SystemPerformanceTimeInterval']= float(form.systemPerformanceTimeInterval.data)
@@ -354,6 +391,7 @@ def prepareJSONData(data, form):
     data['PortNumber']['MapEngine']    = 'Component is Yet to Come'
     data['PortNumber']['LightSirenStatusManager']    = form.portNumberLightSirenStatusManager.data
     data['PortNumber']['PeerToPeerPriority']    = form.portNumberPeerToPeerPriority.data
+    data['PortNumber']['TimePhaseDiagramTool']   = form.portNumberTimePhaseDiagramTool.data
     data['psid']['map']    = form.psidMap.data    
     data['psid']['spat']    = form.psidSPaT.data
     data['psid']['rsm']    = form.psidRSM.data
@@ -413,6 +451,7 @@ def prepareJSONData(data, form):
     data['PriorityParameter']['TruckWeight']                        = float(form.priorityTruckWeight.data)
     data['PriorityParameter']['DilemmaZoneRequestWeight']           = float(form.priorityDilemmaZoneRequestWeight.data)
     data['PriorityParameter']['CoordinationWeight']                 = float(form.priorityCoordinationWeight.data)
+    data['PriorityParameter']['FlexibilityWeight']                  = float(form.priorityFlexibilityWeight.data)
     data['CoordinationPlanCheckingTimeInterval']                    = form.coordinationPlanCheckingTimeInterval.data
 
 # configuration viewer / editor
@@ -441,6 +480,116 @@ def configuration():
             flash('Configuration Updated')  
     
     return render_template('configuration.html', pageTitle=pageTitle, form=form)
+
+@app.route('/message_count/',methods=['GET','POST'])
+def message_count():
+    
+    #read the cofig file to extract the intersection name and platform
+    with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
+        data = json.load(json_file)
+        
+        thisPlatform = data['ApplicationPlatform']
+        intName = data['IntersectionName']
+        
+    #ran a loop to search for the file matching the below mentioned pattern
+    file = ''
+    for file in glob.glob('/nojournal/bin/v2x-data/' + intName + '*/' + intName + '_msgCountsLog_*.csv'):
+        i = 0
+
+    #read the csv file and extracted the required columns and stored in the dataframe "df"   
+    if (file):
+        col_list = ["log_timestamp_verbose","msg_type","msg_count"]
+        df = pd.read_csv(file ,usecols=col_list)      
+        if(df.empty):
+            t2 = 0
+            if thisPlatform == "roadside":
+                platform = "Infrastructure Side (MRP)"
+            elif thisPlatform == "vehicle":
+                platform = "Vehicle Side (VSP)"
+            df.columns = ["Time","Message","Count"]
+            df1 = df2 = df
+        else:
+            #read the csv file again but just the timestamp column and determined the latest refreshed rate
+            #stored the dataframe in "rt" and assigned the Time column to "t1" as a list
+            rt = pd.read_csv(file , usecols= ["log_timestamp_verbose"])
+            t1= rt["log_timestamp_verbose"].tolist()
+            #t2 will be the most latest added time
+            t2 = max(t1)
+            #assigned names to the respective columns
+            df.columns = ["Time","Message","Count"]
+            #generated additional column to contain the cumulative count grouped by each message type
+            df['Cumulative'] = df.groupby(['Message'])['Count'].cumsum(axis=0)
+            #sorted the dataframe in descending order to obtain the latest entries on top and assigned to new dataframe "new_df"
+            new_df = df.sort_values(['Time'], ascending=False)
+            #dropped the rows with duplicate values and kept the latest entry i.e. the first entry of each mssg type
+            new_df = new_df.drop_duplicates(subset='Message', keep="first")
+
+            #checking whether to display the MRP or VSP 
+            if thisPlatform == "roadside":
+                #df1 is the dataframe folding the transmitted table
+                df1 = new_df
+                #df2 is the dataframe holding the received table
+                df2 = new_df
+                platform = "Infrastructure Side (MRP)"
+                #dropping unrequired rows from both dataframes to separate transmitted and received table
+                df1 = df1[df1.Message != 'SRM']
+                df1 = df1[df1.Message != 'RemoteBSM']
+                df1 = df1[df1.Message != 'HostBSM']
+                df2 = df2[df2.Message != 'HostBSM']
+                df2 = df2[df2.Message != 'MAP']
+                df2 = df2[df2.Message != 'SPaT']
+                df2 = df2[df2.Message != 'SSM']
+            
+            elif thisPlatform == "vehicle":
+                df1 = new_df
+                df2 = new_df
+                platform = "Vehicle Side (VSP)"
+                df2 = df2[df2.Message != 'SRM']
+                df2 = df2[df2.Message != 'HostBSM']
+                df1 = df1[df1.Message != 'RemoteBSM']
+                df1 = df1[df1.Message != 'MAP']
+                df1 = df1[df1.Message != 'SPaT']
+                df1 = df1[df1.Message != 'SSM']
+    else:
+        df1 = pd.DataFrame()
+        df2 = pd.DataFrame()
+        t2 = 0
+        if thisPlatform == "roadside":
+            platform = "Infrastructure Side (MRP)"
+        elif thisPlatform == "vehicle":
+            platform = "Vehicle Side (VSP)"
+ 
+    #sending the dataframes to HTML template
+    return render_template('message_count.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False))
+
+
+@app.route('/time_phase_diagram/',methods=['GET','POST'])
+def time_phase_diagram():
+    
+    #time phase diagrams
+    #checking if directory exists
+    try:
+        #extracting all the filenames from the directory
+        diagrams = []
+        diagrams = fnmatch.filter(os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"), "*.jpg")
+        diagrams.sort()
+        t_diagrams = []
+        diagrams_path = ["/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/"+ diagram for diagram in diagrams]
+        for diag_path in diagrams_path:
+            im = Image.open(diag_path)
+            data = io.BytesIO()
+            im.save(data, "JPEG")
+            encoded_img_data = base64.b64encode(data.getvalue()).decode('utf-8')
+            t_diagrams.append(encoded_img_data)  
+    except:
+        diagrams = []
+        t_diagrams = []
+
+
+    #sending the dataframes to HTML template
+    return render_template('time_phase_diagram.html',  diagrams = diagrams, t_diagrams = t_diagrams)
+
+
 
  # page not found 
 @app.errorhandler(404)

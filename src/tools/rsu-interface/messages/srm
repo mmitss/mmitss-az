@@ -1,9 +1,9 @@
 Version=0.7
 Type=SRM
-PSID=0xE0000019
+PSID=0xE0000016
 Priority=7
 TxMode=ALT
-TxChannel=182
+TxChannel=SCH
 TxInterval=
 DeliveryStart=
 DeliveryStop=
