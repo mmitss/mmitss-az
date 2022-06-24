@@ -1,0 +1,161 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<style>
+    .diagram_list{
+
+        height:300px;
+        width: auto;
+        overflow-y: scroll;
+        float:right;
+        border: 2px solid black;
+        background-color: white;
+        
+    }
+
+    .highlight {
+        color: white;
+        background-color: #507a77;
+    }
+    .imgList{
+        width: auto;
+    }
+    a.redirect{
+
+        color:black ;
+        font-size: 25px;
+        background-color: rgb(219, 217, 217);
+        position:relative; left:50px; top:100px;
+        padding: 10px;
+        border-radius: 25px;
+    }
+    a {
+        text-decoration: none;
+        display:inline-block;
+        padding: 8px 16px;
+    }
+
+    a:hover {
+        background-color: #ddd;
+    }   
+
+    .preNext {
+        background-color: #f1f1f1;
+        color: black;
+        border-radius: 20%;
+        font-size: 25px;
+    }
+
+
+    ul.a {
+        list-style-type: none;
+        margin: 0;
+        width:fit-content;
+        padding: 5px;
+    }
+
+
+    ul.a li:hover{
+        display: block;
+        color: white;
+        background-color: #507a77;
+    }
+    
+    h1.noData{
+        position:relative; left:250px; top:100px;
+    }
+    
+    h4{
+        color: seashell;
+        font-weight: bold;
+    }
+    table.imgTd td {
+      border: 2px solid gray;
+      background-color: #afc5c3;
+      width: auto;
+      padding: 10px;
+      margin-left:auto; 
+      margin-right:auto;
+     
+    }
+
+
+    img {
+    width: 550px;
+    padding: 20px;
+
+    }
+
+    table, td {
+      border: 1px solid gray;
+      width: auto;
+      background-color: #afc5c3;
+      padding: 15px;
+      margin-left:auto; 
+      margin-right:auto;
+     
+    }
+    th {
+        color:azure;
+        background-color: rgba(70, 192, 155, 0.884);
+        padding: 15px;
+        
+    }
+    td:nth-child(even) {
+        background-color: #fffdfd;
+        
+        }
+    .header{
+        text-align: center;
+
+    }
+    b {
+        margin-left: 24%;
+        font-size: 25px;
+    }
+    
+</style>
+
+<div class="container">
+    <form method="post">
+
+            <div id="tables" role="tabpanel" class="tab-pane fade in active">
+            <a href="#tables"></a>
+            {% if time != 0 %}
+            <div class="header">
+                    <h1>Performance Data Message Count: {{platform}}</h1><br>
+                    Last refreshed : {{time}}
+                    <hr>
+            </div>
+            <div><b>Messages Transmitted</b>
+                {{tables1 | safe}}</div>
+            <br>
+            <br>
+            <div><b>Messages Received</b>
+                {{tables2 | safe}}
+                <br><br>
+            </div>
+            {% else %}
+            <h1 class="noData">No Performance Data Available</h1>
+            {% endif %}
+            </div>
+    
+            <script>
+                $(document).ready(function(){
+                    setInterval(function(){
+                        $("#tables").load(" #tables > *");
+                        console.log("reload...") ;
+                    }, 30000);
+                    });
+            </script>
+
+    </form>
+</div>
+
+
+{% endblock %}
+

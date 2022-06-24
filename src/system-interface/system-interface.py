@@ -481,9 +481,8 @@ def configuration():
     
     return render_template('configuration.html', pageTitle=pageTitle, form=form)
 
-
-@app.route('/performance_data/',methods=['GET','POST'])
-def performance_data():
+@app.route('/message_count/',methods=['GET','POST'])
+def message_count():
     
     #read the cofig file to extract the intersection name and platform
     with open('/nojournal/bin/mmitss-phase3-master-config.json') as json_file:
@@ -559,12 +558,20 @@ def performance_data():
             platform = "Infrastructure Side (MRP)"
         elif thisPlatform == "vehicle":
             platform = "Vehicle Side (VSP)"
+ 
+    #sending the dataframes to HTML template
+    return render_template('message_count.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False))
+
+
+@app.route('/time_phase_diagram/',methods=['GET','POST'])
+def time_phase_diagram():
+    
     #time phase diagrams
     #checking if directory exists
     try:
         #extracting all the filenames from the directory
+        diagrams = []
         diagrams = fnmatch.filter(os.listdir("/nojournal/bin/performance-measurement-diagrams/time-phase-diagram"), "*.jpg")
-        print(diagrams)
         diagrams.sort()
         t_diagrams = []
         diagrams_path = ["/nojournal/bin/performance-measurement-diagrams/time-phase-diagram/"+ diagram for diagram in diagrams]
@@ -574,14 +581,13 @@ def performance_data():
             im.save(data, "JPEG")
             encoded_img_data = base64.b64encode(data.getvalue()).decode('utf-8')
             t_diagrams.append(encoded_img_data)  
-       
     except:
         diagrams = []
         t_diagrams = []
 
 
     #sending the dataframes to HTML template
-    return render_template('performance_data.html', platform=platform, time=t2 , tables1=df1.to_html(index=False), tables2=df2.to_html(index=False), diagrams = diagrams, t_diagrams = t_diagrams)
+    return render_template('time_phase_diagram.html',  diagrams = diagrams, t_diagrams = t_diagrams)
 
 
 
