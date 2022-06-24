@@ -3,5 +3,5 @@
     "NoOfCircle": 4,
     "ytick":[10,20,30,40],
     "ytickString": ["10","20","30","40"],
-    "Offset":180
+    "Offset":2
 }
